@@ -12,6 +12,8 @@ extern int opterr;
 extern int optopt;
 extern int optind;
 extern char* optarg;
+
+// flawfinder: ignore
 int getopt(int argc, char* const* argv, char const* options);
 
 #endif // !STORED_OS_POSIX

@@ -24,6 +24,7 @@ namespace stored {
  * \details This block of memory is copied to the start of the buffer upon initialization.
  */
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
+// flawfinder: ignore
 static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len}}] = {
 	{{store.buffer.init|carray|tab_indent(1)}}
 };
@@ -36,6 +37,8 @@ static unsigned char const {{store.name}}Data_bufferinit[{{store.buffer.init|len
 	: buffer()
 {
 {% if store.buffer.init|len > 0 %}
+	static_assert(sizeof(buffer) >= sizeof({{store.name}}Data_bufferinit), "");
+	// flawfinder: ignore
 	memcpy(buffer, {{store.name}}Data_bufferinit, sizeof({{store.name}}Data_bufferinit));
 {% endif %}
 {% if store.littleEndian %}

@@ -33,7 +33,7 @@ jobs:
         run: |
           sudo apt update
           dist/ubuntu/bootstrap.sh
-          sudo apt install clang-tidy clang libegl1 cppcheck
+          sudo apt install clang-tidy clang libegl1 cppcheck flawfinder
       - name: build Debug
         run: dist/ubuntu/build.sh Debug dev ${{matrix.cxx}} ${{matrix.zmq}} ${{matrix.zth}} test
       - name: build Release

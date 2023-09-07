@@ -9,6 +9,7 @@ int optopt = 0;
 int optind = 1;
 char* optarg = nullptr;
 
+// flawfinder: ignore
 int getopt(int argc, char* const* argv, char const* options)
 {
 	if(optind >= argc || !argv || !options)

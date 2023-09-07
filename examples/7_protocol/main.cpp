@@ -54,7 +54,8 @@ printBuffer(void const* buffer, size_t len, char const* prefix = nullptr, FILE* 
 		s += prefix;
 
 	uint8_t const* b = static_cast<uint8_t const*>(buffer);
-	char buf[16];
+	// flawfinder: ignore
+	char buf[16] = {};
 	for(size_t i = 0; i < len; i++) {
 		switch(b[i]) {
 		case '\0':
@@ -74,7 +75,8 @@ printBuffer(void const* buffer, size_t len, char const* prefix = nullptr, FILE* 
 			break;
 		default:
 			if(b[i] < 0x20 || b[i] >= 0x7f) {
-				snprintf(buf, sizeof(buf), "\\x%02" PRIx8, b[i]);
+				// flawfinder: ignore
+				snprintf(buf, sizeof(buf) - 1, "\\x%02" PRIx8, b[i]);
 				s += buf;
 			} else {
 				s += (char)b[i];
@@ -139,6 +141,7 @@ public:
 #ifdef STORED_OS_WINDOWS
 				(double)::rand() / RAND_MAX;
 #else
+				// flawfinder: ignore
 				drand48();
 #endif
 			if(p < ber()) {
@@ -216,8 +219,10 @@ int main()
 	setvbuf(stdout, NULL, _IONBF, 0);
 
 #ifdef STORED_OS_WINDOWS
+	// flawfinder: ignore
 	srand((unsigned int)time(NULL));
 #else
+	// flawfinder: ignore
 	srand48((long)time(NULL));
 #endif
 

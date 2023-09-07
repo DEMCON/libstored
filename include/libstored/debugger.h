@@ -570,6 +570,7 @@ private:
 	 * instances must have equal size. These properties are checked in our
 	 * the constructor.
 	 */
+	// flawfinder: ignore
 	char m_buffer[sizeof(DebugVariantTyped<>)];
 };
 #	ifdef STORED_COMPILER_ARMCC

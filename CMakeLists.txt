@@ -389,6 +389,23 @@ if(CPPCHECK_CMD)
 	endif()
 endif()
 
+find_program(FLAWFINDER_EXE NAMES flawfinder)
+if(FLAWFINDER_EXE)
+	add_custom_target(
+		libstored-flawfinder
+		DEPENDS all-libstored-generate
+		COMMAND ${FLAWFINDER_EXE} --error-level=3 examples src include
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		COMMENT "Running flawfinder..."
+		VERBATIM
+	)
+
+	option(LIBSTORED_FLAWFINDER "Run flawfinder by default" ${LIBSTORED_DEV_OPTION})
+	if(LIBSTORED_FLAWFINDER)
+		add_custom_target(libstored-flawfinder-all ALL DEPENDS libstored-flawfinder)
+	endif()
+endif()
+
 if(LIBSTORED_DIST_DIR)
 	add_subdirectory(${LIBSTORED_DIST_DIR})
 endif()

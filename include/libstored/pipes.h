@@ -778,7 +778,7 @@ protected:
 	explicit ExitValue(type&& v)
 		: m_p{}
 	{
-		new(m_v) type{std::move(v)};
+		new(m_v.data()) type{std::move(v)};
 	}
 
 	template <typename S>
@@ -793,7 +793,7 @@ public:
 		: m_p{v.m_p}
 	{
 		if(m_p)
-			new(m_v) type{std::move(v.value())};
+			new(m_v.data()) type{std::move(v.value())};
 	}
 
 	ExitValue& operator=(ExitValue&& v) = delete;
@@ -848,18 +848,18 @@ protected:
 	type& value()
 	{
 		// NOLINTNEXTLINE
-		return *reinterpret_cast<type*>(&m_v[0]);
+		return *reinterpret_cast<type*>(m_v.data());
 	}
 
 	type const& value() const
 	{
 		// NOLINTNEXTLINE
-		return *reinterpret_cast<type const*>(&m_v[0]);
+		return *reinterpret_cast<type const*>(m_v.data());
 	}
 
 private:
-	alignas(type) char m_v[sizeof(type)]; // only valid when m_p == nullptr
-	type const* m_p;
+	alignas(type) std::array<char, sizeof(type)> m_v{}; // only valid when m_p == nullptr
+	type const* m_p = nullptr;
 };
 
 /*!

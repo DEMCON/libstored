@@ -171,12 +171,14 @@ int main()
 	int mem = 0xbeef;
 
 	if(stored::Config::DebuggerReadMem) {
+		// flawfinder: ignore
 		char buffer[32] = {};
 		snprintf(buffer, sizeof(buffer), "R%" PRIxPTR " %zu", (uintptr_t)&mem, sizeof(mem));
 		phy.decode(buffer);
 	}
 
 	if(stored::Config::DebuggerWriteMem) {
+		// flawfinder: ignore
 		char buffer[32] = {};
 		snprintf(buffer, sizeof(buffer), "W%" PRIxPTR " cafe", (uintptr_t)&mem);
 		phy.decode(buffer);
