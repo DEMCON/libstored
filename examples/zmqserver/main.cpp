@@ -59,6 +59,7 @@ protected:
 #ifdef STORED_OS_WINDOWS
 			value = (double)::rand() / RAND_MAX;
 #else
+			// flawfinder: ignore
 			value = drand48();
 #endif
 		}

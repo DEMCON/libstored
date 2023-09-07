@@ -78,10 +78,11 @@ int main()
 {
 	MyExample e;
 
-	//	time_t now = (time_t)e.time_s.get();
-	//	printf("time = %s\n", ctime(&now));
+#if 0
+	time_t now = (time_t)e.time_s.get();
+	printf("time = %s\n", ctime(&now));
+#endif
 
-	srand(42);
 	printf("rand = %" PRId32 "\n", e.rand.get());
 	printf("rand = %" PRId32 "\n", e.rand.get());
 	printf("rand = %" PRId32 "\n", e.rand.get());

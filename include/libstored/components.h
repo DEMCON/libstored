@@ -299,6 +299,7 @@ private:
 		std::enable_if_t<impl::has_id<Id_, Id...>::value, int> = 0>
 	constexpr size_t init(char const (&prefix)[PN], char const (&name)[NN]) noexcept
 	{
+		// flawfinder: ignore
 		char buf[PN + NN] = {};
 		size_t len = 0;
 

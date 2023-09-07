@@ -135,7 +135,7 @@ String::type string_literal(void const* buffer, size_t len, char const* prefix)
 		s += prefix;
 
 	uint8_t const* b = static_cast<uint8_t const*>(buffer);
-	char buf[16];
+	char buf[16] = {};
 	for(size_t i = 0; i < len; i++) {
 		switch(b[i]) {
 		case '\0':
@@ -158,7 +158,9 @@ String::type string_literal(void const* buffer, size_t len, char const* prefix)
 				// Embedded systems may not have a fancy printf, so limit the
 				// formatting specifier somewhat.
 				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
-				if(snprintf(buf, sizeof(buf), "\\x%02x", (unsigned int)b[i]) > 0)
+				// flawfinder: ignore
+				if(snprintf(buf, sizeof(buf) - 1, "\\x%02x", (unsigned int)b[i])
+				   > 0)
 					s += buf;
 			} else {
 				s += (char)b[i];

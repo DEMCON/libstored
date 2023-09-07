@@ -69,6 +69,7 @@ int main(int argc, char** argv)
 	bool verbose = false;
 
 	int c;
+	// flawfinder: ignore
 	while(ret == 0 && (c = getopt(argc, argv, "i:d:u:p:v")) != -1)
 		switch(c) {
 		case 'i':
@@ -76,7 +77,12 @@ int main(int argc, char** argv)
 			debugger.setIdentification(optarg);
 			break;
 		case 'p':
+			// flawfinder: ignore
 			debug_port = atoi(optarg);
+			if(debug_port == 0 || debug_port >= 0x10000) {
+				printf("Invalid port '%s'\n", optarg);
+				ret = 1;
+			}
 			break;
 		case 'v':
 			printf("Enable verbose output\n");

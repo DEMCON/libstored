@@ -334,7 +334,8 @@ DebugZmqLayer::DebugZmqLayer(void* context, int port, ProtocolLayer* up, Protoco
 	// NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays)
 	char bind[32] = {};
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
-	if(snprintf(bind, sizeof(bind), "tcp://*:%" PRIu16, (uint16_t)port) < 0)
+	// flawfinder: ignore
+	if(snprintf(bind, sizeof(bind) - 1, "tcp://*:%" PRIu16, (uint16_t)port) < 0)
 		setLastError(ENOMEM);
 	else if(zmq_bind(socket(), bind) == -1)
 		setLastError(errno);
