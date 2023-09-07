@@ -62,15 +62,15 @@ target_include_directories(
 
 install(
 	TARGETS heatshrink
-	EXPORT Heatshrink
+	EXPORT heatshrink
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 if(WIN32)
-	install(EXPORT Heatshrink DESTINATION CMake)
+	install(EXPORT heatshrink DESTINATION CMake)
 else()
-	install(EXPORT Heatshrink DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake)
+	install(EXPORT heatshrink DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libstored/cmake)
 endif()
 
 set(Heatshrink_FOUND 1)

@@ -15,8 +15,8 @@ set(CMAKE_CXX_COMPILER ${TOOLCHAIN_PREFIX}-g++)
 set(CMAKE_MC_COMPILER ${TOOLCHAIN_PREFIX}-windmc)
 set(CMAKE_RC_COMPILER ${TOOLCHAIN_PREFIX}-windres)
 
-# target environment on the build host system
-set(CMAKE_FIND_ROOT_PATH /usr/${TOOLCHAIN_PREFIX})
+# target environment on target sysroot and the build host system
+set(CMAKE_FIND_ROOT_PATH ${CMAKE_INSTALL_PREFIX} /usr/${TOOLCHAIN_PREFIX})
 
 # modify default behavior of FIND_XXX() commands
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
