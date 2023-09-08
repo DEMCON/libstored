@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>libstored &mdash; libstored 1.5.1-alpha documentation</title>
+  <title>libstored &mdash; libstored 1.6.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -13,7 +13,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=e1c64ce6"></script>
+        <script src="../_static/documentation_options.js?v=760e8205"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -35,7 +35,7 @@
             libstored
           </a>
               <div class="version">
-                1.5.1.dev0
+                1.6.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -322,7 +322,7 @@ Debugger instance. The connect to this C++ bridge.</p>
 <h3>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h3>
 <p>The host tools to debug your application are written in Python, based on
 PySide6. The <code class="docutils literal notranslate"><span class="pre">libstored</span></code> wheel file from the <code class="docutils literal notranslate"><span class="pre">python</span></code> directory is by
-default installed in the venv, located in <code class="docutils literal notranslate"><span class="pre">dist/.venv</span></code>.</p>
+default installed in the venv, located in <code class="docutils literal notranslate"><span class="pre">dist/venv</span></code>.</p>
 <p>To get a grasp how debugging feels like, try the following.</p>
 <ol class="arabic simple">
 <li><p>Build the examples, as discussed above.</p></li>
@@ -331,8 +331,8 @@ properly.  In the instructions below, use <code class="docutils literal notransl
 <li><p>Run <code class="docutils literal notranslate"><span class="pre">examples/zmqserver/zmqserver</span></code>. This starts an application with a
 store with all kinds of object, and provides a ZeroMQ server interface for
 debugging.</p></li>
-<li><p>Activate the Python venv by running <code class="docutils literal notranslate"><span class="pre">dist\.venv\Scripts\activate.bat</span></code> on
-Windows, or <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">dist/.venv/bin/activate</span></code> on Linux or macOS.</p></li>
+<li><p>Activate the Python venv by running <code class="docutils literal notranslate"><span class="pre">dist\venv\Scripts\activate.bat</span></code> on
+Windows, or <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">dist/venv/bin/activate</span></code> on Linux or macOS.</p></li>
 <li><p>Run <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">libstored.gui</span></code>. This GUI connects to the <code class="docutils literal notranslate"><span class="pre">zmqserver</span></code>
 application via ZeroMQ.</p></li>
 <li><p>The GUI window will pop up and shows the objects of the <code class="docutils literal notranslate"><span class="pre">zmqserver</span></code>
@@ -504,41 +504,23 @@ generate stuff for you.  This is how to integrate it in your project:</p>
 <li><p>Add libstored to your source repository, for example as a submodule.</p></li>
 <li><p>Run <code class="docutils literal notranslate"><span class="pre">dist/&lt;platform&gt;/bootstrap</span></code> in the libstored directory once to install
 all dependencies.</p></li>
-<li><p>Include libstored in your cmake project.</p>
-<ul>
-<li><p>By using <code class="docutils literal notranslate"><span class="pre">add_directory()</span></code> to completely build libstored:</p>
-<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">LIBSTORED_EXAMPLES</span><span class="w"> </span><span class="s">OFF</span><span class="w"> </span><span class="s">CACHE</span><span class="w"> </span><span class="s">BOOL</span><span class="w"> </span><span class="s2">&quot;Disable libstored examples&quot;</span><span class="w"> </span><span class="s">FORCE</span><span class="p">)</span>
-<span class="nb">set</span><span class="p">(</span><span class="s">LIBSTORED_TESTS</span><span class="w"> </span><span class="s">OFF</span><span class="w"> </span><span class="s">CACHE</span><span class="w"> </span><span class="s">BOOL</span><span class="w"> </span><span class="s2">&quot;Disable libstored tests&quot;</span><span class="w"> </span><span class="s">FORCE</span><span class="p">)</span>
-<span class="nb">set</span><span class="p">(</span><span class="s">LIBSTORED_DOCUMENTATION</span><span class="w"> </span><span class="s">OFF</span><span class="w"> </span><span class="s">CACHE</span><span class="w"> </span><span class="s">BOOL</span><span class="w"> </span><span class="s2">&quot;Disable libstored documentation&quot;</span><span class="w"> </span><span class="s">FORCE</span><span class="p">)</span>
-<span class="nb">add_subdirectory</span><span class="p">(</span><span class="s">libstored</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>ZeroMQ support is by default enabled, when the target platform supports it.
-To disable it, add the following line before <code class="docutils literal notranslate"><span class="pre">add_subdirectory()</span></code> above:</p>
-<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">LIBSTORED_HAVE_LIBZMQ</span><span class="w"> </span><span class="s">OFF</span><span class="w"> </span><span class="s">CACHE</span><span class="w"> </span><span class="s">BOOL</span><span class="w"> </span><span class="s2">&quot;Disable ZeroMQ&quot;</span><span class="w"> </span><span class="s">FORCE</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><a class="reference external" href="https://github.com/jhrutgers/zth">Zth</a> support is by default disabled. When enabled, it will build Zth from
-source when not found on your system. Using gcc is required for Zth. To
-enable it, add:</p>
-<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">LIBSTORED_HAVE_ZTH</span><span class="w"> </span><span class="s">ON</span><span class="w"> </span><span class="s">CACHE</span><span class="w"> </span><span class="s">BOOL</span><span class="w"> </span><span class="s2">&quot;Enable Zth&quot;</span><span class="w"> </span><span class="s">FORCE</span><span class="p">)</span>
-</pre></div>
-</div>
-</li>
-<li><p>Alternatively, use <code class="docutils literal notranslate"><span class="pre">include()</span></code> to only include what is required to build
-stores.  This method does not build the python client, documentation,
-tests, and examples, as the <code class="docutils literal notranslate"><span class="pre">add_subdirectory()</span></code> would do.</p>
+<li><p>Include libstored in your cmake project, such as:</p>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">list</span><span class="p">(</span><span class="s">APPEND</span><span class="w"> </span><span class="s">CMAKE_MODULE_PATH</span><span class="w"> </span><span class="s">extern/libstored/cmake</span><span class="p">)</span>
 <span class="nb">include</span><span class="p">(</span><span class="s">libstored</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Before including <code class="docutils literal notranslate"><span class="pre">libstored</span></code>, you can specify similar options as for
-<code class="docutils literal notranslate"><span class="pre">add_subdirectory()</span></code>, but the defaults are different. By default, it
-does not enable ASan, clang-tidy, and ZMQ, etc., where
-<code class="docutils literal notranslate"><span class="pre">add_subdirectory()</span></code> would try to do an auto-detect.  See also
-<code class="docutils literal notranslate"><span class="pre">examples/integrate</span></code>.</p>
-</li>
-</ul>
+<p>Before including <code class="docutils literal notranslate"><span class="pre">libstored</span></code>, you can specify several options (see
+<code class="docutils literal notranslate"><span class="pre">cmake/libstored.cmake</span></code>), such as enabling ASan or clang-tidy.
+Especially the library dependencies (ZeroMQ, Zth, Qt, heatshrink) are
+relevant to consider.  For example, to enable ZeroMQ:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">list</span><span class="p">(</span><span class="s">APPEND</span><span class="w"> </span><span class="s">CMAKE_MODULE_PATH</span><span class="w"> </span><span class="s">extern/libstored/dist/common</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">ZeroMQ</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">LIBSTORED_HAVE_LIBZMQ</span><span class="w"> </span><span class="s">ON</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For Windows, Linux and macOS, the provided package in the <code class="docutils literal notranslate"><span class="pre">common</span></code>
+directory tries to find ZeroMQ on your system, or it is built from source.
+For other targets, you might tweak this approach.</p>
 </li>
 <li><p>Optional: install <code class="docutils literal notranslate"><span class="pre">dist/common/st.vim</span></code> in <code class="docutils literal notranslate"><span class="pre">$HOME/.vim/syntax</span></code> to have
 proper syntax highlighting in vim.</p></li>
@@ -573,6 +555,22 @@ usually; the <code class="docutils literal notranslate"><span class="pre">rtl/vi
 include this file in another cmake project, you import all generated
 libraries as static libraries. See the <code class="docutils literal notranslate"><span class="pre">examples/installed</span></code> example how
 to do this.</p></li>
+</ol>
+<p>Alternatively, you could install libstored from PyPI instead of the submodule
+approach.  In that case:</p>
+<ol class="arabic">
+<li><p>Do something like <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">libstored</span></code>.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">libstored.cmake</span></code> to generate a <code class="docutils literal notranslate"><span class="pre">FindLibstored.cmake</span></code>.</p></li>
+<li><p>In your project, call <code class="docutils literal notranslate"><span class="pre">find_package(Libstored)</span></code>, while having the
+generated <code class="docutils literal notranslate"><span class="pre">FindLibstored.cmake</span></code> in your <code class="docutils literal notranslate"><span class="pre">CMAKE_MODULE_PATH</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Libstored</span></code> accepts <code class="docutils literal notranslate"><span class="pre">ZeroMQ</span></code>, <code class="docutils literal notranslate"><span class="pre">Zth</span></code>, <code class="docutils literal notranslate"><span class="pre">Heatshrink</span></code>, <code class="docutils literal notranslate"><span class="pre">Qt5</span></code>, <code class="docutils literal notranslate"><span class="pre">Qt6</span></code>
+as <code class="docutils literal notranslate"><span class="pre">COMPONENTS</span></code>.  Setting these enables integration of these libraries
+with libstored. When possible, they are taken from your host system, or
+built from source (except Qt).  If you want more control over these
+libraries, you can also use the mechanism described above with manually
+setting <code class="docutils literal notranslate"><span class="pre">LIBSTORED_HAVE_LIBZMQ</span></code> and friends.</p>
+</li>
+<li><p>Continue with step 5 of the submodule-approach above.</p></li>
 </ol>
 <p>Check out the examples of libstored, which are all independent applications
 with their own generated store.</p>

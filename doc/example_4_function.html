@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4_function &mdash; libstored 1.5.1-alpha documentation</title>
+  <title>4_function &mdash; libstored 1.6.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -13,7 +13,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=e1c64ce6"></script>
+        <script src="../_static/documentation_options.js?v=760e8205"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -35,7 +35,7 @@
             libstored
           </a>
               <div class="version">
-                1.5.1.dev0
+                1.6.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -213,10 +213,11 @@
 <span class="p">{</span>
 <span class="w">	</span><span class="n">MyExample</span><span class="w"> </span><span class="n">e</span><span class="p">;</span>
 
-<span class="w">	</span><span class="c1">//	time_t now = (time_t)e.time_s.get();</span>
-<span class="w">	</span><span class="c1">//	printf(&quot;time = %s\n&quot;, ctime(&amp;now));</span>
+<span class="cp">#if 0</span>
+<span class="c">	time_t now = (time_t)e.time_s.get();</span>
+<span class="c">	printf(&quot;time = %s\n&quot;, ctime(&amp;now));</span>
+<span class="cp">#endif</span>
 
-<span class="w">	</span><span class="n">srand</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
 <span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;rand = %&quot;</span><span class="w"> </span><span class="n">PRId32</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">rand</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
 <span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;rand = %&quot;</span><span class="w"> </span><span class="n">PRId32</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">rand</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
 <span class="w">	</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;rand = %&quot;</span><span class="w"> </span><span class="n">PRId32</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">rand</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>

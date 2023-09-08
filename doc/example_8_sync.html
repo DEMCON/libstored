@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>8_sync &mdash; libstored 1.5.1-alpha documentation</title>
+  <title>8_sync &mdash; libstored 1.6.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -13,7 +13,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=e1c64ce6"></script>
+        <script src="../_static/documentation_options.js?v=760e8205"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -35,7 +35,7 @@
             libstored
           </a>
               <div class="version">
-                1.5.1.dev0
+                1.6.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -213,6 +213,7 @@ bool b
 <span class="w">	</span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 
 <span class="w">	</span><span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+<span class="w">	</span><span class="c1">// flawfinder: ignore</span>
 <span class="w">	</span><span class="k">while</span><span class="p">(</span><span class="n">ret</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getopt</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;i:d:u:p:v&quot;</span><span class="p">))</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span>
 <span class="w">		</span><span class="k">switch</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">		</span><span class="k">case</span><span class="w"> </span><span class="sc">&#39;i&#39;</span><span class="p">:</span>
@@ -220,7 +221,12 @@ bool b
 <span class="w">			</span><span class="n">debugger</span><span class="p">.</span><span class="n">setIdentification</span><span class="p">(</span><span class="n">optarg</span><span class="p">);</span>
 <span class="w">			</span><span class="k">break</span><span class="p">;</span>
 <span class="w">		</span><span class="k">case</span><span class="w"> </span><span class="sc">&#39;p&#39;</span><span class="p">:</span>
+<span class="w">			</span><span class="c1">// flawfinder: ignore</span>
 <span class="w">			</span><span class="n">debug_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">atoi</span><span class="p">(</span><span class="n">optarg</span><span class="p">);</span>
+<span class="w">			</span><span class="k">if</span><span class="p">(</span><span class="n">debug_port</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">debug_port</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mh">0x10000</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">				</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Invalid port &#39;%s&#39;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">optarg</span><span class="p">);</span>
+<span class="w">				</span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">			</span><span class="p">}</span>
 <span class="w">			</span><span class="k">break</span><span class="p">;</span>
 <span class="w">		</span><span class="k">case</span><span class="w"> </span><span class="sc">&#39;v&#39;</span><span class="p">:</span>
 <span class="w">			</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Enable verbose output</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
