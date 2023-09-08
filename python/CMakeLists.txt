@@ -156,16 +156,16 @@ endif()
 if("${pylibstored_wheel_ALL}${pylibstored_tar_ALL}" STREQUAL "")
 	set(cmake_rm echo "No old whl files found")
 elseif(CMAKE_VERSION VERSION_GREATER_EQUAL "3.17")
-	set(cmake_rm rm)
+	set(cmake_rm rm -f)
 else()
-	set(cmake_rm remove)
+	set(cmake_rm remove -f)
 endif()
 
 add_custom_command(
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/.timestamp
 	# BYPRODUCTS ${pylibstored_wheel} ${pylibstored_tar}
 	DEPENDS ${_wheel_deps}
-	COMMAND ${CMAKE_COMMAND} -E ${cmake_rm} -f ${pylibstored_wheel_ALL} ${pylibstored_tar_ALL}
+	COMMAND ${CMAKE_COMMAND} -E ${cmake_rm} ${pylibstored_wheel_ALL} ${pylibstored_tar_ALL}
 	COMMAND ${PYTHON_EXECUTABLE} -m build -o ${CMAKE_CURRENT_BINARY_DIR}
 		${CMAKE_CURRENT_SOURCE_DIR}
 	COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/.timestamp
