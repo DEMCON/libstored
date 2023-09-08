@@ -286,15 +286,34 @@ function(libstored_lib libprefix libpath)
 
 	if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
 		find_program(
-			CLANG_TIDY_EXE
-			NAMES "clang-tidy"
-			DOC "Path to clang-tidy executable"
+			CLANG_EXE
+			NAMES "clang"
+			DOC "Path to clang executable"
 		)
-		if(CLANG_TIDY_EXE AND LIBSTORED_CLANG_TIDY)
+
+		if(CLANG_EXE AND NOT CLANG_TIDY_EXE14)
+			execute_process(COMMAND ${CLANG_EXE} -dumpversion OUTPUT_VARIABLE CLANG_VERSION
+				ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+			# We need clang-tidy 14 or later for --config-file.
+			if("${CLANG_VERSION}" VERSION_GREATER_EQUAL 14)
+				find_program(
+					CLANG_TIDY_EXE14
+					NAMES "clang-tidy"
+					DOC "Path to clang-tidy executable"
+				)
+
+				if(CLANG_TIDY_EXE14)
+					message(STATUS "Found clang-tidy ${CLANG_VERSION}")
+				endif()
+			endif()
+		endif()
+
+		if(CLANG_TIDY_EXE14 AND LIBSTORED_CLANG_TIDY)
 			message(STATUS "Enabled clang-tidy for ${LIBSTORED_LIB_TARGET}")
 
 			set(DO_CLANG_TIDY
-			    "${CLANG_TIDY_EXE}" "--config-file=${LIBSTORED_SOURCE_DIR}/.clang-tidy"
+			    "${CLANG_TIDY_EXE14}" "--config-file=${LIBSTORED_SOURCE_DIR}/.clang-tidy"
 			    "--extra-arg=-I${LIBSTORED_SOURCE_DIR}/include"
 			    "--extra-arg=-I${LIBSTORED_LIB_DESTINATION}/include"
 			)
