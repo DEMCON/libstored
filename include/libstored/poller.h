@@ -196,6 +196,7 @@ protected:
 		*this = p;
 	}
 
+	// NOLINTNEXTLINE(hicpp-use-equals-default)
 	TypedPollable& operator=(TypedPollable const& p)
 	{
 		Pollable::operator=(p);
