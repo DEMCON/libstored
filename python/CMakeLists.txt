@@ -180,7 +180,7 @@ if(NOT "${pylibstored_wheel}" STREQUAL "")
 	if(LIBSTORED_PIP_INSTALL_USER)
 		add_custom_target(
 			pylibstored-install
-			DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/.timestamp
+			DEPENDS pylibstored-dist
 			COMMAND ${PYTHON_EXECUTABLE} -m pip install --user --upgrade --no-deps
 				--force-reinstall ${pylibstored_wheel}
 		)
@@ -188,7 +188,7 @@ if(NOT "${pylibstored_wheel}" STREQUAL "")
 	else()
 		add_custom_target(
 			pylibstored-install
-			DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/.timestamp
+			DEPENDS pylibstored-dist
 			COMMAND ${PYTHON_EXECUTABLE} -m pip install --upgrade --no-deps
 				--force-reinstall ${pylibstored_wheel}
 		)
