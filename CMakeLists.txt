@@ -285,11 +285,6 @@ if(VIVADO_CMD)
 	message(STATUS "Using vivado ${VIVADO_CMD}")
 endif()
 
-option(LIBSTORED_EXAMPLES "Build examples" ON)
-if(LIBSTORED_EXAMPLES)
-	add_subdirectory(examples)
-endif()
-
 if(LIBSTORED_VENV)
 	set(LIBSTORED_PIP_INSTALL_USER_DEFAULT OFF)
 else()
@@ -302,6 +297,11 @@ option(LIBSTORED_PIP_INSTALL_USER "Run pip install with --user flag when install
 
 if(LIBSTORED_PYLIBSTORED)
 	add_subdirectory(python)
+endif()
+
+option(LIBSTORED_EXAMPLES "Build examples" ON)
+if(LIBSTORED_EXAMPLES)
+	add_subdirectory(examples)
 endif()
 
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0")
