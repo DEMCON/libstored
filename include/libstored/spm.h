@@ -317,8 +317,12 @@ private:
 				m_old.push_back(m_buffer);
 			} catch(...) {
 				deallocate<char>(p, size + chunkHeader);
+#	ifdef STORED_cpp_exceptions
 				// cppcheck-suppress rethrowNoCurrentException
 				throw;
+#	else
+				std::terminate();
+#	endif
 			}
 		}
 
