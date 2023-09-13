@@ -132,6 +132,16 @@ else()
 	libstored_add_test(test_poller test_poller.cpp)
 endif()
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	add_custom_target(teststore-bare)
+	libstored_generate(TARGET teststore-bare STORES TestStore.st DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bare NO_ZMQ)
+	target_compile_options(teststore-bare-libstored PUBLIC -fno-exceptions -fno-rtti)
+
+	add_executable(test_bare test_bare.cpp)
+	target_link_libraries(test_bare gtest gmock gtest_main teststore-bare-libstored)
+	gtest_add_tests(TARGET test_bare TEST_LIST tests)
+endif()
+
 # All test binaries are put in the same directory.
 # Only copy the dlls once.
 libstored_copy_dlls(test_debugger)
