@@ -16,6 +16,18 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 Added
 `````
 
+...
+
+.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.6.0...HEAD
+
+
+
+`1.6.0`_ - 2023-09-13
+---------------------
+
+Added
+`````
+
 - `libstored.cmake`, with generator to pylibstored. Instead of cloning the
   libstored repo, running `pip install libstored` contains everything to
   generate a store. See also `examples/int_pip`.
@@ -35,7 +47,7 @@ Fixed
 - Improve stability of Debugger/Synchronizer protocol handling of bogus
   messages.
 
-.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.5.0...HEAD
+.. _1.6.0: https://github.com/DEMCON/libstored/releases/tag/v1.6.0
 
 
 
