@@ -25,6 +25,7 @@ function show_help {
 	echo "        Set CMAKE_BUILD_TYPE to this value"
 	echo "  C++98 C++03 C++11 C++14 C++17 C++20"
 	echo "        Set the C++ standard"
+	echo "  conf  Configure only, don't build"
 	echo "  dev   Enable development-related options"
 	echo "  test  Enable building and running tests"
 	echo "  zmq   Enable ZeroMQ integration"
@@ -39,6 +40,7 @@ repo="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." &> /dev/null; pwd -P)"
 dist_dir="$(pwd -P)"
 
 build_type=
+do_build=1
 do_test=
 do_test_run=${do_test_run:-1}
 use_ninja=1
@@ -70,6 +72,8 @@ while [[ ! -z ${1:-} ]]; do
 			cmake_opts="${cmake_opts} -DCMAKE_CXX_STANDARD=17 -DCMAKE_C_STANDARD=11";;
 		C++20)
 			cmake_opts="${cmake_opts} -DCMAKE_CXX_STANDARD=20 -DCMAKE_C_STANDARD=11";;
+		conf)
+			do_build=0;;
 		dev)
 			cmake_opts="${cmake_opts} -DLIBSTORED_DEV=ON"
 			do_test=1
@@ -179,14 +183,16 @@ cmake -DCMAKE_MODULE_PATH="${repo}/dist/common" \
 	-DCMAKE_INSTALL_PREFIX="${dist_dir}/build/deploy" \
 	${cmake_opts} "$@" ../../..
 
-cmake --build . "${par}"
-cmake --build . --target install "${par}"
+if [[ ${do_build} == 1 ]]; then
+	cmake --build . "${par}"
+	cmake --build . --target install "${par}"
 
-if [[ ${do_test} == 1 ]] && [[ ${do_test_run} == 1 ]]; then
-	CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test
+	if [[ ${do_test} == 1 ]] && [[ ${do_test_run} == 1 ]]; then
+		CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test
 
-	if [[ ${lcov} == 1 ]]; then
-		cmake --build . --target libstored-lcov
+		if [[ ${lcov} == 1 ]]; then
+			cmake --build . --target libstored-lcov
+		fi
 	fi
 fi
 
