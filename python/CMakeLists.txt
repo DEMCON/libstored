@@ -193,19 +193,24 @@ if(NOT "${pylibstored_wheel}" STREQUAL "")
 				--force-reinstall ${pylibstored_wheel}
 		)
 	endif()
-endif()
 
-install(
-	CODE "
-	execute_process(
-		COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/libstored
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pylibstored_wheel} ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/libstored
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pylibstored_tar} ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/libstored
-		COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target pylibstored-install
-		RESULT_VARIABLE _res
+	get_filename_component(pylibstored_wheel_file ${pylibstored_wheel} NAME)
+	get_filename_component(pylibstored_tar_file ${pylibstored_tar} NAME)
+
+	install(
+		CODE "
+		execute_process(
+			COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/libstored
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pylibstored_wheel}
+				${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/libstored/${pylibstored_wheel_file}
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pylibstored_tar}
+				${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/libstored/${pylibstored_tar_file}
+			COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target pylibstored-install
+			RESULT_VARIABLE _res
+		)
+		if(NOT \${_res} EQUAL 0)
+			message(FATAL_ERROR \"pylibstored-install failed\")
+		endif()
+	"
 	)
-	if(NOT \${_res} EQUAL 0)
-		message(FATAL_ERROR \"pylibstored-install failed\")
-	endif()
-"
-)
+endif()
