@@ -16,6 +16,7 @@ if errorlevel 1 goto silent_error
 echo.
 
 set cmake_opts=-DLIBSTORED_DIST_DIR=%here%
+set do_build=1
 set support_test=1
 set do_test=
 set msvc=1
@@ -23,7 +24,7 @@ set msvc=1
 :parse_param
 
 if "%1" == "" (
-	goto do_build
+	goto go_build
 )
 if %1 == -h (
 	goto show_help
@@ -82,6 +83,10 @@ if %1 == C++20 (
 	set cmake_opts=%cmake_opts% -DCMAKE_CXX_STANDARD=20 -DCMAKE_C_STANDARD=11
 	goto next_param
 )
+if %1 == conf (
+	set do_build=0
+	goto next_param
+)
 if %1 == dev (
 	set cmake_opts=%cmake_opts% -DLIBSTORED_DEV=ON
 	set do_test=1
@@ -121,17 +126,17 @@ if %1 == zth (
 )
 if %1 == -- (
 	shift
-	goto do_build
+	goto go_build
 )
 
 rem Unknown parameter, pass the remaining to cmake.
-goto do_build
+goto go_build
 
 :next_param
 shift
 goto parse_param
 
-:do_build
+:go_build
 
 if %support_test% == 0 set do_test=
 if "%do_test%" == "0" set cmake_opts=%cmake_opts% -DLIBSTORED_TESTS=OFF
@@ -154,6 +159,9 @@ if %msvc% == 1 (
 
 cmake "-DCMAKE_MODULE_PATH=%cmake_here%../common" "-DCMAKE_INSTALL_PREFIX=%cmake_builddir%/deploy" %cmake_opts% ..\..\.. %1 %2 %3 %4 %5 %6 %7 %8 %9
 if errorlevel 1 goto error
+
+if not "%do_build%" == "1" goto done
+
 cmake --build . %par%
 if errorlevel 1 goto error
 cmake --build . --target install %par%
@@ -183,6 +191,7 @@ echo         Set CMAKE_BUILD_TYPE to this value
 echo   gcc   Use gcc instead of default compiler
 echo   C++98 C++03 C++11 C++14 C++17 C++20
 echo         Set the C++ standard
+echo   conf  Configure only, don't build
 echo   dev   Enable development-related options
 echo   test  Enable building and running tests
 echo   zmq   Enable ZeroMQ integration
