@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: CC0-1.0
+
 *.cache
 *.hw
 *.ip_user_files
@@ -6,4 +10,4 @@
 *.runs
 *.log
 *.jou
-test_fpga
+/test_fpga/

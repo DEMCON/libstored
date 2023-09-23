@@ -1,9 +1,6 @@
-# libstored, distributed debuggable data stores.
-# Copyright (C) 2020-2023  Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
 #
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
 
 cmake_minimum_required(VERSION 3.5)
 project(libstored)
@@ -404,6 +401,18 @@ if(FLAWFINDER_EXE)
 	if(LIBSTORED_FLAWFINDER)
 		add_custom_target(libstored-flawfinder-all ALL DEPENDS libstored-flawfinder)
 	endif()
+endif()
+
+add_custom_target(
+	libstored-reuse
+	COMMAND ${PYTHON_EXECUTABLE} -m reuse lint
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+	COMMENT "Checking REUSE compliance"
+	VERBATIM
+)
+
+if(LIBSTORED_DEV)
+	add_custom_target(libstored-reuse-all ALL DEPENDS libstored-reuse)
 endif()
 
 if(LIBSTORED_DIST_DIR)

@@ -1,5 +1,10 @@
 ﻿
 
+..
+   SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+   
+   SPDX-License-Identifier: CC-BY-4.0
+
 .. image:: https://github.com/DEMCON/libstored/workflows/CI/badge.svg
    :alt: CI
    :target: https://github.com/DEMCON/libstored/actions?query=workflow%3ACI
@@ -521,8 +526,8 @@ with their own generated store.
 License
 -------
 
-This project is licensed under the terms of the Mozilla Public License, v. 2.0,
-as specified in LICENSE.
+(Most of) this project is licensed under the terms of the Mozilla Public
+License, v. 2.0, as specified in LICENSE.
 
 
 .. _presentation: https://demcon.github.io/libstored/libstored.sozi.html

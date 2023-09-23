@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: CC0-1.0
+#
+#
 # libstored documentation build configuration file, created by
 # sphinx-quickstart on Fri Dec  4 11:40:34 2020.
 #
@@ -50,7 +55,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'libstored'
-copyright = '2020-2022, Jochem Rutgers'
+copyright = '2020-2023, Jochem Rutgers'
 author = 'Jochem Rutgers'
 
 # The version info for the project you're documenting, acts as replacement for

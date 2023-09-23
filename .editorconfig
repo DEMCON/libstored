@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: CC0-1.0
+
 root = true
 
 [*]
@@ -34,6 +38,7 @@ end_of_line = unset
 indent_style = space
 indent_size = 3
 charset = utf-8-bom
+trim_trailing_whitespace = false
 
 [*.cmd]
 end_of_line = crlf

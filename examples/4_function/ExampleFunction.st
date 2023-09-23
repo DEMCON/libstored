@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: CC0-1.0
+
 // All previous examples had normal variables, which do not have side effects
 // when read or written. If a side effect is required, one can define a
 // function.  For this, surround the type with ( and ). Read it as a function

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: CC0-1.0
+
 // Any store definition is compatible with the FPGA, but there are a few
 // details to mention.
 

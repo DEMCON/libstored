@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: CC0-1.0
+
 int8      an int8
 int16     an int16
 int32     an int32

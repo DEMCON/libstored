@@ -1,4 +1,11 @@
-﻿libstored for Windows using MinGW on Ubuntu
+﻿
+
+..
+   SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+   
+   SPDX-License-Identifier: CC0-1.0
+
+libstored for Windows using MinGW on Ubuntu
 ===========================================
 
 This directory contains files to build libstored for Windows, cross-compiling

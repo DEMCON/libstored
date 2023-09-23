@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: CC0-1.0
+
 /*!
  * \file
  * \brief A stdin/stdout terminal application to test hand-injected Embedded Debugger messages.

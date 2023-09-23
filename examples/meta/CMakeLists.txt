@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: CC0-1.0
+
 add_executable(meta main.cpp ${CMAKE_CURRENT_BINARY_DIR}/LoggingExampleMeta.h)
 libstored_generate(TARGET meta STORES ExampleMeta.st)
 

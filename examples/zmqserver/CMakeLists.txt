@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: CC0-1.0
+
 add_executable(zmqserver main.cpp)
 libstored_generate(TARGET zmqserver STORES ZmqServerStore.st)
 install(TARGETS zmqserver RUNTIME DESTINATION bin)
@@ -8,4 +12,3 @@ if(WIN32)
 		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:libzmq> ${CMAKE_CURRENT_BINARY_DIR}
 		VERBATIM)
 endif()
-

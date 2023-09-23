@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: MIT
+
 /*!
  * \file
  * \brief libstored's components example.

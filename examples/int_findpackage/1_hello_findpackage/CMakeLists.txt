@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: CC0-1.0
+
 # Assume this is your project, and you have generated the FindLibstored.cmake file, which can be
 # found in the CMAKE_MODULE_PATH.
 

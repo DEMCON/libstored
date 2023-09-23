@@ -1,11 +1,8 @@
 #!/bin/bash
 
-# libstored, distributed debuggable data stores.
-# Copyright (C) 2020-2023  Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
 #
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
 
 # This file is sourced from a dist/*/ directory. Do not call directly.
 

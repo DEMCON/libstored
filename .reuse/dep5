@@ -1,0 +1,9 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+
+Files: extern/material.io/*
+Copyright: Google
+License: Apache-2.0
+
+Files: presentation/*
+Copyright: 2020-2023 Jochem Rutgers
+License: CC-BY-4.0

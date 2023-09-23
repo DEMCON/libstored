@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: CC0-1.0
+
 // This is a comment. The comment is always till the end of the line.
 
 // Basically, a variable is defined as:
