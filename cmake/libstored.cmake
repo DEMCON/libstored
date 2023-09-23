@@ -222,7 +222,7 @@ function(libstored_lib libprefix libpath)
 	)
 		# The flag should be there from LLVM 8.0.0, but I don't see it...
 		target_compile_options(
-			${LIBSTORED_LIB_TARGET} PRIVATE -Wno-defaulted-function-deleted
+			${LIBSTORED_LIB_TARGET} PUBLIC -Wno-defaulted-function-deleted
 		)
 	endif()
 
