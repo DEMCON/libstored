@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: CC0-1.0
+
 import QtQuick 2.10
 import QtQuick.Controls 2.10
 import QtQuick.Layouts 1.10

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: MPL-2.0
+
 # This example shows how use libstored from pip, without having the repo checked out.
 #
 # Refer to 1_hello_pip/CMakeLists.txt for more information.

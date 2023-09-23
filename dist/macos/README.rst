@@ -1,4 +1,11 @@
-﻿libstored for macOS
+﻿
+
+..
+   SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+   
+   SPDX-License-Identifier: CC0-1.0
+
+libstored for macOS
 ===================
 
 This directory contains files to build libstored for macOS (tested with 10.15).

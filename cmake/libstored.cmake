@@ -1,9 +1,6 @@
-# libstored, distributed debuggable data stores.
-# Copyright (C) 2020-2023  Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
 #
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
 
 # ##################################################################################################
 # Options
@@ -615,7 +612,9 @@ if(NOT RCC_EXE STREQUAL "RCC_EXE-NOTFOUND")
 
 		string(LENGTH "${qrc_prefix}" qrc_prefix_len)
 
-		set(qrc "<!DOCTYPE RCC>\n<RCC version=\"1.0\">\n<qresource>\n")
+		# REUSE-IgnoreStart
+		set(qrc "<!--\nSPDX-FileCopyrightText: 2020-2023 Jochem Rutgers\n\nSPDX-License-Identifier: MPL-2.0\n-->\n<!DOCTYPE RCC>\n<RCC version=\"1.0\">\n<qresource>\n")
+		# REUSE-IgnoreEnd
 		foreach(f IN LISTS ARGN)
 			get_filename_component(f_abs ${f} ABSOLUTE)
 			if(qrc_prefix_len GREATER 0)

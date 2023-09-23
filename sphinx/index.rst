@@ -1,4 +1,11 @@
-﻿libstored
+﻿
+
+..
+   SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+   
+   SPDX-License-Identifier: CC-BY-4.0
+
+libstored
 =========
 
 This is a generator for a C++ class (store) with your application's variables,

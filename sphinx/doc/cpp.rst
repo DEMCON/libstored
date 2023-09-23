@@ -1,4 +1,11 @@
-﻿C++
+﻿
+
+..
+   SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+   
+   SPDX-License-Identifier: CC-BY-4.0
+
+C++
 ===
 
 This is the C++ API used by the generated store classes, and to be used in the

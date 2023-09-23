@@ -1,4 +1,7 @@
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
 #
+# SPDX-License-Identifier: CC0-1.0
+
 # Vivado (TM) v2016.4 (64-bit)
 #
 # 9_fpga.tcl: Tcl script for re-creating project '9_fpga'

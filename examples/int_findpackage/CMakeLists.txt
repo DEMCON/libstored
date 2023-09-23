@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: MPL-2.0
+
 # This example shows how use libstored-cmake with find_package() to find libstored.
 #
 # Refer to 1_hello_findpackage/CMakeLists.txt for more information.

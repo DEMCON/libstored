@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: CC0-1.0
+
 // Did you enable syntax highlighting in Vim? See scripts/st.vim.
 
 // The following types are supported:
@@ -31,7 +35,7 @@ int8=42    test42
 // strings.
 string:8="hello" string hello
 
-// Initializer don't work on a blob, though.
+// Initializers don't work on a blob, though.
 
 // Note that there should not be any whitespace around the =, because after
 // from the first whitespace, the name is taken. So, this is not what you would

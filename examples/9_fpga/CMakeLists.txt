@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: CC0-1.0
+
 if(LIBSTORED_HAVE_LIBZMQ)
 	add_executable(9_fpga main.cpp)
 	libstored_generate(TARGET 9_fpga STORES ExampleFpga.st ExampleFpga2.st)

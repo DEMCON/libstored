@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: MPL-2.0
+
 int8		default int8
 int16		default int16
 int32		default int32

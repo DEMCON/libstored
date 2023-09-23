@@ -1,4 +1,11 @@
-﻿Python
+﻿
+
+..
+   SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+   
+   SPDX-License-Identifier: CC-BY-4.0
+
+Python
 ======
 
 The Python API is only used to access an application over the `Debugger`_

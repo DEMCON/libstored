@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: MIT
+
 #include "getopt_mini.h"
 
 #ifdef STORED_COMPILER_MSVC

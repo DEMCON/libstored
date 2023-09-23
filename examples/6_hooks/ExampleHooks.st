@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: CC0-1.0
+
 // This example assumes that you want to synchronize the store via other means
 // than the Debugger interface. To do so, the application must track changes in
 // data, and schedule these changes for synchronization.

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: CC0-1.0
+
 if(TARGET Qt5::Core)
 	find_package(Qt5 COMPONENTS Gui Quick)
 	set(QtNs Qt5)

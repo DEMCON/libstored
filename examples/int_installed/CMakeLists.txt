@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: MPL-2.0
+
 # This example shows how to link against an installed libstored static library with your stores.
 #
 # For this, we need the installed 1_hello static library. So, first build and install the examples.

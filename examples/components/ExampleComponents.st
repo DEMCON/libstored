@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: MIT
+
 {
 	float=3.721 G (m/s^2)
 	float=43.34e-3 air molar mass (kg/mol)

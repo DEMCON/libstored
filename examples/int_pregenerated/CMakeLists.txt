@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: MPL-2.0
+
 # This example shows how use pre-generated store files in an application. These pre-generated files
 # could be committed to a repository and used later on.
 #

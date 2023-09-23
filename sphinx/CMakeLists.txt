@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: MPL-2.0
+
 find_package(Doxygen)
 
 if(NOT DOXYGEN_FOUND)

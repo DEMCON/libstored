@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: CC0-1.0
+
 // I assume that the FPGA has only one Synchronizer interface,
 // which is likely to be a UART, or otherwise byte-oriented stream.
 // If there are multiple stores in the FPGA, like one store per module in the FPGA,

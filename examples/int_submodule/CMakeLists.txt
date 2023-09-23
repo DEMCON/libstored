@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: MPL-2.0
+
 # This example shows how to integrate libstored in your own CMake project when using libstored as
 # submodule.
 

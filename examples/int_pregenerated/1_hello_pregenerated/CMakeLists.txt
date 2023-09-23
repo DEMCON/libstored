@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: CC0-1.0
+
 # Assume this is your project, and you don't have libstored as submodule, but use the generated
 # library source files directly. This top-level cmake file shows how to do that.
 

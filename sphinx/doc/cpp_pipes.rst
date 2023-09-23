@@ -1,4 +1,11 @@
-﻿Pipes
+﻿
+
+..
+   SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+   
+   SPDX-License-Identifier: CC-BY-4.0
+
+Pipes
 =====
 
 Pipes can be used to compose functionality, such that data streams through a pipe and is modified on the go.

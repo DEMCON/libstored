@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: CC0-1.0
+
 // Scopes are surrounded by { } and have a name.  You can see the scope as a
 // special type.  Within the scope, any variable can exist like at the
 // top-level, including subscopes.
