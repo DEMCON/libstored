@@ -19,7 +19,9 @@ if which brew > /dev/null && which pkg-config > /dev/null && ! pkg-config libzmq
 	fi
 fi
 
-cmake_opts=
+# By default, clang compiles for C++98, but it seems to crash on some headers lately.
+# Default to C++14.
+cmake_opts="-DCMAKE_CXX_STANDARD=14 -DCMAKE_C_STANDARD=11"
 
 ver=`sw_vers -productVersion`
 ver_major=`echo ${ver} | sed -E 's/^([0-9]+)\.([0-9]+).*/\1/'`
