@@ -42,10 +42,10 @@ set(package_data_
     dist/common/FindHeatshrink.cmake
     dist/common/FindZeroMQ.cmake
     dist/common/FindZth.cmake
+    doc/libstored-src.spdx.tmpl
     doc/store.csv.tmpl
     doc/store.py.tmpl
     doc/store.rtf.tmpl
-    fpga/doc/vhdl.rst
     fpga/rtl/pkg.vhd
     fpga/rtl/protocol.vhd
     fpga/rtl/store.vhd.tmpl
@@ -88,8 +88,12 @@ set(package_data_
     src/store.cpp.tmpl
     version/CMakeLists.txt
     version/version.txt
+    version/version.txt.license
     .clang-tidy
     CMakeLists.txt.tmpl
+    LICENSES/CC0-1.0.txt
+    LICENSES/MIT.txt
+    LICENSES/MPL-2.0.txt
 )
 
 set(package_data "")
@@ -99,6 +103,16 @@ foreach(F IN LISTS package_data_)
 	)
 	list(APPEND package_data ${CMAKE_CURRENT_SOURCE_DIR}/libstored/data/${F})
 endforeach()
+
+if(LIBSTORED_DEV)
+	add_custom_target(
+		pylibstored-reuse ALL
+		COMMAND ${PYTHON_EXECUTABLE} -m reuse --root . lint
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/libstored/data
+		COMMENT "Checking pylibstored generator REUSE compliance"
+		VERBATIM
+	)
+endif()
 
 file(
 	GENERATE

@@ -5,11 +5,14 @@
 # SPDX-License-Identifier: MPL-2.0
 
 import argparse
+import datetime
 import hashlib
 import jinja2
 import logging
 import re
+import shutil
 import struct
+import uuid
 from functools import reduce
 
 import sys
@@ -19,6 +22,7 @@ from textx import metamodel_from_file
 from textx.export import metamodel_export, model_export
 
 from .dsl import types
+from ..version import libstored_version
 
 generator_dir = os.path.dirname(__file__)
 
@@ -242,8 +246,21 @@ def model_cname(model_file):
     s = s[0].upper() + s[1:]
     return s
 
+def spdx(license='MPL-2.0', prefix=''):
+    # REUSE-IgnoreStart
+    return \
+        f'{prefix}SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers\n' + \
+        f'{prefix}\n' + \
+        f'{prefix}SPDX-License-Identifier: {license}\n'
+    # REUSE-IgnoreEnd
+
+def sha1(file):
+    with open(file, 'rb') as f:
+        return hashlib.sha1(f.read()).hexdigest()
+
 model_names = set()
 model_cnames = set()
+models = set()
 
 ##
 # @brief Load a model from a file
@@ -278,6 +295,7 @@ def load_model(filename, littleEndian=True, debug=False):
     model.name = mcname
     model.littleEndian = littleEndian
     model.process()
+    models.add(model)
     return model
 
 def generate_store(model_file, output_dir, littleEndian=True):
@@ -354,8 +372,14 @@ def generate_store(model_file, output_dir, littleEndian=True):
     with open(os.path.join(output_dir, 'doc', mname + '.rtf'), 'w') as f:
         f.write(store_rtf_tmpl.render(store=model))
 
+    with open(os.path.join(output_dir, 'doc', mname + '.rtf.license'), 'w') as f:
+        f.write(spdx('CC0-1.0'))
+
     with open(os.path.join(output_dir, 'doc', mname + '.csv'), 'w') as f:
         f.write(store_csv_tmpl.render(store=model))
+
+    with open(os.path.join(output_dir, 'doc', mname + '.csv.license'), 'w') as f:
+        f.write(spdx('CC0-1.0'))
 
     with open(os.path.join(output_dir, 'doc', mname + 'Meta.py'), 'w') as f:
         f.write(store_py_tmpl.render(store=model))
@@ -366,9 +390,14 @@ def generate_store(model_file, output_dir, littleEndian=True):
     with open(os.path.join(output_dir, 'rtl', mname + '_pkg.vhd'), 'w') as f:
         f.write(store_pkg_vhd_tmpl.render(store=model))
 
+    licenses_dir = os.path.join(output_dir, 'LICENSES')
+    os.makedirs(licenses_dir, exist_ok=True)
+    shutil.copy(os.path.join(libstored_dir, 'LICENSES', 'CC0-1.0.txt'), licenses_dir)
+    shutil.copy(os.path.join(libstored_dir, 'LICENSES', 'MPL-2.0.txt'), licenses_dir)
+
 def generate_cmake(libprefix, model_files, output_dir):
     logger.info("generating CMakeLists.txt")
-    models = list(map(model_name, model_files))
+    model_map = list(map(model_name, model_files))
 
     try:
         libstored_reldir = '${CMAKE_CURRENT_SOURCE_DIR}/' + os.path.relpath(libstored_dir, output_dir)
@@ -382,6 +411,7 @@ def generate_cmake(libprefix, model_files, output_dir):
     jenv = jinja2.Environment(
             loader = jinja2.FileSystemLoader([
                 os.path.join(libstored_dir),
+                os.path.join(libstored_dir, 'doc'),
                 os.path.join(libstored_dir, 'fpga', 'vivado'),
             ]),
             trim_blocks = True,
@@ -390,14 +420,16 @@ def generate_cmake(libprefix, model_files, output_dir):
     jenv.filters['header'] = lambda m: f'include/{m}.h'
     jenv.filters['src'] = lambda m: f'src/{m}.cpp'
     jenv.filters['escapebs'] = escapebs
+    jenv.globals['sha1'] = lambda f: sha1(os.path.join(output_dir, f))
 
     cmake_tmpl = jenv.get_template('CMakeLists.txt.tmpl')
     vivado_tmpl = jenv.get_template('vivado.tcl.tmpl')
+    spdx_tmpl = jenv.get_template('libstored-src.spdx.tmpl')
 
     with open(os.path.join(output_dir, 'CMakeLists.txt'), 'w') as f:
         f.write(cmake_tmpl.render(
             libstored_dir=libstored_reldir,
-            models=models,
+            models=model_map,
             libprefix=libprefix,
             python_executable=sys.executable,
             ))
@@ -405,8 +437,18 @@ def generate_cmake(libprefix, model_files, output_dir):
     with open(os.path.join(output_dir, 'rtl', 'vivado.tcl'), 'w') as f:
         f.write(vivado_tmpl.render(
             libstored_dir=libstored_dir,
+            models=model_map,
+            libprefix=libprefix,
+            ))
+
+    with open(os.path.join(output_dir, 'doc', 'libstored-src.spdx'), 'w') as f:
+        f.write(spdx_tmpl.render(
+            libstored_dir=libstored_dir,
             models=models,
             libprefix=libprefix,
+            libstored_version=libstored_version,
+            uuid=str(uuid.uuid4()),
+            timestamp=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
             ))
 
 def main():
