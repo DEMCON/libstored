@@ -23,7 +23,12 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 Added
 `````
 
-...
+- Produce SBOM for generated store libraries.
+
+Changed
+`````
+
+- Make libstored REUSE compliant.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.6.0...HEAD
 

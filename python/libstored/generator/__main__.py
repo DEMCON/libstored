@@ -291,6 +291,7 @@ def load_model(filename, littleEndian=True, debug=False):
     model_cnames.add(mcname)
 
     model = meta.model_from_file(filename, debug=debug)
+    model.stname = os.path.split(filename)[1]
     model.filename = mname
     model.name = mcname
     model.littleEndian = littleEndian
@@ -425,6 +426,7 @@ def generate_cmake(libprefix, model_files, output_dir):
     cmake_tmpl = jenv.get_template('CMakeLists.txt.tmpl')
     vivado_tmpl = jenv.get_template('vivado.tcl.tmpl')
     spdx_tmpl = jenv.get_template('libstored-src.spdx.tmpl')
+    sha1sum_tmpl = jenv.get_template('SHA1SUM.tmpl')
 
     with open(os.path.join(output_dir, 'CMakeLists.txt'), 'w') as f:
         f.write(cmake_tmpl.render(
@@ -440,6 +442,16 @@ def generate_cmake(libprefix, model_files, output_dir):
             models=model_map,
             libprefix=libprefix,
             ))
+
+    with open(os.path.join(output_dir, 'doc', 'SHA1SUM'), 'w') as f:
+        f.write(sha1sum_tmpl.render(
+            libstored_dir=libstored_dir,
+            models=models,
+            libprefix=libprefix,
+            ))
+
+    with open(os.path.join(output_dir, 'doc', 'SHA1SUM.license'), 'w') as f:
+        f.write(spdx('CC0-1.0'))
 
     with open(os.path.join(output_dir, 'doc', 'libstored-src.spdx'), 'w') as f:
         f.write(spdx_tmpl.render(

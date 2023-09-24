@@ -86,9 +86,12 @@ add_custom_target(all-libstored-generate)
 # ##################################################################################################
 # libstored_*() functions.
 
-# Create the libstored library based on the generated files. Old interface: libstored_lib(libprefix
-# libpath store1 store2 ...) New interface: libstored_lib(TARGET lib DESTINATION libpath STORES
-# store1 store1 ... [ZTH] [ZMQ|NO_ZMQ] [QT])
+# Create the libstored library based on the generated files.
+#
+# Old interface: libstored_lib(libprefix libpath store1 store2 ...)
+#
+# New interface: libstored_lib(TARGET lib DESTINATION libpath STORES store1 store1 ... [ZTH]
+# [ZMQ|NO_ZMQ] [QT])
 function(libstored_lib libprefix libpath)
 	if("${libprefix}" STREQUAL "TARGET")
 		cmake_parse_arguments(
@@ -117,6 +120,68 @@ function(libstored_lib libprefix libpath)
 		)
 		list(APPEND LIBSTORED_LIB_TARGET_SRC "${LIBSTORED_LIB_DESTINATION}/src/${m}.cpp")
 	endforeach()
+
+	set(LIBSTORED_LIB_SBOM_CMAKE "${CMAKE_CURRENT_BINARY_DIR}/${LIBSTORED_LIB_TARGET}-sbom.cmake")
+
+	# The namespace is the SHA1 hash over the doc/SHA1SUM file as UUID5 (truncated, with char
+	# 13=5 and 21=8).
+	file(WRITE "${LIBSTORED_LIB_SBOM_CMAKE}" "
+		file(READ \"${LIBSTORED_LIB_DESTINATION}/doc/SHA1SUM\" _stores)
+		file(SHA1 \"${LIBSTORED_LIB_DESTINATION}/doc/SHA1SUM\" _sha1)
+		string(REGEX REPLACE \"^(........)(....).(...)(....).(...........).*$\" \"\\\\1-\\\\2-5\\\\3-\\\\4-8\\\\5\"
+			_uuid5 \"\${_sha1}\")
+		string(TIMESTAMP _now UTC)
+
+		file(WRITE \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\"
+\"SPDXVersion: SPDX-2.3
+DataLicense: CC0-1.0
+SPDXID: SPDXRef-DOCUMENT
+DocumentName: sbom
+DocumentNamespace: https://github.com/DEMCON/libstored/spdxdocs/sbom-\${_uuid5}
+Creator: Person: Anonymous ()
+Creator: Organization: Anonymous ()
+Creator: Tool: libstored-${LIBSTORED_VERSION}
+Created: \${_now}
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-libstored
+
+PackageName: ${LIBSTORED_LIB_TARGET}
+SPDXID: SPDXRef-libstored
+PackageVersion: \${_sha1}
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageDescription: <text>Static library generated using libstored ${LIBSTORED_VERSION}, CMake ${CMAKE_VERSION},
+built with ${CMAKE_BUILD_TYPE} configuration for ${CMAKE_SYSTEM_NAME} (${CMAKE_SYSTEM_PROCESSOR}), containing:
+\${_stores}</text>
+PackageLicenseConcluded: MPL-2.0
+PackageLicenseDeclared: MPL-2.0
+PackageCopyrightText: <text>2020-2023 Jochem Rutgers</text>
+ExternalRef: PACKAGE-MANAGER purl pkg:github/DEMCON/libstored@${LIBSTORED_VERSION_BASE}
+PrimaryPackagePurpose: LIBRARY
+
+PackageName: ${CMAKE_CXX_COMPILER_ID}
+SPDXID: SPDXRef-compiler
+PackageVersion: ${CMAKE_CXX_COMPILER_VERSION}
+PackageDownloadLocation: NOASSERTION
+FilesAnalyzed: false
+PackageLicenseConcluded: NOASSERTION
+PackageLicenseDeclared: NOASSERTION
+PackageCopyrightText: NOASSERTION
+PackageSummary: <text>The compiler as identified by CMake, running on ${CMAKE_HOST_SYSTEM_NAME} (${CMAKE_HOST_SYSTEM_PROCESSOR})</text>
+PrimaryPackagePurpose: APPLICATION
+Relationship: SPDXRef-compiler BUILD_DEPENDENCY_OF SPDXRef-libstored
+\")
+		"
+	)
+
+	add_custom_target(
+		${LIBSTORED_LIB_TARGET}-sbom
+		COMMAND ${CMAKE_COMMAND} -P "${LIBSTORED_LIB_SBOM_CMAKE}"
+		VERBATIM
+	)
+
+	if(TARGET ${LIBSTORED_LIB_TARGET}-generate)
+		add_dependencies(${LIBSTORED_LIB_TARGET}-sbom ${LIBSTORED_LIB_TARGET}-generate)
+	endif()
 
 	add_library(
 		${LIBSTORED_LIB_TARGET} STATIC
@@ -148,6 +213,8 @@ function(libstored_lib libprefix libpath)
 		${LIBSTORED_SOURCE_DIR}/src/zmq.cpp
 		${LIBSTORED_LIB_TARGET_SRC}
 	)
+
+	add_dependencies(${LIBSTORED_LIB_TARGET} ${LIBSTORED_LIB_TARGET}-sbom)
 
 	target_include_directories(
 		${LIBSTORED_LIB_TARGET}
@@ -239,11 +306,49 @@ function(libstored_lib libprefix libpath)
 		message(STATUS "Enable Zth integration for ${LIBSTORED_LIB_TARGET}")
 		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_ZTH=1)
 		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC libzth)
+
+		file(APPEND "${LIBSTORED_LIB_SBOM_CMAKE}" "
+			file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
+PackageName: Zth
+SPDXID: SPDXRef-Zth
+PackageVersion: ${Zth_VERSION}
+PackageDownloadLocation: https://github.com/jhrutgers/zth/releases/tag/v${Zth_VERSION}
+PackageHomePage: https://github.com/jhrutgers/zth
+ExternalRef: PACKAGE-MANAGER purl pkg:github/jhrutgers/zth@${Zth_VERSION}
+FilesAnalyzed: false
+PackageLicenseConcluded: MPL-2.0
+PackageLicenseDeclared: MPL-2.0
+PackageCopyrightText: 2019-2022 Jochem Rutgers
+PackageSummary: <text>Cross-platform cooperative multitasking (fiber) framework.</text>
+PrimaryPackagePurpose: LIBRARY
+Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-Zth
+\")
+			"
+		)
 	endif()
 
 	if(LIBSTORED_HAVE_LIBZMQ AND LIBSTORED_LIB_ZMQ)
 		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_ZMQ=1)
 		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC libzmq)
+
+		file(APPEND "${LIBSTORED_LIB_SBOM_CMAKE}" "
+			file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
+PackageName: libzmq
+SPDXID: SPDXRef-libzmq
+PackageVersion: ${ZeroMQ_VERSION}
+PackageDownloadLocation: https://github.com/zeromq/libzmq/releases
+PackageHomePage: https://zeromq.org/
+ExternalRef: PACKAGE-MANAGER purl pkg:github/zeromq/libzmq
+FilesAnalyzed: false
+PackageLicenseConcluded: MPL-2.0
+PackageLicenseDeclared: MPL-2.0
+PackageCopyrightText: NOASSERTION
+PackageSummary: <text>A lightweight messaging kernel.</text>
+PrimaryPackagePurpose: LIBRARY
+Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-libzmq
+\")
+			"
+		)
 	endif()
 
 	if(LIBSTORED_HAVE_QT AND LIBSTORED_LIB_QT)
@@ -253,12 +358,48 @@ function(libstored_lib libprefix libpath)
 				${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_QT=5
 			)
 			target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC Qt5::Core)
+
+			file(APPEND "${LIBSTORED_LIB_SBOM_CMAKE}" "
+				file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
+PackageName: Qt5
+SPDXID: SPDXRef-Qt5
+PackageVersion: ${Qt5Core_VERSION}
+PackageDownloadLocation: https://download.qt.io/
+PackageHomePage: https://www.qt.io/
+ExternalRef: PACKAGE-MANAGER purl pkg:github/qt/qt5@v${Qt5Core_VERSION}
+FilesAnalyzed: false
+PackageLicenseConcluded: NOASSERTION
+PackageLicenseDeclared: LGPL-3.0-or-later
+PackageCopyrightText: NOASSERTION
+PrimaryPackagePurpose: LIBRARY
+Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-Qt5
+\")
+				"
+			)
 		else()
 			message(STATUS "Enable Qt6 integration for ${LIBSTORED_LIB_TARGET}")
 			target_compile_definitions(
 				${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_QT=6
 			)
 			target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC Qt::Core)
+
+			file(APPEND "${LIBSTORED_LIB_SBOM_CMAKE}" "
+				file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
+PackageName: Qt6
+SPDXID: SPDXRef-Qt6
+PackageVersion: ${Qt6Core_VERSION}
+PackageDownloadLocation: https://download.qt.io/
+PackageHomePage: https://www.qt.io/
+ExternalRef: PACKAGE-MANAGER purl pkg:github/qt/qt5@v${Qt6Core_VERSION}
+FilesAnalyzed: false
+PackageLicenseConcluded: NOASSERTION
+PackageLicenseDeclared: LGPL-3.0-or-later
+PackageCopyrightText: NOASSERTION
+PrimaryPackagePurpose: LIBRARY
+Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-Qt6
+\")
+				"
+			)
 		endif()
 
 		if(COMMAND qt_disable_unicode_defines)
@@ -277,6 +418,25 @@ function(libstored_lib libprefix libpath)
 			${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_HEATSHRINK=1
 		)
 		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC heatshrink)
+
+		file(APPEND "${LIBSTORED_LIB_SBOM_CMAKE}" "
+			file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
+PackageName: heatshrink
+SPDXID: SPDXRef-heatshrink
+PackageVersion: ${Heatshrink_VERSION}
+PackageDownloadLocation: https://github.com/atomicobject/heatshrink/releases/tag/v${Heatshrink_VERSION}
+PackageHomePage: https://github.com/atomicobject/heatshrink
+ExternalRef: PACKAGE-MANAGER purl pkg:github/atomicobject/heatshrink@${Heatshrink_VERSION}
+FilesAnalyzed: false
+PackageLicenseConcluded: ISC
+PackageLicenseDeclared: ISC
+PackageCopyrightText: 2013-2015, Scott Vokes <vokes.s@gmail.com>
+PackageSummary: <text>A data compression/decompression library for embedded/real-time systems.</text>
+PrimaryPackagePurpose: LIBRARY
+Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-heatshrink
+\")
+			"
+		)
 	endif()
 
 	set(DO_CLANG_TIDY "")
@@ -451,10 +611,13 @@ function(libstored_copy_dlls target)
 	endif()
 endfunction()
 
-# Generate the store files and invoke libstored_lib to create the library for cmake. Old interface:
-# libstored_generate(target store1 store2 ...) New interface: libstored_generate(TARGET target
-# [DESTINATION path] STORES store1 store2 [ZTH] [ZMQ|NO_ZMQ])
-function(libstored_generate target) # add all other models as varargs
+# Generate the store files and invoke libstored_lib to create the library for cmake.
+#
+# Old interface: libstored_generate(target store1 store2 ...)
+#
+# New interface: libstored_generate(TARGET target [DESTINATION path] STORES store1 store2 [ZTH]
+# [ZMQ|NO_ZMQ])
+function(libstored_generate target)
 	if("${target}" STREQUAL "TARGET")
 		cmake_parse_arguments(
 			LIBSTORED_GENERATE "ZTH;ZMQ;NO_ZMQ;QT" "TARGET;DESTINATION" "STORES"
@@ -485,7 +648,12 @@ function(libstored_generate target) # add all other models as varargs
 	endif()
 
 	set(model_bases "")
-	set(generated_files "")
+	set(generated_files
+		${LIBSTORED_GENERATE_DESTINATION}/CMakeLists.txt
+		${LIBSTORED_GENERATE_DESTINATION}/rtl/vivado.tcl
+		${LIBSTORED_GENERATE_DESTINATION}/doc/libstored-src.spdx
+		${LIBSTORED_GENERATE_DESTINATION}/doc/SHA1SUM
+	)
 	foreach(model IN ITEMS ${LIBSTORED_GENERATE_STORES})
 		get_filename_component(model_abs "${model}" ABSOLUTE)
 		list(APPEND models ${model_abs})
@@ -511,6 +679,7 @@ function(libstored_generate target) # add all other models as varargs
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/include/libstored/store.h.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/src/store.cpp.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/libstored-src.spdx.tmpl
+		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/SHA1SUM.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.rtf.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.csv.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.py.tmpl

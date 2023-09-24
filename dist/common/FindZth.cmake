@@ -66,7 +66,8 @@ if(NOT Zth_FOUND AND Zth_FIND_REQUIRED)
 		set(_libzth_loc ${CMAKE_INSTALL_PREFIX}/lib/libzth.a)
 
 		set(libzth_repo "https://github.com/jhrutgers/zth.git")
-		set(libzth_tag "v1.1.0")
+		set(Zth_VERSION "1.1.0")
+		set(libzth_tag "v${Zth_VERSION}")
 
 		ExternalProject_Add(
 			libzth-extern

@@ -14,10 +14,12 @@ if("${HEATSHRINK_GIT_URL}" STREQUAL "")
 	endif()
 endif()
 
+set(Heatshrink_VERSION 0.4.1)
+
 ExternalProject_Add(
 	heatshrink-extern
 	GIT_REPOSITORY ${HEATSHRINK_GIT_URL}
-	GIT_TAG v0.4.1
+	GIT_TAG v${Heatshrink_VERSION}
 	CONFIGURE_COMMAND ""
 	BUILD_COMMAND ""
 	INSTALL_COMMAND ""

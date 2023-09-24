@@ -1,0 +1,12 @@
+{#
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: MPL-2.0
+
+# Note that the hashes are SHA-1 checksums over the model names with newlines
+# as Unix.  The mentioned filename may not exist relative to the directory of
+# this SHA1SUM file.
+-#}
+{% for m in models %}
+{{m.hash}}  {{m.stname}}
+{% endfor -%}
