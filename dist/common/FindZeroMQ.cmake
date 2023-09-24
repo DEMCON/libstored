@@ -108,7 +108,8 @@ if(NOT TARGET libzmq AND ZeroMQ_FIND_REQUIRED)
 	endif()
 
 	set(libzmq_repo "https://github.com/zeromq/libzmq.git")
-	set(libzmq_tag "v4.3.4")
+	set(ZeroMQ_VERSION "4.3.4")
+	set(libzmq_tag "v${ZeroMQ_VERSION}")
 
 	if(MSVC)
 		ExternalProject_Add(
