@@ -1,0 +1,107 @@
+{#
+# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+#
+# SPDX-License-Identifier: MPL-2.0
+-#}
+SPDXVersion: SPDX-2.2
+DataLicense: CC0-1.0
+SPDXID: SPDXRef-DOCUMENT
+DocumentName: libstored-src
+DocumentNamespace: https://github.com/DEMCON/libstored/spdxdocs/generator-{{libstored_version}}-{{uuid}}
+Creator: Person: Anonymous ()
+Creator: Organization: Anonymous ()
+Creator: Tool: libstored.generator-{{libstored_version}}
+Created: {{timestamp}}
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-CMakeLists-txt
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-rtl-vivado-tcl
+{% for m in models %}
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-doc-{{m.name}}-csv
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-doc-{{m.name}}-rtf
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-doc-{{m.name}}Meta-py
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-include-{{m.name}}-h
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-rtl-{{m.name}}-vhd
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-rtl-{{m.name}}-pkg-vhd
+Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-src-{{m.name}}-cpp
+{% endfor %}
+
+FileName: ./CMakeLists.txt
+SPDXID: SPDXRef-CMakeLists-txt
+FileChecksum: SHA1: {{sha1('CMakeLists.txt')}}
+FileType: SOURCE
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: MPL-2.0
+FileCopyrightText: <text>SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers</text>
+
+FileName: ./rtl/vivado.tcl
+SPDXID: SPDXRef-rtl-vivado-tcl
+FileChecksum: SHA1: {{sha1('rtl/vivado.tcl')}}
+FileType: SOURCE
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: MPL-2.0
+FileCopyrightText: <text>SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers</text>
+
+{% for m in models %}
+FileName: ./doc/{{m.name}}.csv
+SPDXID: SPDXRef-doc-{{m.name}}-csv
+FileChecksum: SHA1: {{sha1('doc/' + m.name + '.csv')}}
+FileType: DOCUMENTATION
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: CC0-1.0
+FileCopyrightText: <text>SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers</text>
+FileComment: <text>Generated file of {{m.name}} with hash {{m.hash}}</text>
+
+FileName: ./doc/{{m.name}}.rtf
+SPDXID: SPDXRef-doc-{{m.name}}-rtf
+FileChecksum: SHA1: {{sha1('doc/' + m.name + '.rtf')}}
+FileType: DOCUMENTATION
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: CC0-1.0
+FileCopyrightText: <text>SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers</text>
+FileComment: <text>Generated file of {{m.name}} with hash {{m.hash}}</text>
+
+FileName: ./doc/{{m.name}}Meta.py
+SPDXID: SPDXRef-doc-{{m.name}}Meta-py
+FileChecksum: SHA1: {{sha1('doc/' + m.name + 'Meta.py')}}
+FileType: SOURCE
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: MPL-2.0
+FileCopyrightText: <text>SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers</text>
+FileComment: <text>Generated file of {{m.name}} with hash {{m.hash}}</text>
+
+FileName: ./include/{{m.name}}.h
+SPDXID: SPDXRef-include-{{m.name}}-h
+FileChecksum: SHA1: {{sha1('include/' + m.name + '.h')}}
+FileType: SOURCE
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: MPL-2.0
+FileCopyrightText: <text>SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers</text>
+FileComment: <text>Generated file of {{m.name}} with hash {{m.hash}}</text>
+
+FileName: ./rtl/{{m.name}}.vhd
+SPDXID: SPDXRef-rtl-{{m.name}}-vhd
+FileChecksum: SHA1: {{sha1('rtl/' + m.name + '.vhd')}}
+FileType: SOURCE
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: MPL-2.0
+FileCopyrightText: <text>SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers</text>
+FileComment: <text>Generated file of {{m.name}} with hash {{m.hash}}</text>
+
+FileName: ./rtl/{{m.name}}_pkg.vhd
+SPDXID: SPDXRef-rtl-{{m.name}}-pkg-vhd
+FileChecksum: SHA1: {{sha1('rtl/' + m.name + '_pkg.vhd')}}
+FileType: SOURCE
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: MPL-2.0
+FileCopyrightText: <text>SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers</text>
+FileComment: <text>Generated file of {{m.name}} with hash {{m.hash}}</text>
+
+FileName: ./src/{{m.name}}.cpp
+SPDXID: SPDXRef-src-{{m.name}}-cpp
+FileChecksum: SHA1: {{sha1('src/' + m.name + '.cpp')}}
+FileType: SOURCE
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: MPL-2.0
+FileCopyrightText: <text>SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers</text>
+FileComment: <text>Generated file of {{m.name}} with hash {{m.hash}}</text>
+
+{% endfor %}
