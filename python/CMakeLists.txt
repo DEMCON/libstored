@@ -43,6 +43,7 @@ set(package_data_
     dist/common/FindZeroMQ.cmake
     dist/common/FindZth.cmake
     doc/libstored-src.spdx.tmpl
+    doc/SHA1SUM.tmpl
     doc/store.csv.tmpl
     doc/store.py.tmpl
     doc/store.rtf.tmpl
