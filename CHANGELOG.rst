@@ -26,7 +26,7 @@ Added
 - Produce SBOM for generated store libraries.
 
 Changed
-`````
+```````
 
 - Make libstored REUSE compliant.
 
