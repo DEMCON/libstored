@@ -121,11 +121,15 @@ function(libstored_lib libprefix libpath)
 		list(APPEND LIBSTORED_LIB_TARGET_SRC "${LIBSTORED_LIB_DESTINATION}/src/${m}.cpp")
 	endforeach()
 
-	set(LIBSTORED_LIB_SBOM_CMAKE "${CMAKE_CURRENT_BINARY_DIR}/${LIBSTORED_LIB_TARGET}-sbom.cmake")
+	set(LIBSTORED_LIB_SBOM_CMAKE
+	    "${CMAKE_CURRENT_BINARY_DIR}/${LIBSTORED_LIB_TARGET}-sbom.cmake"
+	)
 
 	# The namespace is the SHA1 hash over the doc/SHA1SUM file as UUID5 (truncated, with char
 	# 13=5 and 21=8).
-	file(WRITE "${LIBSTORED_LIB_SBOM_CMAKE}" "
+	file(
+		WRITE "${LIBSTORED_LIB_SBOM_CMAKE}"
+		"
 		file(READ \"${LIBSTORED_LIB_DESTINATION}/doc/SHA1SUM\" _stores)
 		file(SHA1 \"${LIBSTORED_LIB_DESTINATION}/doc/SHA1SUM\" _sha1)
 		string(REGEX REPLACE \"^(........)(....).(...)(....).(...........).*$\" \"\\\\1-\\\\2-5\\\\3-\\\\4-8\\\\5\"
@@ -307,7 +311,9 @@ Relationship: SPDXRef-compiler BUILD_DEPENDENCY_OF SPDXRef-libstored
 		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_ZTH=1)
 		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC libzth)
 
-		file(APPEND "${LIBSTORED_LIB_SBOM_CMAKE}" "
+		file(
+			APPEND "${LIBSTORED_LIB_SBOM_CMAKE}"
+			"
 			file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
 PackageName: Zth
 SPDXID: SPDXRef-Zth
@@ -331,7 +337,9 @@ Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-Zth
 		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_ZMQ=1)
 		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC libzmq)
 
-		file(APPEND "${LIBSTORED_LIB_SBOM_CMAKE}" "
+		file(
+			APPEND "${LIBSTORED_LIB_SBOM_CMAKE}"
+			"
 			file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
 PackageName: libzmq
 SPDXID: SPDXRef-libzmq
@@ -359,7 +367,9 @@ Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-libzmq
 			)
 			target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC Qt5::Core)
 
-			file(APPEND "${LIBSTORED_LIB_SBOM_CMAKE}" "
+			file(
+				APPEND "${LIBSTORED_LIB_SBOM_CMAKE}"
+				"
 				file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
 PackageName: Qt5
 SPDXID: SPDXRef-Qt5
@@ -383,7 +393,9 @@ Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-Qt5
 			)
 			target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC Qt::Core)
 
-			file(APPEND "${LIBSTORED_LIB_SBOM_CMAKE}" "
+			file(
+				APPEND "${LIBSTORED_LIB_SBOM_CMAKE}"
+				"
 				file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
 PackageName: Qt6
 SPDXID: SPDXRef-Qt6
@@ -419,7 +431,9 @@ Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-Qt6
 		)
 		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC heatshrink)
 
-		file(APPEND "${LIBSTORED_LIB_SBOM_CMAKE}" "
+		file(
+			APPEND "${LIBSTORED_LIB_SBOM_CMAKE}"
+			"
 			file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
 PackageName: heatshrink
 SPDXID: SPDXRef-heatshrink
@@ -449,8 +463,11 @@ Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-heatshrink
 		)
 
 		if(CLANG_EXE AND NOT CLANG_TIDY_EXE14)
-			execute_process(COMMAND ${CLANG_EXE} -dumpversion OUTPUT_VARIABLE CLANG_VERSION
-				ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+			execute_process(
+				COMMAND ${CLANG_EXE} -dumpversion
+				OUTPUT_VARIABLE CLANG_VERSION
+				ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
+			)
 
 			# We need clang-tidy 14 or later for --config-file.
 			if("${CLANG_VERSION}" VERSION_GREATER_EQUAL 14)
@@ -470,7 +487,8 @@ Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-heatshrink
 			message(STATUS "Enabled clang-tidy for ${LIBSTORED_LIB_TARGET}")
 
 			set(DO_CLANG_TIDY
-			    "${CLANG_TIDY_EXE14}" "--config-file=${LIBSTORED_SOURCE_DIR}/.clang-tidy"
+			    "${CLANG_TIDY_EXE14}"
+			    "--config-file=${LIBSTORED_SOURCE_DIR}/.clang-tidy"
 			    "--extra-arg=-I${LIBSTORED_SOURCE_DIR}/include"
 			    "--extra-arg=-I${LIBSTORED_LIB_DESTINATION}/include"
 			)
@@ -649,10 +667,10 @@ function(libstored_generate target)
 
 	set(model_bases "")
 	set(generated_files
-		${LIBSTORED_GENERATE_DESTINATION}/CMakeLists.txt
-		${LIBSTORED_GENERATE_DESTINATION}/rtl/vivado.tcl
-		${LIBSTORED_GENERATE_DESTINATION}/doc/libstored-src.spdx
-		${LIBSTORED_GENERATE_DESTINATION}/doc/SHA1SUM
+	    ${LIBSTORED_GENERATE_DESTINATION}/CMakeLists.txt
+	    ${LIBSTORED_GENERATE_DESTINATION}/rtl/vivado.tcl
+	    ${LIBSTORED_GENERATE_DESTINATION}/doc/libstored-src.spdx
+	    ${LIBSTORED_GENERATE_DESTINATION}/doc/SHA1SUM
 	)
 	foreach(model IN ITEMS ${LIBSTORED_GENERATE_STORES})
 		get_filename_component(model_abs "${model}" ABSOLUTE)
@@ -731,10 +749,10 @@ function(libstored_generate target)
 	endif()
 
 	get_target_property(target_cxx_standard ${LIBSTORED_GENERATE_TARGET} CXX_STANDARD)
-	if(NOT target_cxx_standard STREQUAL "target_cxx_standard-NOTFOUND")
+	if(target_cxx_standard)
 		set_target_properties(
 			${LIBSTORED_GENERATE_TARGET}-libstored PROPERTIES CXX_STANDARD
-									  ${target_cxx_standard}
+									  "${target_cxx_standard}"
 		)
 	endif()
 
@@ -783,7 +801,18 @@ if(NOT RCC_EXE STREQUAL "RCC_EXE-NOTFOUND")
 		string(LENGTH "${qrc_prefix}" qrc_prefix_len)
 
 		# REUSE-IgnoreStart
-		set(qrc "<!--\nSPDX-FileCopyrightText: 2020-2023 Jochem Rutgers\n\nSPDX-License-Identifier: MPL-2.0\n-->\n<!DOCTYPE RCC>\n<RCC version=\"1.0\">\n<qresource>\n")
+		set(qrc
+		    "<!--
+SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+
+SPDX-License-Identifier: MPL-2.0
+-->
+
+<!DOCTYPE RCC>
+<RCC version=\"1.0\">
+<qresource>
+"
+		)
 		# REUSE-IgnoreEnd
 		foreach(f IN LISTS ARGN)
 			get_filename_component(f_abs ${f} ABSOLUTE)
