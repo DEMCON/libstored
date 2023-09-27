@@ -75,11 +75,15 @@ jobs:
             cxx: C++03
           - compiler: msvc
             cxx: C++11
-        include:
-          - compiler: gcc
-            cxx: C++17
-            zmq: zmq
-            zth: zth
+
+        # Disabled, because GitHub now has mingw 12.2, which triggers the following error:
+        # https://sourceforge.net/p/mingw-w64/mailman/mingw-w64-public/thread/CAA2C%3DvBCHsSZX22LOfvtsN-YTJKNLYpTc96qwKUvufrg4Os7bw%40mail.gmail.com/#msg37674511
+        # TODO: fix this
+#        include:
+#          - compiler: gcc
+#            cxx: C++17
+#            zmq: zmq
+#            zth: zth
     steps:
       - name: checkout
         uses: actions/checkout@v3
