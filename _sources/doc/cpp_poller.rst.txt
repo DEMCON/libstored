@@ -1,4 +1,11 @@
-﻿Poller
+﻿
+
+..
+   SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+   
+   SPDX-License-Identifier: CC-BY-4.0
+
+Poller
 ======
 
 Basically, these classes provide ``poll()`` in a platform-independent way.  To

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>9_fpga &mdash; libstored 1.6.1-alpha documentation</title>
+  <title>9_fpga &mdash; libstored 1.7.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -13,7 +13,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=664bbacb"></script>
+        <script src="../_static/documentation_options.js?v=0b75d01e"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -35,7 +35,7 @@
             libstored
           </a>
               <div class="version">
-                1.6.1.dev0
+                1.7.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -125,7 +125,11 @@
 <h2>Store definition<a class="headerlink" href="#store-definition" title="Link to this heading"></a></h2>
 <section id="examplefpga">
 <h3>ExampleFpga<a class="headerlink" href="#examplefpga" title="Link to this heading"></a></h3>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Any store definition is compatible with the FPGA, but there are a few
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: CC0-1.0
+
+// Any store definition is compatible with the FPGA, but there are a few
 // details to mention.
 
 // For a C++ target, /t would be a function, which is read-only.  Functions
@@ -154,7 +158,11 @@ blob:3 blob
 </section>
 <section id="examplefpga2">
 <h3>ExampleFpga2<a class="headerlink" href="#examplefpga2" title="Link to this heading"></a></h3>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// I assume that the FPGA has only one Synchronizer interface,
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: CC0-1.0
+
+// I assume that the FPGA has only one Synchronizer interface,
 // which is likely to be a UART, or otherwise byte-oriented stream.
 // If there are multiple stores in the FPGA, like one store per module in the FPGA,
 // as that matches nicely to the same amount of AXI slaves, they are daisy chained,
@@ -167,7 +175,11 @@ int8 other store&#39;s int8
 </section>
 <section id="application">
 <h2>Application<a class="headerlink" href="#application" title="Link to this heading"></a></h2>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers</span>
+<span class="c1">//</span>
+<span class="c1">// SPDX-License-Identifier: CC0-1.0</span>
+
+<span class="cm">/*!</span>
 <span class="cm"> * \file</span>
 <span class="cm"> * \brief Example to show how to use libstored in VHDL.</span>
 <span class="cm"> *</span>
@@ -281,12 +293,9 @@ int8 other store&#39;s int8
 </section>
 <section id="id1">
 <h2>FPGA<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-- libstored, distributed debuggable data stores.
--- Copyright (C) 2020-2023  Jochem Rutgers
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-- SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
 --
--- This Source Code Form is subject to the terms of the Mozilla Public
--- License, v. 2.0. If a copy of the MPL was not distributed with this
--- file, You can obtain one at https://mozilla.org/MPL/2.0/.
+-- SPDX-License-Identifier: CC0-1.0
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -1261,7 +1270,7 @@ public:
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2022, Jochem Rutgers.</p>
+    <p>&#169; Copyright 2020-2023, Jochem Rutgers.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

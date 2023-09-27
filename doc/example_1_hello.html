@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>1_hello &mdash; libstored 1.6.1-alpha documentation</title>
+  <title>1_hello &mdash; libstored 1.7.0-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -13,7 +13,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=664bbacb"></script>
+        <script src="../_static/documentation_options.js?v=0b75d01e"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -35,7 +35,7 @@
             libstored
           </a>
               <div class="version">
-                1.6.1.dev0
+                1.7.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -116,7 +116,11 @@
 <h1>1_hello<a class="headerlink" href="#hello" title="Link to this heading"></a></h1>
 <section id="store-definition">
 <h2>Store definition<a class="headerlink" href="#store-definition" title="Link to this heading"></a></h2>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// This is a comment. The comment is always till the end of the line.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+//
+// SPDX-License-Identifier: CC0-1.0
+
+// This is a comment. The comment is always till the end of the line.
 
 // Basically, a variable is defined as:
 // &lt;type&gt; &lt;name&gt;
@@ -139,7 +143,11 @@ double world
 </section>
 <section id="application">
 <h2>Application<a class="headerlink" href="#application" title="Link to this heading"></a></h2>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers</span>
+<span class="c1">//</span>
+<span class="c1">// SPDX-License-Identifier: CC0-1.0</span>
+
+<span class="cm">/*!</span>
 <span class="cm"> * \file</span>
 <span class="cm"> * \brief Hello world example.</span>
 <span class="cm"> */</span>
@@ -543,7 +551,7 @@ public:
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2022, Jochem Rutgers.</p>
+    <p>&#169; Copyright 2020-2023, Jochem Rutgers.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
