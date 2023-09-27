@@ -9,6 +9,15 @@
 #
 # Refer to 1_hello_installed/CMakeLists.txt for more information.
 
+set(_more_flags)
+
+if(CMAKE_CXX_STANDARD)
+	list(APPEND _more_flags -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD})
+endif()
+if(CMAKE_C_STANDARD)
+	list(APPEND _more_flags -DCMAKE_C_STANDARD=${CMAKE_C_STANDARD})
+endif()
+
 add_custom_command(
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/1_hello_installed.timestamp
 	DEPENDS ../1_hello/main.cpp
@@ -20,9 +29,7 @@ add_custom_command(
 		${CMAKE_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/1_hello_installed
 		-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -G ${CMAKE_GENERATOR}
-		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-		-DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD} -DCMAKE_C_STANDARD=${CMAKE_C_STANDARD}
-		--no-warn-unused-cli
+		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE} --no-warn-unused-cli ${_more_flags}
 	# Build 1_hello_installed.
 	COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_BINARY_DIR}/1_hello_installed
 		${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE}

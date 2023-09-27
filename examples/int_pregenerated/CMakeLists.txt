@@ -7,6 +7,15 @@
 #
 # Refer to 1_hello_pregenerated/CMakeLists.txt for more information.
 
+set(_more_flags)
+
+if(CMAKE_CXX_STANDARD)
+	list(APPEND _more_flags -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD})
+endif()
+if(CMAKE_C_STANDARD)
+	list(APPEND _more_flags -DCMAKE_C_STANDARD=${CMAKE_C_STANDARD})
+endif()
+
 add_custom_command(
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/1_hello_pregenerated.timestamp
 	DEPENDS ../1_hello/main.cpp
@@ -21,8 +30,7 @@ add_custom_command(
 		-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -G ${CMAKE_GENERATOR}
 		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE} -DLIBSTORED_INSTALL_STORE_LIBS=OFF
-		-DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD} -DCMAKE_C_STANDARD=${CMAKE_C_STANDARD}
-		--no-warn-unused-cli
+		--no-warn-unused-cli ${_more_flags}
 	# Build 1_hello_pregenerated.
 	COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_BINARY_DIR}/1_hello_pregenerated
 		${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE}
