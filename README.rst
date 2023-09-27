@@ -527,7 +527,7 @@ License
 -------
 
 (Most of) this project is licensed under the terms of the Mozilla Public
-License, v. 2.0, as specified in LICENSE.
+License, v. 2.0, as specified in LICENSE. This project complies to `REUSE`_.
 
 
 .. _presentation: https://demcon.github.io/libstored/libstored.sozi.html
@@ -538,4 +538,4 @@ License, v. 2.0, as specified in LICENSE.
 .. _heatshrink: https://github.com/atomicobject/heatshrink
 .. _Kst: https://kst-plot.kde.org/
 .. _python: https://github.com/DEMCON/libstored/tree/master/python
-
+.. _REUSE: https://reuse.software/
