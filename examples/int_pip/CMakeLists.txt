@@ -6,6 +6,15 @@
 #
 # Refer to 1_hello_pip/CMakeLists.txt for more information.
 
+set(_more_flags)
+
+if(CMAKE_CXX_STANDARD)
+	list(APPEND _more_flags -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD})
+endif()
+if(CMAKE_C_STANDARD)
+	list(APPEND _more_flags -DCMAKE_C_STANDARD=${CMAKE_C_STANDARD})
+endif()
+
 add_custom_command(
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/1_hello_pip.timestamp
 	DEPENDS ../1_hello/main.cpp ../1_hello/ExampleHello.st
@@ -25,8 +34,7 @@ add_custom_command(
 		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -G ${CMAKE_GENERATOR}
 		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE} -DLIBSTORED_INSTALL_STORE_LIBS=OFF
 		-DLIBSTORED_CLANG_TIDY=${LIBSTORED_CLANG_TIDY}
-		-DCMAKE_MODULE_PATH=${CMAKE_CURRENT_BINARY_DIR} --no-warn-unused-cli
-		-DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD} -DCMAKE_C_STANDARD=${CMAKE_C_STANDARD}
+		-DCMAKE_MODULE_PATH=${CMAKE_CURRENT_BINARY_DIR} --no-warn-unused-cli ${_more_flags}
 	# Build 1_hello_pip.
 	COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_BINARY_DIR}/1_hello_pip ${CMAKE_COMMAND}
 		--build . --config ${CMAKE_BUILD_TYPE}
