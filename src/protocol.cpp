@@ -229,6 +229,7 @@ void TerminalLayer::decode(void* buffer, size_t len)
 		char c = (static_cast<char*>(buffer))[i];
 
 		switch(m_decodeState) {
+		default:
 		case StateNormal:
 			if(unlikely(c == Esc))
 				m_decodeState = StateNormalEsc;
@@ -574,6 +575,7 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last)
 		event(EventEncodeBufferOverflow);
 
 	switch(m_encodeState) {
+	default:
 	case EncodeStateIdle:
 		pushEncodeQueue(buffer, len);
 
@@ -643,6 +645,7 @@ void ArqLayer::event(ArqLayer::Event e)
 #endif
 	} else {
 		switch(e) {
+		default:
 		case EventNone:
 		case EventReconnect:
 		case EventRetransmit:
@@ -910,12 +913,16 @@ void DebugArqLayer::decode(void* buffer, size_t len)
 				// decode.
 				m_decodeState = DecodeStateRetransmit;
 				break;
+			case EncodeStateEncoding:
+			case EncodeStateUnbufferedEncoding:
 			default:
 				// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert,cert-dcl03-c)
 				stored_assert(false);
 			}
 		} // else: unexpected seq; ignore.
 		break;
+	case DecodeStateIdle:
+	case DecodeStateDecoding:
 	default:;
 	}
 
@@ -943,6 +950,7 @@ void DebugArqLayer::decode(void* buffer, size_t len)
 			stored_assert(m_decodeSeq != m_decodeSeqStart);
 		}
 		break;
+	case DecodeStateDecoded:
 	default:;
 	}
 }
@@ -967,6 +975,8 @@ void DebugArqLayer::encode(void const* buffer, size_t len, bool last)
 			setPurgeableResponse();
 		}
 		break;
+	case EncodeStateUnbufferedIdle:
+	case EncodeStateUnbufferedEncoding:
 	default:;
 	}
 
@@ -985,10 +995,13 @@ void DebugArqLayer::encode(void const* buffer, size_t len, bool last)
 			m_encodeSeqReset = false;
 		}
 		break;
+	case EncodeStateEncoding:
+	case EncodeStateUnbufferedEncoding:
 	default:;
 	}
 
 	switch(m_encodeState) {
+	default:
 	case EncodeStateUnbufferedIdle:
 		base::encode(seq, seqlen, false);
 		m_encodeState = EncodeStateUnbufferedEncoding;
@@ -1045,6 +1058,8 @@ void DebugArqLayer::setPurgeableResponse(bool purgeable)
 		case EncodeStateIdle:
 			m_encodeState = EncodeStateUnbufferedIdle;
 			break;
+		case EncodeStateUnbufferedIdle:
+		case EncodeStateUnbufferedEncoding:
 		default:
 			// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert,cert-dcl03-c)
 			stored_assert(false);
@@ -1063,6 +1078,8 @@ void DebugArqLayer::setPurgeableResponse(bool purgeable)
 			base::setPurgeableResponse(false);
 			m_encodeState = EncodeStateIdle;
 			break;
+		case EncodeStateIdle:
+		case EncodeStateEncoding:
 		default:
 			// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert,cert-dcl03-c)
 			stored_assert(false);
