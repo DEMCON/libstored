@@ -118,6 +118,8 @@ void CompressLayer::decoderPoll()
 			return;
 		case HSDR_POLL_MORE:
 			break;
+		case HSDR_POLL_ERROR_NULL:
+		case HSDR_POLL_ERROR_UNKNOWN:
 		default:
 			// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert,cert-dcl03-c)
 			stored_assert(false);
@@ -186,6 +188,8 @@ void CompressLayer::encoderPoll()
 			return;
 		case HSER_POLL_MORE:
 			break;
+		case HSER_POLL_ERROR_NULL:
+		case HSER_POLL_ERROR_MISUSE:
 		default:
 			// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert,cert-dcl03-c)
 			stored_assert(false);
