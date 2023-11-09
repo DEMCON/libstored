@@ -49,6 +49,19 @@ endif()
 
 option(LIBSTORED_COVERAGE "Enable code coverage instrumentation" OFF)
 
+if(CMAKE_HOST_WIN32)
+	find_program(PYTHON_EXECUTABLE python)
+else()
+	find_program(PYTHON_EXECUTABLE python3)
+	find_program(HAVE_VALGRIND valgrind)
+endif()
+
+if(NOT PYTHON_EXECUTABLE)
+	message(FATAL_ERROR "Cannot find python")
+else()
+	message(STATUS "Using python ${PYTHON_EXECUTABLE}")
+endif()
+
 option(LIBSTORED_PYLIBSTORED "Build python libstored package" ON)
 
 if(CMAKE_HOST_WIN32 OR NOT LIBSTORED_PYLIBSTORED)
@@ -72,8 +85,10 @@ if(LIBSTORED_VENV)
 		# Force CC and CXX to default, in case we are cross-compiling and compiling wheels
 		# for the venv...
 		execute_process(
-			COMMAND ${CMAKE_COMMAND} -E env --unset=CC --unset=CXX
-				${PROJECT_SOURCE_DIR}/dist/common/venv.sh ${venv_check}
+			COMMAND
+				${CMAKE_COMMAND} -E env --unset=CC --unset=CXX
+				${PROJECT_SOURCE_DIR}/dist/common/venv.sh -p "${PYTHON_EXECUTABLE}"
+				${venv_check}
 			RESULT_VARIABLE ret
 		)
 		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/venv/bin")
@@ -229,19 +244,6 @@ if(# Need gcc for this...
 endif()
 
 option(LIBSTORED_GCC_ANALYZER "Run GCC's analyzer" ${LIBSTORED_GCC_ANALYZER_DEFAULT})
-
-if(CMAKE_HOST_WIN32)
-	find_program(PYTHON_EXECUTABLE python)
-else()
-	find_program(PYTHON_EXECUTABLE python3)
-	find_program(HAVE_VALGRIND valgrind)
-endif()
-
-if(NOT PYTHON_EXECUTABLE)
-	message(FATAL_ERROR "Cannot find python")
-else()
-	message(STATUS "Using python ${PYTHON_EXECUTABLE}")
-endif()
 
 set(LIBSTORED_SOURCE_DIR
     ${PROJECT_SOURCE_DIR}
