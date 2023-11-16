@@ -125,6 +125,12 @@ function(libstored_lib libprefix libpath)
 	    "${CMAKE_CURRENT_BINARY_DIR}/${LIBSTORED_LIB_TARGET}-sbom.cmake"
 	)
 
+	if("${LIBSTORED_VERSION_HASH}" STREQUAL "")
+		set(_version_hash)
+	else()
+		set(_version_hash " (git commit ${LIBSTORED_VERSION_HASH})")
+	endif()
+
 	# The namespace is the SHA1 hash over the doc/SHA1SUM file as UUID5 (truncated, with char
 	# 13=5 and 21=8).
 	file(
@@ -153,8 +159,8 @@ SPDXID: SPDXRef-libstored
 PackageVersion: \${_sha1}
 PackageDownloadLocation: NOASSERTION
 FilesAnalyzed: false
-PackageDescription: <text>Static library generated using libstored ${LIBSTORED_VERSION}, CMake ${CMAKE_VERSION},
-built with ${CMAKE_BUILD_TYPE} configuration for ${CMAKE_SYSTEM_NAME} (${CMAKE_SYSTEM_PROCESSOR}), containing:
+PackageDescription: <text>Static library generated using libstored ${LIBSTORED_VERSION}${_version_hash},
+CMake ${CMAKE_VERSION}, built with ${CMAKE_BUILD_TYPE} configuration for ${CMAKE_SYSTEM_NAME} (${CMAKE_SYSTEM_PROCESSOR}), containing:
 \${_stores}</text>
 PackageLicenseConcluded: MPL-2.0
 PackageLicenseDeclared: MPL-2.0
@@ -329,6 +335,7 @@ PackageVersion: ${Zth_VERSION}
 PackageDownloadLocation: https://github.com/jhrutgers/zth/releases/tag/v${Zth_VERSION}
 ExternalRef: PACKAGE-MANAGER purl pkg:github/jhrutgers/zth@${Zth_VERSION}"
 			)
+		endif()
 
 		file(
 			APPEND "${LIBSTORED_LIB_SBOM_CMAKE}"
