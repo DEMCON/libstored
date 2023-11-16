@@ -315,16 +315,28 @@ Relationship: SPDXRef-compiler BUILD_DEPENDENCY_OF SPDXRef-libstored
 		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_ZTH=1)
 		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC libzth)
 
+		set(_fields)
+
+		if("${Zth_VERSION}" STREQUAL "")
+			set(_fields "${_fields}
+PackageVersion: preinstalled
+PackageDownloadLocation: NOASSERTION
+ExternalRef: PACKAGE-MANAGER purl pkg:github/jhrutgers/zth"
+			)
+		else()
+			set(_fields "${_fields}
+PackageVersion: ${Zth_VERSION}
+PackageDownloadLocation: https://github.com/jhrutgers/zth/releases/tag/v${Zth_VERSION}
+ExternalRef: PACKAGE-MANAGER purl pkg:github/jhrutgers/zth@${Zth_VERSION}"
+			)
+
 		file(
 			APPEND "${LIBSTORED_LIB_SBOM_CMAKE}"
 			"
 			file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
 PackageName: Zth
-SPDXID: SPDXRef-Zth
-PackageVersion: ${Zth_VERSION}
-PackageDownloadLocation: https://github.com/jhrutgers/zth/releases/tag/v${Zth_VERSION}
+SPDXID: SPDXRef-Zth${_fields}
 PackageHomePage: https://github.com/jhrutgers/zth
-ExternalRef: PACKAGE-MANAGER purl pkg:github/jhrutgers/zth@${Zth_VERSION}
 FilesAnalyzed: false
 PackageLicenseConcluded: MPL-2.0
 PackageLicenseDeclared: MPL-2.0
@@ -341,16 +353,29 @@ Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-Zth
 		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_ZMQ=1)
 		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC libzmq)
 
+		set(_fields)
+
+		if("${ZeroMQ_VERSION}" STREQUAL "")
+			set(_fields "${_fields}
+PackageVersion: preinstalled
+PackageDownloadLocation: NOASSERTION
+ExternalRef: PACKAGE-MANAGER purl pkg:github/zeromq/libzmq"
+			)
+		else()
+			set(_fields "${_fields}
+PackageVersion: ${ZeroMQ_VERSION}
+PackageDownloadLocation: https://github.com/zeromq/libzmq/releases
+ExternalRef: PACKAGE-MANAGER purl pkg:github/zeromq/libzmq@${ZeroMQ_VERSION}"
+			)
+		endif()
+
 		file(
 			APPEND "${LIBSTORED_LIB_SBOM_CMAKE}"
 			"
 			file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
 PackageName: libzmq
-SPDXID: SPDXRef-libzmq
-PackageVersion: ${ZeroMQ_VERSION}
-PackageDownloadLocation: https://github.com/zeromq/libzmq/releases
+SPDXID: SPDXRef-libzmq${_fields}
 PackageHomePage: https://zeromq.org/
-ExternalRef: PACKAGE-MANAGER purl pkg:github/zeromq/libzmq
 FilesAnalyzed: false
 PackageLicenseConcluded: MPL-2.0
 PackageLicenseDeclared: MPL-2.0
@@ -435,16 +460,29 @@ Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-Qt6
 		)
 		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC heatshrink)
 
+		set(_fields)
+
+		if("${Heatshrink_VERSION}" STREQUAL "")
+			set(_fields "${_fields}
+PackageVersion: preinstalled
+PackageDownloadLocation: NOASSERTION
+ExternalRef: PACKAGE-MANAGER purl pkg:github/atomicobject/heatshrink"
+			)
+		else()
+			set(_fields "${_fields}
+PackageVersion: ${Heatshrink_VERSION}
+PackageDownloadLocation: https://github.com/atomicobject/heatshrink/releases/tag/v${Heatshrink_VERSION}
+ExternalRef: PACKAGE-MANAGER purl pkg:github/atomicobject/heatshrink@${Heatshrink_VERSION}"
+			)
+		endif()
+
 		file(
 			APPEND "${LIBSTORED_LIB_SBOM_CMAKE}"
 			"
 			file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
 PackageName: heatshrink
-SPDXID: SPDXRef-heatshrink
-PackageVersion: ${Heatshrink_VERSION}
-PackageDownloadLocation: https://github.com/atomicobject/heatshrink/releases/tag/v${Heatshrink_VERSION}
+SPDXID: SPDXRef-heatshrink${_fields}
 PackageHomePage: https://github.com/atomicobject/heatshrink
-ExternalRef: PACKAGE-MANAGER purl pkg:github/atomicobject/heatshrink@${Heatshrink_VERSION}
 FilesAnalyzed: false
 PackageLicenseConcluded: ISC
 PackageLicenseDeclared: ISC
