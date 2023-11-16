@@ -49,6 +49,17 @@ endif()
 
 option(LIBSTORED_COVERAGE "Enable code coverage instrumentation" OFF)
 
+if(CMAKE_HOST_WIN32)
+	find_program(PYTHON_EXECUTABLE python)
+else()
+	find_program(PYTHON_EXECUTABLE python3)
+	find_program(HAVE_VALGRIND valgrind)
+endif()
+
+if(NOT PYTHON_EXECUTABLE)
+	message(FATAL_ERROR "Cannot find python")
+endif()
+
 option(LIBSTORED_PYLIBSTORED "Build python libstored package" ON)
 
 if(CMAKE_HOST_WIN32 OR NOT LIBSTORED_PYLIBSTORED)
@@ -79,12 +90,14 @@ if(LIBSTORED_VENV)
 			RESULT_VARIABLE ret
 		)
 		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/venv/bin")
+		set(PYTHON_EXECUTABLE "${PROJECT_SOURCE_DIR}/dist/venv/bin/python3")
 	elseif(CMAKE_HOST_WIN32)
 		execute_process(
 			COMMAND ${CMAKE_COMMAND} -E env --unset=CC --unset=CXX
 				${PROJECT_SOURCE_DIR}/dist/win32/venv.cmd check RESULT_VARIABLE ret
 		)
 		list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_SOURCE_DIR}/dist/venv/Scripts")
+		set(PYTHON_EXECUTABLE "${PROJECT_SOURCE_DIR}/dist/venv/Scripts/python.exe")
 	else()
 		message(FATAL_ERROR "Don't know how to create a venv.")
 	endif()
@@ -93,18 +106,7 @@ if(LIBSTORED_VENV)
 	endif()
 endif()
 
-if(CMAKE_HOST_WIN32)
-	find_program(PYTHON_EXECUTABLE python)
-else()
-	find_program(PYTHON_EXECUTABLE python3)
-	find_program(HAVE_VALGRIND valgrind)
-endif()
-
-if(NOT PYTHON_EXECUTABLE)
-	message(FATAL_ERROR "Cannot find python")
-else()
-	message(STATUS "Using python ${PYTHON_EXECUTABLE}")
-endif()
+message(STATUS "Using python ${PYTHON_EXECUTABLE}")
 
 # Should be defaulted to OFF some day.
 option(LIBSTORED_DRAFT_API "Enable draft API" ON)
