@@ -269,7 +269,6 @@ Relationship: SPDXRef-compiler BUILD_DEPENDENCY_OF SPDXRef-libstored
 				-Wswitch-default
 				-Wswitch-enum
 				-Wfloat-equal
-				-Wsuggest-override
 				-ffunction-sections
 				-fdata-sections
 		)
