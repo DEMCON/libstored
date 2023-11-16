@@ -27,6 +27,18 @@ if(NOT LIBSTORED_VERSION_SUFFIX STREQUAL "")
 	string(APPEND LIBSTORED_VERSION_PYTHON ".dev0")
 endif()
 
+find_program(GIT_EXECUTABLE NAMES git)
+
+if(GIT_EXECUTABLE)
+	execute_process(
+		COMMAND ${GIT_EXECUTABLE} log -1 --format=%H
+		WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+		OUTPUT_VARIABLE LIBSTORED_VERSION_HASH
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		ERROR_QUIET
+	)
+endif()
+
 # This file may be used while building libstored, so the version files should remain in sync.
 # However, it is also possible that we only want to parse the version information, but the sources
 # are read-only. Do not try to update the files in that case.
