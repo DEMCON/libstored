@@ -49,19 +49,6 @@ endif()
 
 option(LIBSTORED_COVERAGE "Enable code coverage instrumentation" OFF)
 
-if(CMAKE_HOST_WIN32)
-	find_program(PYTHON_EXECUTABLE python)
-else()
-	find_program(PYTHON_EXECUTABLE python3)
-	find_program(HAVE_VALGRIND valgrind)
-endif()
-
-if(NOT PYTHON_EXECUTABLE)
-	message(FATAL_ERROR "Cannot find python")
-else()
-	message(STATUS "Using python ${PYTHON_EXECUTABLE}")
-endif()
-
 option(LIBSTORED_PYLIBSTORED "Build python libstored package" ON)
 
 if(CMAKE_HOST_WIN32 OR NOT LIBSTORED_PYLIBSTORED)
@@ -104,6 +91,19 @@ if(LIBSTORED_VENV)
 	if(ret EQUAL "2")
 		message(FATAL_ERROR "Cannot create venv")
 	endif()
+endif()
+
+if(CMAKE_HOST_WIN32)
+	find_program(PYTHON_EXECUTABLE python)
+else()
+	find_program(PYTHON_EXECUTABLE python3)
+	find_program(HAVE_VALGRIND valgrind)
+endif()
+
+if(NOT PYTHON_EXECUTABLE)
+	message(FATAL_ERROR "Cannot find python")
+else()
+	message(STATUS "Using python ${PYTHON_EXECUTABLE}")
 endif()
 
 # Should be defaulted to OFF some day.
