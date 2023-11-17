@@ -33,7 +33,7 @@ link ZMQ to gui--><path d="M132.69,527.1 C129.33,547.81 120.37,603.04 115.79,631
 link ZMQ to visu--><path d="M141.63,527.1 C161.14,547.81 213.17,603.04 239.81,631.31 " fill="none" id="ZMQ-visu" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[799a817ffc2a18cd0307133178d758b0]
 link storeA2 to fpgastack--><path d="M764.03,544.59 C773.77,562.35 786.96,586.41 798.2,606.91 " fill="none" id="storeA2-fpgastack" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[1048887bfff05e37bf670ca51ced63d2]
 link storeA2 to app2--><path d="M733.01,544.59 C717.15,568.47 693.73,603.74 678.66,626.42 " fill="none" id="storeA2-app2" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[48bac06d0c460d4aedb10338632c6f86]
-link UARTsync to fpgastack--><path d="M969.59,526.71 C950.72,542.18 907.07,577.96 871.93,606.76 " fill="none" id="UARTsync-fpgastack" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[06f04a53eb6d6570527c516de90f3573]
+link UARTsync to fpgastack--><path d="M969.59,526.71 C950.72,542.18 907.07,577.96 871.93,606.76 " fill="none" id="UARTsync-fpgastack" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[60bf1d341bb8ffa9d1834a6f3ed66d0c]
 @startuml
 node "Microcontroller" {
    rectangle storeA1 [
@@ -161,7 +161,7 @@ PlantUML version 1.2020.02(Sun Mar 01 10:22:07 UTC 2020)
 (GPL source distribution)
 Java Runtime: OpenJDK Runtime Environment
 JVM: OpenJDK 64-Bit Server VM
-Java Version: 11.0.20.1+1
+Java Version: 11.0.21+9
 Operating System: Linux
 Default Encoding: UTF-8
 Language: en
