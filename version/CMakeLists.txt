@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
+cmake_policy(VERSION 3.5)
+
 file(STRINGS "${CMAKE_CURRENT_LIST_DIR}/version.txt" LIBSTORED_VERSION LIMIT_COUNT 1)
 
 message(STATUS "libstored version ${LIBSTORED_VERSION}")

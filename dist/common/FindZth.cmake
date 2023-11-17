@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
+cmake_policy(VERSION 3.5)
+
 include(ExternalProject)
 include(CheckIncludeFileCXX)
 
