@@ -2827,6 +2827,7 @@ int NamedPipeLayer::startRead()
 			return base::startRead();
 	case StateError:
 		return setLastError(EINVAL);
+	case StateConnecting:
 	default:
 		return setLastError(EAGAIN);
 	}
@@ -2838,6 +2839,9 @@ void NamedPipeLayer::encode(void const* buffer, size_t len, bool last)
 	case StateConnected:
 		base::encode(buffer, len, last);
 		break;
+	case StateInit:
+	case StateConnecting:
+	case StateError:
 	default:
 		// Don't actually write, as we are not connected.
 		// However, do pass downstream.
