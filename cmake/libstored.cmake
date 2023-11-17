@@ -5,6 +5,8 @@
 # ##################################################################################################
 # Options
 
+cmake_policy(VERSION 3.5)
+
 option(LIBSTORED_INSTALL_STORE_LIBS "Install generated static libstored libraries" ON)
 option(LIBSTORED_DRAFT_API "Enable draft API" ON)
 option(LIBSTORED_DISABLE_EXCEPTIONS "Disable exception support" OFF)
