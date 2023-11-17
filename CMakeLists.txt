@@ -415,6 +415,10 @@ add_custom_target(
 	VERBATIM
 )
 
+if(TARGET gui-qrc)
+	add_dependencies(libstored-reuse gui-qrc)
+endif()
+
 if(LIBSTORED_DEV)
 	add_custom_target(libstored-reuse-all ALL DEPENDS libstored-reuse)
 endif()
