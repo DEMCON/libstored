@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -11,7 +11,6 @@ import sys
 import os
 import math
 import logging
-import heatshrink2
 import keyword
 import weakref
 import random
@@ -23,6 +22,7 @@ from PySide6.QtGui import QKeyEvent
 
 from .zmq_server import ZmqServer
 from .csv import CsvExport
+from .heatshrink import HeatshrinkDecoder
 
 # Wrapper to keep sphinx happy...
 class _Property(Property):
@@ -833,7 +833,7 @@ class Stream(object):
 
     def _reset(self):
         if self._compressed:
-            self._decoder = heatshrink2.core.Encoder(heatshrink2.core.Reader(window_sz2=8, lookahead_sz2=4))
+            self._decoder = HeatshrinkDecoder()
             self._finishing = False
             self._flushing = False
 
