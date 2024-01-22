@@ -129,6 +129,12 @@ else()
 	libstored_add_test(test_poller test_poller.cpp)
 endif()
 
+if(LIBSTORED_HAVE_HEATSHRINK)
+	add_executable(heatshrink_encoder heatshrink_encoder.cpp test_base.cpp)
+	target_include_directories(heatshrink_encoder BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+	target_link_libraries(heatshrink_encoder teststore-libstored)
+endif()
+
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	add_custom_target(teststore-bare)
 	libstored_generate(TARGET teststore-bare STORES TestStore.st DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bare NO_ZMQ)
