@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+// SPDX-FileCopyrightText: 2024 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -21,22 +21,48 @@ public:
 	}
 };
 
+class StdioLayer : public stored::StdioLayer {
+	STORED_CLASS_NOCOPY(StdioLayer)
+public:
+	typedef stored::StdioLayer base;
+
+	StdioLayer(stored::ProtocolLayer& pipe)
+		: base()
+		, m_pipe(&pipe)
+	{}
+
+	virtual ~StdioLayer() override is_default
+
+	virtual void close() override
+	{
+		// Before we close stdout, make sure we flush the encode pipe.
+
+		if(m_pipe) {
+			m_pipe->encode();
+			m_pipe->flush();
+		}
+
+		m_pipe = nullptr;
+	}
+
+private:
+	stored::ProtocolLayer* m_pipe;
+};
+
 int main()
 {
 	EchoLayer e;
 	stored::CompressLayer c;
-	c.wrap(e);
-
 	stored::PrintLayer log(stderr);
-	log.wrap(c);
-
-	stored::StdioLayer stdio;
+	StdioLayer stdio(e);
+	log.setUp(&e);
+	e.setDown(&c);
+	c.setDown(&log);
 	stdio.wrap(log);
 
 	while(stdio.recv() == 0)
 		;
 
-	e.encode();
 	fflush(nullptr);
 	return 0;
 }

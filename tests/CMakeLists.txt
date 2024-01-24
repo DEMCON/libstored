@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -133,6 +133,17 @@ if(LIBSTORED_HAVE_HEATSHRINK)
 	add_executable(heatshrink_encoder heatshrink_encoder.cpp test_base.cpp)
 	target_include_directories(heatshrink_encoder BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 	target_link_libraries(heatshrink_encoder teststore-libstored)
+
+	if(LIBSTORED_PYLIBSTORED)
+		add_test(
+			NAME HeatshrinkDecoder
+			COMMAND ${CMAKE_COMMAND} -E env
+				PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../python
+				${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_heatshrink.py $<TARGET_FILE:heatshrink_encoder>
+		)
+
+		set_tests_properties(HeatshrinkDecoder PROPERTIES TIMEOUT 60)
+	endif()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -220,7 +231,7 @@ if(LIBSTORED_HAVE_LIBZMQ AND LIBSTORED_EXAMPLES AND LIBSTORED_PYLIBSTORED)
 	add_test(
 		NAME ZmqClient
 		COMMAND ${CMAKE_COMMAND} -E env
-			PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../client
+			PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../python
 			"PATH=$<SHELL_PATH:$<TARGET_FILE_DIR:libzmq>>${ENV_PATH_SEP}$ENV{PATH}"
 			${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_ZmqClient.py ${CMAKE_INSTALL_PREFIX}/bin/$<TARGET_FILE_NAME:zmqserver>
 	)
