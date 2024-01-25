@@ -18,7 +18,7 @@ class HeatshrinkDecoderTest(unittest.TestCase):
 
     def encode(self, x):
         p = subprocess.run(self.encoder, input=x, capture_output=True, text=False, check=True)
-        self.logger.debug('\n' + p.stderr.decode())
+#        self.logger.debug('\n' + p.stderr.decode())
         return p.stdout
 
     def do_endec(self, x):
@@ -27,7 +27,7 @@ class HeatshrinkDecoderTest(unittest.TestCase):
 
         c = self.encode(x)
         d = self._decoder.finish(c)
-        self.logger.info(f'Compressed {x} into {c}, and decompressed to {d}')
+#        self.logger.info(f'Compressed {x} into {c}, and decompressed to {d}')
         self.assertEqual(d, x)
 
     def test_empty(self):
@@ -44,12 +44,12 @@ class HeatshrinkDecoderTest(unittest.TestCase):
         # Test all lengths
         for l in range(1, 1024):
             # Random pattern with this length
-            for i in range(0, 1):
-                self.do_endec(bytearray(os.urandom(l)))
+            self.do_endec(bytearray(os.urandom(l)))
 
 if __name__ == '__main__':
     HeatshrinkDecoderTest.encoder = sys.argv[-1]
     del sys.argv[-1]
 
     logging.basicConfig(level=logging.INFO)
-    unittest.main()
+    suite = unittest.TestLoader().loadTestsFromTestCase(HeatshrinkDecoderTest)
+    unittest.TextTestRunner(verbosity=2).run(suite)

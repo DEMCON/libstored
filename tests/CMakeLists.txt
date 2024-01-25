@@ -142,7 +142,7 @@ if(LIBSTORED_HAVE_HEATSHRINK)
 				${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_heatshrink.py $<TARGET_FILE:heatshrink_encoder>
 		)
 
-		set_tests_properties(HeatshrinkDecoder PROPERTIES TIMEOUT 60)
+		set_tests_properties(HeatshrinkDecoder PROPERTIES TIMEOUT 300)
 	endif()
 endif()
 

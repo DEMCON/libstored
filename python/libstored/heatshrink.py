@@ -97,7 +97,7 @@ class HeatshrinkDecoder:
         assert isinstance(out_buf, bytearray)
 
         while True:
-            self.logger.debug('-- poll, state is %s, input_size %d', self._state, self._input_size)
+#            self.logger.debug('-- poll, state is %s, input_size %d', self._state, self._input_size)
             in_state = self._state
             if in_state == HSD_state.HSDS_TAG_BIT:
                 self._state = self._st_tag_bit()
