@@ -6,6 +6,7 @@
 
 import libstored
 import logging
+import os
 import subprocess
 import sys
 import unittest
@@ -38,6 +39,13 @@ class HeatshrinkDecoderTest(unittest.TestCase):
         self.do_endec(b'aaa')
         self.do_endec(b'aaaa')
         self.do_endec(b'aaaaa')
+
+    def test_random(self):
+        # Test all lengths
+        for l in range(1, 1024):
+            # Random pattern with this length
+            for i in range(0, 1):
+                self.do_endec(bytearray(os.urandom(l)))
 
 if __name__ == '__main__':
     HeatshrinkDecoderTest.encoder = sys.argv[-1]
