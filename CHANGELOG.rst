@@ -1,7 +1,7 @@
 ﻿
 
 ..
-   SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+   SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
    
    SPDX-License-Identifier: CC0-1.0
 
@@ -28,7 +28,7 @@ Added
 Changed
 ```````
 
-...
+- Brake dependency on heatshrink2 Python package by providing a pure-python heatshrink decoder.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.7.0...HEAD
 
