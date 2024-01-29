@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -15,6 +15,8 @@
 #endif
 
 #if defined(STORED_OS_POSIX)
+#	include <sys/types.h>
+#	include <sys/stat.h>
 #	include <termios.h>
 #endif
 
@@ -2647,11 +2649,11 @@ void FileLayer::resetOverlappedWrite()
 
 
 
-#if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
 //////////////////////////////
 // NamedPipeLayer
 //
 
+#if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
 /*!
  * \brief Ctor for the server part of a named pipe.
  *
@@ -2664,9 +2666,7 @@ NamedPipeLayer::NamedPipeLayer(
 	, m_openMode(openMode)
 {
 	stored_assert(name);
-	stored_assert(
-		openMode == PIPE_ACCESS_DUPLEX || openMode == PIPE_ACCESS_INBOUND
-		|| openMode == PIPE_ACCESS_OUTBOUND);
+	stored_assert(openMode == Duplex || openMode == Inbound || openMode == Outbound);
 
 	m_name = "\\\\.\\pipe\\";
 	m_name += name;
@@ -2774,7 +2774,7 @@ again:
 
 		if(GetOverlappedResult(fd_r(), &overlappedRead(), &dummy, FALSE)) {
 			m_state = StateConnected;
-			if(m_openMode != PIPE_ACCESS_OUTBOUND && startRead()) {
+			if(m_openMode != Outbound && startRead()) {
 				if(lastError() == EAGAIN) {
 					if(!didDecode && timeout_us < 0)
 						// Wait for more data.
@@ -2799,7 +2799,7 @@ again:
 		}
 	}
 	case StateConnected:
-		if(m_openMode == PIPE_ACCESS_OUTBOUND)
+		if(m_openMode == Outbound)
 			return setLastError(0); // NOLINT(bugprone-branch-clone)
 		else if(base::recv(didDecode ? 0 : timeout_us) == EAGAIN && didDecode)
 			return setLastError(0);
@@ -2821,7 +2821,7 @@ int NamedPipeLayer::startRead()
 	case StateInit:
 		return recv(false);
 	case StateConnected:
-		if(m_openMode == PIPE_ACCESS_OUTBOUND)
+		if(m_openMode == Outbound)
 			return setLastError(0);
 		else
 			return base::startRead();
@@ -2877,17 +2877,76 @@ bool NamedPipeLayer::isConnected() const
 	return m_state == StateConnected;
 }
 
+#elif defined(STORED_OS_POSIX)
+/*!
+ * \brief Ctor.
+ *
+ * The \c name is the path to the FIFO file, which is created when it does not exist yet.
+ */
+NamedPipeLayer::NamedPipeLayer(
+	char const* name, Access openMode, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_name(name)
+	, m_openMode(openMode)
+{
+	if(mkfifo(name, 0666)) {
+		int e = errno;
+		switch(e) {
+		case EEXIST:
+			// That's fine.
+			break;
+		default:
+			setLastError(e ? e : EBADF);
+			return;
+		}
+	}
+
+	int fd_r = -1;
+	int fd_w = -1;
+	if(openMode == Inbound) {
+		fd_r = open(name, O_RDONLY | O_NONBLOCK);
+		fd_w = open("/dev/null", O_WRONLY);
+	} else {
+		fd_r = open("/dev/null", O_RDONLY);
+		fd_w = open(name, O_WRONLY | O_NONBLOCK | O_APPEND);
+	}
+
+	init(fd_r, fd_w);
+}
+
+NamedPipeLayer::~NamedPipeLayer()
+{
+	close_();
+}
+
+/*!
+ * \brief Return the path of the FIFO file.
+ */
+String::type const& NamedPipeLayer::name() const
+{
+	return m_name;
+}
+
+/*!
+ * \brief Resets the connection to accept a new incoming one.
+ */
+void NamedPipeLayer::reopen()
+{
+	// Nothing to do for Unix.
+}
+#endif // STORED_OS_WINDOWS
 
 
 //////////////////////////////
 // DoublePipeLayer
 //
 
+#if defined(STORED_OS_WINDOWS)
 DoublePipeLayer::DoublePipeLayer(
 	char const* name_r, char const* name_w, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
-	, m_r(name_r, PIPE_ACCESS_INBOUND, this, nullptr)
-	, m_w(name_w, PIPE_ACCESS_OUTBOUND)
+	, m_r(name_r, NamedPipeLayer::Inbound, this, nullptr)
+	, m_w(name_w, NamedPipeLayer::Outbound)
 {
 	if(m_r.lastError())
 		setLastError(m_r.lastError());
@@ -2956,7 +3015,7 @@ XsimLayer::XsimLayer(char const* pipe_prefix, ProtocolLayer* up, ProtocolLayer* 
 	: base((String::type(pipe_prefix) += "_from_xsim").c_str(),
 	       (String::type(pipe_prefix) += "_to_xsim").c_str(), up, down)
 	, m_callback(*this)
-	, m_req((String::type(pipe_prefix) += "_req_xsim").c_str(), PIPE_ACCESS_INBOUND)
+	, m_req((String::type(pipe_prefix) += "_req_xsim").c_str(), NamedPipeLayer::Inbound)
 	, m_inFlight()
 {
 	m_req.wrap(m_callback);
