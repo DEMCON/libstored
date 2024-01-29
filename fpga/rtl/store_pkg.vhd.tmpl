@@ -1,7 +1,7 @@
 {#
 -- vim:filetype=vhdl
 -#}
--- SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+-- SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 --
 -- SPDX-License-Identifier: MPL-2.0
 
@@ -22,6 +22,12 @@ package {{store.name}}_pkg is
 	constant LITTLE_ENDIAN : boolean := false;
 {% endif %}
 	constant KEY_LENGTH : natural := {{(store.objects|first|vhdlkey(store=store, littleEndian=False)|len - 3) * 4}};
+
+--pragma translate_off
+	-- For testing purposes.
+	constant WIN32 : boolean := {{'true' if win32 else 'false'}};
+	constant UNIX : boolean := not WIN32;
+--pragma translate_on
 
 {% for o in store.objects|select('variable') %}
 	-- {{o}}
