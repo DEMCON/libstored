@@ -1,7 +1,7 @@
 {#
 -- vim:filetype=vhdl
 -#}
--- SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+-- SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 --
 -- SPDX-License-Identifier: MPL-2.0
 
@@ -378,6 +378,7 @@ begin
 		end record;
 
 		signal r, r_in : r_t;
+		signal hash_i : std_logic_vector(sync_out_data_i'range);
 	begin
 
 		process(r, rstn, sync_chained_in.valid, sync_chained_in.last, sync_chained_out_accept_i,
@@ -552,10 +553,24 @@ begin
 				'1' when STATE_TRIGGER,
 				'0' when others;
 
+		process(r)
+			variable v : hash_t;
+		begin
+			-- Xsim seems to SEGV when {{store.name}}_pkg.HASH is indexed directly.
+			v := {{store.name}}_pkg.HASH;
+			hash_i <= (others => '-');
+
+			for i in v'range loop
+				if i = v'high - r.cnt then
+					hash_i <= v(i);
+				end if;
+			end loop;
+		end process;
+
 		with r.state select
 			sync_out_data_i <=
 				MSG_HELLO when STATE_HELLO_CMD,
-				{{store.name}}_pkg.HASH({{store.name}}_pkg.HASH'high - r.cnt) when STATE_HELLO_HASH,
+				hash_i when STATE_HELLO_HASH,
 				(others => '0') when STATE_HELLO_HASH_END,
 				id_in(15 downto 8) when STATE_HELLO_ID1,
 				id_in(7 downto 0) when STATE_HELLO_ID2,
