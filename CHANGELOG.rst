@@ -29,6 +29,7 @@ Changed
 ```````
 
 - Brake dependency on heatshrink2 Python package by providing a pure-python heatshrink decoder.
+- Bump ZeroMQ to 4.3.5 when building from source, fixing GCC 13 support.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.7.0...HEAD
 
