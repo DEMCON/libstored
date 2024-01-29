@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -246,6 +246,9 @@ def model_cname(model_file):
     s = s[0].upper() + s[1:]
     return s
 
+def platform_win32():
+    return sys.platform == 'win32'
+
 def spdx(license='MPL-2.0', prefix=''):
     # REUSE-IgnoreStart
     return \
@@ -332,6 +335,8 @@ def generate_store(model_file, output_dir, littleEndian=True):
             trim_blocks = True,
             lstrip_blocks = True)
 
+    jenv.globals['store'] = model
+    jenv.globals['win32'] = platform_win32()
     jenv.filters['ctype'] = ctype
     jenv.filters['qtype'] = qtype
     jenv.filters['stype'] = stype
@@ -365,31 +370,31 @@ def generate_store(model_file, output_dir, littleEndian=True):
     store_pkg_vhd_tmpl = jenv.get_template('store_pkg.vhd.tmpl')
 
     with open(os.path.join(output_dir, 'include', mname + '.h'), 'w') as f:
-        f.write(store_h_tmpl.render(store=model))
+        f.write(store_h_tmpl.render())
 
     with open(os.path.join(output_dir, 'src', mname + '.cpp'), 'w') as f:
-        f.write(store_cpp_tmpl.render(store=model))
+        f.write(store_cpp_tmpl.render())
 
     with open(os.path.join(output_dir, 'doc', mname + '.rtf'), 'w') as f:
-        f.write(store_rtf_tmpl.render(store=model))
+        f.write(store_rtf_tmpl.render())
 
     with open(os.path.join(output_dir, 'doc', mname + '.rtf.license'), 'w') as f:
         f.write(spdx('CC0-1.0'))
 
     with open(os.path.join(output_dir, 'doc', mname + '.csv'), 'w') as f:
-        f.write(store_csv_tmpl.render(store=model))
+        f.write(store_csv_tmpl.render())
 
     with open(os.path.join(output_dir, 'doc', mname + '.csv.license'), 'w') as f:
         f.write(spdx('CC0-1.0'))
 
     with open(os.path.join(output_dir, 'doc', mname + 'Meta.py'), 'w') as f:
-        f.write(store_py_tmpl.render(store=model))
+        f.write(store_py_tmpl.render())
 
     with open(os.path.join(output_dir, 'rtl', mname + '.vhd'), 'w') as f:
-        f.write(store_vhd_tmpl.render(store=model))
+        f.write(store_vhd_tmpl.render())
 
     with open(os.path.join(output_dir, 'rtl', mname + '_pkg.vhd'), 'w') as f:
-        f.write(store_pkg_vhd_tmpl.render(store=model))
+        f.write(store_pkg_vhd_tmpl.render())
 
     licenses_dir = os.path.join(output_dir, 'LICENSES')
     os.makedirs(licenses_dir, exist_ok=True)
