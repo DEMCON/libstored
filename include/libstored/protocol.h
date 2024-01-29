@@ -1,6 +1,6 @@
 #ifndef LIBSTORED_PROTOCOL_H
 #define LIBSTORED_PROTOCOL_H
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -1291,19 +1291,22 @@ private:
 /*!
  * \brief Server end of a named pipe.
  *
- * This is only for Windows. Just use a #FileLayer with \c pipe() for POSIX.
- *
- * The client end is easier; it is just a file-like create/open/write/close API.
+ * On Windows, the client end is easier; it is just a file-like create/open/write/close API.
  */
 class NamedPipeLayer : public FileLayer {
 	STORED_CLASS_NOCOPY(NamedPipeLayer)
 public:
 	typedef FileLayer base;
 
-	enum { BufferSize = 1024 };
+	enum {
+		BufferSize = 1024,
+		Inbound = PIPE_ACCESS_INBOUND,
+		Outbound = PIPE_ACCESS_OUTBOUND,
+		Duplex = PIPE_ACCESS_DUPLEX,
+	};
 
 	NamedPipeLayer(
-		char const* name, DWORD openMode = PIPE_ACCESS_DUPLEX, ProtocolLayer* up = nullptr,
+		char const* name, DWORD openMode = Duplex, ProtocolLayer* up = nullptr,
 		ProtocolLayer* down = nullptr);
 	virtual ~NamedPipeLayer() override;
 	String::type const& name() const;
@@ -1338,7 +1341,7 @@ private:
 /*!
  * \brief Server end of a pair of named pipes.
  *
- * This is like NamedPipeLayer, but it uses to unidirectional pipes
+ * This is like NamedPipeLayer, but it uses two unidirectional pipes
  * instead of one bidirectional.
  */
 class DoublePipeLayer : public PolledFileLayer {
@@ -1493,9 +1496,45 @@ private:
 
 #	else // !STORED_OS_WINDOWS
 
+#		ifdef STORED_OS_POSIX
+/*!
+ * \brief Named pipe.
+ *
+ * This is always unidirectional.
+ */
+class NamedPipeLayer : public FileLayer {
+	STORED_CLASS_NOCOPY(NamedPipeLayer)
+public:
+	typedef FileLayer base;
+
+	enum Access {
+		Inbound,
+		Outbound,
+		// Duplex, // Not supported.
+	};
+
+	NamedPipeLayer(
+		char const* name, Access openMode, ProtocolLayer* up = nullptr,
+		ProtocolLayer* down = nullptr);
+	virtual ~NamedPipeLayer() override;
+
+	String::type const& name() const;
+
+	virtual void reopen();
+
+private:
+	String::type m_name;
+	Access m_openMode;
+};
+
+// TODO
+typedef FileLayer DoublePipeLayer;
+
+#		else  // !STORED_OS_POSIX
 // Pipes are just files.
 typedef FileLayer NamedPipeLayer;
 typedef FileLayer DoublePipeLayer;
+#		endif // STORED_OS_POSIX
 
 /*!
  * \brief A stdin/stdout layer.
