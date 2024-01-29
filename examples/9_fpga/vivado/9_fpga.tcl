@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 #
 # SPDX-License-Identifier: CC0-1.0
 
@@ -30,18 +30,18 @@
 #
 # 3. The following remote source files that were added to the original project:-
 #
-#    "C:/dev/prive/libstored/fpga/rtl/pkg.vhd"
-#    "C:/dev/prive/libstored/fpga/rtl/util.vhd"
-#    "C:/dev/prive/libstored/examples/9_fpga/libstored/rtl/ExampleFpga2_pkg.vhd"
-#    "C:/dev/prive/libstored/fpga/rtl/variable.vhd"
-#    "C:/dev/prive/libstored/examples/9_fpga/libstored/rtl/ExampleFpga_pkg.vhd"
-#    "C:/dev/prive/libstored/fpga/rtl/protocol.vhd"
-#    "C:/dev/prive/libstored/examples/9_fpga/libstored/rtl/ExampleFpga2.vhd"
-#    "C:/dev/prive/libstored/examples/9_fpga/libstored/rtl/ExampleFpga.vhd"
-#    "C:/dev/prive/libstored/examples/9_fpga/rtl/toplevel.vhd"
-#    "C:/dev/prive/libstored/examples/9_fpga/tb/tb.vhd"
-#    "C:/dev/prive/libstored/examples/9_fpga/vivado/constraints.xdc"
-#    "C:/dev/prive/libstored/fpga/tb/tb_pkg.vhd"
+#    "C:/.../libstored/fpga/rtl/pkg.vhd"
+#    "C:/.../libstored/fpga/rtl/util.vhd"
+#    "C:/.../libstored/examples/9_fpga/libstored/rtl/ExampleFpga2_pkg.vhd"
+#    "C:/.../libstored/fpga/rtl/variable.vhd"
+#    "C:/.../libstored/examples/9_fpga/libstored/rtl/ExampleFpga_pkg.vhd"
+#    "C:/.../libstored/fpga/rtl/protocol.vhd"
+#    "C:/.../libstored/examples/9_fpga/libstored/rtl/ExampleFpga2.vhd"
+#    "C:/.../libstored/examples/9_fpga/libstored/rtl/ExampleFpga.vhd"
+#    "C:/.../libstored/examples/9_fpga/rtl/toplevel.vhd"
+#    "C:/.../libstored/examples/9_fpga/tb/tb.vhd"
+#    "C:/.../libstored/examples/9_fpga/vivado/constraints.xdc"
+#    "C:/.../libstored/fpga/tb/tb_pkg.vhd"
 #
 #*****************************************************************************************
 
@@ -112,7 +112,7 @@ set proj_dir [get_property directory [current_project]]
 set obj [get_projects 9_fpga]
 set_property "default_lib" "xil_defaultlib" $obj
 set_property "ip_cache_permissions" "read write" $obj
-set_property "ip_output_repo" "C:/dev/prive/libstored/examples/9_fpga/vivado/9_fpga/9_fpga.cache/ip" $obj
+set_property "ip_output_repo" "$proj_dir/9_fpga.cache/ip" $obj
 set_property "part" "xc7a50tcsg324-1" $obj
 set_property "sim.ip.auto_export_scripts" "1" $obj
 set_property "simulator_language" "VHDL" $obj
