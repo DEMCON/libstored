@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -13,10 +13,16 @@ function gotErr {
 
 trap gotErr ERR
 
+if [[ $UID -eq 0 ]] && [[ ! which sudo > /dev/null ]]; then
+	# Running as root in some docker image?
+	apt install -y sudo || ( apt update && apt install -y sudo )
+fi
+
 sudo apt install -y \
 	build-essential git-core cmake pkg-config \
 	python3 python3-pip python3-setuptools \
-	doxygen plantuml python3-venv python3-dev
+	doxygen plantuml python3-venv python3-dev lsb-release \
+	libgl1 libegl1 libxkbcommon0
 
 [[ ! -z ${CXX:-} ]] || which g++ > /dev/null || sudo apt install -y g++-multilib gdb-multiarch
 [[ ! -z ${CC:-} ]] || which gcc > /dev/null || sudo apt install -y gcc-multilib gdb-multiarch

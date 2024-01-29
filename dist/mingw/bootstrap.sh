@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -14,6 +14,11 @@ function gotErr {
 trap gotErr ERR
 
 here="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null; pwd -P)"
+
+if [[ $UID -eq 0 ]] && [[ ! which sudo > /dev/null ]]; then
+	# Running as root in some docker image?
+	apt install -y sudo || ( apt update && apt install -y sudo )
+fi
 
 sudo apt install -y gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64
 
