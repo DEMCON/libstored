@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 #
 # SPDX-License-Identifier: MIT
 
@@ -97,8 +97,8 @@ if(NOT TARGET libzmq AND ZeroMQ_FIND_REQUIRED)
 				set(dllname "${dllname}-gd")
 			endif()
 
-			set(_libzmq_loc ${CMAKE_INSTALL_PREFIX}/bin/libzmq${dllname}-4_3_4.dll)
-			set(_libzmq_implib ${CMAKE_INSTALL_PREFIX}/lib/libzmq${dllname}-4_3_4.lib)
+			set(_libzmq_loc ${CMAKE_INSTALL_PREFIX}/bin/libzmq${dllname}-4_3_5.dll)
+			set(_libzmq_implib ${CMAKE_INSTALL_PREFIX}/lib/libzmq${dllname}-4_3_5.lib)
 		else()
 			set(_libzmq_loc ${CMAKE_INSTALL_PREFIX}/bin/libzmq.dll)
 			set(_libzmq_implib ${CMAKE_INSTALL_PREFIX}/lib/libzmq.dll.a)
@@ -110,7 +110,7 @@ if(NOT TARGET libzmq AND ZeroMQ_FIND_REQUIRED)
 	endif()
 
 	set(libzmq_repo "https://github.com/zeromq/libzmq.git")
-	set(ZeroMQ_VERSION "4.3.4")
+	set(ZeroMQ_VERSION "4.3.5")
 	set(libzmq_tag "v${ZeroMQ_VERSION}")
 
 	if(MSVC)
