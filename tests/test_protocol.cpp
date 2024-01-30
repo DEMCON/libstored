@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -1055,9 +1055,9 @@ static int recvAll(L& l)
 	}
 }
 
-#ifdef STORED_OS_WINDOWS
 TEST(FileLayer, NamedPipe)
 {
+#ifdef STORED_OS_WINDOWS
 	LoggingLayer top;
 	stored::NamedPipeLayer l("test");
 	l.wrap(top);
@@ -1097,25 +1097,36 @@ TEST(FileLayer, NamedPipe)
 	l.encode(" Upon a Star", 12);
 	EXPECT_EQ(recvAll(f), 0);
 	EXPECT_EQ(ftop.allDecoded(), " Upon a Star");
-}
+#else // !STORED_OS_WINDOWS
+	LoggingLayer top;
+	stored::NamedPipeLayer li("test", stored::NamedPipeLayer::Inbound);
+	li.wrap(top);
+	EXPECT_EQ(li.lastError(), 0);
+
+	stored::NamedPipeLayer lo("test", stored::NamedPipeLayer::Outbound);
+	EXPECT_EQ(lo.lastError(), 0);
+
+	lo.encode("Zip-a-Dee-Doo-Dah", 17);
+	EXPECT_EQ(recvAll(li), 0);
+	EXPECT_EQ(top.allDecoded(), "Zip-a-Dee-Doo-Dah");
 #endif // STORED_OS_WINDOWS
+}
 
 TEST(FileLayer, DoublePipe)
 {
-#ifdef STORED_OS_WINDOWS
 	stored::DoublePipeLayer p1("test_2to1", "test_1to2");
+#ifdef STORED_OS_WINDOWS
 	stored::FileLayer p2("\\\\.\\pipe\\test_1to2", "\\\\.\\pipe\\test_2to1");
+#else
+	stored::DoublePipeLayer p2("test_1to2", "test_2to1");
+#endif
+	EXPECT_EQ(p1.lastError(), 0);
+	EXPECT_EQ(p2.lastError(), 0);
+
 	// Make sure the pipes are connected.
 	p1.recv();
+	p1.encode();
 	EXPECT_TRUE(p1.isConnected());
-#else
-	int fds_1to2[2];
-	int fds_2to1[2];
-	ASSERT_EQ(pipe(fds_1to2), 0);
-	ASSERT_EQ(pipe(fds_2to1), 0);
-	stored::DoublePipeLayer p1(fds_2to1[0], fds_1to2[1]);
-	stored::FileLayer p2(fds_1to2[0], fds_2to1[1]);
-#endif
 
 	LoggingLayer top1;
 	p1.wrap(top1);
