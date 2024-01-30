@@ -2009,7 +2009,7 @@ again:
 		}
 	} else if(cnt == 0) {
 		// EOF
-		close();
+		// Don't close(). The file may grow, or the FIFO may get filled later on.
 		return setLastError(EAGAIN);
 	} else {
 		decode(m_bufferRead.data(), (size_t)cnt);
@@ -2901,17 +2901,14 @@ NamedPipeLayer::NamedPipeLayer(
 		}
 	}
 
-	int fd_r = -1;
-	int fd_w = -1;
 	if(openMode == Inbound) {
-		fd_r = open(name, O_RDONLY | O_NONBLOCK);
-		fd_w = open("/dev/null", O_WRONLY);
+		int fd_r = open(name, O_RDONLY | O_NONBLOCK);
+		int fd_w = open("/dev/null", O_WRONLY);
+		init(fd_r, fd_w);
 	} else {
-		fd_r = open("/dev/null", O_RDONLY);
-		fd_w = open(name, O_WRONLY | O_NONBLOCK | O_APPEND);
+		// Postpone open() till first encode().
+		setLastError(0);
 	}
-
-	init(fd_r, fd_w);
 }
 
 NamedPipeLayer::~NamedPipeLayer()
@@ -2927,21 +2924,60 @@ String::type const& NamedPipeLayer::name() const
 	return m_name;
 }
 
+void NamedPipeLayer::encode(void const* buffer, size_t len, bool last)
+{
+	if(!isConnected())
+		reopen();
+
+	base::encode(buffer, len, last);
+}
+
+/*!
+ * \brief Checks if the pipe is connected.
+ */
+bool NamedPipeLayer::isConnected() const
+{
+	// Unknown. Assume it is.
+	return isOpen();
+}
+
 /*!
  * \brief Resets the connection to accept a new incoming one.
  */
 void NamedPipeLayer::reopen()
 {
-	// Nothing to do for Unix.
+	if(m_openMode == Inbound)
+		// Nothing to do.
+		return;
+
+	// Try opening now. For the write (outbound) end to open properly, the read (inbound) end
+	// should have been opened already.
+
+	close();
+
+	int fd_r = open("/dev/null", O_RDONLY);
+	int fd_w =
+		open(name().c_str(), O_WRONLY | O_NONBLOCK | O_APPEND); // May exit with ENXIO when
+									// no read is open yet.
+
+	if(fd_w == -1) {
+		int e = errno;
+		::close(fd_r);
+		setLastError(e ? e : EBADF);
+		return;
+	}
+
+	init(fd_r, fd_w);
 }
-#endif // STORED_OS_WINDOWS
+#endif // STORED_OS_POSIX
+
 
 
 //////////////////////////////
 // DoublePipeLayer
 //
 
-#if defined(STORED_OS_WINDOWS)
+#if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX) || defined(DOXYGEN)
 DoublePipeLayer::DoublePipeLayer(
 	char const* name_r, char const* name_w, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
@@ -3004,6 +3040,7 @@ void DoublePipeLayer::reset()
 	m_w.reset();
 	base::reset();
 }
+#endif // STORED_OS_WINDOWS || STORED_OS_POSIX
 
 
 
@@ -3011,6 +3048,7 @@ void DoublePipeLayer::reset()
 // XsimLayer
 //
 
+#if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX) || defined(DOXYGEN)
 XsimLayer::XsimLayer(char const* pipe_prefix, ProtocolLayer* up, ProtocolLayer* down)
 	: base((String::type(pipe_prefix) += "_from_xsim").c_str(),
 	       (String::type(pipe_prefix) += "_to_xsim").c_str(), up, down)
@@ -3108,8 +3146,7 @@ void XsimLayer::reopen()
 	base::reopen();
 	keepAlive();
 }
-
-#endif // STORED_OS_WINDOWS
+#endif // STORED_OS_WINDOWS || STORED_OS_POSIX
 
 
 

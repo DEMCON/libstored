@@ -1338,6 +1338,48 @@ private:
 	DWORD m_openMode;
 };
 
+#	elif defined(STORED_OS_POSIX)
+/*!
+ * \brief Named pipe.
+ *
+ * This is always unidirectional.
+ */
+class NamedPipeLayer : public FileLayer {
+	STORED_CLASS_NOCOPY(NamedPipeLayer)
+public:
+	typedef FileLayer base;
+
+	enum Access {
+		Inbound,
+		Outbound,
+		// Duplex, // Not supported.
+	};
+
+	NamedPipeLayer(
+		char const* name, Access openMode, ProtocolLayer* up = nullptr,
+		ProtocolLayer* down = nullptr);
+	virtual ~NamedPipeLayer() override;
+
+	String::type const& name() const;
+
+	virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#	ifndef DOXYGEN
+	using base::encode;
+#	endif
+
+	bool isConnected() const;
+	virtual void reopen();
+
+private:
+	String::type m_name;
+	Access m_openMode;
+};
+#	else  // !STORED_OS_WINDOWS && !STORED_OS_POSIX
+// Pipes are just files.
+typedef FileLayer NamedPipeLayer;
+typedef FileLayer DoublePipeLayer;
+#	endif // !STORED_OS_WINDOWS && !STORED_OS_POSIX
+
 /*!
  * \brief Server end of a pair of named pipes.
  *
@@ -1355,9 +1397,9 @@ public:
 	virtual ~DoublePipeLayer() override;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#		ifndef DOXYGEN
+#	ifndef DOXYGEN
 	using base::encode;
-#		endif
+#	endif
 
 	virtual bool isOpen() const override;
 	virtual int recv(long timeout_us = 0) override;
@@ -1374,6 +1416,7 @@ private:
 	NamedPipeLayer m_w;
 };
 
+#if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX)
 /*!
  * \brief XSIM interaction.
  *
@@ -1400,9 +1443,9 @@ public:
 	virtual ~XsimLayer() override;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#		ifndef DOXYGEN
+#	ifndef DOXYGEN
 	using base::encode;
-#		endif
+#	endif
 
 	virtual int recv(long timeout_us = 0) override;
 	virtual void reset() override;
@@ -1441,7 +1484,9 @@ private:
 	NamedPipeLayer m_req;
 	size_t m_inFlight;
 };
+#endif // STORED_OS_WINDOWS || STORED_OS_POSIX
 
+#	if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
 /*!
  * \brief A stdin/stdout layer.
  *
@@ -1495,46 +1540,6 @@ private:
 };
 
 #	else // !STORED_OS_WINDOWS
-
-#		ifdef STORED_OS_POSIX
-/*!
- * \brief Named pipe.
- *
- * This is always unidirectional.
- */
-class NamedPipeLayer : public FileLayer {
-	STORED_CLASS_NOCOPY(NamedPipeLayer)
-public:
-	typedef FileLayer base;
-
-	enum Access {
-		Inbound,
-		Outbound,
-		// Duplex, // Not supported.
-	};
-
-	NamedPipeLayer(
-		char const* name, Access openMode, ProtocolLayer* up = nullptr,
-		ProtocolLayer* down = nullptr);
-	virtual ~NamedPipeLayer() override;
-
-	String::type const& name() const;
-
-	virtual void reopen();
-
-private:
-	String::type m_name;
-	Access m_openMode;
-};
-
-// TODO
-typedef FileLayer DoublePipeLayer;
-
-#		else  // !STORED_OS_POSIX
-// Pipes are just files.
-typedef FileLayer NamedPipeLayer;
-typedef FileLayer DoublePipeLayer;
-#		endif // STORED_OS_POSIX
 
 /*!
  * \brief A stdin/stdout layer.
