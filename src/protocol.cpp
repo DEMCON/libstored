@@ -3053,8 +3053,8 @@ void DoublePipeLayer::reset()
  * \brief Ctor.
  *
  * The \p pipe_prefix species the name of the pipe in Windows, which will be prepended with
- * \\.\pipe\. In other POSIX-like systems, the name is used as the filename of the (to be created)
- * FIFO.
+ * <tt>\\\\.\\pipe\\</tt> . In other POSIX-like systems, the name is used as the filename of the
+ * (to be created) FIFO.
  */
 XsimLayer::XsimLayer(char const* pipe_prefix, ProtocolLayer* up, ProtocolLayer* down)
 	: base((String::type(pipe_prefix) += "_from_xsim").c_str(),
