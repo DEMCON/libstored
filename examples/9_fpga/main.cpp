@@ -60,9 +60,13 @@ int main()
 	synchronizer.connect(ascii);
 	stored::TerminalLayer term;
 	term.wrap(ascii);
+#ifdef STORED_OS_WINDOWS
 	stored::XsimLayer xsim("9_fpga");
+#else
+	stored::XsimLayer xsim("/tmp/9_fpga");
+#endif
 
-#if 0 // Enable to dump all data to the terminal for debugging.
+#if 1 // Enable to dump all data to the terminal for debugging.
 	stored::PrintLayer print(stdout);
 	print.wrap(term);
 	xsim.wrap(print);
@@ -92,7 +96,7 @@ int main()
 
 	while(true) {
 		// 1 s timeout, to force keep alive once in a while.
-		if(poller.poll(1000000).empty()) {
+		if(poller.poll(1000).empty()) {
 			switch(errno) {
 			case EAGAIN:
 			case EINTR:
