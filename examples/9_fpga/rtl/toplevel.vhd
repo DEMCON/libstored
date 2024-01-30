@@ -138,10 +138,18 @@ begin
 
 --pragma translate_off
 	xsim_g : if SIMULATION generate
+		function pipe_name return string is
+		begin
+			if ExampleFpga_pkg.WIN32 then
+				return "\\.\pipe\9_fpga";
+			else
+				return "/tmp/9_fpga";
+			end if;
+		end function;
 	begin
 		XsimLayer_inst : entity work.XsimLayer
 			generic map (
-				PIPE_PREFIX => "\\.\pipe\9_fpga"
+				PIPE_PREFIX => pipe_name
 			)
 			port map (
 				clk => clk,
