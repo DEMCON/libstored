@@ -27,15 +27,15 @@
 # 2. The following source(s) files that were local or imported into the original project.
 #    (Please see the '$orig_proj_dir' and '$origin_dir' variable setting below at the start of the script)
 #
-#    "C:/dev/prive/libstored/fpga/rtl/pkg.vhd"
-#    "C:/dev/prive/libstored/fpga/rtl/util.vhd"
-#    "C:/dev/prive/libstored/tests/libstored/rtl/TestStore_pkg.vhd"
-#    "C:/dev/prive/libstored/fpga/rtl/variable.vhd"
-#    "C:/dev/prive/libstored/tests/libstored/rtl/TestStore.vhd"
-#    "C:/dev/prive/libstored/fpga/rtl/protocol.vhd"
-#    "C:/dev/prive/libstored/tests/test_fpga/vivado/test_fpga.srcs/constrs_1/new/constr.xdc"
-#    "C:/dev/prive/libstored/fpga/tb/tb_pkg.vhd"
-#    "C:/dev/prive/libstored/tests/test_fpga/rtl/toplevel.vhd"
+#    "C:/.../libstored/fpga/rtl/pkg.vhd"
+#    "C:/.../libstored/fpga/rtl/util.vhd"
+#    "C:/.../libstored/tests/libstored/rtl/TestStore_pkg.vhd"
+#    "C:/.../libstored/fpga/rtl/variable.vhd"
+#    "C:/.../libstored/tests/libstored/rtl/TestStore.vhd"
+#    "C:/.../libstored/fpga/rtl/protocol.vhd"
+#    "C:/.../libstored/tests/test_fpga/vivado/test_fpga.srcs/constrs_1/new/constr.xdc"
+#    "C:/.../libstored/fpga/tb/tb_pkg.vhd"
+#    "C:/.../libstored/tests/test_fpga/rtl/toplevel.vhd"
 #
 # 3. The following remote source files that were added to the original project:-
 #
@@ -110,7 +110,7 @@ set proj_dir [get_property directory [current_project]]
 set obj [get_projects test_fpga]
 set_property "default_lib" "xil_defaultlib" $obj
 set_property "ip_cache_permissions" "read write" $obj
-set_property "ip_output_repo" "C:/dev/prive/libstored/tests/test_fpga/vivado/test_fpga.cache/ip" $obj
+set_property "ip_output_repo" "$proj_dir/test_fpga.cache/ip" $obj
 set_property "part" "xc7a50tcsg324-1" $obj
 set_property "sim.ip.auto_export_scripts" "1" $obj
 set_property "simulator_language" "VHDL" $obj
