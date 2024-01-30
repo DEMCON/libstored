@@ -344,14 +344,12 @@ private:
 /*!
  * \brief A layer that performs segmentation of the messages.
  *
- * Messages to be encoded are split with a maximum chunk size (MTU). At the
- * end of each chunk, either #ContinueMarker or the #EndMarker is inserted,
- * depending of this was the last chunk.  Incoming messages are reassembled
- * until the #EndMarker is encountered.
+ * Messages to be encoded are split with a maximum chunk size (MTU). At the end of each chunk,
+ * either #ContinueMarker or the #EndMarker is inserted, depending on whether this was the last
+ * chunk.  Incoming messages are reassembled until the #EndMarker is encountered.
  *
- * This layer assumes a lossless channel; all messages are received in
- * order. If that is not the case for your transport, wrap this layer in
- * the #stored::DebugArqLayer or #stored::ArqLayer.
+ * This layer assumes a lossless channel; all messages are received in order. If that is not the
+ * case for your transport, wrap this layer in the #stored::DebugArqLayer or #stored::ArqLayer.
  */
 class SegmentationLayer : public ProtocolLayer {
 	STORED_CLASS_NOCOPY(SegmentationLayer)
@@ -398,7 +396,7 @@ private:
  * indicates if it is an ack, the 6 LSb are the sequence number.
  * Sequence 0 is special; it resets the connection. It should not be used
  * during normal operation, so the next sequence number after 63 is 1.
- * Message that do not have a payload (so, no decode() has to be invoked
+ * Messages that do not have a payload (so, no decode() has to be invoked
  * upon receival), should set bit 6. This also applies to the reset
  * message.
  *
@@ -418,10 +416,10 @@ private:
  * The application must call #flush() (for the whole stack), or
  * #keepAlive() at a regular interval. Every invocation of either function
  * will do a retransmit of the head of the encode queue. If called to
- * often, retransmits may be done before the other party had a change to
+ * often, retransmits may be done before the other party had a chance to
  * respond. If called not often enough, retransmits may take long and
  * communication may be slowed down. Either way, it is functionally
- * correct. Determine for you application what is wise to do.
+ * correct. Determine for your application what is wise to do.
  */
 class ArqLayer : public ProtocolLayer {
 	STORED_CLASS_NOCOPY(ArqLayer)
