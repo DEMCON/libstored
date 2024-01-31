@@ -161,8 +161,8 @@ begin
 
 	FileLayer_inst : entity work.FileLayer
 		generic map (
-			FILENAME_IN => "../../../../../stack_in.txt",
-			FILENAME_OUT => "../../../../../stack_out.txt"
+			FILENAME_IN => "test_stack.txt",
+			FILENAME_OUT => "test_stack.txt"
 		)
 		port map (
 			clk => clk,
@@ -648,18 +648,18 @@ begin
 			test_expect_eq(test, esc_decode_out.last, '1');
 		end procedure;
 
-		procedure do_test_file_read is
-		begin
-			test_start(test, "FileRead");
-			test_expect_eq(test, clk, file_decode_out, file_encode_in,
-				(x"31", x"32", x"33", x"0d", x"0a", x"00"));
-			test_expect_eq(test, file_decode_out.last, '1');
-		end procedure;
-
 		procedure do_test_file_write is
 		begin
 			test_start(test, "FileWrite");
 			msg_write(clk, file_decode_out, file_encode_in, string_encode("Hello World!"));
+		end procedure;
+
+		procedure do_test_file_read is
+		begin
+			test_start(test, "FileRead");
+			test_expect_eq(test, clk, file_decode_out, file_encode_in,
+				string_encode("Hello World!") & to_buffer(x"00"));
+			test_expect_eq(test, file_decode_out.last, '1');
 		end procedure;
 
 	begin
@@ -711,8 +711,8 @@ begin
 		do_test_esc_encode;
 		do_test_esc_decode;
 
-		do_test_file_read;
 		do_test_file_write;
+		do_test_file_read;
 
 		test_verbose(test);
 		-- ...

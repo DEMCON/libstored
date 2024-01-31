@@ -880,11 +880,21 @@ package body libstored_tb_pkg is
 
 			wait until rising_edge(clk) and sync_out.valid = '1' for deadline - now;
 			assert sync_out.valid = '1' report "Timeout" severity failure;
-			id_in(15 downto 8) := sync_out.data;
+
+			if littleEndian then
+				id_in(7 downto 0) := sync_out.data;
+			else
+				id_in(15 downto 8) := sync_out.data;
+			end if;
 
 			wait until rising_edge(clk) and sync_out.valid = '1' for deadline - now;
 			assert sync_out.valid = '1' report "Timeout" severity failure;
-			id_in(7 downto 0) := sync_out.data;
+
+			if littleEndian then
+				id_in(15 downto 8) := sync_out.data;
+			else
+				id_in(7 downto 0) := sync_out.data;
+			end if;
 
 			assert sync_out.last = '1' report "Corrupt message" severity warning;
 			exit;
@@ -917,11 +927,21 @@ package body libstored_tb_pkg is
 		wait until rising_edge(clk) and sync_out.accept = '1' for deadline - now;
 		assert sync_out.accept = '1' report "Timeout" severity failure;
 
-		sync_in.data <= id_in(15 downto 8);
+		if littleEndian then
+			sync_in.data <= id_in(7 downto 0);
+		else
+			sync_in.data <= id_in(15 downto 8);
+		end if;
+
 		wait until rising_edge(clk) and sync_out.accept = '1' for deadline - now;
 		assert sync_out.accept = '1' report "Timeout" severity failure;
 
-		sync_in.data <= id_in(7 downto 0);
+		if littleEndian then
+			sync_in.data <= id_in(15 downto 8);
+		else
+			sync_in.data <= id_in(7 downto 0);
+		end if;
+
 		wait until rising_edge(clk) and sync_out.accept = '1' for deadline - now;
 		assert sync_out.accept = '1' report "Timeout" severity failure;
 
@@ -976,11 +996,21 @@ package body libstored_tb_pkg is
 		wait until rising_edge(clk) and sync_out.accept = '1' for deadline - now;
 		assert sync_out.accept = '1' report "Timeout" severity failure;
 
-		sync_in.data <= id_in(15 downto 8);
+		if littleEndian then
+			sync_in.data <= id_in(7 downto 0);
+		else
+			sync_in.data <= id_in(15 downto 8);
+		end if;
+
 		wait until rising_edge(clk) and sync_out.accept = '1' for deadline - now;
 		assert sync_out.accept = '1' report "Timeout" severity failure;
 
-		sync_in.data <= id_in(7 downto 0);
+		if littleEndian then
+			sync_in.data <= id_in(15 downto 8);
+		else
+			sync_in.data <= id_in(7 downto 0);
+		end if;
+
 		wait until rising_edge(clk) and sync_out.accept = '1' for deadline - now;
 		assert sync_out.accept = '1' report "Timeout" severity failure;
 
@@ -1006,7 +1036,11 @@ package body libstored_tb_pkg is
 
 		keyv := normalize(key);
 		for i in 0 to keyv'length / 8 - 1 loop
-			sync_in.data <= keyv(keyv'high - i * 8 downto keyv'high - i * 8 - 7);
+			if littleEndian then
+				sync_in.data <= keyv(i * 8 + 7 downto i * 8);
+			else
+				sync_in.data <= keyv(keyv'high - i * 8 downto keyv'high - i * 8 - 7);
+			end if;
 			wait until rising_edge(clk) and sync_out.accept = '1' for deadline - now;
 			assert sync_out.accept = '1' report "Timeout" severity failure;
 		end loop;
