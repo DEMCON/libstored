@@ -179,7 +179,9 @@ use work.libstored_pkg;
 
 entity SegmentationLayer is
 	generic (
-		MTU : positive
+		MTU : positive;
+		ENCODE_OUT_FIFO_DEPTH : natural := 0;
+		DECODE_IN_FIFO_DEPTH : natural := 0
 	);
 	port (
 		clk : in std_logic;
@@ -196,12 +198,121 @@ entity SegmentationLayer is
 end SegmentationLayer;
 
 architecture rtl of SegmentationLayer is
+	constant ENCODE_MTU : natural := libstored_pkg.maximum(MTU, 2);
 begin
-	-- TODO
---pragma translate_off
-	assert not (rising_edge(clk) and rstn /= '1')
-		report "Not implemented" severity failure;
---pragma translate_on
+	encode_g : if true generate
+		type state_t is (STATE_FORWARD, STATE_C, STATE_E);
+		type r_t is record
+			state : state_t;
+			cnt : natural range 0 to ENCODE_MTU - 1;
+		end record;
+
+		signal r, r_in : r_t;
+
+		signal encode_out_data_i, encode_out_data_o : std_logic_vector(8 downto 0);
+		signal encode_out_valid, encode_out_accept : std_logic;
+	begin
+		process(clk)
+		begin
+			if rising_edge(clk) then
+				r <= r_in;
+			end if;
+		end process;
+
+		process(r, rstn, encode_in, encode_out_accept)
+			variable v : r_t;
+		begin
+			v := r;
+
+			case r.state is
+			when STATE_FORWARD =>
+				if encode_in.valid = '1' and encode_out_accept = '1' then
+					v.cnt := r.cnt + 1;
+
+					if encode_in.last = '1' then
+						v.state := STATE_E;
+					elsif v.cnt = ENCODE_MTU - 1 then
+						v.state := STATE_C;
+					end if;
+				end if;
+			when STATE_C | STATE_E =>
+				if encode_out_accept = '1' then
+					v.cnt := 0;
+					v.state := STATE_FORWARD;
+				end if;
+			end case;
+
+			if rstn /= '1' then
+				v.state := STATE_FORWARD;
+				v.cnt := 0;
+			end if;
+
+			r_in <= v;
+		end process;
+
+		fifo_inst : entity work.libstored_fifo
+			generic map (
+				WIDTH => 9,
+				DEPTH => ENCODE_OUT_FIFO_DEPTH
+			)
+			port map (
+				clk => clk,
+				rstn => rstn,
+				i => encode_out_data_i,
+				i_valid => encode_out_valid,
+				i_accept => encode_out_accept,
+				o => encode_out_data_o,
+				o_valid => encode_out.valid,
+				o_accept => decode_in.accept
+			);
+
+		with r.state select
+			encode_out_data_i <=
+				'1' & x"43" when STATE_C,
+				'1' & x"45" when STATE_E,
+				'0' & encode_in.data when others;
+
+		encode_out.data <= encode_out_data_o(7 downto 0);
+		encode_out.last <= encode_out_data_o(8);
+		with r.state select
+			decode_out.accept <=
+				'0' when STATE_C | STATE_E,
+				encode_out_accept when others;
+
+		with r.state select
+			encode_out_valid <=
+				'1' when STATE_C | STATE_E,
+				encode_in.valid when others;
+	end generate;
+
+	decode_g : if true generate
+		signal decode_out_data : std_logic_vector(7 downto 0);
+		signal decode_out_valid, decode_out_accept, decode_out_last, skip : std_logic;
+	begin
+		fifo_inst : entity work.libstored_droptail
+			generic map (
+				FIFO_DEPTH => DECODE_IN_FIFO_DEPTH,
+				TAIL_LENGTH => 1 -- Only 'E' is to be removed.
+			)
+			port map (
+				clk => clk,
+				rstn => rstn,
+				data_in => decode_out_data,
+				last_in => decode_out_last,
+				valid_in => decode_out_valid,
+				accept_in => decode_out_accept,
+				data_out => decode_out.data,
+				valid_out => decode_out.valid,
+				last_out => decode_out.last,
+				accept_out => encode_in.accept
+			);
+
+		decode_out_data <= decode_in.data;
+		skip <= decode_in.last when decode_out_data = x"43" else '0'; -- 'C'
+		decode_out_last <= decode_in.last;
+		decode_out_valid <= decode_in.valid and not skip;
+		encode_out.accept <= decode_out_accept or skip;
+	end generate;
 end rtl;
 
 
