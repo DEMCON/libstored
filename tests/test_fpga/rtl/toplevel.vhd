@@ -52,6 +52,8 @@ architecture behav of test_fpga is
 	signal esc_encode_in, esc_encode_out, esc_decode_in, esc_decode_out : msg_t := msg_term;
 
 	signal file_encode_in, file_decode_out : msg_t := msg_term;
+
+	signal segment_encode_in, segment_encode_out, segment_decode_in, segment_decode_out : msg_t := msg_term;
 begin
 
 	store_inst : entity work.TestStore_hdl
@@ -169,6 +171,21 @@ begin
 			rstn => rstn,
 			encode_in => file_encode_in,
 			decode_out => file_decode_out
+		);
+
+	SegmentationLayer_inst : entity work.SegmentationLayer
+		generic map (
+			MTU => 5,
+			ENCODE_OUT_FIFO_DEPTH => 12,
+			DECODE_IN_FIFO_DEPTH => 12
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			encode_in => segment_encode_in,
+			encode_out => segment_encode_out,
+			decode_in => segment_decode_in,
+			decode_out => segment_decode_out
 		);
 
 	process
@@ -662,6 +679,82 @@ begin
 			test_expect_eq(test, file_decode_out.last, '1');
 		end procedure;
 
+		procedure do_test_segment_encode is
+		begin
+			test_start(test, "SegmentEncode");
+			segment_encode_in.accept <= '0';
+			segment_decode_in.accept <= '0';
+			msg_write(clk, segment_decode_out, segment_encode_in,
+				(x"01", x"02"));
+			test_expect_eq(test, clk, segment_encode_out, segment_decode_in,
+				(x"01", x"02", x"45"));
+			test_expect_eq(test, segment_encode_out.last, '1');
+
+			msg_write(clk, segment_decode_out, segment_encode_in,
+				(x"01", x"02", x"03", x"04"));
+			test_expect_eq(test, clk, segment_encode_out, segment_decode_in,
+				(x"01", x"02", x"03", x"04", x"45"));
+			test_expect_eq(test, segment_encode_out.last, '1');
+
+			msg_write(clk, segment_decode_out, segment_encode_in,
+				(x"01", x"02", x"03", x"04", x"05"));
+			test_expect_eq(test, clk, segment_encode_out, segment_decode_in,
+				(x"01", x"02", x"03", x"04", x"43"));
+			test_expect_eq(test, segment_encode_out.last, '1');
+			test_expect_eq(test, clk, segment_encode_out, segment_decode_in,
+				(x"05", x"45"));
+			test_expect_eq(test, segment_encode_out.last, '1');
+
+			msg_write(clk, segment_decode_out, segment_encode_in,
+				(x"01", x"02", x"03", x"04",        x"05", x"06", x"07", x"08",        x"09"));
+			test_expect_eq(test, clk, segment_encode_out, segment_decode_in,
+				(x"01", x"02", x"03", x"04", x"43", x"05", x"06", x"07", x"08", x"43", x"09", x"45"));
+		end procedure;
+
+		procedure do_test_segment_decode is
+		begin
+			test_start(test, "SegmentDecode");
+			segment_encode_in.accept <= '0';
+			segment_decode_in.accept <= '0';
+			msg_write(clk, segment_encode_out, segment_decode_in,
+				(x"01", x"02", x"45"));
+			test_expect_eq(test, clk, segment_decode_out, segment_encode_in,
+				(x"01", x"02"));
+			test_expect_eq(test, segment_decode_out.last, '1');
+
+			msg_write(clk, segment_encode_out, segment_decode_in,
+				(x"01", x"02", x"03", x"04", x"45"));
+			test_expect_eq(test, clk, segment_decode_out, segment_encode_in,
+				(x"01", x"02", x"03", x"04"));
+			test_expect_eq(test, segment_decode_out.last, '1');
+
+			msg_write(clk, segment_encode_out, segment_decode_in,
+				(x"01", x"02", x"03", x"04", x"43"));
+			msg_write(clk, segment_encode_out, segment_decode_in,
+				(x"05", x"45"));
+			test_expect_eq(test, segment_decode_out.last, '0');
+			test_expect_eq(test, clk, segment_decode_out, segment_encode_in,
+				(x"01", x"02", x"03", x"04", x"05"));
+			test_expect_eq(test, segment_decode_out.last, '1');
+
+			msg_write(clk, segment_encode_out, segment_decode_in,
+				(x"01", x"02", x"03", x"04", x"43"));
+			msg_write(clk, segment_encode_out, segment_decode_in,
+				(x"05", x"06", x"07", x"08", x"43"));
+			msg_write(clk, segment_encode_out, segment_decode_in,
+				(x"09", x"45"));
+			test_expect_eq(test, clk, segment_decode_out, segment_encode_in,
+				(x"01", x"02", x"03", x"04"));
+			test_expect_eq(test, segment_decode_out.last, '0');
+			test_expect_eq(test, clk, segment_decode_out, segment_encode_in,
+				(x"05", x"06", x"07", x"08"));
+			test_expect_eq(test, segment_decode_out.last, '0');
+			test_expect_eq(test, clk, segment_decode_out, segment_encode_in,
+				to_buffer(x"09"));
+			test_expect_eq(test, segment_decode_out.last, '1');
+		end procedure;
+
+
 	begin
 		id_out := x"aabb";
 		id_out2 := x"ccdd";
@@ -713,6 +806,9 @@ begin
 
 		do_test_file_write;
 		do_test_file_read;
+
+		do_test_segment_encode;
+		do_test_segment_decode;
 
 		test_verbose(test);
 		-- ...
