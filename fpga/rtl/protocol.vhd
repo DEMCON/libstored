@@ -199,6 +199,10 @@ end SegmentationLayer;
 
 architecture rtl of SegmentationLayer is
 	constant ENCODE_MTU : natural := libstored_pkg.maximum(MTU, 2);
+	constant MSG_C : std_logic_vector(7 downto 0) := x"43";
+	constant MSG_E : std_logic_vector(7 downto 0) := x"45";
+
+	signal encode_idle, decode_idle : std_logic;
 begin
 	encode_g : if true generate
 		type state_t is (STATE_FORWARD, STATE_C, STATE_E);
@@ -263,13 +267,14 @@ begin
 				i_accept => encode_out_accept,
 				o => encode_out_data_o,
 				o_valid => encode_out.valid,
-				o_accept => decode_in.accept
+				o_accept => decode_in.accept,
+				empty => encode_idle
 			);
 
 		with r.state select
 			encode_out_data_i <=
-				'1' & x"43" when STATE_C,
-				'1' & x"45" when STATE_E,
+				'1' & MSG_C when STATE_C,
+				'1' & MSG_E when STATE_E,
 				'0' & encode_in.data when others;
 
 		encode_out.data <= encode_out_data_o(7 downto 0);
@@ -304,15 +309,18 @@ begin
 				data_out => decode_out.data,
 				valid_out => decode_out.valid,
 				last_out => decode_out.last,
-				accept_out => encode_in.accept
+				accept_out => encode_in.accept,
+				empty => decode_idle
 			);
 
 		decode_out_data <= decode_in.data;
-		skip <= decode_in.last when decode_out_data = x"43" else '0'; -- 'C'
+		skip <= decode_in.last when decode_out_data = MSG_C else '0';
 		decode_out_last <= decode_in.last;
 		decode_out_valid <= decode_in.valid and not skip;
 		encode_out.accept <= decode_out_accept or skip;
 	end generate;
+
+	idle <= encode_idle and decode_idle;
 end rtl;
 
 
@@ -363,7 +371,223 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.libstored_pkg;
 
+entity Crc is
+	generic (
+		WIDTH := positive := 8;
+		POLYNOMIAL := std_logic_vector
+	);
+	port (
+		clk : in std_logic;
+		rstn : in std_logic;
+
+		i : in std_logic_vector(WIDTH - 1 downto 0);
+		valid : in std_logic;
+		last : in std_logic;
+
+		crc : out std_logic_vector(POLYNOMIAL'length - 1 downto 0);
+		crc_valid : out std_logic
+	);
+end Crc;
+
+architecture rtl of Crc is
+	type r_t is record
+		crc : std_logic_vector(POLYNOMIAL'length - 1 downto 0);
+		valid : std_logic;
+		reset : std_logic;
+	end record;
+
+	constant POLY : std_logic_vector := libstored_pkg.normalize(POLY);
+	signal r_in, r : r_t;
+begin
+	process(r, rstn, i, valid, last)
+		variable v : r_t;
+	begin
+		v := r;
+
+		if r.reset = '1' then
+			v.crc := (others => '0');
+			v.valid := '0';
+			v.reset := '0';
+		end if;
+
+		v.valid := valid;
+
+		if valid = '1' then
+			for b in WIDTH - 1 downto 0 loop
+				v.crc := v.crc(v.crc'high - 1 downto 0) & '0') xor
+					(POLY and (POLY'range => i(b) xor v.crc(v.crc'high)));
+			end loop;
+
+			if last = '1' then
+				v.reset := '1';
+			end if;
+		end if;
+
+		if rstn /= '1' then
+			v.crc := (others => '-');
+			v.valid := '0';
+			v.reset := '1';
+		end if;
+
+		r_in <= v;
+	end process;
+
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			r <= r_in;
+		end if;
+	end process;
+
+	crc <= v.crc;
+	crc_valid <= v.valid;
+end rtl;
+
+
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use work.libstored_pkg;
+
 entity Crc8Layer is
+	generic (
+		POLYNOMIAL : std_logic_vector;
+		ENCODE_OUT_FIFO_DEPTH : natural := 0;
+		MTU : positive
+	);
+	port (
+		clk : in std_logic;
+		rstn : in std_logic;
+
+		encode_in : in libstored_pkg.msg_t;
+		encode_out : out libstored_pkg.msg_t;
+
+		decode_in : in libstored_pkg.msg_t;
+		decode_out : out libstored_pkg.msg_t;
+
+		idle : out std_logic
+	);
+end Crc8Layer;
+
+architecture rtl of CrcLayer is
+	constant POLY_BYTES : natural := (POLYNOMIAL'length + 7) / 8;
+
+	signal encode_idle, decode_idle : std_logic;
+begin
+	encode_g : if true generate
+		type state_t is (STATE_FORWARD, STATE_CRC);
+
+		type r_t is record
+			state : state_t;
+			cnt : natural range 0 to POLY_BYTES - 1;
+			crc : std_logic_vector(POLY_BYTES * 8 - 1 downto 0);
+		end record;
+
+		signal r, r_in : r_t;
+
+		signal encode_out_i, encode_out_o : std_logic_vector(8 downto 0);
+		signal encode_out_data : std_logic_vector(7 downto 0);
+		signal encode_out_valid, encode_out_accept, encode_out_last : std_logic;
+
+		signal crc_i_valid : std_logic;
+		signal crc : std_logic_vector(7 downto 0);
+	begin
+		encode_out_fifo_inst : entity work.libstored_fifo
+			generic map (
+				WIDTH => 9,
+				DEPTH => ENCODE_OUT_FIFO_DEPTH
+			)
+			port map (
+				clk => clk,
+				rstn => rstn,
+				i => encode_out_i,
+				i_valid => encode_out_valid,
+				i_accept => encode_out_accept,
+				o => encode_out_o,
+				o_valid => encode_out.valid,
+				o_accept => decode_in.accept,
+				empty => encode_idle
+			);
+
+		encode_out_i <= encode_out_last & encode_out_data;
+		encode_out.data <= encode_out_o(7 downto 0);
+		encode_out.last <= encode_out_o(8);
+
+		process(r, rst, encode_in, encode_out_accept, crc)
+			variable v : r_t;
+		begin
+			v := r;
+
+			case r.state is
+			when STATE_FORWARD =>
+				if encode_out_accept = '1' and encode_in.valid = '1' and encode_in.last = '1' then
+					v.state := STATE_CRC;
+					v.cnt := POLY_BYTES - 1;
+					v.crc := (others => '0');
+					v.crc(crc'length - 1 downto 0) := crc;
+				end if;
+			when STATE_CRC =>
+				if encode_out_accept = '1' then
+					v.crc := r.crc(r.crc'high - 8 downto 0) & (7 downto 0 => '-');
+
+					if r.cnt = 0 then
+						v.state := STATE_FORWARD;
+					else
+						v.cnt := r.cnt - 1;
+					end if;
+				end if;
+			end case;
+
+			if rstn /= '1' then
+				v.state := STATE_FORWARD;
+			end if;
+
+			r_in <= v;
+		end process;
+
+		with r.state select
+			encode_out_valid <=
+				'1' when STATE_CRC,
+				encode_in.valid when others;
+
+		encode_out_last <=
+			'1' when r.state = STATE_CRC and r.cnt = 0 else
+			'0';
+
+		with r.state select
+			encode_out_data <=
+				r.crc(r.crc'high downto r.crc'high - 7) when STATE_CRC,
+				encode_in.data when others;
+
+		with r.state select
+			crc_i_valid <=
+				'0' when STATE_CRC,
+				encode_in.valid when others;
+
+		crc_inst : entity work.Crc
+			generic map (
+				POLYNOMIAL => POLYNOMIAL
+			)
+			port map (
+				clk => clk,
+				rstn => rstn,
+
+				i => encode_in.data,
+				valid => crc_i_valid,
+				last => encode_in.last,
+				crc => crc
+			);
+	end generate;
+
+	idle <= encode_idle and decode_idle;
+end rtl;
+
+entity Crc8Layer is
+	generic (
+		ENCODE_OUT_FIFO_DEPTH : natural := 0;
+		MTU : positive
+	);
 	port (
 		clk : in std_logic;
 		rstn : in std_logic;
@@ -379,14 +603,27 @@ entity Crc8Layer is
 end Crc8Layer;
 
 architecture rtl of Crc8Layer is
+	constant POLYNOMIAL : std_logic_vector(7 downto 0) := x"a6";
 begin
-	-- TODO
---pragma translate_off
-	assert not (rising_edge(clk) and rstn /= '1')
-		report "Not implemented" severity failure;
---pragma translate_on
-end rtl;
+	inst : entity work.CrcLayer
+		generic map (
+			POLYNOMIAL => POLYNOMIAL,
+			ENCODE_OUT_FIFO_DEPTH => ENCODE_OUT_FIFO_DEPTH,
+			MTU => MTU
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
 
+			encode_in => encode_in,
+			encode_out => encode_out,
+
+			decode_in => decode_in,
+			decode_out => decode_out,
+
+			idle => idle
+		);
+end rtl;
 
 
 
@@ -396,6 +633,10 @@ use ieee.numeric_std.all;
 use work.libstored_pkg;
 
 entity Crc16Layer is
+	generic (
+		ENCODE_OUT_FIFO_DEPTH : natural := 0;
+		MTU : positive
+	);
 	port (
 		clk : in std_logic;
 		rstn : in std_logic;
@@ -411,15 +652,27 @@ entity Crc16Layer is
 end CRC16Layer;
 
 architecture rtl of CRC16Layer is
+	constant POLYNOMIAL : std_logic_vector(15 downto 0) := x"baad";
 begin
-	-- TODO
---pragma translate_off
-	assert not (rising_edge(clk) and rstn /= '1')
-		report "Not implemented" severity failure;
---pragma translate_on
+	inst : entity work.CrcLayer
+		generic map (
+			POLYNOMIAL => POLYNOMIAL,
+			ENCODE_OUT_FIFO_DEPTH => ENCODE_OUT_FIFO_DEPTH,
+			MTU => MTU
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+
+			encode_in => encode_in,
+			encode_out => encode_out,
+
+			decode_in => decode_in,
+			decode_out => decode_out,
+
+			idle => idle
+		);
 end rtl;
-
-
 
 
 
