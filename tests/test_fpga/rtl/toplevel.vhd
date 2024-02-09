@@ -48,12 +48,10 @@ architecture behav of test_fpga is
 
 	signal term_encode_in, term_encode_out, term_decode_in, term_decode_out : msg_t := msg_term;
 	signal term_terminal_out, term_terminal_in : msg_t := msg_term;
-
 	signal esc_encode_in, esc_encode_out, esc_decode_in, esc_decode_out : msg_t := msg_term;
-
 	signal file_encode_in, file_decode_out : msg_t := msg_term;
-
 	signal segment_encode_in, segment_encode_out, segment_decode_in, segment_decode_out : msg_t := msg_term;
+	signal crc8_encode_in, crc8_encode_out, crc8_decode_in, crc8_decode_out : msg_t := msg_term;
 begin
 
 	store_inst : entity work.TestStore_hdl
@@ -186,6 +184,21 @@ begin
 			encode_out => segment_encode_out,
 			decode_in => segment_decode_in,
 			decode_out => segment_decode_out
+		);
+
+	Crc8Layer_inst : entity work.Crc8Layer
+		generic map (
+			MTU => 8,
+			ENCODE_OUT_FIFO_DEPTH => 12,
+			DECODE_IN_FIFO_DEPTH => 12
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			encode_in => crc8_encode_in,
+			encode_out => crc8_encode_out,
+			decode_in => crc8_decode_in,
+			decode_out => crc8_decode_out
 		);
 
 	process
@@ -754,6 +767,85 @@ begin
 			test_expect_eq(test, segment_decode_out.last, '1');
 		end procedure;
 
+		procedure do_test_crc8_encode is
+		begin
+			test_start(test, "Crc8Encode");
+			crc8_encode_in.accept <= '0';
+			crc8_decode_in.accept <= '0';
+			msg_write(clk, crc8_decode_out, crc8_encode_in,
+				to_buffer(x"31"));
+			test_expect_eq(test, clk, crc8_encode_out, crc8_decode_in,
+				(x"31", x"5e"));
+			test_expect_eq(test, crc8_encode_out.last, '1');
+
+			msg_write(clk, crc8_decode_out, crc8_encode_in,
+				(x"31", x"32"));
+			test_expect_eq(test, clk, crc8_encode_out, crc8_decode_in,
+				(x"31", x"32", x"54"));
+			test_expect_eq(test, crc8_encode_out.last, '1');
+
+			msg_write(clk, crc8_decode_out, crc8_encode_in,
+				(x"31", x"32", x"33"));
+			test_expect_eq(test, clk, crc8_encode_out, crc8_decode_in,
+				(x"31", x"32", x"33", x"fc"));
+			test_expect_eq(test, crc8_encode_out.last, '1');
+
+			msg_write(clk, crc8_decode_out, crc8_encode_in,
+				(x"31", x"32"));
+			msg_write(clk, crc8_decode_out, crc8_encode_in,
+				(x"31", x"32", x"33"));
+			test_expect_eq(test, clk, crc8_encode_out, crc8_decode_in,
+				(x"31", x"32", x"54", x"31", x"32", x"33", x"fc"));
+		end procedure;
+
+		procedure do_test_crc8_decode is
+		begin
+			test_start(test, "Crc8Decode");
+			crc8_encode_in.accept <= '0';
+			crc8_decode_in.accept <= '0';
+			msg_write(clk, crc8_encode_out, crc8_decode_in,
+				(x"31", x"5e"));
+			test_expect_eq(test, clk, crc8_decode_out, crc8_encode_in,
+				to_buffer(x"31"));
+			test_expect_eq(test, crc8_decode_out.last, '1');
+
+			msg_write(clk, crc8_encode_out, crc8_decode_in,
+				(x"31", x"32", x"54"));
+			test_expect_eq(test, clk, crc8_decode_out, crc8_encode_in,
+				(x"31", x"32"));
+			test_expect_eq(test, crc8_decode_out.last, '1');
+
+			msg_write(clk, crc8_encode_out, crc8_decode_in,
+				(x"31", x"32", x"33", x"fc"));
+			test_expect_eq(test, clk, crc8_decode_out, crc8_encode_in,
+				(x"31", x"32", x"33"));
+			test_expect_eq(test, crc8_decode_out.last, '1');
+
+			msg_write(clk, crc8_encode_out, crc8_decode_in,
+				(x"31", x"5f")); -- bad
+			msg_write(clk, crc8_encode_out, crc8_decode_in,
+				(x"32", x"5e")); -- bad
+			msg_write(clk, crc8_encode_out, crc8_decode_in,
+				(x"31", x"32", x"54"));
+			test_expect_eq(test, clk, crc8_decode_out, crc8_encode_in,
+				(x"31", x"32"));
+
+			msg_write(clk, crc8_encode_out, crc8_decode_in,
+				(x"31", x"5e"));
+			msg_write(clk, crc8_encode_out, crc8_decode_in,
+				(x"31", x"33", x"54")); -- bad
+			test_expect_eq(test, clk, crc8_decode_out, crc8_encode_in,
+				to_buffer(x"31"));
+
+			-- Drop because of overflow.
+			msg_write(clk, crc8_encode_out, crc8_decode_in,
+				(x"00", x"01", x"02", x"03", x"04", x"05", x"06", x"07", x"08", x"09", x"0a", x"0b", x"0c", x"0d", x"0e", x"0f",
+				 x"10", x"11", x"12", x"13", x"14", x"15", x"16", x"17", x"18", x"19", x"1a", x"1b", x"1c", x"1d", x"1e", x"1f"));
+			msg_write(clk, crc8_encode_out, crc8_decode_in,
+				(x"31", x"5e"));
+			test_expect_eq(test, clk, crc8_decode_out, crc8_encode_in,
+				to_buffer(x"31"));
+		end procedure;
 
 	begin
 		id_out := x"aabb";
@@ -812,6 +904,8 @@ begin
 
 		test_verbose(test);
 		-- ...
+		do_test_crc8_encode;
+		do_test_crc8_decode;
 
 		test_finish(test);
 
