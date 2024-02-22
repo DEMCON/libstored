@@ -134,15 +134,14 @@ begin
 		when STATE_DROP =>
 			v.last_valid := '1';
 			v.cnt := r.cnt - 1;
-			case v.cnt is
-			when 1 =>
+			if r.cnt = TAIL_LENGTH + 1 then
 				v.last := DATA_LAST;
-			when 0 =>
+			elsif r.cnt <= TAIL_LENGTH then
 				v.last := DATA_DROP;
 				v.state := STATE_NORMAL;
-			when others =>
+			else
 				v.last := DATA_NORMAL;
-			end case;
+			end if;
 		when STATE_FORWARD =>
 			v.last_valid := '1';
 			v.cnt := r.cnt - 1;
@@ -501,7 +500,7 @@ begin
 		signal encode_out_valid, encode_out_accept, encode_out_last : std_logic;
 
 		signal crc_i_valid : std_logic;
-		signal crc : std_logic_vector(7 downto 0);
+		signal crc : std_logic_vector(POLYNOMIAL'length - 1 downto 0);
 	begin
 		encode_out_fifo_inst : entity work.libstored_fifo
 			generic map (
@@ -608,7 +607,8 @@ begin
 	end generate;
 
 	decode_g : if true generate
-		type state_t is (STATE_RESET, STATE_PACKET, STATE_CRC, STATE_CHECK, STATE_COMMIT, STATE_DROP, STATE_FLUSH);
+		type state_t is (STATE_RESET, STATE_PACKET, STATE_CRC, STATE_CHECK, STATE_COMMIT, STATE_DROP,
+			STATE_FLUSH, STATE_FLUSH_END);
 		type r_t is record
 			state : state_t;
 			crc_in : std_logic_vector(CRC_BYTES * 8 - 1 downto 0);
@@ -624,8 +624,8 @@ begin
 		signal decode_in_accept, decode_in_valid, decode_in_last : std_logic;
 
 		signal decode_in_data2, decode_out_data : std_logic_vector(8 downto 0);
-		signal decode_in_valid2, decode_in_accept2, decode_in_accept2_i, decode_in_drop, decode_in_commit : std_logic;
-		signal decode_full, decode_tail_empty, decode_tail_drop : std_logic;
+		signal decode_in_valid2, decode_in_accept2, decode_in_drop, decode_in_commit : std_logic;
+		signal decode_full, decode_tail_empty : std_logic;
 
 		constant MORE_BUFFER : natural :=
 			libstored_pkg.maximum(
@@ -650,8 +650,7 @@ begin
 				valid_out => decode_in_valid2,
 				last_out => decode_in_last,
 				accept_out => decode_in_accept2,
-				empty => decode_tail_empty,
-				drop => decode_tail_drop
+				empty => decode_tail_empty
 			);
 
 		decode_out_fifo_inst : entity work.libstored_fifo
@@ -664,7 +663,7 @@ begin
 				rstn => rstn,
 				i => decode_in_data2,
 				i_valid => decode_in_valid2,
-				i_accept => decode_in_accept2_i,
+				i_accept => decode_in_accept2,
 				i_rollback => decode_in_drop,
 				i_commit => decode_in_commit,
 				o => decode_out_data,
@@ -676,7 +675,7 @@ begin
 
 		with r.state select
 			decode_in_valid <=
-				decode_in.valid when STATE_PACKET,
+				decode_in.valid when STATE_PACKET | STATE_FLUSH,
 				'0' when others;
 
 		decode_in_data2 <= decode_in_last & decode_in_data;
@@ -685,28 +684,18 @@ begin
 
 		with r.state select
 			encode_out.accept <=
-				decode_in_accept when STATE_PACKET,
+				decode_in_accept when STATE_PACKET | STATE_FLUSH,
 				'0' when others;
 
 		with r.state select
 			decode_in_drop <=
-				'1' when STATE_DROP | STATE_FLUSH,
+				'1' when STATE_DROP | STATE_FLUSH | STATE_FLUSH_END,
 				'0' when others;
 
 		with r.state select
 			decode_in_commit <=
 				'1' when STATE_COMMIT,
 				'0' when others;
-
-		with r.state select
-			decode_in_accept2 <=
-				'1' when STATE_FLUSH,
-				decode_in_accept2_i when others;
-
-		with r.state select
-			decode_tail_drop <=
-				'0' when STATE_FLUSH,
-				'1' when others;
 
 		crc_inst : entity work.Crc
 			generic map (
@@ -769,7 +758,13 @@ begin
 				v.crc_in := (others => '-');
 				v.state := STATE_PACKET;
 			when STATE_FLUSH =>
-				if decode_tail_empty = '1' then
+				-- Pass the packet through drop_fifo_inst, and drop afterwards.
+				if decode_in_valid = '1' and decode_in_accept = '1' and decode_in.last = '1' then
+					v.state := STATE_FLUSH_END;
+				end if;
+			when STATE_FLUSH_END =>
+				-- Wait for end of packet to drop.
+				if decode_in_valid2 = '1' and decode_in_accept2 = '1' and decode_in_last = '1' then
 					v.crc := (others => '-');
 					v.crc_in := (others => '-');
 					v.state := STATE_PACKET;

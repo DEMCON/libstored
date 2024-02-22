@@ -52,6 +52,7 @@ architecture behav of test_fpga is
 	signal file_encode_in, file_decode_out : msg_t := msg_term;
 	signal segment_encode_in, segment_encode_out, segment_decode_in, segment_decode_out : msg_t := msg_term;
 	signal crc8_encode_in, crc8_encode_out, crc8_decode_in, crc8_decode_out : msg_t := msg_term;
+	signal crc16_encode_in, crc16_encode_out, crc16_decode_in, crc16_decode_out : msg_t := msg_term;
 begin
 
 	store_inst : entity work.TestStore_hdl
@@ -199,6 +200,21 @@ begin
 			encode_out => crc8_encode_out,
 			decode_in => crc8_decode_in,
 			decode_out => crc8_decode_out
+		);
+
+	Crc16Layer_inst : entity work.Crc16Layer
+		generic map (
+			MTU => 8,
+			ENCODE_OUT_FIFO_DEPTH => 12,
+			DECODE_IN_FIFO_DEPTH => 12
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			encode_in => crc16_encode_in,
+			encode_out => crc16_encode_out,
+			decode_in => crc16_decode_in,
+			decode_out => crc16_decode_out
 		);
 
 	process
@@ -847,6 +863,49 @@ begin
 				to_buffer(x"31"));
 		end procedure;
 
+		procedure do_test_crc16_encode is
+		begin
+			test_start(test, "Crc16Encode");
+			crc16_encode_in.accept <= '0';
+			crc16_decode_in.accept <= '0';
+			msg_write(clk, crc16_decode_out, crc16_encode_in,
+				to_buffer(x"31"));
+			test_expect_eq(test, clk, crc16_encode_out, crc16_decode_in,
+				(x"31", x"49", x"d6"));
+			test_expect_eq(test, crc16_encode_out.last, '1');
+
+			msg_write(clk, crc16_decode_out, crc16_encode_in,
+				(x"31", x"32"));
+			test_expect_eq(test, clk, crc16_encode_out, crc16_decode_in,
+				(x"31", x"32", x"77", x"a2"));
+			test_expect_eq(test, crc16_encode_out.last, '1');
+
+			msg_write(clk, crc16_decode_out, crc16_encode_in,
+				(x"31", x"32", x"33"));
+			test_expect_eq(test, clk, crc16_encode_out, crc16_decode_in,
+				(x"31", x"32", x"33", x"1c", x"84"));
+			test_expect_eq(test, crc16_encode_out.last, '1');
+
+			msg_write(clk, crc16_decode_out, crc16_encode_in,
+				to_buffer(x"31"));
+			msg_write(clk, crc16_decode_out, crc16_encode_in,
+				(x"31", x"32"));
+			test_expect_eq(test, clk, crc16_encode_out, crc16_decode_in,
+				(x"31", x"49", x"d6", x"31", x"32", x"77", x"a2"));
+		end procedure;
+
+		procedure do_test_crc16_decode is
+		begin
+			test_start(test, "Crc16Decode");
+			crc16_encode_in.accept <= '0';
+			crc16_decode_in.accept <= '0';
+			msg_write(clk, crc16_encode_out, crc16_decode_in,
+				(x"31", x"49", x"d6"));
+			test_expect_eq(test, clk, crc16_decode_out, crc16_encode_in,
+				to_buffer(x"31"));
+			test_expect_eq(test, crc16_decode_out.last, '1');
+		end procedure;
+
 	begin
 		id_out := x"aabb";
 		id_out2 := x"ccdd";
@@ -902,10 +961,13 @@ begin
 		do_test_segment_encode;
 		do_test_segment_decode;
 
-		test_verbose(test);
-		-- ...
 		do_test_crc8_encode;
 		do_test_crc8_decode;
+
+		test_verbose(test);
+		-- ...
+		do_test_crc16_encode;
+		do_test_crc16_decode;
 
 		test_finish(test);
 
