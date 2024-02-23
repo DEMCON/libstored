@@ -899,10 +899,32 @@ begin
 			test_start(test, "Crc16Decode");
 			crc16_encode_in.accept <= '0';
 			crc16_decode_in.accept <= '0';
+
 			msg_write(clk, crc16_encode_out, crc16_decode_in,
 				(x"31", x"49", x"d6"));
 			test_expect_eq(test, clk, crc16_decode_out, crc16_encode_in,
 				to_buffer(x"31"));
+			test_expect_eq(test, crc16_decode_out.last, '1');
+
+			msg_write(clk, crc16_encode_out, crc16_decode_in,
+				(x"31", x"32", x"77", x"a2"));
+			test_expect_eq(test, clk, crc16_decode_out, crc16_encode_in,
+				(x"31", x"32"));
+			test_expect_eq(test, crc16_decode_out.last, '1');
+
+			msg_write(clk, crc16_encode_out, crc16_decode_in,
+				(x"31", x"32", x"33", x"34", x"1c", x"84")); -- bad
+			msg_write(clk, crc16_encode_out, crc16_decode_in,
+				(x"00", x"31", x"32", x"33", x"1c", x"84")); -- bad
+			msg_write(clk, crc16_encode_out, crc16_decode_in,
+				(x"ff", x"ff")); -- ok, but empty
+			msg_write(clk, crc16_encode_out, crc16_decode_in,
+				(x"fe", x"ff")); -- bad and empty
+
+			msg_write(clk, crc16_encode_out, crc16_decode_in,
+				(x"31", x"32", x"33", x"1c", x"84"));
+			test_expect_eq(test, clk, crc16_decode_out, crc16_encode_in,
+				(x"31", x"32", x"33"));
 			test_expect_eq(test, crc16_decode_out.last, '1');
 		end procedure;
 
@@ -964,10 +986,11 @@ begin
 		do_test_crc8_encode;
 		do_test_crc8_decode;
 
-		test_verbose(test);
-		-- ...
 		do_test_crc16_encode;
 		do_test_crc16_decode;
+
+		test_verbose(test);
+		-- ...
 
 		test_finish(test);
 
