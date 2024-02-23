@@ -26,6 +26,7 @@ entity libstored_droptail is
 		valid_out : out std_logic;
 		last_out : out std_logic;
 		accept_out : in std_logic;
+		dropped_out : out std_logic;
 
 		empty : out std_logic
 	);
@@ -45,6 +46,7 @@ architecture rtl of libstored_droptail is
 	constant DATA_NORMAL : std_logic_vector(1 downto 0) := "00";
 	constant DATA_LAST : std_logic_vector(1 downto 0) := "01";
 	constant DATA_DROP : std_logic_vector(1 downto 0) := "10";
+	constant DATA_DROP_LAST : std_logic_vector(1 downto 0) := "11";
 
 	signal valid_in_i, valid_out_i, accept_out_i, accept_in_i, last_valid : std_logic;
 	signal last_out_i : std_logic_vector(1 downto 0);
@@ -83,10 +85,16 @@ begin
 		);
 
 	valid_out <=
-		valid_out_i and last_valid when last_out_i /= DATA_DROP else
+		valid_out_i and last_valid when last_out_i = DATA_NORMAL or last_out_i = DATA_LAST else
 		'0';
 
-	accept_out_i <= valid_out_i and last_valid and accept_out;
+	dropped_out <=
+		'1' when last_out_i = DATA_DROP_LAST else
+		'0';
+
+	accept_out_i <=
+		valid_out_i and last_valid and accept_out when last_out_i = DATA_NORMAL or last_out_i = DATA_LAST else
+		valid_out_i and last_valid;
 
 	last_out <=
 		'1' when last_out_i = DATA_LAST else
@@ -134,13 +142,15 @@ begin
 		when STATE_DROP =>
 			v.last_valid := '1';
 			v.cnt := r.cnt - 1;
-			if r.cnt = TAIL_LENGTH + 1 then
-				v.last := DATA_LAST;
-			elsif r.cnt <= TAIL_LENGTH then
-				v.last := DATA_DROP;
-				v.state := STATE_NORMAL;
-			else
+			if r.cnt > TAIL_LENGTH + 1 then
 				v.last := DATA_NORMAL;
+			elsif r.cnt = TAIL_LENGTH + 1 then
+				v.last := DATA_LAST;
+			elsif r.cnt > 1 then
+				v.last := DATA_DROP;
+			else
+				v.last := DATA_DROP_LAST;
+				v.state := STATE_NORMAL;
 			end if;
 		when STATE_FORWARD =>
 			v.last_valid := '1';
@@ -621,7 +631,7 @@ begin
 		signal crc_valid : std_logic;
 
 		signal decode_in_data : std_logic_vector(7 downto 0);
-		signal decode_in_accept, decode_in_valid, decode_in_last : std_logic;
+		signal decode_in_accept, decode_in_valid, decode_in_last, decode_in_dropped : std_logic;
 
 		signal decode_in_data2, decode_out_data : std_logic_vector(8 downto 0);
 		signal decode_in_valid2, decode_in_accept2, decode_in_drop, decode_in_commit : std_logic;
@@ -650,6 +660,7 @@ begin
 				valid_out => decode_in_valid2,
 				last_out => decode_in_last,
 				accept_out => decode_in_accept2,
+				dropped_out => decode_in_dropped,
 				empty => decode_tail_empty
 			);
 
@@ -715,7 +726,7 @@ begin
 		crc_valid <= decode_in_valid2 and decode_in_accept2;
 
 		process(r, rstn, decode_in, decode_in_valid, decode_in_accept, decode_in_valid2, decode_in_accept2, decode_in_last,
-			crc, decode_full, decode_idle, decode_tail_empty)
+			crc, decode_full, decode_idle, decode_tail_empty, decode_in_dropped)
 			variable v : r_t;
 		begin
 			v := r;
@@ -737,7 +748,12 @@ begin
 				end if;
 			when STATE_CRC =>
 				-- Feed the packet, without CRC, through crc_inst.
-				if decode_in_valid2 = '1' and decode_in_accept2 = '1' then
+				if decode_in_dropped = '1' then
+					-- Empty packet.
+					v.crc := (others => '-');
+					v.crc_in := (others => '-');
+					v.state := STATE_PACKET;
+				elsif decode_in_valid2 = '1' and decode_in_accept2 = '1' then
 					v.crc := crc;
 
 					if decode_in_last = '1' then
