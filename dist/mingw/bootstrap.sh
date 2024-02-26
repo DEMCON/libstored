@@ -15,7 +15,7 @@ trap gotErr ERR
 
 here="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null; pwd -P)"
 
-if [[ ${UID:-1} -eq 0 ]] && [[ ! which sudo > /dev/null ]]; then
+if [[ ${UID:-0} -eq 0 ]] && ! which sudo > /dev/null; then
 	# Running as root in some docker image?
 	apt install -y sudo || ( apt update && apt install -y sudo )
 fi
