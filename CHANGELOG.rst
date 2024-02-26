@@ -23,13 +23,20 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 Added
 `````
 
-...
+- Implement `NamedPipeLayer` and `DoublePipeLayer` for Linux.
+- Allow running `9_fpga` on Linux.
+- CRC8, CRC6, Segmentation protocol layers in VHDL. ArqLayer is still missing.
 
 Changed
 ```````
 
-- Brake dependency on heatshrink2 Python package by providing a pure-python heatshrink decoder.
+- Brake dependency on `heatshrink2` Python package by providing a pure-python heatshrink decoder.
 - Bump ZeroMQ to 4.3.5 when building from source, fixing GCC 13 support.
+
+Fixed
+`````
+
+- Workaround for segfault in XSIM.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.7.0...HEAD
 
