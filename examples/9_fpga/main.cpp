@@ -66,7 +66,7 @@ int main()
 	stored::XsimLayer xsim("/tmp/9_fpga");
 #endif
 
-#if 1 // Enable to dump all data to the terminal for debugging.
+#if 0 // Enable to dump all data to the terminal for debugging.
 	stored::PrintLayer print(stdout);
 	print.wrap(term);
 	xsim.wrap(print);
