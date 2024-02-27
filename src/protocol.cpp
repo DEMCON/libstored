@@ -2891,6 +2891,7 @@ NamedPipeLayer::NamedPipeLayer(
 {
 	if(mkfifo(name, 0666)) {
 		int e = errno;
+		// NOLINTNEXTLINE(hicpp-multiway-paths-covered)
 		switch(e) {
 		case EEXIST:
 			// That's fine.

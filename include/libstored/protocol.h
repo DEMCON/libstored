@@ -1458,10 +1458,10 @@ protected:
 	/*!
 	 * \brief Helper to call XsimLayer::decoded() when data arrives on the req channel.
 	 */
-	class DecodeCallback : public ProtocolLayer {
+	class DecodeCallback final : public ProtocolLayer {
 		STORED_CLASS_NOCOPY(DecodeCallback)
 	public:
-		DecodeCallback(XsimLayer& xsim)
+		explicit DecodeCallback(XsimLayer& xsim)
 			: m_xsim(xsim)
 		{}
 		~DecodeCallback() final is_default
