@@ -23,6 +23,18 @@ The format is based on `Keep a Changelog`_, and this project adheres to `Semanti
 Added
 `````
 
+...
+
+.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.7.1...HEAD
+
+
+
+`1.7.1`_ - 2024-02-28
+---------------------
+
+Added
+`````
+
 - Implement `NamedPipeLayer` and `DoublePipeLayer` for Linux.
 - Allow running `9_fpga` on Linux.
 - CRC8, CRC6, Segmentation protocol layers in VHDL. ArqLayer is still missing.
@@ -38,7 +50,7 @@ Fixed
 
 - Workaround for segfault in XSIM.
 
-.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.7.0...HEAD
+.. _1.7.1: https://github.com/DEMCON/libstored/releases/tag/v1.7.1
 
 
 
