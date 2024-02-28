@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 #
 # SPDX-License-Identifier: CC0-1.0
 
@@ -7,6 +7,7 @@ libstored_generate(TARGET meta STORES ExampleMeta.st)
 
 add_custom_command(
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/LoggingExampleMeta.h
+	DEPENDS meta-libstored-generate
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/libstored/doc/ExampleMetaMeta.py
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/generator.py
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/LoggingWrapper.h.tmpl
