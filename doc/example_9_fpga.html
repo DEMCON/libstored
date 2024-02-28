@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>9_fpga &mdash; libstored 1.7.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>9_fpga &mdash; libstored 1.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=030dc6f6"></script>
+        <script src="../_static/documentation_options.js?v=a77542ef"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -35,7 +37,7 @@
             libstored
           </a>
               <div class="version">
-                1.7.0
+                1.7.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -237,7 +239,11 @@ int8 other store&#39;s int8
 <span class="w">	</span><span class="n">synchronizer</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">ascii</span><span class="p">);</span>
 <span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span><span class="w"> </span><span class="n">term</span><span class="p">;</span>
 <span class="w">	</span><span class="n">term</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">ascii</span><span class="p">);</span>
+<span class="cp">#ifdef STORED_OS_WINDOWS</span>
 <span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">XsimLayer</span><span class="w"> </span><span class="n">xsim</span><span class="p">(</span><span class="s">&quot;9_fpga&quot;</span><span class="p">);</span>
+<span class="cp">#else</span>
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">XsimLayer</span><span class="w"> </span><span class="n">xsim</span><span class="p">(</span><span class="s">&quot;/tmp/9_fpga&quot;</span><span class="p">);</span>
+<span class="cp">#endif</span>
 
 <span class="cp">#if 0</span><span class="c"> // Enable to dump all data to the terminal for debugging.</span>
 <span class="c">	stored::PrintLayer print(stdout);</span>
@@ -269,7 +275,7 @@ int8 other store&#39;s int8
 
 <span class="w">	</span><span class="k">while</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">		</span><span class="c1">// 1 s timeout, to force keep alive once in a while.</span>
-<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">(</span><span class="mi">1000000</span><span class="p">).</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">(</span><span class="mi">1000</span><span class="p">).</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">			</span><span class="k">switch</span><span class="p">(</span><span class="n">errno</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">			</span><span class="k">case</span><span class="w"> </span><span class="no">EAGAIN</span><span class="p">:</span>
 <span class="w">			</span><span class="k">case</span><span class="w"> </span><span class="no">EINTR</span><span class="p">:</span>
@@ -433,10 +439,18 @@ begin
 
 --pragma translate_off
 	xsim_g : if SIMULATION generate
+		function pipe_name return string is
+		begin
+			if ExampleFpga_pkg.WIN32 then
+				return &quot;\\.\pipe\9_fpga&quot;;
+			else
+				return &quot;/tmp/9_fpga&quot;;
+			end if;
+		end function;
 	begin
 		XsimLayer_inst : entity work.XsimLayer
 			generic map (
-				PIPE_PREFIX =&gt; &quot;\\.\pipe\9_fpga&quot;
+				PIPE_PREFIX =&gt; pipe_name
 			)
 			port map (
 				clk =&gt; clk,

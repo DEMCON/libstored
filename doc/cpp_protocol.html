@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Protocol &mdash; libstored 1.7.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>Protocol &mdash; libstored 1.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=030dc6f6"></script>
+        <script src="../_static/documentation_options.js?v=a77542ef"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -35,7 +37,7 @@
             libstored
           </a>
               <div class="version">
-                1.7.0
+                1.7.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -934,7 +936,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dt class="sig sig-object cpp" id="_CPPv4N6stored15DoublePipeLayerE">
 <span id="_CPPv3N6stored15DoublePipeLayerE"></span><span id="_CPPv2N6stored15DoublePipeLayerE"></span><span id="stored::DoublePipeLayer"></span><span class="target" id="classstored_1_1_double_pipe_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DoublePipeLayer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6stored15PolledFileLayerE" title="stored::PolledFileLayer"><span class="n"><span class="pre">PolledFileLayer</span></span></a><a class="headerlink" href="#_CPPv4N6stored15DoublePipeLayerE" title="Link to this definition"></a><br /></dt>
 <dd><p>Server end of a pair of named pipes. </p>
-<p>This is like <a class="reference internal" href="#classstored_1_1_named_pipe_layer"><span class="std std-ref">NamedPipeLayer</span></a>, but it uses to unidirectional pipes instead of one bidirectional. </p>
+<p>This is like <a class="reference internal" href="#classstored_1_1_named_pipe_layer"><span class="std std-ref">NamedPipeLayer</span></a>, but it uses two unidirectional pipes instead of one bidirectional. </p>
 <p>Subclassed by <a class="reference internal" href="#classstored_1_1_xsim_layer"><span class="std std-ref">stored::XsimLayer</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -1409,8 +1411,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayerE">
 <span id="_CPPv3N6stored14NamedPipeLayerE"></span><span id="_CPPv2N6stored14NamedPipeLayerE"></span><span id="stored::NamedPipeLayer"></span><span class="target" id="classstored_1_1_named_pipe_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NamedPipeLayer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6stored9FileLayerE" title="stored::FileLayer"><span class="n"><span class="pre">FileLayer</span></span></a><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayerE" title="Link to this definition"></a><br /></dt>
 <dd><p>Server end of a named pipe. </p>
-<p>This is only for Windows. Just use a FileLayer with <code class="docutils literal notranslate"><span class="pre">pipe()</span></code> for POSIX.</p>
-<p>The client end is easier; it is just a file-like create/open/write/close API. </p>
+<p>On Windows, the client end is easier; it is just a file-like create/open/write/close API. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
@@ -1420,6 +1421,21 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayerUt2_2510BufferSizeE">
 <span id="_CPPv3N6stored14NamedPipeLayerUt2_2510BufferSizeE"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a8b5874edc1a68fe18bd3ccd9affb4ed7a95b2f2194c488d701e80c07be6165338"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayerUt2_2510BufferSizeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayerUt2_257InboundE">
+<span id="_CPPv3N6stored14NamedPipeLayerUt2_257InboundE"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a8b5874edc1a68fe18bd3ccd9affb4ed7aad8e2ca47b9e207235eb80f702f79f1a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Inbound</span></span></span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayerUt2_257InboundE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayerUt2_258OutboundE">
+<span id="_CPPv3N6stored14NamedPipeLayerUt2_258OutboundE"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a8b5874edc1a68fe18bd3ccd9affb4ed7a459f45b6f4d1f7f42ebe5c47df1d8fd5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Outbound</span></span></span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayerUt2_258OutboundE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayerUt2_256DuplexE">
+<span id="_CPPv3N6stored14NamedPipeLayerUt2_256DuplexE"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a8b5874edc1a68fe18bd3ccd9affb4ed7aa98b3f65c70d630a9e08529c0d3cf8bc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Duplex</span></span></span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayerUt2_256DuplexE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1434,7 +1450,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayer14NamedPipeLayerEPKc5DWORDP13ProtocolLayerP13ProtocolLayer">
-<span id="_CPPv3N6stored14NamedPipeLayer14NamedPipeLayerEPKc5DWORDP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored14NamedPipeLayer14NamedPipeLayerEPKc5DWORDP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::NamedPipeLayer::NamedPipeLayer__cCP.DWORD.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_named_pipe_layer_1af68a15eed3a59c643125ad9590a9a0cd"></span><span class="sig-name descname"><span class="n"><span class="pre">NamedPipeLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">DWORD</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">openMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">PIPE_ACCESS_DUPLEX</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayer14NamedPipeLayerEPKc5DWORDP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored14NamedPipeLayer14NamedPipeLayerEPKc5DWORDP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored14NamedPipeLayer14NamedPipeLayerEPKc5DWORDP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::NamedPipeLayer::NamedPipeLayer__cCP.DWORD.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a5984816865cd8b322e4eed77d7bd5637"></span><span class="sig-name descname"><span class="n"><span class="pre">NamedPipeLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">DWORD</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">openMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored14NamedPipeLayerUt2_256DuplexE" title="stored::NamedPipeLayer::[anonymous]::Duplex"><span class="n"><span class="pre">Duplex</span></span></a>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayer14NamedPipeLayerEPKc5DWORDP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
 <dd><p>Ctor for the server part of a named pipe. </p>
 <p>The given name is prefixed with <code class="docutils literal notranslate"><span class="pre">\\</span></code>.\pipe. </p>
 </dd></dl>
@@ -1592,7 +1608,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dt class="sig sig-object cpp" id="_CPPv4N6stored17SegmentationLayerE">
 <span id="_CPPv3N6stored17SegmentationLayerE"></span><span id="_CPPv2N6stored17SegmentationLayerE"></span><span id="stored::SegmentationLayer"></span><span class="target" id="classstored_1_1_segmentation_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SegmentationLayer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><a class="headerlink" href="#_CPPv4N6stored17SegmentationLayerE" title="Link to this definition"></a><br /></dt>
 <dd><p>A layer that performs segmentation of the messages. </p>
-<p>Messages to be encoded are split with a maximum chunk size (MTU). At the end of each chunk, either <a class="reference internal" href="#classstored_1_1_segmentation_layer_1a36b6e6bf8545558a5e1c95c9a3bbcd27"><span class="std std-ref">ContinueMarker</span></a> or the <a class="reference internal" href="#classstored_1_1_segmentation_layer_1a85ac4ba426a9e49f2f8c1d14785bcc24"><span class="std std-ref">EndMarker</span></a> is inserted, depending of this was the last chunk. Incoming messages are reassembled until the <a class="reference internal" href="#classstored_1_1_segmentation_layer_1a85ac4ba426a9e49f2f8c1d14785bcc24"><span class="std std-ref">EndMarker</span></a> is encountered.</p>
+<p>Messages to be encoded are split with a maximum chunk size (MTU). At the end of each chunk, either <a class="reference internal" href="#classstored_1_1_segmentation_layer_1a36b6e6bf8545558a5e1c95c9a3bbcd27"><span class="std std-ref">ContinueMarker</span></a> or the <a class="reference internal" href="#classstored_1_1_segmentation_layer_1a85ac4ba426a9e49f2f8c1d14785bcc24"><span class="std std-ref">EndMarker</span></a> is inserted, depending on whether this was the last chunk. Incoming messages are reassembled until the <a class="reference internal" href="#classstored_1_1_segmentation_layer_1a85ac4ba426a9e49f2f8c1d14785bcc24"><span class="std std-ref">EndMarker</span></a> is encountered.</p>
 <p>This layer assumes a lossless channel; all messages are received in order. If that is not the case for your transport, wrap this layer in the <a class="reference internal" href="#classstored_1_1_debug_arq_layer"><span class="std std-ref">stored::DebugArqLayer</span></a> or <a class="reference internal" href="#classstored_1_1_arq_layer"><span class="std std-ref">stored::ArqLayer</span></a>. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -1971,7 +1987,9 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored9XsimLayer9XsimLayerEPKcP13ProtocolLayerP13ProtocolLayer">
 <span id="_CPPv3N6stored9XsimLayer9XsimLayerEPKcP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored9XsimLayer9XsimLayerEPKcP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::XsimLayer::XsimLayer__cCP.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_xsim_layer_1a3c9d0feb1dd37875b1df78df12475676"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XsimLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pipe_prefix</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored9XsimLayer9XsimLayerEPKcP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Ctor. </p>
+<p>The <code class="docutils literal notranslate"><span class="pre">pipe_prefix</span></code> species the name of the pipe in Windows, which will be prepended with <code class="docutils literal notranslate"><span class="pre">\\.\pipe\</span></code> . In other POSIX-like systems, the name is used as the filename of the (to be created) FIFO. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored9XsimLayerD0Ev">
@@ -2039,10 +2057,10 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dd><p>A general purpose layer that performs Automatic Repeat Request operations on messages. </p>
 <p>This layer does not assume a specific message pattern. For <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>, use <a class="reference internal" href="#classstored_1_1_debug_arq_layer"><span class="std std-ref">stored::DebugArqLayer</span></a>.</p>
 <p>Every message sent has to be acknowledged. There is no window; after sending a message, an ack must be received before continuing. The queue of messages is by default unlimited, but can be set via the constructor. If the limit is hit, the event callback is invoked.</p>
-<p>This layer prepends the message with a sequence number byte. The MSb indicates if it is an ack, the 6 LSb are the sequence number. Sequence 0 is special; it resets the connection. It should not be used during normal operation, so the next sequence number after 63 is 1. Message that do not have a payload (so, no <a class="reference internal" href="#classstored_1_1_arq_layer_1aae0973f22504fbff0b98fefec8d53013"><span class="std std-ref">decode()</span></a> has to be invoked upon receival), should set bit 6. This also applies to the reset message.</p>
+<p>This layer prepends the message with a sequence number byte. The MSb indicates if it is an ack, the 6 LSb are the sequence number. Sequence 0 is special; it resets the connection. It should not be used during normal operation, so the next sequence number after 63 is 1. Messages that do not have a payload (so, no <a class="reference internal" href="#classstored_1_1_arq_layer_1aae0973f22504fbff0b98fefec8d53013"><span class="std std-ref">decode()</span></a> has to be invoked upon receival), should set bit 6. This also applies to the reset message.</p>
 <p>Retransmits are triggered every time a message is queued for encoding, or when <a class="reference internal" href="#classstored_1_1_arq_layer_1abf63088fb9952dcc6599a023d0491d12"><span class="std std-ref">flush()</span></a> is called. There is no timeout specified.</p>
 <p>One may decide to use a <a class="reference internal" href="#classstored_1_1_segmentation_layer"><span class="std std-ref">stored::SegmentationLayer</span></a> higher in the protocol stack to reduce the amount of data to retransmit when a message is lost (only one segment is retransmitted, not the full message), but this may add the overhead of the sequence number and round-trip time per segment. If the <a class="reference internal" href="#classstored_1_1_segmentation_layer"><span class="std std-ref">stored::SegmentationLayer</span></a> is used below the <a class="reference internal" href="#classstored_1_1_arq_layer"><span class="std std-ref">ArqLayer</span></a>, normal-case behavior (no packet loss) is most efficient, but the penalty of a retransmit may be higher. It is up to the infrastructure and application requirements what is best.</p>
-<p>The layer has no notion of time, or time out for retransmits and acks. The application must call <a class="reference internal" href="#classstored_1_1_arq_layer_1abf63088fb9952dcc6599a023d0491d12"><span class="std std-ref">flush()</span></a> (for the whole stack), or <a class="reference internal" href="#classstored_1_1_arq_layer_1ab1d2c6282a3ecad2e561ddb517421b09"><span class="std std-ref">keepAlive()</span></a> at a regular interval. Every invocation of either function will do a retransmit of the head of the encode queue. If called to often, retransmits may be done before the other party had a change to respond. If called not often enough, retransmits may take long and communication may be slowed down. Either way, it is functionally correct. Determine for you application what is wise to do. </p>
+<p>The layer has no notion of time, or time out for retransmits and acks. The application must call <a class="reference internal" href="#classstored_1_1_arq_layer_1abf63088fb9952dcc6599a023d0491d12"><span class="std std-ref">flush()</span></a> (for the whole stack), or <a class="reference internal" href="#classstored_1_1_arq_layer_1ab1d2c6282a3ecad2e561ddb517421b09"><span class="std std-ref">keepAlive()</span></a> at a regular interval. Every invocation of either function will do a retransmit of the head of the encode queue. If called to often, retransmits may be done before the other party had a chance to respond. If called not often enough, retransmits may take long and communication may be slowed down. Either way, it is functionally correct. Determine for your application what is wise to do. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">

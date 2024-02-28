@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VHDL &mdash; libstored 1.7.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>VHDL &mdash; libstored 1.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=030dc6f6"></script>
+        <script src="../_static/documentation_options.js?v=a77542ef"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -35,7 +37,7 @@
             libstored
           </a>
               <div class="version">
-                1.7.0
+                1.7.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -283,7 +285,7 @@ this:</p>
 </pre></div>
 </div>
 <p>The output timing is exemplified below.</p>
-<img alt="../_images/wavedrom-017283b0-60ad-4060-983d-7f348878f794.svg" src="../_images/wavedrom-017283b0-60ad-4060-983d-7f348878f794.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
+<img alt="../_images/wavedrom-43061ac8-27da-48ac-ace8-47151b452b2e.svg" src="../_images/wavedrom-43061ac8-27da-48ac-ace8-47151b452b2e.svg" /><p>During reset, the initial value is set at the output, 1 in this example.
 When the value is written, via <code class="docutils literal notranslate"><span class="pre">var_in</span></code>, the AXI interface, or via the
 Synchronizer, <code class="docutils literal notranslate"><span class="pre">value</span></code> is updated and <code class="docutils literal notranslate"><span class="pre">updated</span></code> is flagged for one
 clock cycle.  The flag is set at every write, not only when the data
@@ -319,7 +321,7 @@ this:</p>
 </pre></div>
 </div>
 <p>When <code class="docutils literal notranslate"><span class="pre">we</span></code> is high, the <code class="docutils literal notranslate"><span class="pre">value</span></code> is written to the store.</p>
-<img alt="../_images/wavedrom-7a449870-5ac0-4bc0-827d-688b5d775c03.svg" src="../_images/wavedrom-7a449870-5ac0-4bc0-827d-688b5d775c03.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
+<img alt="../_images/wavedrom-5ee14083-4e29-4063-b9a8-d8927d178708.svg" src="../_images/wavedrom-5ee14083-4e29-4063-b9a8-d8927d178708.svg" /><p>In this example, the variable is set to 1 in the second cycle.  Consider
 the case that a microcontroller and the FPGA synchronize a store.  If a
 variable should be read-only for the microcontroller, <code class="docutils literal notranslate"><span class="pre">we</span></code> can be tied
 high by the FPGA, such that the FPGA updates the variable constantly.  In
@@ -437,7 +439,7 @@ layer in the stack.</p>
 </dd>
 </dl>
 <p>Passing messages follows this scheme, which is resembles the AXI4-Stream Protocol:</p>
-<img alt="../_images/wavedrom-3cfc2fb1-dddb-4fca-9367-622eea7b809b.svg" src="../_images/wavedrom-3cfc2fb1-dddb-4fca-9367-622eea7b809b.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
+<img alt="../_images/wavedrom-ae9840d1-25ed-449b-b048-baaade29f21c.svg" src="../_images/wavedrom-ae9840d1-25ed-449b-b048-baaade29f21c.svg" /><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
 clock edge.  In the example above, this happens at edge 2, 3, 6, 9, and 10.
 There is no order or dependency in <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code>; both can be
 high while other is not, indicating ‘there is data’, or ‘the data can be
@@ -763,7 +765,7 @@ Only available in simulation.</p>
 </pre></div>
 </div>
 <p>Example that drops a tail of length 1:</p>
-<img alt="../_images/wavedrom-da4ce912-3f6d-4697-b8f4-da17e0791402.svg" src="../_images/wavedrom-da4ce912-3f6d-4697-b8f4-da17e0791402.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
+<img alt="../_images/wavedrom-2725fce2-ee5d-4600-bf1b-62d4176dce15.svg" src="../_images/wavedrom-2725fce2-ee5d-4600-bf1b-62d4176dce15.svg" /><p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
 unspecified.</p>
 <dl class="simple">
 <dt>FIFO_DEPTH<span class="classifier">natural := 0</span></dt><dd><p>Minimum FIFO depth. Set to 0 to allow pass-through.</p>
@@ -845,8 +847,8 @@ This is effectively a FIFO of size 1.</p>
 </pre></div>
 </div>
 <p>Example to drop and commit pushed data:</p>
-<img alt="../_images/wavedrom-15cc3768-b918-46bc-89d0-3a1bbb2f3bb0.svg" src="../_images/wavedrom-15cc3768-b918-46bc-89d0-3a1bbb2f3bb0.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
-<img alt="../_images/wavedrom-e1c90eb4-2ea8-487e-8d00-91d9a8a285c2.svg" src="../_images/wavedrom-e1c90eb4-2ea8-487e-8d00-91d9a8a285c2.svg" /><dl class="simple">
+<img alt="../_images/wavedrom-195c533f-343f-4c34-9d9c-12126950f76f.svg" src="../_images/wavedrom-195c533f-343f-4c34-9d9c-12126950f76f.svg" /><p>Example to drop and commit popped data having a FIFO size of 4:</p>
+<img alt="../_images/wavedrom-25db30ed-5275-4114-8a62-1d5cce4a8781.svg" src="../_images/wavedrom-25db30ed-5275-4114-8a62-1d5cce4a8781.svg" /><dl class="simple">
 <dt>WIDTH<span class="classifier">positive</span></dt><dd><p>Data width.</p>
 </dd>
 <dt>DEPTH<span class="classifier">natural := 1</span></dt><dd><p>Minimum FIFO depth.</p>
