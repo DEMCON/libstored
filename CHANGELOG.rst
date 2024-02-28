@@ -10,7 +10,8 @@ CHANGELOG
 
 All notable changes to this project will be documented in this file.
 
-The format is based on `Keep a Changelog`_, and this project adheres to `Semantic Versioning`_.
+The format is based on `Keep a Changelog`_, and this project adheres to
+`Semantic Versioning`_.
 
 .. _Keep a Changelog: https://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: https://semver.org/spec/v2.0.0.html
@@ -35,14 +36,15 @@ Added
 Added
 `````
 
-- Implement `NamedPipeLayer` and `DoublePipeLayer` for Linux.
-- Allow running `9_fpga` on Linux.
+- Implement ``NamedPipeLayer`` and ``DoublePipeLayer`` for Linux.
+- Allow running ``examples/9_fpga`` on Linux.
 - CRC8, CRC6, Segmentation protocol layers in VHDL. ArqLayer is still missing.
 
 Changed
 ```````
 
-- Brake dependency on `heatshrink2` Python package by providing a pure-python heatshrink decoder.
+- Brake dependency on ``heatshrink2`` Python package by providing a pure-python
+  heatshrink decoder.
 - Bump ZeroMQ to 4.3.5 when building from source, fixing GCC 13 support.
 
 Fixed
@@ -77,9 +79,9 @@ Changed
 Added
 `````
 
-- `libstored.cmake`, with generator to pylibstored. Instead of cloning the
-  libstored repo, running `pip install libstored` contains everything to
-  generate a store. See also `examples/int_pip`.
+- ``libstored.cmake``, with generator to pylibstored. Instead of cloning the
+  libstored repo, running ``pip install libstored`` contains everything to
+  generate a store. See also ``examples/int_pip``.
 
 Changed
 ```````
@@ -106,7 +108,7 @@ Fixed
 Added
 `````
 
-- Python `libstored.log` command line logging tool to easily generate a CSV
+- Python ``libstored.log`` command line logging tool to easily generate a CSV
   file with samples.
 
 Changed
