@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CHANGELOG &mdash; libstored 1.7.1 documentation</title>
+  <title>CHANGELOG &mdash; libstored 1.7.2-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=a77542ef"></script>
+        <script src="../_static/documentation_options.js?v=2bffa182"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
             libstored
           </a>
               <div class="version">
-                1.7.1
+                1.7.2.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -145,7 +145,8 @@
   <section id="changelog">
 <h1>CHANGELOG<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
 <p>All notable changes to this project will be documented in this file.</p>
-<p>The format is based on <a class="reference external" href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>, and this project adheres to <a class="reference external" href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<p>The format is based on <a class="reference external" href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>, and this project adheres to
+<a class="reference external" href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <section id="unreleased">
 <h2><a class="reference external" href="https://github.com/DEMCON/libstored/compare/v1.7.1...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Link to this heading"></a></h2>
 <section id="added">
@@ -158,15 +159,16 @@
 <section id="id3">
 <h3>Added<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>Implement <cite>NamedPipeLayer</cite> and <cite>DoublePipeLayer</cite> for Linux.</p></li>
-<li><p>Allow running <cite>9_fpga</cite> on Linux.</p></li>
-<li><p>CRC8, CRC6, Segmentation protocol layers in VHDL. ArqLayer is still missing.</p></li>
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">NamedPipeLayer</span></code> and <code class="docutils literal notranslate"><span class="pre">DoublePipeLayer</span></code> for Linux.</p></li>
+<li><p>Allow running <code class="docutils literal notranslate"><span class="pre">examples/9_fpga</span></code> on Linux.</p></li>
+<li><p>CRC8, CRC16, Segmentation protocol layers in VHDL. ArqLayer is still missing.</p></li>
 </ul>
 </section>
 <section id="changed">
 <h3>Changed<a class="headerlink" href="#changed" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>Brake dependency on <cite>heatshrink2</cite> Python package by providing a pure-python heatshrink decoder.</p></li>
+<li><p>Brake dependency on <code class="docutils literal notranslate"><span class="pre">heatshrink2</span></code> Python package by providing a pure-python
+heatshrink decoder.</p></li>
 <li><p>Bump ZeroMQ to 4.3.5 when building from source, fixing GCC 13 support.</p></li>
 </ul>
 </section>
@@ -197,9 +199,9 @@
 <section id="id10">
 <h3>Added<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p><cite>libstored.cmake</cite>, with generator to pylibstored. Instead of cloning the
-libstored repo, running <cite>pip install libstored</cite> contains everything to
-generate a store. See also <cite>examples/int_pip</cite>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libstored.cmake</span></code>, with generator to pylibstored. Instead of cloning the
+libstored repo, running <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">libstored</span></code> contains everything to
+generate a store. See also <code class="docutils literal notranslate"><span class="pre">examples/int_pip</span></code>.</p></li>
 </ul>
 </section>
 <section id="id11">
@@ -225,7 +227,7 @@ messages.</p></li>
 <section id="id15">
 <h3>Added<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>Python <cite>libstored.log</cite> command line logging tool to easily generate a CSV
+<li><p>Python <code class="docutils literal notranslate"><span class="pre">libstored.log</span></code> command line logging tool to easily generate a CSV
 file with samples.</p></li>
 </ul>
 </section>
