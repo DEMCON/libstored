@@ -38,7 +38,7 @@ Added
 
 - Implement ``NamedPipeLayer`` and ``DoublePipeLayer`` for Linux.
 - Allow running ``examples/9_fpga`` on Linux.
-- CRC8, CRC6, Segmentation protocol layers in VHDL. ArqLayer is still missing.
+- CRC8, CRC16, Segmentation protocol layers in VHDL. ArqLayer is still missing.
 
 Changed
 ```````
