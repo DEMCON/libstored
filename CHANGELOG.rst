@@ -26,6 +26,12 @@ Added
 
 ...
 
+Fixed
+``````
+
+- Use ``ZMQ_DEALER`` instead of ``ZMQ_PAIR`` for ``SyncZmqLayer`` to fix
+  stability issues over IPC and other possibly non-stable connections.
+
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.7.1...HEAD
 
 

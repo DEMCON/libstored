@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -357,14 +357,14 @@ int DebugZmqLayer::recv(long timeout_us)
 /*!
  * \brief Constructor.
  *
- * The given \p endpoint is used for a PAIR socket.
+ * The given \p endpoint is used for a DEALER socket.
  * If \p listen is \c true, it binds to the endpoint, otherwise it connects to it.
  *
  * \see #stored::Synchronizer
  */
 SyncZmqLayer::SyncZmqLayer(
 	void* context, char const* endpoint, bool listen, ProtocolLayer* up, ProtocolLayer* down)
-	: base(context, ZMQ_PAIR, up, down)
+	: base(context, ZMQ_DEALER, up, down)
 {
 	if(lastError())
 		return;
