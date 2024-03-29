@@ -349,6 +349,9 @@ use work.libstored_pkg;
 
 entity ArqLayer is
 	generic (
+		MTU : positive;
+		ENCODE_OUT_FIFO_DEPTH : natural := 0;
+		DECODE_IN_FIFO_DEPTH : natural := 0;
 		SYSTEM_CLK_FREQ : integer := 100e6;
 		ACK_TIMEOUT_s : real := 0.1;
 		SIMULATION : boolean := false
@@ -366,17 +369,356 @@ entity ArqLayer is
 		decode_in : in libstored_pkg.msg_t;
 		decode_out : out libstored_pkg.msg_t;
 
+		reconnect : in std_logic := '0';
+		retransmit : in std_logic := '0';
+
+		retransmitted : out std_logic;
+		connected : out std_logic;
 		idle : out std_logic
 	);
 end ArqLayer;
 
 architecture rtl of ArqLayer is
+	function ack_timeout_calc return natural is
+		variable s : real;
+	begin
+		s := ACK_TIMEOUT_s;
+
+		if SIMULATION then
+			s := s / 1000.0;
+		end if;
+
+		return libstored_pkg.maximum(1, integer(s * real(SYSTEM_CLK_FREQ)));
+	end function;
+
+	constant ACK_TIMEOUT_CLK : natural := ack_timeout_calc;
+
+	constant FLAG_NOP : natural := 6;
+	constant FLAG_ACK : natural := 7;
+	constant SEQ_BITS : positive := 6;
+	constant SEQ_MAX : natural := 1 ** SEQ_BITS;
+	constant SEQ_MASK : std_logic_vector(7 downto 0) := std_logic_vector(to_unsigned(SEQ_MAX - 1, 8));
+
+	function arq_msg(constant ack : boolean; constant nop : boolean; constant seq : natural) return std_logic_vector is
+		variable msg : std_logic_vector(7 downto 0);
+	begin
+		msg := (others => '0');
+		if ack then
+			msg(FLAG_ACK) := '1';
+		end if;
+		if nop then
+			msg(FLAG_NOP) := '1';
+		end if;
+
+		msg := msg or (std_logic_vector(to_unsigned(seq, msg'length)) and SEQ_MASK);
+
+		return msg;
+	end function;
+
+	function next_seq(constant seq : natural) return natural is
+	begin
+		if seq = SEQ_MAX then
+			return 1;
+		else
+			return seq + 1;
+		end if;
+	end function;
+
+	type state_encode_t is (SE_RESET, SE_RECONNECT, SE_RECONNECTING, SE_IDLE, SE_ACK,
+		SE_HEADER, SE_DATA, SE_WAITING);
+	type state_decode_t is (SD_RESET, SD_IDLE, SD_DROP, SD_DECODE);
+
+	type r_t is record
+		se : state_encode_t;
+		se_prev : state_encode_t;
+		sd : state_decode_t;
+		t : natural range 0 to ACK_TIMEOUT_CLK;
+		timeout : std_logic;
+		retransmit : std_logic;
+		seq_e : natural range 0 to SEQ_MAX;
+		seq_d : natural range 0 to SEQ_MAX;
+		seq_d_prev : natural range 0 to SEQ_MAX;
+		do_ack : std_logic;
+	end record;
+
+	signal r_in, r : r_t;
+
+	signal ef_data_in, ef_data_out : std_logic_vector(8 downto 0);
+	signal ef_data : std_logic_vector(7 downto 0);
+	signal ef_last, ef_commit, ef_rollback, ef_valid, ef_accept, ef_empty : std_logic;
+
+	signal df_data_in, df_data_out : std_logic_vector(8 downto 0);
+	signal df_valid, df_accept, df_empty : std_logic;
+
+	signal decode_seq : natural range 0 to SEQ_MAX;
 begin
-	-- TODO
+	ef_data_in <= encode_in.last & encode_in.data;
+	ef_data <= ef_data_out(7 downto 0);
+	ef_last <= ef_data_out(8);
+
+	encode_fifo_inst : entity work.libstored_fifo
+		generic map (
+			WIDTH => 9,
+			DEPTH => libstored_pkg.maximum(MTU, ENCODE_OUT_FIFO_DEPTH)
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			i => ef_data_in,
+			i_valid => encode_in.valid,
+			i_accept => decode_out.accept,
+			o => ef_data_out,
+			o_valid => ef_valid,
+			o_accept => ef_accept,
+			o_commit => ef_commit,
+			o_rollback => ef_rollback,
+			empty => ef_empty
+		);
+
+	df_data_in <= decode_in.last & decode_in.data;
+	decode_out.data <= df_data_out(7 downto 0);
+	decode_out.last <= df_data_out(8);
+
+	decode_seq <=
+		0 when decode_in.valid /= '1' else
 --pragma translate_off
-	assert not (rising_edge(clk) and rstn /= '1')
-		report "Not implemented" severity failure;
+		0 when is_x(decode_in.data(SEQ_BITS - 1 downto 0)) else
 --pragma translate_on
+		to_integer(unsigned(decode_in.data(SEQ_BITS - 1 downto 0)));
+
+	decode_fifo_inst : entity work.libstored_fifo
+		generic map (
+			WIDTH => 9,
+			DEPTH => DECODE_IN_FIFO_DEPTH
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			i => df_data_in,
+			i_valid => df_valid,
+			i_accept => df_accept,
+			o => df_data_out,
+			o_valid => decode_out.valid,
+			o_accept => encode_in.accept,
+			empty => df_empty
+		);
+
+	process(r, rstn, decode_in, ef_valid, ef_last, decode_seq, retransmit, reconnect)
+		variable v : r_t;
+	begin
+		v := r;
+
+		v.retransmit := '0';
+
+		if r.t > 0 then
+			v.t := r.t - 1;
+		end if;
+
+		if r.t = 1 or retransmit = '1' then
+			v.timeout := '1';
+		end if;
+
+		ef_commit <= '0';
+		ef_rollback <= '0';
+
+		case r.se is
+		when SE_RESET =>
+			v.se := SE_RECONNECT;
+			v.do_ack := '0';
+		when SE_RECONNECT =>
+			-- Send out reset message.
+			if decode_in.accept = '1' then
+				v.se := SE_RECONNECTING;
+				v.timeout := '0';
+				v.t := ACK_TIMEOUT_CLK;
+				v.seq_e := 0;
+			end if;
+		when SE_RECONNECTING =>
+			if r.do_ack = '1' then
+				v.se := SE_ACK;
+				v.se_prev := r.se;
+			elsif r.sd = SD_IDLE and decode_in.data(FLAG_ACK) = '1' and decode_seq = 0 and decode_in.valid = '1' then
+				-- Ack on our reset msg. We are connected now.
+				v.se := SE_IDLE;
+			elsif r.timeout = '1' then
+				v.se := SE_RECONNECT;
+				v.retransmit := '1';
+			end if;
+		when SE_IDLE =>
+			if r.do_ack = '1' then
+				v.se := SE_ACK;
+				v.se_prev := r.se;
+			elsif ef_valid = '1' then
+				v.se := SE_HEADER;
+			end if;
+		when SE_HEADER =>
+			-- Prepend data with ARQ header.
+			if decode_in.accept = '1' then
+				if ef_last = '1' then
+					v.se := SE_WAITING;
+					v.t := ACK_TIMEOUT_CLK;
+				else
+					v.se := SE_DATA;
+				end if;
+			end if;
+		when SE_DATA =>
+			-- Forward data.
+			if decode_in.accept = '1' and ef_last = '1' then
+				v.se := SE_WAITING;
+				v.t := ACK_TIMEOUT_CLK;
+			end if;
+		when SE_WAITING =>
+			-- Wait for ack.
+			if r.sd = SD_IDLE and decode_in.data(FLAG_ACK) = '1' and decode_seq = r.seq_e and decode_in.valid = '1' then
+				-- Got ack.
+				v.se := SE_IDLE;
+				v.seq_e := next_seq(r.seq_e);
+				ef_commit <= '1';
+			elsif r.do_ack = '1' then
+				-- While waiting, push out queued ack.
+				v.se := SE_ACK;
+				v.se_prev := r.se;
+			elsif r.timeout = '1' then
+				-- Timeout, retransmit.
+				ef_rollback <= '1';
+				v.se := SE_IDLE;
+				v.retransmit := '1';
+			end if;
+		when SE_ACK =>
+			if decode_in.accept = '1' then
+				v.se := r.se_prev;
+				v.do_ack := '0';
+				v.seq_d_prev := r.seq_d;
+				v.seq_d := next_seq(r.seq_d);
+			end if;
+		when others =>
+			v.se := SE_RESET;
+		end case;
+
+		case r.sd is
+		when SD_RESET =>
+			v.sd := SD_IDLE;
+			v.seq_d := 0;
+			v.seq_d_prev := 0;
+		when SD_IDLE =>
+			-- Expect next ARQ header byte.
+
+			if decode_in.valid = '0' then
+				-- No data.
+				null;
+			elsif decode_in.data(FLAG_ACK) = '1' then
+				-- Ignore this message. r.se should pick it up.
+				if decode_in.last = '0' then
+					v.sd := SD_DROP;
+				end if;
+			elsif decode_seq = 0 then
+				-- Got a reset msg. Queue an ack response.
+				v.do_ack := '1';
+				v.seq_d := 0;
+				v.seq_d_prev := 0;
+
+				if decode_in.last = '0' then
+					v.sd := SD_DROP;
+				end if;
+			elsif decode_seq = r.seq_d_prev then
+				-- Retransmit. Ack again.
+				v.seq_d := r.seq_d_prev;
+				v.do_ack := '1';
+
+				if decode_in.last = '0' then
+					v.sd := SD_DROP;
+				end if;
+			elsif decode_seq /= r.seq_d then
+				-- Wrong seq. Ignore.
+				if decode_in.last = '0' then
+					v.sd := SD_DROP;
+				end if;
+			else
+				-- Send an ack.
+				v.do_ack := '1';
+
+				if decode_in.last = '1' then
+					-- That's it.
+					null;
+				elsif decode_in.data(FLAG_NOP) = '1' then
+					-- Ignore body.
+					v.sd := SD_DROP;
+				else
+					-- Pass through for decoding.
+					v.sd := SD_DECODE;
+				end if;
+			end if;
+		when SD_DROP | SD_DECODE =>
+			if decode_in.valid = '1' and decode_in.last = '1' and df_accept = '1' then
+				v.sd := SD_IDLE;
+			end if;
+		when others =>
+			v.sd := SD_RESET;
+		end case;
+
+		if reconnect = '1' then
+			v.se := SE_RECONNECT;
+		end if;
+
+		if rstn /= '1' then
+			v.se := SE_RESET;
+			v.sd := SD_RESET;
+		end if;
+
+		r_in <= v;
+	end process;
+
+	with r.se select
+		encode_out.data <=
+			arq_msg(false, true, 0) when SE_RECONNECT,
+			arq_msg(true, true, r.seq_d) when SE_ACK,
+			arq_msg(false, false, r.seq_e) when SE_HEADER,
+			(others => '-') when others;
+
+	with r.se select
+		encode_out.last <=
+			'1' when SE_RECONNECT | SE_ACK,
+			'0' when SE_HEADER,
+			ef_last when SE_DATA,
+			'-' when others;
+
+	with r.se select
+		encode_out.valid <=
+			'1' when SE_RECONNECT | SE_ACK | SE_HEADER,
+			ef_valid when SE_DATA,
+			'0' when others;
+
+	with r.se select
+		ef_accept <=
+			decode_in.accept when SE_DATA,
+			'0' when others;
+
+	retransmitted <= r.retransmit;
+
+	with r.se select
+		connected <=
+			'1' when SE_IDLE | SE_HEADER | SE_DATA | SE_WAITING | SE_ACK,
+			'0' when others;
+
+	with r.sd select
+		encode_out.accept <=
+			'1' when SD_IDLE | SD_DROP,
+			df_accept when SD_DECODE,
+			'0' when others;
+
+	with r.sd select
+		df_valid <=
+			decode_in.valid when SD_DECODE,
+			'0' when others;
+
+	idle <= ef_empty and df_empty;
+
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			r <= r_in;
+		end if;
+	end process;
 end rtl;
 
 

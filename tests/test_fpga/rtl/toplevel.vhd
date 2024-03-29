@@ -53,6 +53,7 @@ architecture behav of test_fpga is
 	signal segment_encode_in, segment_encode_out, segment_decode_in, segment_decode_out : msg_t := msg_term;
 	signal crc8_encode_in, crc8_encode_out, crc8_decode_in, crc8_decode_out : msg_t := msg_term;
 	signal crc16_encode_in, crc16_encode_out, crc16_decode_in, crc16_decode_out : msg_t := msg_term;
+	signal arq_encode_in, arq_encode_out, arq_decode_in, arq_decode_out : msg_t := msg_term;
 begin
 
 	store_inst : entity work.TestStore_hdl
@@ -215,6 +216,23 @@ begin
 			encode_out => crc16_encode_out,
 			decode_in => crc16_decode_in,
 			decode_out => crc16_decode_out
+		);
+
+	ArqLayer_inst : entity work.ArqLayer
+		generic map (
+			MTU => 8,
+			ENCODE_OUT_FIFO_DEPTH => 12,
+			DECODE_IN_FIFO_DEPTH => 12,
+			SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ,
+			ACK_TIMEOUT_s => 1.0e-3
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			encode_in => arq_encode_in,
+			encode_out => arq_encode_out,
+			decode_in => arq_decode_in,
+			decode_out => arq_decode_out
 		);
 
 	process
@@ -928,6 +946,29 @@ begin
 			test_expect_eq(test, crc16_decode_out.last, '1');
 		end procedure;
 
+		procedure do_test_arq_encode is
+		begin
+			test_start(test, "ArqEncode");
+			arq_encode_in.accept <= '0';
+			arq_decode_in.accept <= '0';
+
+			-- Expect a few resets.
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				(x"40", x"40", x"40"));
+			test_expect_eq(test, arq_encode_out.last, '1');
+
+			-- todo
+		end procedure;
+
+		procedure do_test_arq_decode is
+		begin
+			test_start(test, "ArqDecode");
+			arq_encode_in.accept <= '0';
+			arq_decode_in.accept <= '0';
+
+			-- todo
+		end procedure;
+
 	begin
 		id_out := x"aabb";
 		id_out2 := x"ccdd";
@@ -991,6 +1032,9 @@ begin
 
 		test_verbose(test);
 		-- ...
+		-- todo
+--		do_test_arq_encode;
+--		do_test_arq_decode;
 
 		test_finish(test);
 
