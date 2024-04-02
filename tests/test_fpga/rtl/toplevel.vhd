@@ -55,6 +55,8 @@ architecture behav of test_fpga is
 	signal crc16_encode_in, crc16_encode_out, crc16_decode_in, crc16_decode_out : msg_t := msg_term;
 	signal arq_encode_in, arq_encode_out, arq_decode_in, arq_decode_out : msg_t := msg_term;
 	signal arq_reconnect : std_logic := '0';
+
+	signal full_stack : boolean := false;
 begin
 
 	store_inst : entity work.TestStore_hdl
@@ -236,6 +238,47 @@ begin
 			decode_out => arq_decode_out,
 			reconnect => arq_reconnect
 		);
+
+	process(rstn, full_stack, segment_encode_out, arq_encode_out, crc8_encode_out, esc_encode_out,
+		term_encode_out, term_decode_out, esc_decode_out, crc8_decode_out, arq_decode_out)
+	begin
+		if full_stack'event or rstn'event then
+			if full_stack then
+				arq_encode_in <= msg_term;
+				crc8_encode_in <= msg_term;
+				esc_encode_in <= msg_term;
+				term_encode_in <= msg_term;
+				term_decode_in <= msg_term;
+				esc_decode_in <= msg_term;
+				crc8_decode_in <= msg_term;
+				arq_decode_in <= msg_term;
+				segment_decode_in <= msg_term;
+			else
+				arq_encode_in <= msg_highz;
+				crc8_encode_in <= msg_highz;
+				esc_encode_in <= msg_highz;
+				term_encode_in <= msg_highz;
+				term_decode_in <= msg_highz;
+				esc_decode_in <= msg_highz;
+				crc8_decode_in <= msg_highz;
+				arq_decode_in <= msg_highz;
+				segment_decode_in <= msg_highz;
+			end if;
+		end if;
+
+		if full_stack then
+			arq_encode_in <= segment_encode_out;
+			crc8_encode_in <= arq_encode_out;
+			esc_encode_in <= crc8_encode_out;
+			term_encode_in <= esc_encode_out;
+
+			term_decode_in <= term_encode_out;
+			esc_decode_in <= term_decode_out;
+			crc8_decode_in <= esc_decode_out;
+			arq_decode_in <= crc8_decode_out;
+			segment_decode_in <= arq_decode_out;
+		end if;
+	end process;
 
 	process
 	begin
@@ -1062,6 +1105,49 @@ begin
 				to_buffer(x"c3"));
 		end procedure;
 
+		procedure do_full_stack is
+		begin
+			test_start(test, "Full stack");
+			arq_encode_in <= msg_highz;
+			crc8_encode_in <= msg_highz;
+			esc_encode_in <= msg_highz;
+			term_encode_in <= msg_highz;
+			term_decode_in <= msg_highz;
+			esc_decode_in <= msg_highz;
+			crc8_decode_in <= msg_highz;
+			arq_decode_in <= msg_highz;
+			segment_decode_in <= msg_highz;
+
+			full_stack <= true;
+
+			segment_encode_in.accept <= '0';
+
+			arq_reconnect <= '1';
+			wait until rising_edge(clk);
+			arq_reconnect <= '0';
+
+			msg_write(clk, segment_decode_out, segment_encode_in,
+				(x"31", x"32"));
+			msg_write(clk, segment_decode_out, segment_encode_in,
+				(x"31", x"32", x"33", x"34", x"35", x"36"));
+			test_expect_eq(test, clk, segment_decode_out, segment_encode_in,
+				(x"31", x"32"));
+			test_expect_eq(test, clk, segment_decode_out, segment_encode_in,
+				(x"31", x"32", x"33", x"34", x"35", x"36"));
+
+			full_stack <= false;
+
+			arq_encode_in <= msg_term;
+			crc8_encode_in <= msg_term;
+			esc_encode_in <= msg_term;
+			term_encode_in <= msg_term;
+			term_decode_in <= msg_term;
+			esc_decode_in <= msg_term;
+			crc8_decode_in <= msg_term;
+			arq_decode_in <= msg_term;
+			segment_decode_in <= msg_term;
+		end procedure;
+
 	begin
 		id_out := x"aabb";
 		id_out2 := x"ccdd";
@@ -1125,6 +1211,8 @@ begin
 
 		do_test_arq_encode;
 		do_test_arq_decode;
+
+		do_full_stack;
 
 		test_verbose(test);
 		-- ...
