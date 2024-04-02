@@ -333,7 +333,7 @@ begin
 				if empty_i = '0' and o_accept = '1' and o_rollback = '0' then
 					rp_tmp <= rp_tmp_next;
 					rp_v := rp_tmp_next;
-					if i_commit = '1' then
+					if o_commit = '1' then
 						rp <= rp_tmp_next;
 --pragma translate_off
 				 		erase_fifo(rp, rp_tmp_next);

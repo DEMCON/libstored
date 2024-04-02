@@ -396,8 +396,8 @@ architecture rtl of ArqLayer is
 	constant FLAG_NOP : natural := 6;
 	constant FLAG_ACK : natural := 7;
 	constant SEQ_BITS : positive := 6;
-	constant SEQ_MAX : natural := 1 ** SEQ_BITS;
-	constant SEQ_MASK : std_logic_vector(7 downto 0) := std_logic_vector(to_unsigned(SEQ_MAX - 1, 8));
+	constant SEQ_MAX : natural := 2 ** SEQ_BITS - 1;
+	constant SEQ_MASK : std_logic_vector(7 downto 0) := std_logic_vector(to_unsigned(SEQ_MAX, 8));
 
 	function arq_msg(constant ack : boolean; constant nop : boolean; constant seq : natural) return std_logic_vector is
 		variable msg : std_logic_vector(7 downto 0);
@@ -424,7 +424,7 @@ architecture rtl of ArqLayer is
 		end if;
 	end function;
 
-	type state_encode_t is (SE_RESET, SE_RECONNECT, SE_RECONNECTING, SE_IDLE, SE_ACK,
+	type state_encode_t is (SE_RESET, SE_RECONNECT, SE_RECONNECTING, SE_IDLE,
 		SE_HEADER, SE_DATA, SE_WAITING);
 	type state_decode_t is (SD_RESET, SD_IDLE, SD_DROP, SD_DECODE);
 
@@ -534,32 +534,22 @@ begin
 				v.seq_e := 0;
 			end if;
 		when SE_RECONNECTING =>
-			if r.do_ack = '1' then
-				v.se := SE_ACK;
-				v.se_prev := r.se;
-			elsif r.sd = SD_IDLE and decode_in.data(FLAG_ACK) = '1' and decode_seq = 0 and decode_in.valid = '1' then
+			if r.sd = SD_IDLE and decode_in.data(FLAG_ACK) = '1' and decode_seq = 0 and decode_in.valid = '1' then
 				-- Ack on our reset msg. We are connected now.
 				v.se := SE_IDLE;
+				v.seq_e := 1;
 			elsif r.timeout = '1' then
 				v.se := SE_RECONNECT;
 				v.retransmit := '1';
 			end if;
 		when SE_IDLE =>
-			if r.do_ack = '1' then
-				v.se := SE_ACK;
-				v.se_prev := r.se;
-			elsif ef_valid = '1' then
+			if r.do_ack = '0' and ef_valid = '1' then
 				v.se := SE_HEADER;
 			end if;
 		when SE_HEADER =>
 			-- Prepend data with ARQ header.
 			if decode_in.accept = '1' then
-				if ef_last = '1' then
-					v.se := SE_WAITING;
-					v.t := ACK_TIMEOUT_CLK;
-				else
-					v.se := SE_DATA;
-				end if;
+				v.se := SE_DATA;
 			end if;
 		when SE_DATA =>
 			-- Forward data.
@@ -574,25 +564,25 @@ begin
 				v.se := SE_IDLE;
 				v.seq_e := next_seq(r.seq_e);
 				ef_commit <= '1';
-			elsif r.do_ack = '1' then
-				-- While waiting, push out queued ack.
-				v.se := SE_ACK;
-				v.se_prev := r.se;
 			elsif r.timeout = '1' then
 				-- Timeout, retransmit.
 				ef_rollback <= '1';
 				v.se := SE_IDLE;
 				v.retransmit := '1';
 			end if;
-		when SE_ACK =>
-			if decode_in.accept = '1' then
-				v.se := r.se_prev;
+		when others =>
+			v.se := SE_RESET;
+		end case;
+
+		case r.se is
+		when SE_RECONNECTING | SE_IDLE | SE_WAITING =>
+			if r.do_ack = '1' and decode_in.accept = '1' then
 				v.do_ack := '0';
 				v.seq_d_prev := r.seq_d;
 				v.seq_d := next_seq(r.seq_d);
 			end if;
 		when others =>
-			v.se := SE_RESET;
+			null;
 		end case;
 
 		case r.sd is
@@ -608,6 +598,7 @@ begin
 				null;
 			elsif decode_in.data(FLAG_ACK) = '1' then
 				-- Ignore this message. r.se should pick it up.
+				-- If r.se is not in de proper state now, drop it anyway.
 				if decode_in.last = '0' then
 					v.sd := SD_DROP;
 				end if;
@@ -668,23 +659,25 @@ begin
 		r_in <= v;
 	end process;
 
-	with r.se select
-		encode_out.data <=
-			arq_msg(false, true, 0) when SE_RECONNECT,
-			arq_msg(true, true, r.seq_d) when SE_ACK,
-			arq_msg(false, false, r.seq_e) when SE_HEADER,
-			(others => '-') when others;
+	encode_out.data <=
+		arq_msg(true, true, r.seq_d) when r.do_ack = '1' and (r.se = SE_RECONNECTING or r.se = SE_IDLE or r.se = SE_WAITING) else
+		arq_msg(false, true, 0) when r.se = SE_RECONNECT else
+		arq_msg(false, false, r.seq_e) when r.se = SE_HEADER else
+		ef_data when r.se = SE_DATA else
+		(others => '-');
 
 	with r.se select
 		encode_out.last <=
-			'1' when SE_RECONNECT | SE_ACK,
+			r.do_ack when SE_RECONNECTING | SE_IDLE | SE_WAITING,
+			'1' when SE_RECONNECT,
 			'0' when SE_HEADER,
 			ef_last when SE_DATA,
 			'-' when others;
 
 	with r.se select
 		encode_out.valid <=
-			'1' when SE_RECONNECT | SE_ACK | SE_HEADER,
+			r.do_ack when SE_RECONNECTING | SE_IDLE | SE_WAITING,
+			'1' when SE_RECONNECT | SE_HEADER,
 			ef_valid when SE_DATA,
 			'0' when others;
 
@@ -697,7 +690,7 @@ begin
 
 	with r.se select
 		connected <=
-			'1' when SE_IDLE | SE_HEADER | SE_DATA | SE_WAITING | SE_ACK,
+			'1' when SE_IDLE | SE_HEADER | SE_DATA | SE_WAITING,
 			'0' when others;
 
 	with r.sd select
@@ -711,7 +704,7 @@ begin
 			decode_in.valid when SD_DECODE,
 			'0' when others;
 
-	idle <= ef_empty and df_empty;
+	idle <= ef_empty and df_empty and not r.do_ack;
 
 	process(clk)
 	begin
