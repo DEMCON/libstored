@@ -26,6 +26,13 @@ package libstored_pkg is
 		accept => '1'
 	);
 
+	constant msg_highz : msg_t := (
+		data => (others => 'Z'),
+		last => 'Z',
+		valid => 'Z',
+		accept => 'Z'
+	);
+
 	function maximum(constant a, b : integer) return integer;
 	function minimum(constant a, b : integer) return integer;
 	function bits(constant x : natural) return natural;
