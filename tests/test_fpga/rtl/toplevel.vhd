@@ -54,6 +54,7 @@ architecture behav of test_fpga is
 	signal crc8_encode_in, crc8_encode_out, crc8_decode_in, crc8_decode_out : msg_t := msg_term;
 	signal crc16_encode_in, crc16_encode_out, crc16_decode_in, crc16_decode_out : msg_t := msg_term;
 	signal arq_encode_in, arq_encode_out, arq_decode_in, arq_decode_out : msg_t := msg_term;
+	signal arq_reconnect : std_logic := '0';
 begin
 
 	store_inst : entity work.TestStore_hdl
@@ -232,7 +233,8 @@ begin
 			encode_in => arq_encode_in,
 			encode_out => arq_encode_out,
 			decode_in => arq_decode_in,
-			decode_out => arq_decode_out
+			decode_out => arq_decode_out,
+			reconnect => arq_reconnect
 		);
 
 	process
@@ -952,12 +954,52 @@ begin
 			arq_encode_in.accept <= '0';
 			arq_decode_in.accept <= '0';
 
+			arq_reconnect <= '1';
+			wait until rising_edge(clk);
+			arq_reconnect <= '0';
+
 			-- Expect a few resets.
 			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
 				(x"40", x"40", x"40"));
 			test_expect_eq(test, arq_encode_out.last, '1');
 
-			-- todo
+			-- Accept the reset.
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c0"));
+
+			-- Send actual data.
+			msg_write(clk, arq_decode_out, arq_encode_in,
+				(x"31", x"32", x"33"));
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				(x"01", x"31", x"32", x"33"));
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c1"));
+
+			-- Send more data.
+			msg_write(clk, arq_decode_out, arq_encode_in,
+				(x"34", x"35"));
+			msg_write(clk, arq_decode_out, arq_encode_in,
+				to_buffer(x"36"));
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				(x"02", x"34", x"35"));
+
+			-- No ack; expect retransmit.
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				(x"02", x"34", x"35"));
+
+			-- Wrong ack; expect retransmit.
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c1"));
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				(x"02", x"34", x"35"));
+
+			-- Correct ack.
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c2"));
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				(x"03", x"36"));
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c3"));
 		end procedure;
 
 		procedure do_test_arq_decode is
@@ -966,7 +1008,58 @@ begin
 			arq_encode_in.accept <= '0';
 			arq_decode_in.accept <= '0';
 
-			-- todo
+			arq_reconnect <= '1';
+			wait until rising_edge(clk);
+			arq_reconnect <= '0';
+
+			-- Handle encode reset
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"40"));
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c0"));
+
+			-- Do decode reset.
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"40"));
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c0"));
+
+			-- Decode
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				(x"01", x"31", x"32", x"33"));
+			test_expect_eq(test, clk, arq_decode_out, arq_encode_in,
+				(x"31", x"32", x"33"));
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c1"));
+
+			-- Retransmit same message.
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				(x"01", x"31", x"32", x"33"));
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c1"));
+			test_expect_eq(test, arq_decode_out.valid, '0');
+
+			-- Decode next.
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				(x"02", x"34", x"35"));
+			test_expect_eq(test, clk, arq_decode_out, arq_encode_in,
+				(x"34", x"35"));
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c2"));
+
+			-- Simultaneous encode/decode.
+			msg_write(clk, arq_decode_out, arq_encode_in,
+				(x"41", x"42", x"43"));
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				(x"03", x"36"));
+			test_expect_eq(test, clk, arq_decode_out, arq_encode_in,
+				to_buffer(x"36"));
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				(x"01", x"41", x"42", x"43"));
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c1"));
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c3"));
 		end procedure;
 
 	begin
@@ -1030,11 +1123,11 @@ begin
 		do_test_crc16_encode;
 		do_test_crc16_decode;
 
+		do_test_arq_encode;
+		do_test_arq_decode;
+
 		test_verbose(test);
 		-- ...
-		-- todo
---		do_test_arq_encode;
---		do_test_arq_decode;
 
 		test_finish(test);
 
