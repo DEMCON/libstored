@@ -48,8 +48,9 @@ architecture rtl of libstored_droptail is
 	constant DATA_DROP : std_logic_vector(1 downto 0) := "10";
 	constant DATA_DROP_LAST : std_logic_vector(1 downto 0) := "11";
 
-	signal valid_in_i, valid_out_i, accept_out_i, accept_in_i, last_valid : std_logic;
+	signal valid_in_i, valid_out_i, valid_out_o, accept_out_i, accept_in_i, last_valid : std_logic;
 	signal last_out_i : std_logic_vector(1 downto 0);
+	signal data_out_i : std_logic_vector(7 downto 0);
 begin
 	data_fifo_inst : entity work.libstored_fifo
 		generic map (
@@ -62,7 +63,7 @@ begin
 			i => data_in,
 			i_valid => valid_in_i,
 			i_accept => accept_in_i,
-			o => data_out,
+			o => data_out_i,
 			o_valid => valid_out_i,
 			o_accept => accept_out_i,
 			empty => empty
@@ -84,9 +85,17 @@ begin
 			o_accept => accept_out_i
 		);
 
-	valid_out <=
+	valid_out_o <=
 		valid_out_i and last_valid when last_out_i = DATA_NORMAL or last_out_i = DATA_LAST else
 		'0';
+
+	valid_out <= valid_out_o;
+
+	data_out <=
+--pragma translate_off
+		(others => '-') when valid_out_o /= '1' else
+--pragma translate_on
+		data_out_i;
 
 	dropped_out <=
 		'1' when last_out_i = DATA_DROP_LAST else
@@ -97,6 +106,9 @@ begin
 		valid_out_i and last_valid;
 
 	last_out <=
+--pragma translate_off
+		'-' when valid_out_o /= '1' else
+--pragma translate_on
 		'1' when last_out_i = DATA_LAST else
 		'0';
 
@@ -556,6 +568,7 @@ begin
 			if decode_in.accept = '1' and ef_last = '1' then
 				v.se := SE_WAITING;
 				v.t := ACK_TIMEOUT_CLK;
+				v.timeout := '0';
 			end if;
 		when SE_WAITING =>
 			-- Wait for ack.
