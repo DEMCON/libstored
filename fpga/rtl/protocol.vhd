@@ -217,7 +217,10 @@ entity SegmentationLayer is
 		decode_in : in libstored_pkg.msg_t;
 		decode_out : out libstored_pkg.msg_t;
 
-		idle : out std_logic
+		idle : out std_logic;
+
+		mtu_decode_in : in natural := 0;
+		mtu_decode_out : out natural
 	);
 end SegmentationLayer;
 
@@ -228,6 +231,14 @@ architecture rtl of SegmentationLayer is
 
 	signal encode_idle, decode_idle : std_logic;
 begin
+
+	mtu_decode_out <= 0;
+
+	assert mtu_decode_in = 0 or mtu_decode_in > 1
+		report "mtu_decode_in is too small; must be > 1" severity failure;
+	assert mtu_decode_in = 0 or mtu_decode_in >= MTU
+		report "Specified MTU does not fit downstream" severity failure;
+
 	encode_g : if true generate
 		type state_t is (STATE_RESET, STATE_FORWARD, STATE_C, STATE_E);
 		type r_t is record
@@ -386,7 +397,10 @@ entity ArqLayer is
 
 		retransmitted : out std_logic;
 		connected : out std_logic;
-		idle : out std_logic
+		idle : out std_logic;
+
+		mtu_decode_in : in natural := 0;
+		mtu_decode_out : out natural
 	);
 end ArqLayer;
 
@@ -464,6 +478,16 @@ architecture rtl of ArqLayer is
 
 	signal decode_seq : natural range 0 to SEQ_MAX;
 begin
+
+	mtu_decode_out <=
+		MTU when mtu_decode_in = 0 else
+		libstored_pkg.minimum(MTU, mtu_decode_in - 1);
+
+	assert mtu_decode_in = 0 or mtu_decode_in > 1
+		report "mtu_decode_in is too small; must be > 1" severity failure;
+	assert mtu_decode_in = 0 or mtu_decode_in - 1 >= MTU
+		report "Specified MTU does not fit downstream" severity failure;
+
 	ef_data_in <= encode_in.last & encode_in.data;
 	ef_data <= ef_data_out(7 downto 0);
 	ef_last <= ef_data_out(8);
@@ -612,9 +636,8 @@ begin
 			elsif decode_in.data(FLAG_ACK) = '1' then
 				-- Ignore this message. r.se should pick it up.
 				-- If r.se is not in de proper state now, drop it anyway.
-				if decode_in.last = '0' then
-					v.sd := SD_DROP;
-				end if;
+				null;
+				-- An ack may be followed by another command.
 			elsif decode_seq = 0 then
 				-- Got a reset msg. Queue an ack response.
 				v.do_ack := '1';
@@ -833,7 +856,10 @@ entity CrcLayer is
 		decode_in : in libstored_pkg.msg_t;
 		decode_out : out libstored_pkg.msg_t;
 
-		idle : out std_logic
+		idle : out std_logic;
+
+		mtu_decode_in : in natural := 0;
+		mtu_decode_out : out natural
 	);
 end CrcLayer;
 
@@ -842,6 +868,16 @@ architecture rtl of CrcLayer is
 
 	signal encode_idle, decode_idle : std_logic;
 begin
+
+	mtu_decode_out <=
+		MTU when mtu_decode_in = 0 else
+		libstored_pkg.minimum(MTU, mtu_decode_in - CRC_BYTES);
+
+	assert mtu_decode_in = 0 or mtu_decode_in > CRC_BYTES
+		report "mtu_decode_in is too small; must be > polynomial length" severity failure;
+	assert mtu_decode_in = 0 or mtu_decode_in - CRC_BYTES >= MTU
+		report "Specified MTU does not fit downstream" severity failure;
+
 	encode_g : if true generate
 		type state_t is (STATE_RESET, STATE_FORWARD, STATE_CRC);
 
@@ -946,7 +982,7 @@ begin
 		with r.state select
 			crc_i_valid <=
 				'0' when STATE_CRC,
-				encode_in.valid when others;
+				encode_in.valid and encode_out_accept when others;
 
 		crc_inst : entity work.Crc
 			generic map (
@@ -1176,7 +1212,10 @@ entity Crc8Layer is
 		decode_in : in libstored_pkg.msg_t;
 		decode_out : out libstored_pkg.msg_t;
 
-		idle : out std_logic
+		idle : out std_logic;
+
+		mtu_decode_in : in natural := 0;
+		mtu_decode_out : out natural
 	);
 end Crc8Layer;
 
@@ -1200,7 +1239,10 @@ begin
 			decode_in => decode_in,
 			decode_out => decode_out,
 
-			idle => idle
+			idle => idle,
+
+			mtu_decode_in => mtu_decode_in,
+			mtu_decode_out => mtu_decode_out
 		);
 end rtl;
 
@@ -1227,7 +1269,10 @@ entity Crc16Layer is
 		decode_in : in libstored_pkg.msg_t;
 		decode_out : out libstored_pkg.msg_t;
 
-		idle : out std_logic
+		idle : out std_logic;
+
+		mtu_decode_in : in natural := 0;
+		mtu_decode_out : out natural
 	);
 end CRC16Layer;
 
@@ -1251,7 +1296,10 @@ begin
 			decode_in => decode_in,
 			decode_out => decode_out,
 
-			idle => idle
+			idle => idle,
+
+			mtu_decode_in => mtu_decode_in,
+			mtu_decode_out => mtu_decode_out
 		);
 end rtl;
 
@@ -1278,12 +1326,19 @@ entity AsciiEscapeLayer is
 		decode_in : in libstored_pkg.msg_t;
 		decode_out : out libstored_pkg.msg_t;
 
-		idle : out std_logic
+		idle : out std_logic;
+
+		mtu_decode_in : in natural := 0;
+		mtu_decode_out : out natural
 	);
 end AsciiEscapeLayer;
 
 architecture rtl of AsciiEscapeLayer is
 begin
+	mtu_decode_out <=
+		0 when mtu_decode_in = 0 else
+		mtu_decode_in / 2;
+
 	encode_g : if true generate
 		type state_t is (STATE_DATA, STATE_ESC);
 		type r_t is record
@@ -1405,7 +1460,6 @@ begin
 
 		signal r, r_in : r_t;
 
-		signal decode_out_i, decode_out_o : std_logic_vector(8 downto 0);
 		signal decode_out_data : std_logic_vector(7 downto 0);
 		signal decode_out_valid, decode_out_accept, decode_out_last, decode_out_drop : std_logic;
 		signal decode_in_is_esc : boolean;
@@ -1509,13 +1563,18 @@ entity BufferLayer is
 		decode_in : in libstored_pkg.msg_t := libstored_pkg.msg_term;
 		decode_out : out libstored_pkg.msg_t;
 
-		idle : out std_logic
+		idle : out std_logic;
+
+		mtu_decode_in : in natural := 0;
+		mtu_decode_out : out natural
 	);
 end BufferLayer;
 
 architecture rtl of BufferLayer is
 	signal encode_empty, decode_empty : std_logic;
 begin
+
+	mtu_decode_out <= mtu_decode_in;
 
 	encode_buf_g : if ENCODE_DEPTH > 0 generate
 		signal encode_i, encode_o : std_logic_vector(8 downto 0);
@@ -1628,7 +1687,10 @@ entity TerminalLayer is
 		terminal_in : in libstored_pkg.msg_t := libstored_pkg.msg_term;
 		terminal_out : out libstored_pkg.msg_t;
 
-		idle : out std_logic
+		idle : out std_logic;
+
+		mtu_decode_in : in natural := 0;
+		mtu_decode_out : out natural
 	);
 end TerminalLayer;
 
@@ -1639,6 +1701,13 @@ architecture rtl of TerminalLayer is
 
 	signal encode_idle, decode_idle : std_logic;
 begin
+
+	mtu_decode_out <=
+		0 when mtu_decode_in = 0 else
+		mtu_decode_in - 4;
+
+	assert mtu_decode_in = 0 or mtu_decode_in > 4
+		report "mtu_decode_in is too small; must be > 4" severity failure;
 
 	encode_g : if true generate
 		type state_t is (STATE_RESET, STATE_IDLE, STATE_START_ESC, STATE_START,
@@ -1977,7 +2046,10 @@ entity UARTLayer is
 		rts : out std_logic;
 
 		idle : out std_logic;
-		bit_clk : out natural
+		bit_clk : out natural;
+
+		mtu_decode_in : in natural := 0;
+		mtu_decode_out : out natural
 	);
 end UARTLayer;
 
@@ -2058,6 +2130,8 @@ architecture rtl of UARTLayer is
 	signal rx_idle, tx_idle : std_logic;
 	signal rx_pause, tx_pause, tx_xon : std_logic;
 begin
+
+	mtu_decode_out <= mtu_decode_in;
 
 	rx_meta_inst : entity work.libstored_metastabilize
 		generic map (
