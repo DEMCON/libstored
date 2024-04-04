@@ -1305,7 +1305,10 @@ entity FileLayer is
 		encode_in : in libstored_pkg.msg_t;
 		decode_out : out libstored_pkg.msg_t;
 
-		idle : out std_logic
+		idle : out std_logic;
+
+		mtu_decode_in : in natural := 0;
+		mtu_decode_out : out natural
 	);
 end FileLayer;
 
@@ -1315,6 +1318,7 @@ architecture behav of FileLayer is
 	signal fn_in : libstored_tb_pkg.str_t(0 to 255) := libstored_tb_pkg.to_str(FILENAME_IN, 256);
 	signal fn_out : libstored_tb_pkg.str_t(0 to 255) := libstored_tb_pkg.to_str(FILENAME_OUT, 256);
 begin
+	mtu_decode_out <= mtu_decode_in;
 
 	read_p : process
 		variable status : file_open_status;
@@ -1456,7 +1460,10 @@ entity TeeLayer is
 		decode_in : in libstored_pkg.msg_t;
 		decode_out : out libstored_pkg.msg_t;
 
-		idle : out std_logic
+		idle : out std_logic;
+
+		mtu_decode_in : in natural := 0;
+		mtu_decode_out : out natural
 	);
 end TeeLayer;
 
@@ -1466,6 +1473,8 @@ architecture behav of TeeLayer is
 	signal fn_enc : libstored_tb_pkg.str_t(0 to 255) := libstored_tb_pkg.to_str(FILENAME_ENCODE, 256);
 	signal fn_dec : libstored_tb_pkg.str_t(0 to 255) := libstored_tb_pkg.to_str(FILENAME_DECODE, 256);
 begin
+
+	mtu_decode_out <= mtu_decode_in;
 
 	idle <= '1';
 
@@ -1579,7 +1588,10 @@ entity XsimLayer is
 		encode_in : in libstored_pkg.msg_t;
 		decode_out : out libstored_pkg.msg_t;
 
-		idle : out std_logic
+		idle : out std_logic;
+
+		mtu_decode_in : in natural := 0;
+		mtu_decode_out : out natural
 	);
 end XsimLayer;
 
@@ -1587,6 +1599,8 @@ architecture behav of XsimLayer is
 	signal idle_pipe, idle_tee : std_logic;
 	signal file_encode_in, file_decode_out : libstored_pkg.msg_t;
 begin
+	mtu_decode_out <= mtu_decode_in;
+
 	pipe_inst : entity work.FileLayer
 		generic map (
 			SLEEP_s => 0.0,
@@ -1646,7 +1660,10 @@ entity RandomDelayLayer is
 		encode_out : out libstored_pkg.msg_t;
 
 		decode_in : in libstored_pkg.msg_t;
-		decode_out : out libstored_pkg.msg_t
+		decode_out : out libstored_pkg.msg_t;
+
+		mtu_decode_in : in natural := 0;
+		mtu_decode_out : out natural
 	);
 end RandomDelayLayer;
 
@@ -1716,6 +1733,7 @@ architecture behav of RandomDelayLayer is
 	signal encode_out_accept_i, decode_out_accept_i : std_logic;
 	signal encode_out_valid_i, decode_out_valid_i : std_logic;
 begin
+	mtu_decode_out <= mtu_decode_in;
 
 	process
 	begin
