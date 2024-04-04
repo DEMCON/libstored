@@ -49,8 +49,14 @@ architecture rtl of example_9_fpga is
 	signal sync_in, sync_out, sync_chained_in, sync_chained_out : msg_t;
 	signal sync_chained_id : unsigned(15 downto 0);
 
+	signal segment_encode_in, segment_decode_out : msg_t;
+	signal arq_encode_in, arq_decode_out : msg_t;
+	signal crc16_encode_in, crc16_decode_out : msg_t;
+	signal ascii_encode_in, ascii_decode_out : msg_t;
 	signal term_encode_in, term_decode_out : msg_t;
 	signal uart_encode_in, uart_decode_out : msg_t;
+
+	signal segment_mtu, arq_mtu, crc16_mtu, ascii_mtu, term_mtu, uart_mtu  : natural := 0;
 
 	signal clk_cnt, write_cnt : unsigned(31 downto 0);
 begin
@@ -97,14 +103,68 @@ begin
 	-- Protocol stack for Synchronizer
 	-----------------------------------------
 
+	segment_encode_in <= sync_out;
+	sync_in <= segment_decode_out;
+
+	SegmentationLayer_inst : entity work.SegmentationLayer
+		generic map (
+			MTU => 24
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			encode_in => segment_encode_in,
+			encode_out => arq_encode_in,
+			decode_in => arq_decode_out,
+			decode_out => segment_decode_out,
+
+			-- The following two lines are not required, but they
+			-- statically check the configured MTU.
+			mtu_decode_in => arq_mtu,
+			mtu_decode_out => segment_mtu
+		);
+
+	ArqLayer_inst : entity work.ArqLayer
+		generic map (
+			MTU => 24,
+			SYSTEM_CLK_FREQ => SYSTEM_CLK_FREQ
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			encode_in => arq_encode_in,
+			encode_out => crc16_encode_in,
+			decode_in => crc16_decode_out,
+			decode_out => arq_decode_out,
+			mtu_decode_in => crc16_mtu,
+			mtu_decode_out => arq_mtu
+		);
+
+	Crc16Layer_inst : entity work.Crc16Layer
+		generic map (
+			MTU => 25
+		)
+		port map (
+			clk => clk,
+			rstn => rstn,
+			encode_in => crc16_encode_in,
+			encode_out => ascii_encode_in,
+			decode_in => ascii_decode_out,
+			decode_out => crc16_decode_out,
+			mtu_decode_in => term_mtu,
+			mtu_decode_out => crc16_mtu
+		);
+
 	ASCIIEscapeLayer_inst : entity work.ASCIIEscapeLayer
 		port map (
 			clk => clk,
 			rstn => rstn,
-			encode_in => sync_out,
+			encode_in => ascii_encode_in,
 			encode_out => term_encode_in,
 			decode_in => term_decode_out,
-			decode_out => sync_in
+			decode_out => ascii_decode_out,
+			mtu_decode_in => term_mtu,
+			mtu_decode_out => ascii_mtu
 		);
 
 	TerminalLayer_inst : entity work.TerminalLayer
@@ -114,7 +174,9 @@ begin
 			encode_in => term_encode_in,
 			encode_out => uart_encode_in,
 			decode_in => uart_decode_out,
-			decode_out => term_decode_out
+			decode_out => term_decode_out,
+			mtu_decode_in => uart_mtu,
+			mtu_decode_out => term_mtu
 		);
 
 	uart_g : if not SIMULATION generate
@@ -132,7 +194,8 @@ begin
 				rx => rx,
 				tx => tx,
 				cts => cts,
-				rts => rts
+				rts => rts,
+				mtu_decode_out => uart_mtu
 			);
 	end generate;
 
@@ -155,7 +218,8 @@ begin
 				clk => clk,
 				rstn => rstn,
 				encode_in => uart_encode_in,
-				decode_out => uart_decode_out
+				decode_out => uart_decode_out,
+				mtu_decode_out => uart_mtu
 			);
 	end generate;
 --pragma translate_on

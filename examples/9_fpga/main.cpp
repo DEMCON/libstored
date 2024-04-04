@@ -56,10 +56,21 @@ int main()
 	synchronizer.map(exampleFpga);
 	synchronizer.map(exampleFpga2);
 
+	stored::SegmentationLayer segmentation(24);
+	synchronizer.connect(segmentation);
+
+	stored::ArqLayer arq;
+	arq.wrap(segmentation);
+
+	stored::Crc16Layer crc;
+	crc.wrap(arq);
+
 	stored::AsciiEscapeLayer ascii;
-	synchronizer.connect(ascii);
+	ascii.wrap(crc);
+
 	stored::TerminalLayer term;
 	term.wrap(ascii);
+
 #ifdef STORED_OS_WINDOWS
 	stored::XsimLayer xsim("9_fpga");
 #else
