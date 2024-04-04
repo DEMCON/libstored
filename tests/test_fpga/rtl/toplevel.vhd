@@ -5,6 +5,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use ieee.math_real.all;
 
 use work.TestStore_pkg;
 
@@ -57,6 +58,9 @@ architecture behav of test_fpga is
 	signal arq_reconnect : std_logic := '0';
 
 	signal full_stack : boolean := false;
+
+	shared variable seed1 : positive := 1;
+	shared variable seed2 : positive := 2;
 begin
 
 	store_inst : entity work.TestStore_hdl
@@ -241,6 +245,9 @@ begin
 
 	process(rstn, full_stack, segment_encode_out, arq_encode_out, crc8_encode_out, esc_encode_out,
 		term_encode_out, term_decode_out, esc_decode_out, crc8_decode_out, arq_decode_out)
+
+		variable msg : msg_t := msg_term;
+		variable rand : real;
 	begin
 		if full_stack'event or rstn'event then
 			if full_stack then
@@ -274,7 +281,17 @@ begin
 
 			term_decode_in <= term_encode_out;
 			esc_decode_in <= term_decode_out;
-			crc8_decode_in <= esc_decode_out;
+
+			msg := esc_decode_out;
+			if msg.valid = '1' and msg.last = '1' then
+				uniform(seed1, seed2, rand);
+				-- Drop messages by corrupting the CRC.
+				if rand < 0.33 then
+					msg.data(0) := not msg.data(0);
+				end if;
+			end if;
+
+			crc8_decode_in <= msg;
 			arq_decode_in <= crc8_decode_out;
 			segment_decode_in <= arq_decode_out;
 		end if;
@@ -1129,11 +1146,32 @@ begin
 			msg_write(clk, segment_decode_out, segment_encode_in,
 				(x"31", x"32"));
 			msg_write(clk, segment_decode_out, segment_encode_in,
-				(x"31", x"32", x"33", x"34", x"35", x"36"));
+				(x"33", x"34", x"35", x"36", x"37", x"38"));
+			msg_write(clk, segment_decode_out, segment_encode_in,
+				(x"39", x"3a", x"3b"));
+			msg_write(clk, segment_decode_out, segment_encode_in,
+				to_buffer(x"3c"));
+			msg_write(clk, segment_decode_out, segment_encode_in,
+				(x"3d", x"3e", x"3f", x"40", x"41", x"42", x"43"));
+			msg_write(clk, segment_decode_out, segment_encode_in,
+				(x"44", x"45", x"46", x"47", x"48", x"49", x"4a", x"4b", x"4c", x"4d"));
+			msg_write(clk, segment_decode_out, segment_encode_in,
+				(x"4e", x"4f"));
+
 			test_expect_eq(test, clk, segment_decode_out, segment_encode_in,
 				(x"31", x"32"));
 			test_expect_eq(test, clk, segment_decode_out, segment_encode_in,
-				(x"31", x"32", x"33", x"34", x"35", x"36"));
+				(x"33", x"34", x"35", x"36", x"37", x"38"));
+			test_expect_eq(test, clk, segment_decode_out, segment_encode_in,
+				(x"39", x"3a", x"3b"));
+			test_expect_eq(test, clk, segment_decode_out, segment_encode_in,
+				to_buffer(x"3c"));
+			test_expect_eq(test, clk, segment_decode_out, segment_encode_in,
+				(x"3d", x"3e", x"3f", x"40", x"41", x"42", x"43"));
+			test_expect_eq(test, clk, segment_decode_out, segment_encode_in,
+				(x"44", x"45", x"46", x"47", x"48", x"49", x"4a", x"4b", x"4c", x"4d"));
+			test_expect_eq(test, clk, segment_decode_out, segment_encode_in,
+				(x"4e", x"4f"));
 
 			full_stack <= false;
 
