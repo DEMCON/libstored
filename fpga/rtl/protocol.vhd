@@ -539,7 +539,7 @@ begin
 			empty => df_empty
 		);
 
-	process(r, rstn, decode_in, ef_valid, ef_last, decode_seq, retransmit, reconnect)
+	process(r, rstn, decode_in, ef_valid, ef_last, decode_seq, retransmit, reconnect, df_accept)
 		variable v : r_t;
 	begin
 		v := r;
