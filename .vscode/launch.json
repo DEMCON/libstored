@@ -1,0 +1,25 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "cppdbg",
+			"request": "launch",
+			"name": "1_hello",
+			"preLaunchTask": "build",
+			"stopAtEntry": true,
+			"program": "1_hello",
+			"osx": {
+				"program": "${workspaceFolder}/dist/macos/build/examples/1_hello/1_hello",
+				"cwd": "${workspaceFolder}/dist/macos/build/examples/1_hello"
+			},
+			"linux": {
+				"program": "${workspaceFolder}/dist/ubuntu/build/examples/1_hello/1_hello",
+				"cwd": "${workspaceFolder}/dist/ubuntu/build/examples/1_hello"
+			},
+			"windows": {
+				"program": "${workspaceFolder}\\dist\\win32\\build\\examples\\1_hello\\1_hello.exe",
+				"cwd": "${workspaceFolder}\\dist\\ubuntu\\build\\examples\\1_hello"
+			},
+		}
+	]
+}
