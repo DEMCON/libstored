@@ -24,13 +24,20 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 Added
 `````
 
-...
+- Implement ``ArqLayer`` in VHDL.
+
+Changed
+```````
+
+- ``examples/9_fpga`` now implements a full protocol stack over a potentially
+  lossy channel.
 
 Fixed
 ``````
 
 - Use ``ZMQ_DEALER`` instead of ``ZMQ_PAIR`` for ``SyncZmqLayer`` to fix
   stability issues over IPC and other possibly non-stable connections.
+- A bug that ignored ``o_commit`` signal on ``libstored_pkg.libstored_fifo``.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.7.1...HEAD
 
