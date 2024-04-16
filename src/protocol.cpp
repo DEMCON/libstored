@@ -465,6 +465,7 @@ ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* dow
 	, m_maxEncodeBuffer(maxEncodeBuffer)
 	, m_encodeQueueSize()
 	, m_encodeState(EncodeStateIdle)
+	, m_pauseTransmit()
 	, m_didTransmit()
 	, m_retransmits()
 	, m_sendSeq()
@@ -493,6 +494,7 @@ void ArqLayer::reset()
 	stored_assert(m_encodeQueueSize == 0);
 
 	m_encodeState = EncodeStateIdle;
+	m_pauseTransmit = false;
 	m_didTransmit = false;
 	m_retransmits = 0;
 	m_sendSeq = 0;
@@ -504,56 +506,141 @@ void ArqLayer::reset()
 void ArqLayer::decode(void* buffer, size_t len)
 {
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
+	bool reconnect = false;
 
-next:
-	if(len == 0)
-		return;
+	// Usually, we expect something we have to ack. Possibly a reset command to ack afterwards.
+	// After the response, a transmit() may be called.
+	uint8_t resp[2];
+	size_t resplen = 0;
+	bool do_transmit = false;
+	bool do_decode = false;
 
-	if(buffer_[0] & AckFlag) {
-		if(waitingForAck()
-		   && (buffer_[0] & SeqMask) == ((uint8_t)(*m_encodeQueue.front())[0] & SeqMask)) {
-			// They got our last transmission.
-			popEncodeQueue();
-			m_retransmits = 0;
+	while(len > 0) {
+		uint8_t hdr = buffer_[0];
 
-			// Transmit next message, if any.
-			transmit();
+		printf("0x%02x 0x%x\n", buffer_[0], m_recvSeq);
+		if(hdr & AckFlag) {
+			if(waitingForAck()
+			   && (hdr & SeqMask) == ((uint8_t)(*m_encodeQueue.front())[0] & SeqMask)) {
+				// They got our last transmission.
+				popEncodeQueue();
+				m_retransmits = 0;
+
+				// Transmit next message, if any.
+				do_transmit = true;
+
+				if(unlikely((hdr & SeqMask) == 0)) {
+					// This is an ack to our reset message. We are connected
+					// now.
+					reconnect = true;
+					connected();
+				}
+			}
+
+			buffer_++;
+			len--;
+		} else if(likely((hdr & SeqMask) == m_recvSeq)) {
+			// This is a proper next message.
+			resp[resplen++] = (uint8_t)(m_recvSeq | AckFlag);
+			m_recvSeq = nextSeq(m_recvSeq);
+
+			do_decode = !(hdr & NopFlag);
+			do_transmit = true; // Send out next message.
+			buffer_++;
+			len--;
+		} else if((hdr & SeqMask) == 0) {
+			// This is an unexpected reset message. Reset communication.
+			event(EventReconnect);
+
+			// Send ack.
+			m_recvSeq = nextSeq(0);
+			resp[resplen++] = (uint8_t)AckFlag;
+
+			printf("ack\n");
+			// Also reset our send seq.
+			if(!reconnect
+			   && (m_encodeQueueSize == 0
+			       || (*m_encodeQueue.front())[0] != (char)NopFlag)) {
+				printf("reset\n");
+				// Inject reset message in queue.
+				String::type& s = pushEncodeQueueRaw(false);
+				s.push_back((char)NopFlag);
+				m_encodeQueueSize++;
+				m_sendSeq = nextSeq(0);
+
+				// Reencode existing outbound messages.
+				for(Deque<String::type*>::type::iterator it =
+					    ++m_encodeQueue.begin();
+				    it != m_encodeQueue.end(); ++it) {
+					(**it)[0] =
+						(char)(((uint8_t)(**it)[0] & ~SeqMask) | m_sendSeq);
+					m_sendSeq = nextSeq(m_sendSeq);
+				}
+			}
+
+			do_transmit = true;
+			buffer_++;
+			len--;
+		} else if(nextSeq((uint8_t)(hdr & SeqMask)) == m_recvSeq) {
+			// This is a retransmit of the previous message.
+			// Send ack again.
+			resp[resplen++] = (uint8_t)((uint8_t)(hdr & SeqMask) | AckFlag);
+
+			if((hdr & NopFlag)) {
+				buffer_++;
+				len--;
+			} else {
+				// Drop remaining message, without decode.
+				len = 0;
+			}
+		} else {
+			// Drop silently.
+			len = 0;
 		}
 
-		buffer_++;
-		len--;
-		goto next;
+		if(do_decode) {
+			// Rest of message is data to decode.
+			break;
+		}
+
+		if(resplen == sizeof(resp)) {
+			// Buffer full. Unexpected amount of responses. Drop and wait for retransmit.
+			break;
+		}
 	}
 
-	if(likely((buffer_[0] & SeqMask) == m_recvSeq)) {
-		// This is a proper next message.
-		uint8_t ack = (uint8_t)(m_recvSeq | AckFlag);
-		base::encode(&ack, 1, false);
-		m_recvSeq = nextSeq(m_recvSeq);
+	if(do_decode) {
+		// Do decode first, as recursive calls to decode/encode may corrupt our buffer.
+
+		stored_assert(!m_pauseTransmit);
+		m_pauseTransmit = true;
+
 		resetDidTransmit();
+		// Decode and queue encodes only.
+		base::decode(buffer_, len);
+		if(didTransmit())
+			do_transmit = true;
 
-		if(likely(!(buffer_[0] & NopFlag))) {
-			// Go process the payload.
-			base::decode(buffer_ + 1, len - 1);
-		}
+		// We do not expect recursion here that influence this flag.
+		stored_assert(m_pauseTransmit);
+		m_pauseTransmit = false;
 
-		if(!didTransmit())
-			transmit();
+		len = 0;
+	}
 
-		// cppcheck-suppress duplicateCondition
-		if(!didTransmit()) {
+	if(resplen) {
+		// First encode the responses...
+		base::encode(resp, resplen, !do_transmit);
+		m_didTransmit = true;
+	}
+
+	if(do_transmit) {
+		// ...then a message.
+		if(!transmit() && resplen) {
 			base::encode(nullptr, 0, true);
 			m_didTransmit = true;
 		}
-	} else if(nextSeq((uint8_t)(buffer_[0] & SeqMask)) == m_recvSeq) {
-		// This is a retransmit of the previous message.
-		// Send ack again.
-		uint8_t ack = (uint8_t)((uint8_t)(buffer_[0] & SeqMask) | AckFlag);
-		base::encode(&ack, 1, true);
-	} else if((buffer_[0] & SeqMask) == 0) {
-		// This is an unexpected reset message.
-		event(EventReconnect);
-	} // else drop silently
+	}
 }
 
 /*!
@@ -622,15 +709,19 @@ bool ArqLayer::transmit()
 	// Update administration first, in case base::encode() has some recursive
 	// call back to decode()/encode().
 	m_didTransmit = true;
+
+	if(m_pauseTransmit)
+		// Only queue for now.
+		return false;
+
 	if(m_retransmits < std::numeric_limits<decltype(m_retransmits)>::max())
 		m_retransmits++;
 	if(m_retransmits >= RetransmitCallbackThreshold)
 		event(EventRetransmit);
 
 	// (Re)transmit first message.
-	base::encode(m_encodeQueue.front()->data(), m_encodeQueue.front()->size(), true);
-
 	stored_assert(waitingForAck());
+	base::encode(m_encodeQueue.front()->data(), m_encodeQueue.front()->size(), true);
 	return true;
 }
 
@@ -760,9 +851,9 @@ void ArqLayer::popEncodeQueue()
 /*!
  * \brief Push the given buffer into the encode queue.
  */
-void ArqLayer::pushEncodeQueue(void const* buffer, size_t len)
+void ArqLayer::pushEncodeQueue(void const* buffer, size_t len, bool back)
 {
-	String::type& s = pushEncodeQueueRaw();
+	String::type& s = pushEncodeQueueRaw(back);
 	s.push_back((char)m_sendSeq);
 	s.append(static_cast<char const*>(buffer), len);
 	m_sendSeq = nextSeq(m_sendSeq);
@@ -775,14 +866,21 @@ void ArqLayer::pushEncodeQueue(void const* buffer, size_t len)
  * The returned buffer can be used to put the message in. This should include
  * the sequence number as the first byte.
  */
-String::type& ArqLayer::pushEncodeQueueRaw()
+String::type& ArqLayer::pushEncodeQueueRaw(bool back)
 {
 	String::type* s = nullptr;
 
 	if(m_spare.empty()) {
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		s = new(allocate<String::type>()) String::type;
+	} else {
+		s = m_spare.back();
+		m_spare.pop_back();
+	}
 
+	stored_assert(s);
+
+	if(back) {
 		m_encodeQueue.
 #if STORED_cplusplus >= 201103L
 			emplace_back(s);
@@ -790,14 +888,11 @@ String::type& ArqLayer::pushEncodeQueueRaw()
 			push_back(s);
 #endif
 	} else {
-		s = m_spare.back();
-		m_spare.pop_back();
-
 		m_encodeQueue.
 #if STORED_cplusplus >= 201103L
-			emplace_back(s);
+			emplace_front(s);
 #else
-			push_back(s);
+			push_front(s);
 #endif
 	}
 
@@ -1571,8 +1666,9 @@ void impl::Loopback1::encode(void const* buffer, size_t len, bool last)
 	}
 
 	if(last) {
-		m_to->decode(m_buffer, m_len);
+		size_t l = m_len;
 		m_len = 0;
+		m_to->decode(m_buffer, l);
 	}
 }
 
@@ -2744,6 +2840,7 @@ again:
 		if(ConnectNamedPipe(handle(), &overlappedRead())) {
 			// Connected immediately.
 			m_state = StateConnected;
+			connected();
 			didDecode = true;
 			goto again;
 		} else {
@@ -2774,6 +2871,7 @@ again:
 
 		if(GetOverlappedResult(fd_r(), &overlappedRead(), &dummy, FALSE)) {
 			m_state = StateConnected;
+			connected();
 			if(m_openMode != Outbound && startRead()) {
 				if(lastError() == EAGAIN) {
 					if(!didDecode && timeout_us < 0)
@@ -2969,6 +3067,7 @@ void NamedPipeLayer::reopen()
 	}
 
 	init(fd_r, fd_w);
+	connected();
 }
 #endif // STORED_OS_POSIX
 

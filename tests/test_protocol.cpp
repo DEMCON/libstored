@@ -890,14 +890,12 @@ TEST(ArqLayer, Retransmit)
 
 	DECODE(bottom, "\xff");
 	// 0xff is ignored
-	//
 	DECODE(bottom, "\x40");
 	EXPECT_EQ(bottom.encoded().at(0), "\x80\x40"); // ack 0x40, and retransmit
 
 	// retransmit
 	DECODE(bottom, "\x40");
-	EXPECT_EQ(bottom.encoded().at(1), "\x80"); // ack 0x40
-	// No auto-retransmit
+	EXPECT_EQ(bottom.encoded().at(1), "\x80\x40"); // ack 0x40, and retransmit
 
 	top.flush();
 	// retransmit
@@ -1002,6 +1000,87 @@ TEST(ArqLayer, Callback)
 	EXPECT_EQ(event, stored::ArqLayer::EventRetransmit);
 }
 
+TEST(ArqLayer, Reconnect)
+{
+	LoggingLayer top;
+	stored::ArqLayer l;
+	l.wrap(top);
+	LoggingLayer bottom;
+	bottom.wrap(l);
+
+	DECODE(bottom, "\x80\x40");
+	bottom.clear();
+
+	top.encode(" 1", 2);
+	EXPECT_EQ(bottom.encoded().at(0), "\x01 1");
+	DECODE(bottom, "\x81");
+
+	top.encode(" 2", 2);
+	EXPECT_EQ(bottom.encoded().at(1), "\x02 2");
+	DECODE(bottom, "\x82");
+
+	DECODE(bottom, "\x40");
+	EXPECT_EQ(bottom.encoded().at(2), "\x80\x40");
+
+	top.encode(" 3", 2);
+	EXPECT_EQ(bottom.encoded().at(3), "\x40"); // retransmit
+
+	DECODE(bottom, "\x40");
+	EXPECT_EQ(bottom.encoded().at(4), "\x80\x40"); // reconnect
+
+	// Separate ack/reset does not fully reconnect; expect reset.
+	DECODE(bottom, "\xc0");
+	EXPECT_EQ(bottom.encoded().at(5), "\x01 3");
+	DECODE(bottom, "\x40");
+	EXPECT_EQ(bottom.encoded().at(6), "\x80\x40"); // full reset again
+
+	// In same message, reconnection completes.
+	DECODE(bottom, "\xc0\x40");
+	EXPECT_EQ(bottom.encoded().at(7), "\x80\x01 3");
+	DECODE(bottom, "\x81");
+
+	top.encode(" 4", 2);
+	EXPECT_EQ(bottom.encoded().at(8), "\x02 4");
+	DECODE(bottom, "\x82");
+
+	top.encode(" 5", 2);
+	EXPECT_EQ(bottom.encoded().at(9), "\x03 5");
+	DECODE(bottom, "\x40");
+	EXPECT_EQ(bottom.encoded().at(10), "\x80\x40");
+	DECODE(bottom, "\x80");
+	EXPECT_EQ(bottom.encoded().at(11), "\x01 5");
+}
+
+TEST(ArqLayer, Reconnect2)
+{
+	stored::ArqLayer a;
+	stored::ArqLayer b;
+	stored::PrintLayer p;
+	p.wrap(a);
+	stored::Loopback l(p, b);
+	LoggingLayer la;
+	la.stack(a);
+	LoggingLayer lb;
+	lb.stack(b);
+
+	la.encode(" 1", 2);
+	EXPECT_EQ(lb.decoded().at(0), " 1");
+
+	la.encode(" 2", 2);
+	EXPECT_EQ(lb.decoded().at(1), " 2");
+
+	lb.encode(" 3", 2);
+	EXPECT_EQ(la.decoded().at(0), " 3");
+
+	la.reset();
+
+	lb.encode(" 4", 2);
+	EXPECT_EQ(la.decoded().at(1), " 4");
+
+	la.encode(" 5", 2);
+	EXPECT_EQ(lb.decoded().at(2), " 5");
+}
+
 TEST(CompressLayer, Compress)
 {
 	LoggingLayer top;
@@ -1097,7 +1176,7 @@ TEST(FileLayer, NamedPipe)
 	l.encode(" Upon a Star", 12);
 	EXPECT_EQ(recvAll(f), 0);
 	EXPECT_EQ(ftop.allDecoded(), " Upon a Star");
-#else // !STORED_OS_WINDOWS
+#else  // !STORED_OS_WINDOWS
 	LoggingLayer top;
 	stored::NamedPipeLayer li("test", stored::NamedPipeLayer::Inbound);
 	li.wrap(top);
