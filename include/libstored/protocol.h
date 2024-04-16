@@ -70,18 +70,71 @@ public:
 	 * \brief Change the layer that receives our decoded frames.
 	 * \param up the layer, which can be \c nullptr
 	 */
-	void setUp(ProtocolLayer* up)
+	void setUp(ProtocolLayer* up = nullptr)
 	{
 		m_up = up;
+		connected();
 	}
 
 	/*!
 	 * \brief Change the layer that receives our encoded frames.
 	 * \param down the layer, which can be \c nullptr
 	 */
-	void setDown(ProtocolLayer* down)
+	void setDown(ProtocolLayer* down = nullptr)
 	{
 		m_down = down;
+	}
+
+	/*!
+	 * \brief Return the lowest layer of the stack.
+	 */
+	ProtocolLayer& bottom()
+	{
+		ProtocolLayer* p = this;
+
+		while(p->down())
+			p = p->down();
+
+		return *p;
+	}
+
+	/*!
+	 * \brief Return the lowest layer of the stack.
+	 */
+	ProtocolLayer const& bottom() const
+	{
+		ProtocolLayer const* p = this;
+
+		while(p->down())
+			p = p->down();
+
+		return *p;
+	}
+
+	/*!
+	 * \brief Return the highest layer of the stack.
+	 */
+	ProtocolLayer& top()
+	{
+		ProtocolLayer* p = this;
+
+		while(p->up())
+			p = p->up();
+
+		return *p;
+	}
+
+	/*!
+	 * \brief Return the highest layer of the stack.
+	 */
+	ProtocolLayer const& top() const
+	{
+		ProtocolLayer const* p = this;
+
+		while(p->up())
+			p = p->up();
+
+		return *p;
 	}
 
 	/*!
@@ -90,19 +143,23 @@ public:
 	 *
 	 * If the given layer was not the bottom of the stack, this layer
 	 * injects itself in between the given layer and its wrapper.
+	 *
+	 * \return the new bottom layer of the stack
 	 */
-	void wrap(ProtocolLayer& up)
+	ProtocolLayer& wrap(ProtocolLayer& up)
 	{
-		if(!down()) {
-			ProtocolLayer* d = up.down();
+		ProtocolLayer* b = &bottom();
+		ProtocolLayer* d = up.down();
 
-			setDown(d);
-			if(d)
-				d->setUp(this);
+		if(d) {
+			b->setDown(d);
+			d->setUp(b);
+			b = &d->bottom();
 		}
 
 		up.setDown(this);
 		setUp(&up);
+		return *b;
 	}
 
 	/*!
@@ -111,17 +168,25 @@ public:
 	 *
 	 * If the given layer was not the top of the stack, this layer injects
 	 * itself between the given layer and its stacked one.
+	 *
+	 * \return the new top layer of the stack.
 	 */
-	void stack(ProtocolLayer& down)
+	ProtocolLayer& stack(ProtocolLayer& down)
 	{
 		ProtocolLayer* u = down.up();
 
-		setUp(u);
-		if(u)
-			u->setDown(this);
-
-		down.setUp(this);
 		setDown(&down);
+		down.setUp(this);
+
+		ProtocolLayer* t = &top();
+
+		if(u) {
+			u->setDown(t);
+			t->setUp(u);
+			t = &u->top();
+		}
+
+		return *t;
 	}
 
 	/*!
@@ -229,6 +294,15 @@ public:
 	{
 		if(down())
 			down()->reset();
+	}
+
+	/*!
+	 * \brief (Re)connected notification (bottom-up).
+	 */
+	virtual void connected()
+	{
+		if(up())
+			up()->connected();
 	}
 
 private:
@@ -384,42 +458,49 @@ private:
 /*!
  * \brief A general purpose layer that performs Automatic Repeat Request operations on messages.
  *
- * This layer does not assume a specific message pattern. For
- * #stored::Debugger, use #stored::DebugArqLayer.
+ * This layer does not assume a specific message pattern. For #stored::Debugger, use
+ * #stored::DebugArqLayer.
  *
- * Every message sent has to be acknowledged. There is no window; after
- * sending a message, an ack must be received before continuing.  The queue
- * of messages is by default unlimited, but can be set via the constructor.
- * If the limit is hit, the event callback is invoked.
+ * Every message sent has to be acknowledged. There is no window; after sending a message, an ack
+ * must be received before continuing.  The queue of messages is by default unlimited, but can be
+ * set via the constructor.  If the limit is hit, the event callback is invoked.
  *
- * This layer prepends the message with a sequence number byte.  The MSb
- * indicates if it is an ack, the 6 LSb are the sequence number.
- * Sequence 0 is special; it resets the connection. It should not be used
- * during normal operation, so the next sequence number after 63 is 1.
- * Messages that do not have a payload (so, no decode() has to be invoked
- * upon receival), should set bit 6. This also applies to the reset
- * message.
+ * This layer prepends the message with a sequence number byte.  The MSb indicates if it is an ack,
+ * the 6 LSb are the sequence number.  Sequence 0 is special; it resets the connection. It should
+ * not be used during normal operation, so the next sequence number after 63 is 1.  Messages that do
+ * not have a payload (so, no decode() has to be invoked upon receive), should set bit 6. This also
+ * applies to the reset message. Bit 6 is implied for an ack.
  *
- * Retransmits are triggered every time a message is queued for encoding,
- * or when #flush() is called. There is no timeout specified.
+ * Retransmits are triggered every time a message is queued for encoding, or when #flush() is
+ * called. There is no timeout specified.
  *
- * One may decide to use a #stored::SegmentationLayer higher in the
- * protocol stack to reduce the amount of data to retransmit when a message
- * is lost (only one segment is retransmitted, not the full message), but
- * this may add the overhead of the sequence number and round-trip time per
- * segment. If the #stored::SegmentationLayer is used below the ArqLayer,
- * normal-case behavior (no packet loss) is most efficient, but the penalty
- * of a retransmit may be higher. It is up to the infrastructure and
- * application requirements what is best.
+ * One may decide to use a #stored::SegmentationLayer higher in the protocol stack to reduce the
+ * amount of data to retransmit when a message is lost (only one segment is retransmitted, not the
+ * full message), but this may add the overhead of the sequence number and round-trip time per
+ * segment. If the #stored::SegmentationLayer is used below the ArqLayer, normal-case behavior (no
+ * packet loss) is most efficient, but the penalty of a retransmit may be higher. It is up to the
+ * infrastructure and application requirements what is best.
  *
- * The layer has no notion of time, or time out for retransmits and acks.
- * The application must call #flush() (for the whole stack), or
- * #keepAlive() at a regular interval. Every invocation of either function
- * will do a retransmit of the head of the encode queue. If called to
- * often, retransmits may be done before the other party had a chance to
- * respond. If called not often enough, retransmits may take long and
- * communication may be slowed down. Either way, it is functionally
+ * The layer has no notion of time, or time out for retransmits and acks.  The application must call
+ * #flush() (for the whole stack), or #keepAlive() at a regular interval. Every invocation of either
+ * function will do a retransmit of the head of the encode queue. If called to often, retransmits
+ * may be done before the other party had a chance to respond. If called not often enough,
+ * retransmits may take long and communication may be slowed down. Either way, it is functionally
  * correct. Determine for your application what is wise to do.
+ *
+ * A reset connection or peer can be recovered from by sending the reset message. The other peer
+ * will also reset the communication. To prevent recursive resets, the ack and the reset response
+ * must be in the same message; this way the peer knows that the reset was processed properly.
+ * Successive resets are not required. A typical flow between peer A and B will be:
+ *
+ * \verbatim
+ * A -> B: reset (0x40)
+ * B -> A: ack (0x80), reset (0x40)
+ * A -> B: ack (0x80)
+ * \endverbatim
+ *
+ * Queued messages are retransmitted after the reset, although they may be duplicated when an ack is
+ * lost during the reset. Messages are never completely lost.
  */
 class ArqLayer : public ProtocolLayer {
 	STORED_CLASS_NOCOPY(ArqLayer)
@@ -546,8 +627,8 @@ protected:
 	static uint8_t nextSeq(uint8_t seq);
 
 	void popEncodeQueue();
-	void pushEncodeQueue(void const* buffer, size_t len);
-	String::type& pushEncodeQueueRaw();
+	void pushEncodeQueue(void const* buffer, size_t len, bool back = true);
+	String::type& pushEncodeQueueRaw(bool back = true);
 
 private:
 #	if STORED_cplusplus < 201103L
@@ -562,6 +643,7 @@ private:
 	Deque<String::type*>::type m_spare;
 	size_t m_encodeQueueSize;
 	EncodeState m_encodeState;
+	bool m_pauseTransmit;
 	bool m_didTransmit;
 	uint8_t m_retransmits;
 
@@ -870,6 +952,9 @@ public:
 
 	virtual void decode(void* buffer, size_t len) override
 	{
+		if(m_idleUp)
+			connected();
+
 		m_idleUp = false;
 		base::decode(buffer, len);
 	}
@@ -923,38 +1008,53 @@ private:
 };
 
 #	if STORED_cplusplus >= 201103L
-template <typename Up, typename Down>
+template <typename Up, typename Down, typename Connected>
 class CallbackLayer;
 
 template <typename Up, typename Down>
-static inline CallbackLayer<typename std::decay<Up>::type, typename std::decay<Down>::type>
+static inline CallbackLayer<
+	typename std::decay<Up>::type, typename std::decay<Down>::type, void (*)()>
 make_callback(Up&& up, Down&& down);
+
+template <typename Up, typename Down, typename Connected>
+static inline CallbackLayer<
+	typename std::decay<Up>::type, typename std::decay<Down>::type,
+	typename std::decay<Connected>::type>
+make_callback(Up&& up, Down&& down, Connected&& connected);
 
 /*!
  * \brief Callback class that invokes a callback for every messages through the stack.
  *
  * \copydetails #stored::make_callback()
  */
-template <typename Up, typename Down>
+template <typename Up, typename Down, typename Connected>
 class CallbackLayer : public ProtocolLayer {
 public:
 	typedef ProtocolLayer base;
 
 protected:
-	template <typename U, typename D>
-	CallbackLayer(U&& u, D&& d)
+	template <typename U, typename D, typename C>
+	CallbackLayer(U&& u, D&& d, C&& c)
 		: m_up{std::forward<U>(u)}
 		, m_down{std::forward<D>(d)}
+		, m_connected{std::forward<C>(c)}
 	{}
 
 	template <typename U, typename D>
-	friend CallbackLayer<typename std::decay<U>::type, typename std::decay<D>::type>
+	friend CallbackLayer<typename std::decay<U>::type, typename std::decay<D>::type, void (*)()>
 	make_callback(U&& up, D&& down);
+
+	template <typename U, typename D, typename C>
+	friend CallbackLayer<
+		typename std::decay<U>::type, typename std::decay<D>::type,
+		typename std::decay<C>::type>
+	make_callback(U&& up, D&& down, C&& connected);
 
 public:
 	CallbackLayer(CallbackLayer&& l) noexcept
 		: m_up{std::move(l.m_up)}
 		, m_down{std::move(l.m_down)}
+		, m_connected{std::move(l.m_connected)}
 	{}
 
 	CallbackLayer(CallbackLayer const&) = delete;
@@ -976,6 +1076,12 @@ public:
 		base::encode(buffer, len, last);
 	}
 
+	virtual void connected() override
+	{
+		m_connected();
+		base::connected();
+	}
+
 #		ifndef DOXYGEN
 	using base::encode;
 #		endif
@@ -983,6 +1089,7 @@ public:
 private:
 	Up m_up;
 	Down m_down;
+	Connected m_connected;
 };
 
 /*!
@@ -996,16 +1103,46 @@ private:
  *               [&](void const&, size_t, bool){ ... });
  * \endcode
  *
- * The first argument (a lambda in the example above), gets the parameters
- * as passed to \c decode().  The second argument get the parameters as
- * passed to \c encode().
+ * The first argument (a lambda in the example above), gets the parameters as passed to \c decode().
+ * The second argument get the parameters as passed to \c encode().
  */
 template <typename Up, typename Down>
-static inline CallbackLayer<typename std::decay<Up>::type, typename std::decay<Down>::type>
+static inline CallbackLayer<
+	typename std::decay<Up>::type, typename std::decay<Down>::type, void (*)()>
 make_callback(Up&& up, Down&& down)
 {
-	return CallbackLayer<typename std::decay<Up>::type, typename std::decay<Down>::type>{
-		std::forward<Up>(up), std::forward<Down>(down)};
+	return CallbackLayer<
+		typename std::decay<Up>::type, typename std::decay<Down>::type, void (*)()>{
+		std::forward<Up>(up), std::forward<Down>(down), []() {}};
+}
+
+/*!
+ * \brief Creates a ProtocolLayer that invokes a given callback on every messages or connected event
+ *	through the layer.
+ *
+ * Use as follows:
+ *
+ * \code
+ * auto cb = stored::make_callback(
+ *               [&](void*, size_t){ ... },
+ *               [&](void const&, size_t, bool){ ... },
+ *               [&](){ ... });
+ * \endcode
+ *
+ * The first argument (a lambda in the example above), gets the parameters as passed to \c decode().
+ * The second argument get the parameters as passed to \c encode(). The third one gets invoked upon
+ * \c connected().
+ */
+template <typename Up, typename Down, typename Connected>
+static inline CallbackLayer<
+	typename std::decay<Up>::type, typename std::decay<Down>::type,
+	typename std::decay<Connected>::type>
+make_callback(Up&& up, Down&& down, Connected&& connected)
+{
+	return CallbackLayer<
+		typename std::decay<Up>::type, typename std::decay<Down>::type,
+		typename std::decay<Connected>::type>{
+		std::forward<Up>(up), std::forward<Down>(down), std::forward<Connected>(connected)};
 }
 #	endif // C++11
 
@@ -1361,9 +1498,9 @@ public:
 	String::type const& name() const;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#	ifndef DOXYGEN
+#		ifndef DOXYGEN
 	using base::encode;
-#	endif
+#		endif
 
 	bool isConnected() const;
 	virtual void reopen();
@@ -1414,7 +1551,7 @@ private:
 	NamedPipeLayer m_w;
 };
 
-#if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX)
+#	if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX)
 /*!
  * \brief XSIM interaction.
  *
@@ -1441,9 +1578,9 @@ public:
 	virtual ~XsimLayer() override;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#	ifndef DOXYGEN
+#		ifndef DOXYGEN
 	using base::encode;
-#	endif
+#		endif
 
 	virtual int recv(long timeout_us = 0) override;
 	virtual void reset() override;
@@ -1482,7 +1619,7 @@ private:
 	NamedPipeLayer m_req;
 	size_t m_inFlight;
 };
-#endif // STORED_OS_WINDOWS || STORED_OS_POSIX
+#	endif // STORED_OS_WINDOWS || STORED_OS_POSIX
 
 #	if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
 /*!
