@@ -531,6 +531,7 @@ public:
 	virtual size_t mtu() const override;
 	virtual bool flush() override;
 	virtual void reset() override;
+	virtual void connected() override;
 	void keepAlive();
 
 	enum Event {

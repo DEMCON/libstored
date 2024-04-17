@@ -1055,9 +1055,7 @@ TEST(ArqLayer, Reconnect2)
 {
 	stored::ArqLayer a;
 	stored::ArqLayer b;
-	stored::PrintLayer p;
-	p.wrap(a);
-	stored::Loopback l(p, b);
+	stored::Loopback l(a, b);
 	LoggingLayer la;
 	la.stack(a);
 	LoggingLayer lb;
