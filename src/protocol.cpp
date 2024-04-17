@@ -15,6 +15,7 @@
 #endif
 
 #if defined(STORED_OS_POSIX)
+#	include <csignal>
 #	include <sys/types.h>
 #	include <sys/stat.h>
 #	include <termios.h>
@@ -518,7 +519,6 @@ void ArqLayer::decode(void* buffer, size_t len)
 	while(len > 0) {
 		uint8_t hdr = buffer_[0];
 
-		printf("0x%02x 0x%x\n", buffer_[0], m_recvSeq);
 		if(hdr & AckFlag) {
 			if(waitingForAck()
 			   && (hdr & SeqMask) == ((uint8_t)(*m_encodeQueue.front())[0] & SeqMask)) {
@@ -533,7 +533,7 @@ void ArqLayer::decode(void* buffer, size_t len)
 					// This is an ack to our reset message. We are connected
 					// now.
 					reconnect = true;
-					connected();
+					base::connected();
 				}
 			}
 
@@ -541,6 +541,7 @@ void ArqLayer::decode(void* buffer, size_t len)
 			len--;
 		} else if(likely((hdr & SeqMask) == m_recvSeq)) {
 			// This is a proper next message.
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
 			resp[resplen++] = (uint8_t)(m_recvSeq | AckFlag);
 			m_recvSeq = nextSeq(m_recvSeq);
 
@@ -554,14 +555,13 @@ void ArqLayer::decode(void* buffer, size_t len)
 
 			// Send ack.
 			m_recvSeq = nextSeq(0);
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
 			resp[resplen++] = (uint8_t)AckFlag;
 
-			printf("ack\n");
 			// Also reset our send seq.
 			if(!reconnect
 			   && (m_encodeQueueSize == 0
 			       || (*m_encodeQueue.front())[0] != (char)NopFlag)) {
-				printf("reset\n");
 				// Inject reset message in queue.
 				String::type& s = pushEncodeQueueRaw(false);
 				s.push_back((char)NopFlag);
@@ -573,7 +573,10 @@ void ArqLayer::decode(void* buffer, size_t len)
 					    ++m_encodeQueue.begin();
 				    it != m_encodeQueue.end(); ++it) {
 					(**it)[0] =
-						(char)(((uint8_t)(**it)[0] & ~SeqMask) | m_sendSeq);
+						(char)((uint8_t)(
+							       (uint8_t)(**it)[0]
+							       & (uint8_t)~SeqMask)
+						       | m_sendSeq);
 					m_sendSeq = nextSeq(m_sendSeq);
 				}
 			}
@@ -584,6 +587,7 @@ void ArqLayer::decode(void* buffer, size_t len)
 		} else if(nextSeq((uint8_t)(hdr & SeqMask)) == m_recvSeq) {
 			// This is a retransmit of the previous message.
 			// Send ack again.
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
 			resp[resplen++] = (uint8_t)((uint8_t)(hdr & SeqMask) | AckFlag);
 
 			if((hdr & NopFlag)) {
@@ -594,8 +598,9 @@ void ArqLayer::decode(void* buffer, size_t len)
 				len = 0;
 			}
 		} else {
-			// Drop silently.
+			// Drop.
 			len = 0;
+			do_transmit = true;
 		}
 
 		if(do_decode) {
@@ -604,7 +609,8 @@ void ArqLayer::decode(void* buffer, size_t len)
 		}
 
 		if(resplen == sizeof(resp)) {
-			// Buffer full. Unexpected amount of responses. Drop and wait for retransmit.
+			// Buffer full. Unexpected amount of responses. Drop and wait for
+			// retransmit.
 			break;
 		}
 	}
@@ -624,8 +630,6 @@ void ArqLayer::decode(void* buffer, size_t len)
 		// We do not expect recursion here that influence this flag.
 		stored_assert(m_pauseTransmit);
 		m_pauseTransmit = false;
-
-		len = 0;
 	}
 
 	if(resplen) {
@@ -921,6 +925,13 @@ void ArqLayer::shrink_to_fit()
 	m_spare.shrink_to_fit();
 #endif
 }
+
+void ArqLayer::connected()
+{
+	// Don't propagate the connected event.  A reconnection is handled by this layer itself, via
+	// retransmits or resets.
+}
+
 
 
 //////////////////////////////
@@ -3005,6 +3016,23 @@ NamedPipeLayer::NamedPipeLayer(
 		int fd_w = open("/dev/null", O_WRONLY);
 		init(fd_r, fd_w);
 	} else {
+		sighandler_t oldh = signal(SIGPIPE, SIG_IGN);
+
+		if(oldh == SIG_ERR) {
+			setLastError(errno ? errno : EINVAL);
+			return;
+		} else if(oldh != SIG_IGN && oldh != SIG_DFL) {
+			// Oops, revert the handler and accept SIGPIPEs.
+			if(signal(SIGPIPE, oldh) == SIG_ERR) {
+				// Really oops... Now we broke something.
+#	ifdef STORED_cpp_exceptions
+				throw std::runtime_error("Cannot restore SIGPIPE handler");
+#	else
+				std::terminate();
+#	endif
+			}
+		}
+
 		// Postpone open() till first encode().
 		setLastError(0);
 	}
@@ -3106,7 +3134,7 @@ bool DoublePipeLayer::isOpen() const
 
 int DoublePipeLayer::recv(long timeout_us)
 {
-	m_w.recv(false);
+	m_w.recv();
 	return setLastError(m_r.recv(timeout_us));
 }
 

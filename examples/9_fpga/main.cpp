@@ -34,7 +34,7 @@ public:
 	ExampleFpga2() is_default
 };
 
-int main()
+int main(int argc, char** argv)
 {
 	puts(stored::banner());
 
@@ -77,13 +77,12 @@ int main()
 	stored::XsimLayer xsim("/tmp/9_fpga");
 #endif
 
-#if 0 // Enable to dump all data to the terminal for debugging.
-	stored::PrintLayer print(stdout);
-	print.wrap(term);
-	xsim.wrap(print);
-#else
 	xsim.wrap(term);
-#endif
+
+	stored::PrintLayer print(stdout);
+
+	if(argc >= 2 && strcmp(argv[1], "-v") == 0)
+		print.wrap(term);
 
 	if((errno = xsim.lastError()) && errno != EAGAIN) {
 		perror("Cannot initialize XSIM interface");
@@ -107,7 +106,9 @@ int main()
 
 	while(true) {
 		// 1 s timeout, to force keep alive once in a while.
-		if(poller.poll(1000).empty()) {
+		stored::Poller::Result const& result = poller.poll(1000);
+
+		if(result.empty()) {
 			switch(errno) {
 			case EAGAIN:
 			case EINTR:

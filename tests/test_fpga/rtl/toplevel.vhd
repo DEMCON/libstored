@@ -1060,6 +1060,28 @@ begin
 				(x"03", x"36"));
 			msg_write(clk, arq_encode_out, arq_decode_in,
 				to_buffer(x"c3"));
+
+			-- Reset
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"40"));
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				(x"c0", x"40"));
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c0"));
+			msg_write(clk, arq_decode_out, arq_encode_in,
+				(x"40", x"41"));
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				(x"01", x"40", x"41"));
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"40")); -- abort encode
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				(x"c0", x"40"));
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c0"));
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				(x"01", x"40", x"41")); -- retransmit
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c1"));
 		end procedure;
 
 		procedure do_test_arq_decode is
@@ -1080,9 +1102,18 @@ begin
 
 			-- Do decode reset.
 			msg_write(clk, arq_encode_out, arq_decode_in,
-				to_buffer(x"40"));
+				to_buffer(x"40")); -- split reset after ack
 			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
 				to_buffer(x"c0"));
+			test_expect_eq(test, arq_encode_out.last, '0');
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"40")); -- rereset
+			test_expect_eq(test, arq_encode_out.last, '1');
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				(x"c0", x"40")); -- proper reset response.
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c0"));
+			test_expect_eq(test, arq_encode_out.last, '1');
 
 			-- Decode
 			msg_write(clk, arq_encode_out, arq_decode_in,
@@ -1120,6 +1151,20 @@ begin
 				to_buffer(x"c1"));
 			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
 				to_buffer(x"c3"));
+
+			-- Reset connection
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"40"));
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				(x"c0", x"40"));
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c0"));
+			msg_write(clk, arq_encode_out, arq_decode_in,
+				(x"01", x"50", x"51"));
+			test_expect_eq(test, clk, arq_decode_out, arq_encode_in,
+				(x"50", x"51"));
+			test_expect_eq(test, clk, arq_encode_out, arq_decode_in,
+				to_buffer(x"c1"));
 		end procedure;
 
 		procedure do_full_stack is

@@ -465,6 +465,8 @@ architecture rtl of ArqLayer is
 		seq_d : natural range 0 to SEQ_MAX;
 		seq_d_prev : natural range 0 to SEQ_MAX;
 		do_ack : std_logic;
+		do_reset : std_logic;
+		resetting : boolean;
 	end record;
 
 	signal r_in, r : r_t;
@@ -561,6 +563,8 @@ begin
 		when SE_RESET =>
 			v.se := SE_RECONNECT;
 			v.do_ack := '0';
+			v.do_reset := '1';
+			v.resetting := false;
 		when SE_RECONNECT =>
 			-- Send out reset message.
 			if decode_in.accept = '1' then
@@ -568,18 +572,25 @@ begin
 				v.timeout := '0';
 				v.t := ACK_TIMEOUT_CLK;
 				v.seq_e := 0;
+				v.do_reset := '0';
 			end if;
 		when SE_RECONNECTING =>
 			if r.sd = SD_IDLE and decode_in.data(FLAG_ACK) = '1' and decode_seq = 0 and decode_in.valid = '1' then
 				-- Ack on our reset msg. We are connected now.
 				v.se := SE_IDLE;
 				v.seq_e := 1;
-			elsif r.timeout = '1' then
+				v.resetting := true;
+			elsif r.timeout = '1' and r.do_ack = '0' then
 				v.se := SE_RECONNECT;
 				v.retransmit := '1';
 			end if;
 		when SE_IDLE =>
-			if r.do_ack = '0' and ef_valid = '1' then
+			if r.do_ack = '1' then
+				-- Wait for accept.
+				null;
+			elsif r.do_reset = '1' then
+				v.se := SE_RECONNECT;
+			elsif ef_valid = '1' then
 				v.se := SE_HEADER;
 			end if;
 		when SE_HEADER =>
@@ -601,7 +612,7 @@ begin
 				v.se := SE_IDLE;
 				v.seq_e := next_seq(r.seq_e);
 				ef_commit <= '1';
-			elsif r.timeout = '1' then
+			elsif r.timeout = '1' or r.do_reset = '1' then
 				-- Timeout, retransmit.
 				ef_rollback <= '1';
 				v.se := SE_IDLE;
@@ -610,6 +621,10 @@ begin
 		when others =>
 			v.se := SE_RESET;
 		end case;
+
+		if decode_in.valid = '1' and decode_in.last = '1' then
+			v.resetting := false;
+		end if;
 
 		case r.se is
 		when SE_RECONNECTING | SE_IDLE | SE_WAITING =>
@@ -641,10 +656,13 @@ begin
 			elsif decode_seq = 0 then
 				-- Got a reset msg. Queue an ack response.
 				v.do_ack := '1';
+				if not r.resetting then
+					v.do_reset := '1';
+				end if;
 				v.seq_d := 0;
 				v.seq_d_prev := 0;
 
-				if decode_in.last = '0' then
+				if decode_in.last = '0' and decode_in.data(FLAG_NOP) = '0' then
 					v.sd := SD_DROP;
 				end if;
 			elsif decode_seq = r.seq_d_prev then
@@ -668,8 +686,8 @@ begin
 					-- That's it.
 					null;
 				elsif decode_in.data(FLAG_NOP) = '1' then
-					-- Ignore body.
-					v.sd := SD_DROP;
+					-- No content, resume parsing.
+					null;
 				else
 					-- Pass through for decoding.
 					v.sd := SD_DECODE;
@@ -704,7 +722,7 @@ begin
 
 	with r.se select
 		encode_out.last <=
-			r.do_ack when SE_RECONNECTING | SE_IDLE | SE_WAITING,
+			r.do_ack and not r.do_reset when SE_RECONNECTING | SE_IDLE | SE_WAITING,
 			'1' when SE_RECONNECT,
 			'0' when SE_HEADER,
 			ef_last when SE_DATA,
