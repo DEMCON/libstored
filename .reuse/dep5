@@ -7,3 +7,7 @@ License: Apache-2.0
 Files: presentation/*
 Copyright: 2020-2023 Jochem Rutgers
 License: CC-BY-4.0
+
+Files: .vscode/*
+Copyright: 2020-2024 Jochem Rutgers
+License: CC0-1.0
