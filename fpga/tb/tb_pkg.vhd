@@ -1357,6 +1357,8 @@ begin
 					decode_out.data <= (others => '-');
 				end if;
 			end loop;
+
+			report "Closed " & libstored_tb_pkg.to_string(fn_in) & "; EOF" severity warning;
 		when STATUS_ERROR =>
 			report "Cannot open " & libstored_tb_pkg.to_string(fn_in) & "; STATUS_ERROR" severity failure;
 			wait;
