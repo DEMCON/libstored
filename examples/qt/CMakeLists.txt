@@ -33,5 +33,5 @@ if(Qt_FOUND)
 		target_compile_definitions(qt PUBLIC QT_QML_DEBUG)
 	endif()
 
-	add_dependencies(examples qt)
+	add_launch_json(qt)
 endif()

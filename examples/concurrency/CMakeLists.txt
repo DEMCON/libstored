@@ -10,4 +10,4 @@ libstored_generate(TARGET concurrency STORES ExampleConcurrencyMain.st ExampleCo
 find_package(Threads)
 target_link_libraries(concurrency PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 install(TARGETS concurrency RUNTIME DESTINATION bin)
-add_dependencies(examples concurrency)
+add_launch_json(concurrency)

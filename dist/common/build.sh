@@ -180,6 +180,7 @@ fi
 
 if [[ ${do_clean} == 1 ]]; then
 	[[ ! -e build ]] || rm -rf build
+	[[ ! -e ../../.vscode/launch.json ]] || rm ../../.vscode/launch.json
 fi
 
 mkdir -p build
