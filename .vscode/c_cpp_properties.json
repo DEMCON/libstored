@@ -1,0 +1,42 @@
+{
+	"configurations": [
+		{
+			"name": "Linux",
+			"includePath": [
+				"${workspaceFolder}/**"
+			],
+			"defines": [
+				"STORED_HAVE_ZMQ"
+			],
+			"compilerPath": "/usr/bin/clang",
+			"cStandard": "c17",
+			"cppStandard": "c++17",
+			"intelliSenseMode": "linux-clang-x64"
+		},
+		{
+			"name": "Win32",
+			"includePath": [
+				"${workspaceFolder}/**"
+			],
+			"defines": [
+				"STORED_HAVE_ZMQ"
+			],
+			"cStandard": "c17",
+			"cppStandard": "c++17"
+		},
+		{
+			"name": "Mac",
+			"includePath": [
+				"${workspaceFolder}/**"
+			],
+			"defines": [
+				"STORED_HAVE_ZMQ"
+			],
+			"compilerPath": "/usr/bin/clang",
+			"cStandard": "c17",
+			"cppStandard": "c++17",
+			"intelliSenseMode": "macos-clang-x64"
+		}
+	],
+	"version": 4
+}

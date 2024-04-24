@@ -1,6 +1,6 @@
 @echo off
 
-rem SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+rem SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 rem
 rem SPDX-License-Identifier: MPL-2.0
 
@@ -13,6 +13,7 @@ if errorlevel 1 goto silent_error
 echo.
 
 set cmake_opts=-DLIBSTORED_DIST_DIR=%here%
+set do_clean=0
 set do_build=1
 set support_test=1
 set do_test=
@@ -121,6 +122,10 @@ if %1 == zth (
 	set cmake_opts=%cmake_opts% -DLIBSTORED_HAVE_ZTH=ON
 	goto next_param
 )
+if %1 == zth (
+	set do_clean=1
+	goto next_param
+)
 if %1 == -- (
 	shift
 	goto go_build
@@ -140,6 +145,10 @@ if "%do_test%" == "0" set cmake_opts=%cmake_opts% -DLIBSTORED_TESTS=OFF
 if "%do_test%" == "1" set cmake_opts=%cmake_opts% -DLIBSTORED_TESTS=ON
 
 set "builddir=%here%build"
+
+if "%do_clean%" == "0" goto no_clean
+if exist "%builddir%" rmdir /s /q "%builddir%"
+:no_clean
 if not exist "%builddir%" mkdir "%builddir%"
 if errorlevel 1 goto error_nopopd
 
@@ -194,6 +203,7 @@ echo   test  Enable building and running tests
 echo   zmq   Enable ZeroMQ integration
 echo   nozmq Disable ZeroMQ integration
 echo   zth   Enable Zth integration
+echo   clean Do a clean build
 popd
 exit /b 2
 goto silent_error

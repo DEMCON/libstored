@@ -1,3 +1,10 @@
 {
 	"editor.formatOnSave": true,
+	"cmake.configureOnOpen": false,
+	"files.associations": {
+		"stored": "cpp"
+	},
+	"cSpell.words": [
+		"libstored"
+	],
 }

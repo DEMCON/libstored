@@ -1,12 +1,13 @@
 {
-	"recommendations": [
-		"editorconfig.editorconfig",
-		"ms-vscode.cmake-tools",
-		"ms-vscode.cpptools",
-		"twxs.cmake",
-		"ms-python.python",
-		"puorc.awesome-vhdl",
-		"xaver.clang-format",
-		"cheshirekow.cmake-format"
-	]
+    "recommendations": [
+        "editorconfig.editorconfig",
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools",
+        "twxs.cmake",
+        "ms-python.python",
+        "puorc.awesome-vhdl",
+        "xaver.clang-format",
+        "cheshirekow.cmake-format",
+        "streetsidesoftware.code-spell-checker"
+    ]
 }
