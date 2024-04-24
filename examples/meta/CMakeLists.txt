@@ -25,4 +25,4 @@ add_custom_target(meta-generate DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/LoggingExamp
 target_include_directories(meta PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 install(TARGETS meta RUNTIME DESTINATION bin)
-add_dependencies(examples meta)
+add_launch_json(meta)

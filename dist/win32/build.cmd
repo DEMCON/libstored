@@ -147,7 +147,14 @@ if "%do_test%" == "1" set cmake_opts=%cmake_opts% -DLIBSTORED_TESTS=ON
 set "builddir=%here%build"
 
 if "%do_clean%" == "0" goto no_clean
-if exist "%builddir%" rmdir /s /q "%builddir%"
+if exist "%builddir%" (
+	rmdir /s /q "%builddir%"
+	if errorlevel 1 goto error_nopopd
+)
+if exist ..\..\.vscode\launch.json (
+	del ..\..\.vscode\launch.json
+	if errorlevel 1 goto error_nopopd
+)
 :no_clean
 if not exist "%builddir%" mkdir "%builddir%"
 if errorlevel 1 goto error_nopopd

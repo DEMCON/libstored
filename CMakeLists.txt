@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -300,7 +300,60 @@ if(LIBSTORED_PYLIBSTORED)
 	add_subdirectory(python)
 endif()
 
+option(LIBSTORED_REGEN_LAUNCH_JSON "Regenerate launch.json" OFF)
+if(NOT EXISTS ${LIBSTORED_SOURCE_DIR}/.vscode/launch.json OR LIBSTORED_REGEN_LAUNCH_JSON)
+	set(LIBSTORED_GEN_LAUNCH_JSON ON)
+else()
+	set(LIBSTORED_GEN_LAUNCH_JSON OFF)
+endif()
+
+set_property(
+	GLOBAL
+	PROPERTY
+		LIBSTORED_LAUNCH_JSON
+		"\
+{
+	\"version\": \"0.2.0\",
+	\"configurations\": ["
+)
+
+function(add_launch_json TARGET)
+	add_dependencies(examples ${TARGET})
+	get_property(_launch GLOBAL PROPERTY LIBSTORED_LAUNCH_JSON)
+	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set_property(
+			GLOBAL
+			PROPERTY
+				LIBSTORED_LAUNCH_JSON
+				"${_launch}
+		{
+			\"type\": \"cppdbg\",
+			\"request\": \"launch\",
+			\"name\": \"${TARGET}\",
+			\"preLaunchTask\": \"build-examples\",
+			\"stopAtEntry\": true,
+			\"program\": \"$<SHELL_PATH:$<TARGET_FILE:${TARGET}>>\",
+			\"cwd\": \"$<SHELL_PATH:$<TARGET_FILE_DIR:${TARGET}>>\",
+		},"
+		)
+	else()
+		set_property(
+			GLOBAL
+			PROPERTY
+				LIBSTORED_LAUNCH_JSON
+				"${_launch}
+		{
+			\"type\": \"f5anything\",
+			\"request\": \"launch\",
+			\"name\": \"${TARGET}\",
+			\"command\": \"$<SHELL_PATH:$<TARGET_FILE:${TARGET}>>\",
+		},"
+		)
+	endif()
+endfunction()
+
 option(LIBSTORED_EXAMPLES "Build examples" ON)
+add_custom_target(examples)
 if(LIBSTORED_EXAMPLES)
 	add_subdirectory(examples)
 endif()
@@ -425,4 +478,20 @@ endif()
 
 if(LIBSTORED_DIST_DIR)
 	add_subdirectory(${LIBSTORED_DIST_DIR})
+endif()
+
+if(LIBSTORED_GEN_LAUNCH_JSON)
+	get_property(_launch GLOBAL PROPERTY LIBSTORED_LAUNCH_JSON)
+	set(LIBSTORED_LAUNCH_JSON
+	    "${_launch}
+	]
+}
+"
+	)
+
+	file(
+		GENERATE
+		OUTPUT ${LIBSTORED_SOURCE_DIR}/.vscode/launch.json
+		CONTENT "${LIBSTORED_LAUNCH_JSON}"
+	)
 endif()

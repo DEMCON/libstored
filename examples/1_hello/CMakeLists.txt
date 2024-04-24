@@ -5,4 +5,4 @@
 add_executable(1_hello main.cpp)
 libstored_generate(TARGET 1_hello STORES ExampleHello.st)
 install(TARGETS 1_hello RUNTIME DESTINATION bin)
-add_dependencies(examples 1_hello)
+add_launch_json(1_hello)

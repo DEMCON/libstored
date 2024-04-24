@@ -3,7 +3,10 @@
 # SPDX-License-Identifier: MPL-2.0
 
 # The value will be appended to a STORED_POLL_ define.
-set(LIBSTORED_POLL "AUTO" CACHE STRING "Poll method")
+set(LIBSTORED_POLL
+    "AUTO"
+    CACHE STRING "Poll method"
+)
 
 option(LIBSTORED_CLANG_TIDY "Run clang-tidy" ${LIBSTORED_DEV_OPTION})
 set(LIBSTORED_CLANG_TIDY "OFF")
@@ -19,7 +22,16 @@ if(MSVC)
 		add_compile_options(/MT)
 	endif()
 else()
-	add_compile_options(-Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wconversion -ffunction-sections -fdata-sections)
+	add_compile_options(
+		-Wall
+		-Wextra
+		-Werror
+		-Wdouble-promotion
+		-Wformat=2
+		-Wconversion
+		-ffunction-sections
+		-fdata-sections
+	)
 
 	if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
 		if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT APPLE)
@@ -29,12 +41,13 @@ else()
 		endif()
 	endif()
 
-	if(UNIX)
-		if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "8.0.1")
-			# Not exactly sure which clang version this applies to,
-			# but for 8.0.0, these sanitizers seem to do more harm
-			# than good. I've seen some random compile issues or
-			# crashes...
+	if(UNIX AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+		if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION
+							     VERSION_LESS "8.0.1"
+		)
+			# Not exactly sure which clang version this applies to, but for 8.0.0, these
+			# sanitizers seem to do more harm than good. I've seen some random compile
+			# issues or crashes...
 			set(LIBSTORED_ENABLE_ASAN OFF)
 			set(LIBSTORED_ENABLE_UBSAN OFF)
 		else()
@@ -70,10 +83,13 @@ include(FetchContent)
 FetchContent_Declare(
 	googletest
 	GIT_REPOSITORY https://github.com/google/googletest.git
-	GIT_TAG        release-1.11.0
+	GIT_TAG release-1.11.0
 )
 
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+set(gtest_force_shared_crt
+    ON
+    CACHE BOOL "" FORCE
+)
 FetchContent_MakeAvailable(googletest)
 
 include(GoogleTest)
@@ -90,6 +106,7 @@ function(libstored_add_test TESTNAME)
 	set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
 	gtest_add_tests(TARGET ${TESTNAME} TEST_LIST tests)
 	set_tests_properties(${tests} PROPERTIES TIMEOUT 60)
+	add_launch_json(${TESTNAME})
 endfunction()
 
 libstored_add_test(test_allocator test_allocator.cpp)
@@ -117,9 +134,11 @@ libstored_add_test(test_signal test_signal.cpp)
 if(WIN32)
 	libstored_add_test(test_poller test_poller_win.cpp)
 	if(LIBSTORED_HAVE_LIBZMQ)
-		add_custom_target(libzmq-test-copy
+		add_custom_target(
+			libzmq-test-copy
 			DEPENDS libzmq
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:libzmq> ${CMAKE_CURRENT_BINARY_DIR}
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:libzmq>
+				${CMAKE_CURRENT_BINARY_DIR}
 			VERBATIM
 		)
 		add_dependencies(test_poller libzmq-test-copy)
@@ -131,15 +150,19 @@ endif()
 
 if(LIBSTORED_HAVE_HEATSHRINK)
 	add_executable(heatshrink_encoder heatshrink_encoder.cpp test_base.cpp)
-	target_include_directories(heatshrink_encoder BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+	target_include_directories(
+		heatshrink_encoder BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
+	)
 	target_link_libraries(heatshrink_encoder teststore-libstored)
 
 	if(LIBSTORED_PYLIBSTORED)
 		add_test(
 			NAME HeatshrinkDecoder
-			COMMAND ${CMAKE_COMMAND} -E env
+			COMMAND
+				${CMAKE_COMMAND} -E env
 				PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../python
-				${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_heatshrink.py $<TARGET_FILE:heatshrink_encoder>
+				${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_heatshrink.py
+				$<TARGET_FILE:heatshrink_encoder>
 		)
 
 		set_tests_properties(HeatshrinkDecoder PROPERTIES TIMEOUT 300)
@@ -148,7 +171,15 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	add_custom_target(teststore-bare)
-	libstored_generate(TARGET teststore-bare STORES TestStore.st DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bare NO_ZMQ)
+	libstored_generate(
+		TARGET
+		teststore-bare
+		STORES
+		TestStore.st
+		DESTINATION
+		${CMAKE_CURRENT_BINARY_DIR}/bare
+		NO_ZMQ
+	)
 	target_compile_options(teststore-bare-libstored PUBLIC -fno-exceptions -fno-rtti)
 
 	add_executable(test_bare test_bare.cpp)
@@ -156,30 +187,41 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	gtest_add_tests(TARGET test_bare TEST_LIST tests)
 endif()
 
-# All test binaries are put in the same directory.
-# Only copy the dlls once.
+# All test binaries are put in the same directory. Only copy the dlls once.
 libstored_copy_dlls(test_debugger)
 
 if(LIBSTORED_EXAMPLES)
 	macro(libstored_example_test EXAMPLE)
 
-		# Disabled in favor of sanitizers.
-#		if(HAVE_VALGRIND)
-#			add_test(NAME ${EXAMPLE}-valgrind
-#				COMMAND valgrind --error-exitcode=1 --leak-check=full $<TARGET_FILE:${EXAMPLE}> ${ARGN})
-#		endif()
+		# Disabled in favor of sanitizers. if(HAVE_VALGRIND) add_test(NAME
+		# ${EXAMPLE}-valgrind COMMAND valgrind --error-exitcode=1 --leak-check=full
+		# $<TARGET_FILE:${EXAMPLE}> ${ARGN}) endif()
 
 		if(WIN32)
-			add_test(NAME ${EXAMPLE}-run
-				COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_INSTALL_PREFIX}/bin $ENV{ComSpec} /C "$<TARGET_FILE_NAME:${EXAMPLE}> ${ARGN} > $<SHELL_PATH:${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt>")
+			add_test(
+				NAME ${EXAMPLE}-run
+				COMMAND
+					${CMAKE_COMMAND} -E chdir ${CMAKE_INSTALL_PREFIX}/bin
+					$ENV{ComSpec} /C
+					"$<TARGET_FILE_NAME:${EXAMPLE}> ${ARGN} > $<SHELL_PATH:${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt>"
+			)
 		else()
-			add_test(NAME ${EXAMPLE}-run
-				COMMAND sh -c "'${CMAKE_INSTALL_PREFIX}/bin/$<TARGET_FILE_NAME:${EXAMPLE}>' ${ARGN} > '${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt'")
+			add_test(
+				NAME ${EXAMPLE}-run
+				COMMAND
+					sh -c
+					"'${CMAKE_INSTALL_PREFIX}/bin/$<TARGET_FILE_NAME:${EXAMPLE}>' ${ARGN} > '${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt'"
+			)
 		endif()
 
 		if(EXISTS ${PROJECT_SOURCE_DIR}/examples/${EXAMPLE}/output.txt)
-			add_test(NAME ${EXAMPLE}-output
-				COMMAND ${CMAKE_COMMAND} -E compare_files --ignore-eol ${PROJECT_SOURCE_DIR}/examples/${EXAMPLE}/output.txt ${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt)
+			add_test(
+				NAME ${EXAMPLE}-output
+				COMMAND
+					${CMAKE_COMMAND} -E compare_files --ignore-eol
+					${PROJECT_SOURCE_DIR}/examples/${EXAMPLE}/output.txt
+					${PROJECT_BINARY_DIR}/examples/${EXAMPLE}/output.txt
+			)
 		endif()
 	endmacro()
 
@@ -202,11 +244,20 @@ find_program(SPIN_EXECUTABLE spin)
 
 if(SPIN_EXECUTABLE)
 	add_custom_target(
-		arq-spin-run
-		COMMAND ${SPIN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/DebugArqLayer.pml
+		arq-spin-run COMMAND ${SPIN_EXECUTABLE}
+				     ${CMAKE_CURRENT_SOURCE_DIR}/DebugArqLayer.pml
 	)
 
-	set(ARQ_VERIFY_CMD ${SPIN_EXECUTABLE} -search -DBITSTATE -O3 -b -v -bitstate ${CMAKE_CURRENT_SOURCE_DIR}/DebugArqLayer.pml)
+	set(ARQ_VERIFY_CMD
+	    ${SPIN_EXECUTABLE}
+	    -search
+	    -DBITSTATE
+	    -O3
+	    -b
+	    -v
+	    -bitstate
+	    ${CMAKE_CURRENT_SOURCE_DIR}/DebugArqLayer.pml
+	)
 
 	add_custom_target(
 		arq-spin-verify
@@ -227,13 +278,17 @@ else()
 	set(ENV_PATH_SEP ":")
 endif()
 
-if(LIBSTORED_HAVE_LIBZMQ AND LIBSTORED_EXAMPLES AND LIBSTORED_PYLIBSTORED)
+if(LIBSTORED_HAVE_LIBZMQ
+   AND LIBSTORED_EXAMPLES
+   AND LIBSTORED_PYLIBSTORED
+)
 	add_test(
 		NAME ZmqClient
-		COMMAND ${CMAKE_COMMAND} -E env
-			PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../python
+		COMMAND
+			${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../python
 			"PATH=$<SHELL_PATH:$<TARGET_FILE_DIR:libzmq>>${ENV_PATH_SEP}$ENV{PATH}"
-			${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_ZmqClient.py ${CMAKE_INSTALL_PREFIX}/bin/$<TARGET_FILE_NAME:zmqserver>
+			${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_ZmqClient.py
+			${CMAKE_INSTALL_PREFIX}/bin/$<TARGET_FILE_NAME:zmqserver>
 	)
 
 	set_tests_properties(ZmqClient PROPERTIES TIMEOUT 60)
@@ -249,20 +304,35 @@ if(VIVADO_CMD)
 
 	add_test(
 		NAME FPGA
-		COMMAND $<SHELL_PATH:${VIVADO_CMD}> -mode batch -source ${CMAKE_CURRENT_SOURCE_DIR}/test_fpga/run.tcl ${CMAKE_CURRENT_SOURCE_DIR}/test_fpga/vivado/test_fpga/test_fpga.xpr
+		COMMAND
+			$<SHELL_PATH:${VIVADO_CMD}> -mode batch -source
+			${CMAKE_CURRENT_SOURCE_DIR}/test_fpga/run.tcl
+			${CMAKE_CURRENT_SOURCE_DIR}/test_fpga/vivado/test_fpga/test_fpga.xpr
 	)
 endif()
 
-
-
-# Disable sanitizers for the targets below, as it is probably going to be executed by callgrind/AFL++.
-if(LIBSTORED_ENABLE_ASAN OR LIBSTORED_ENABLE_UBSAN OR LIBSTORED_ENABLE_LSAN)
+# Disable sanitizers for the targets below, as it is probably going to be executed by
+# callgrind/AFL++.
+if(LIBSTORED_ENABLE_ASAN
+   OR LIBSTORED_ENABLE_UBSAN
+   OR LIBSTORED_ENABLE_LSAN
+)
 	set(LIBSTORED_ENABLE_ASAN OFF)
 	set(LIBSTORED_ENABLE_UBSAN OFF)
 	set(LIBSTORED_ENABLE_LSAN OFF)
 	add_custom_target(teststore-perf)
-	libstored_generate(TARGET teststore-perf STORES TestStore.st DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/perf NO_ZMQ)
-	target_include_directories(teststore-perf-libstored BEFORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+	libstored_generate(
+		TARGET
+		teststore-perf
+		STORES
+		TestStore.st
+		DESTINATION
+		${CMAKE_CURRENT_BINARY_DIR}/perf
+		NO_ZMQ
+	)
+	target_include_directories(
+		teststore-perf-libstored BEFORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+	)
 	set(TESTSTORE_LIB teststore-perf)
 else()
 	set(TESTSTORE_LIB teststore)
@@ -292,8 +362,11 @@ if(NOT WIN32)
 		)
 
 		if(AFL_FUZZ)
-			file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${APP}.sh CONTENT
-"#!/bin/bash
+			file(
+				GENERATE
+				OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${APP}.sh
+				CONTENT
+					"#!/bin/bash
 
 set -euo pipefail
 
@@ -314,8 +387,8 @@ export AFL_SKIP_CPUFREQ=1
 "
 			)
 
-			add_test(NAME ${APP}
-				COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/${APP}.sh -V 60
+			add_test(NAME ${APP} COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/${APP}.sh -V
+						     60
 			)
 		endif()
 	endfunction()
@@ -324,14 +397,23 @@ export AFL_SKIP_CPUFREQ=1
 	libstored_fuzz(fuzz_protocol fuzz_protocol.cpp)
 	libstored_fuzz(fuzz_synchronizer fuzz_synchronizer.cpp)
 
-
 	find_program(LCOV_EXE NAMES lcov)
 	find_program(GENHTML_EXE NAMES genhtml)
-	if(LIBSTORED_COVERAGE AND LCOV_EXE AND GENHTML_EXE)
-		add_custom_target(libstored-lcov
-			COMMAND ${LCOV_EXE} -q -j 4 -c -d . -o ${CMAKE_CURRENT_BINARY_DIR}/libstored.info --ignore-errors inconsistent,unused
-				--exclude ${PROJECT_BINARY_DIR}/_deps --exclude v1/
-			COMMAND ${GENHTML_EXE} -q -j 4 -o ${CMAKE_CURRENT_BINARY_DIR}/lcov ${CMAKE_CURRENT_BINARY_DIR}/libstored.info --ignore-errors inconsistent,unused
+	if(LIBSTORED_COVERAGE
+	   AND LCOV_EXE
+	   AND GENHTML_EXE
+	)
+		add_custom_target(
+			libstored-lcov
+			COMMAND
+				${LCOV_EXE} -q -j 4 -c -d . -o
+				${CMAKE_CURRENT_BINARY_DIR}/libstored.info --ignore-errors
+				inconsistent,unused --exclude ${PROJECT_BINARY_DIR}/_deps --exclude
+				v1/
+			COMMAND
+				${GENHTML_EXE} -q -j 4 -o ${CMAKE_CURRENT_BINARY_DIR}/lcov
+				${CMAKE_CURRENT_BINARY_DIR}/libstored.info --ignore-errors
+				inconsistent,unused
 			WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 			COMMENT "Generate lcov output in ${CMAKE_CURRENT_BINARY_DIR}/lcov..."
 			VERBATIM
