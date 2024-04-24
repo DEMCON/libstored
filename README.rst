@@ -1,7 +1,7 @@
 ﻿
 
 ..
-   SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+   SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
    
    SPDX-License-Identifier: CC-BY-4.0
 
@@ -432,6 +432,10 @@ To run all tests, use one of:
 
    cmake --build . --target test
    cmake --build . --target RUN_TESTS
+
+Alternatively, use Visual Studio Code. Open the ``libstored`` repository in your
+workspace, run the task ``bootstrap``, one of the ``config`` tasks, and one of
+the ``build`` tasks afterwards. Run the ``test`` task to execute all tests.
 
 
 How to integrate in your build

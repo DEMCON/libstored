@@ -81,8 +81,34 @@ int main(int argc, char** argv)
 
 	stored::PrintLayer print(stdout);
 
-	if(argc >= 2 && strcmp(argv[1], "-v") == 0)
+	int verbose = 0;
+	for(int i = 1; i < argc; i++) {
+		if(strcmp(argv[i], "-v") == 0)
+			verbose++;
+	}
+
+	switch(verbose) {
+	case 1:
+		print.stack(segmentation);
+		break;
+	case 2:
+		print.wrap(segmentation);
+		break;
+	case 3:
+		print.wrap(arq);
+		break;
+	case 4:
+		print.wrap(crc);
+		break;
+	case 5:
+		print.wrap(ascii);
+		break;
+	case 6:
 		print.wrap(term);
+		break;
+	case 0:
+	default:;
+	}
 
 	if((errno = xsim.lastError()) && errno != EAGAIN) {
 		perror("Cannot initialize XSIM interface");

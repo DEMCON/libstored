@@ -1,11 +1,22 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
 if(MSVC)
 	add_compile_options(/Wall /WX)
 else()
-	add_compile_options(-Wall -Wextra -Werror -Wdouble-promotion -Wformat=2 -Wundef -Wconversion -Wshadow -ffunction-sections -fdata-sections)
+	add_compile_options(
+		-Wall
+		-Wextra
+		-Werror
+		-Wdouble-promotion
+		-Wformat=2
+		-Wundef
+		-Wconversion
+		-Wshadow
+		-ffunction-sections
+		-fdata-sections
+	)
 
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		add_compile_options(-g3 -ggdb)
@@ -16,15 +27,16 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 11)
-	# gcc's updated -Warray-bounds seem to give a lot of bogus errors.
-	# In this case, assigning to uint64_t& value in __time_s() seems to trip it.
-	# Ignore this warning, for now.
+	# gcc's updated -Warray-bounds seem to give a lot of bogus errors. In this case, assigning
+	# to uint64_t& value in __time_s() seems to trip it. Ignore this warning, for now.
 	add_compile_options(-Wno-array-bounds)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT APPLE)
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections")
 endif()
+
+add_custom_target(examples)
 
 add_subdirectory(1_hello)
 add_subdirectory(2_basic)
@@ -73,7 +85,10 @@ if(${_cxx17} GREATER -1)
 		set(CMAKE_CXX_STANDARD 17)
 	endif()
 
-	if(CMAKE_CXX_STANDARD GREATER_EQUAL 17 AND CMAKE_CXX_STANDARD LESS 98 AND LIBSTORED_DRAFT_API)
+	if(CMAKE_CXX_STANDARD GREATER_EQUAL 17
+	   AND CMAKE_CXX_STANDARD LESS 98
+	   AND LIBSTORED_DRAFT_API
+	)
 		add_subdirectory(pipes)
 	endif()
 endif()

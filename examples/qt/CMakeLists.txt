@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 #
 # SPDX-License-Identifier: CC0-1.0
 
@@ -21,11 +21,7 @@ endif()
 if(Qt_FOUND)
 	set(CMAKE_AUTORCC ON)
 
-	add_executable(qt
-		main.cpp
-		main.qrc
-		main.qml
-	)
+	add_executable(qt main.cpp main.qrc main.qml)
 
 	libstored_generate(TARGET qt STORES ExampleQtStore.st QT)
 
@@ -36,4 +32,6 @@ if(Qt_FOUND)
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		target_compile_definitions(qt PUBLIC QT_QML_DEBUG)
 	endif()
+
+	add_dependencies(examples qt)
 endif()

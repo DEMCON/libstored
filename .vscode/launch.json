@@ -5,7 +5,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"name": "1_hello",
-			"preLaunchTask": "build",
+			"preLaunchTask": "build-examples",
 			"stopAtEntry": true,
 			"program": "1_hello",
 			"osx": {

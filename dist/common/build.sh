@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -30,6 +30,7 @@ function show_help {
 	echo "  zth   Enable Zth integration"
 	echo "  fuzz  Enable fuzzing with AFL++"
 	echo "  gcov  Enable gcov/lcov"
+	echo "  clean Do a clean build"
 	exit 2
 }
 
@@ -37,6 +38,7 @@ repo="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." &> /dev/null; pwd -P)"
 dist_dir="$(pwd -P)"
 
 build_type=
+do_clean=0
 do_build=1
 do_test=
 do_test_run=${do_test_run:-1}
@@ -125,6 +127,9 @@ while [[ ! -z ${1:-} ]]; do
 			do_test_run=1
 			lcov=1
 			;;
+		clean)
+			do_clean=1
+			;;
 		--)
 			# Stop parsing
 			shift
@@ -171,6 +176,10 @@ if [[ ! -z ${do_test} ]]; then
 	else
 		cmake_opts="${cmake_opts} -DLIBSTORED_TESTS=OFF"
 	fi
+fi
+
+if [[ ${do_clean} == 1 ]]; then
+	[[ ! -e build ]] || rm -rf build
 fi
 
 mkdir -p build

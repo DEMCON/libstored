@@ -11,18 +11,18 @@ add_custom_command(
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/libstored/doc/ExampleMetaMeta.py
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/generator.py
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/LoggingWrapper.h.tmpl
-	COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/generator.py"
-		-m "${CMAKE_CURRENT_SOURCE_DIR}/libstored/doc/ExampleMetaMeta.py"
-		-t "${CMAKE_CURRENT_SOURCE_DIR}/LoggingWrapper.h.tmpl"
-		-o "${CMAKE_CURRENT_BINARY_DIR}/LoggingExampleMeta.h"
+	COMMAND
+		"${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/generator.py" -m
+		"${CMAKE_CURRENT_SOURCE_DIR}/libstored/doc/ExampleMetaMeta.py" -t
+		"${CMAKE_CURRENT_SOURCE_DIR}/LoggingWrapper.h.tmpl" -o
+		"${CMAKE_CURRENT_BINARY_DIR}/LoggingExampleMeta.h"
 	VERBATIM
 	COMMENT "Generate logging wrapper for ExampleMeta"
 )
 
-add_custom_target(meta-generate
-	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/LoggingExampleMeta.h
-)
+add_custom_target(meta-generate DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/LoggingExampleMeta.h)
 
 target_include_directories(meta PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 install(TARGETS meta RUNTIME DESTINATION bin)
+add_dependencies(examples meta)
