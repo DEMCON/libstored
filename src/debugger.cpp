@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -7,7 +7,7 @@
 #include <cstring>
 
 #ifdef STORED_COMPILER_ARMCC
-#	pragma clang diagnostic ignored "-Wweak-vtables"
+#  pragma clang diagnostic ignored "-Wweak-vtables"
 #endif
 
 namespace stored {
@@ -766,7 +766,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 			if(size) {
 				char const* data = strstr.data();
 				response.encode(data, size, false);
-				// cppcheck-suppress knownConditionTrueFalse
+				// cppcheck-suppress[knownConditionTrueFalse,unmatchedSuppression]
 				stored_assert(data == strstr.data());
 
 				// Note that the buffer may have grown
@@ -1103,9 +1103,8 @@ bool Debugger::decodeHex(Type::type type, void const*& data, size_t& len)
 		bin = spm().alloc<uint8_t>(binlen);
 
 		for(size_t i = 0; i + 1 < len; i += 2) {
-			bin[i / 2] = (uint8_t)(
-				(uint8_t)(decodeNibble(src[i], ok) << 4U)
-				| decodeNibble(src[i + 1], ok));
+			bin[i / 2] =
+				(uint8_t)((uint8_t)(decodeNibble(src[i], ok) << 4U) | decodeNibble(src[i + 1], ok));
 		}
 	}
 
@@ -1132,7 +1131,7 @@ void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* ar
 	ListCmdCallbackArg* a = (ListCmdCallbackArg*)arg;
 
 	// encodeHex() uses the spm for its result.
-	// cppcheck-suppress unreadVariable
+	// cppcheck-suppress[unreadVariable,unmatchedSuppression]
 	ScratchPad<>::Snapshot snapshot = a->that->spm().snapshot();
 	char const* buf = nullptr;
 	size_t buflen = 0;
