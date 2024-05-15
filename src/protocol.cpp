@@ -7,32 +7,32 @@
 #include <libstored/util.h>
 
 #ifdef STORED_OS_WINDOWS
-#	include <fcntl.h>
-#	include <io.h>
+#  include <fcntl.h>
+#  include <io.h>
 #elif !defined(STORED_OS_BAREMETAL)
-#	include <fcntl.h>
-#	include <unistd.h>
+#  include <fcntl.h>
+#  include <unistd.h>
 #endif
 
 #if defined(STORED_OS_POSIX)
-#	include <csignal>
-#	include <sys/types.h>
-#	include <sys/stat.h>
-#	include <termios.h>
+#  include <csignal>
+#  include <sys/stat.h>
+#  include <sys/types.h>
+#  include <termios.h>
 #endif
 
 #ifdef STORED_HAVE_ZTH
-#	include <zth>
-#	define delay_ms(ms) zth::mnap(ms)
+#  include <zth>
+#  define delay_ms(ms) zth::mnap(ms)
 #elif defined(STORED_OS_WINDOWS)
-#	define delay_ms(ms) Sleep(ms)
+#  define delay_ms(ms) Sleep(ms)
 #else
-#	define delay_ms(ms) usleep((ms)*1000L)
+#  define delay_ms(ms) usleep((ms)*1000L)
 #endif
 
 #if defined(STORED_OS_WINDOWS)
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#	define write(fd, buffer, count) _write(fd, buffer, (unsigned int)(count))
+#  define write(fd, buffer, count) _write(fd, buffer, (unsigned int)(count))
 #endif
 
 #include <algorithm>
@@ -573,9 +573,7 @@ void ArqLayer::decode(void* buffer, size_t len)
 					    ++m_encodeQueue.begin();
 				    it != m_encodeQueue.end(); ++it) {
 					(**it)[0] =
-						(char)((uint8_t)(
-							       (uint8_t)(**it)[0]
-							       & (uint8_t)~SeqMask)
+						(char)((uint8_t)((uint8_t)(**it)[0] & (uint8_t)~SeqMask)
 						       | m_sendSeq);
 					m_sendSeq = nextSeq(m_sendSeq);
 				}
@@ -761,7 +759,7 @@ void ArqLayer::event(ArqLayer::Event e)
 uint8_t ArqLayer::nextSeq(uint8_t seq)
 {
 	seq = (uint8_t)((seq + 1U) & SeqMask);
-	// cppcheck-suppress knownConditionTrueFalse
+	// cppcheck-suppress[knownConditionTrueFalse,unmatchedSuppression]
 	return seq ? seq : 1U;
 }
 
@@ -1211,7 +1209,7 @@ size_t DebugArqLayer::mtu() const
 uint32_t DebugArqLayer::nextSeq(uint32_t seq)
 {
 	seq = (uint32_t)((seq + 1U) % 0x8000000);
-	// cppcheck-suppress knownConditionTrueFalse
+	// cppcheck-suppress[knownConditionTrueFalse,unmatchedSuppression]
 	return seq ? seq : 1U;
 }
 
@@ -1309,7 +1307,7 @@ void Crc8Layer::decode(void* buffer, size_t len)
 	if(len == 0)
 		return;
 
-	// cppcheck-suppress constVariablePointer
+	// cppcheck-suppress[constVariablePointer,unmatchedSuppression]
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	uint8_t crc = init;
 	for(size_t i = 0; i < len - 1; i++)
@@ -1405,7 +1403,7 @@ void Crc16Layer::decode(void* buffer, size_t len)
 	if(len < 2)
 		return;
 
-	// cppcheck-suppress constVariablePointer
+	// cppcheck-suppress[constVariablePointer,unmatchedSuppression]
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	uint16_t crc = init;
 	for(size_t i = 0; i < len - 2; i++)
@@ -1877,12 +1875,12 @@ FileLayer::FileLayer(int fd_r, int fd_w, size_t bufferSize, ProtocolLayer* up, P
 	, m_fd_r(-1)
 	, m_fd_w(-1)
 {
-#	ifdef STORED_OS_POSIX
+#  ifdef STORED_OS_POSIX
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	fcntl(fd_r, F_SETFL, fcntl(fd_r, F_GETFL) | O_NONBLOCK);
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	fcntl(fd_w, F_SETFL, fcntl(fd_w, F_GETFL) | O_NONBLOCK);
-#	endif
+#  endif
 
 	init(fd_r, fd_w == -1 ? fd_r : fd_w, bufferSize);
 }
@@ -1941,7 +1939,7 @@ error:
  *
  * Does not return, but sets #lastError() appropriately.
  */
-// cppcheck-suppress passedByValue
+// cppcheck-suppress[passedByValue,unmatchedSuppression]
 void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w, size_t bufferSize)
 {
 	stored_assert(m_fd_r == -1);
@@ -2027,9 +2025,9 @@ done:
 		switch(written) {
 		case -1:
 			switch(errno) {
-#	if EAGAIN != EWOULDBLOCK
+#  if EAGAIN != EWOULDBLOCK
 			case EWOULDBLOCK:
-#	endif
+#  endif
 			case EAGAIN: {
 				if(this->block(m_fd_w, false, -1, m_fd_w == STDOUT_FILENO))
 					return;
@@ -2100,9 +2098,9 @@ again:
 	if(cnt == -1) {
 		switch(errno) {
 		case EAGAIN:
-#	if EAGAIN != EWOULDBLOCK
+#  if EAGAIN != EWOULDBLOCK
 		case EWOULDBLOCK:
-#	endif
+#  endif
 			if(timeout_us == 0)
 				return setLastError(errno);
 
@@ -2454,8 +2452,7 @@ wait_prev_write:
 					   fd_w(), &m_bufferWrite[offset], (DWORD)m_writeLen,
 					   &m_overlappedWrite,
 					   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
-					   (LPOVERLAPPED_COMPLETION_ROUTINE)(
-						   void*)&writeCompletionRoutine))
+					   (LPOVERLAPPED_COMPLETION_ROUTINE)(void*)&writeCompletionRoutine))
 					return 0;
 				else
 					goto error;
@@ -3025,11 +3022,11 @@ NamedPipeLayer::NamedPipeLayer(
 			// Oops, revert the handler and accept SIGPIPEs.
 			if(signal(SIGPIPE, oldh) == SIG_ERR) {
 				// Really oops... Now we broke something.
-#	ifdef STORED_cpp_exceptions
+#  ifdef STORED_cpp_exceptions
 				throw std::runtime_error("Cannot restore SIGPIPE handler");
-#	else
+#  else
 				std::terminate();
-#	endif
+#  endif
 			}
 		}
 
@@ -3567,126 +3564,126 @@ int SerialLayer::resetAutoBaud()
 static speed_t baud_to_speed_t(unsigned long baud)
 {
 	switch(baud) {
-#	ifdef B50
+#  ifdef B50
 	case 50UL:
 		return B50;
-#	endif
-#	ifdef B75
+#  endif
+#  ifdef B75
 	case 75UL:
 		return B75;
-#	endif
-#	ifdef B110
+#  endif
+#  ifdef B110
 	case 110UL:
 		return B110;
-#	endif
-#	ifdef B134
+#  endif
+#  ifdef B134
 	case 134UL:
 		return B134;
-#	endif
-#	ifdef B150
+#  endif
+#  ifdef B150
 	case 150UL:
 		return B150;
-#	endif
-#	ifdef B200
+#  endif
+#  ifdef B200
 	case 200UL:
 		return B200;
-#	endif
-#	ifdef B300
+#  endif
+#  ifdef B300
 	case 300UL:
 		return B300;
-#	endif
-#	ifdef B600
+#  endif
+#  ifdef B600
 	case 600UL:
 		return B600;
-#	endif
-#	ifdef B1200
+#  endif
+#  ifdef B1200
 	case 1200UL:
 		return B1200;
-#	endif
-#	ifdef B1800
+#  endif
+#  ifdef B1800
 	case 1800UL:
 		return B1800;
-#	endif
-#	ifdef B2400
+#  endif
+#  ifdef B2400
 	case 2400UL:
 		return B2400;
-#	endif
-#	ifdef B4800
+#  endif
+#  ifdef B4800
 	case 4800UL:
 		return B4800;
-#	endif
-#	ifdef B9600
+#  endif
+#  ifdef B9600
 	case 9600UL:
 		return B9600;
-#	endif
-#	ifdef B19200
+#  endif
+#  ifdef B19200
 	case 19200UL:
 		return B19200;
-#	endif
-#	ifdef B38400
+#  endif
+#  ifdef B38400
 	case 38400UL:
 		return B38400;
-#	endif
-#	ifdef B57600
+#  endif
+#  ifdef B57600
 	case 57600UL:
 		return B57600;
-#	endif
-#	ifdef B115200
+#  endif
+#  ifdef B115200
 	case 115200UL:
 		return B115200;
-#	endif
-#	ifdef B230400
+#  endif
+#  ifdef B230400
 	case 230400UL:
 		return B230400;
-#	endif
-#	ifdef B460800
+#  endif
+#  ifdef B460800
 	case 460800UL:
 		return B460800;
-#	endif
-#	ifdef B500000
+#  endif
+#  ifdef B500000
 	case 500000UL:
 		return B500000;
-#	endif
-#	ifdef B576000
+#  endif
+#  ifdef B576000
 	case 576000UL:
 		return B576000;
-#	endif
-#	ifdef B921600
+#  endif
+#  ifdef B921600
 	case 921600UL:
 		return B921600;
-#	endif
-#	ifdef B1000000
+#  endif
+#  ifdef B1000000
 	case 1000000UL:
 		return B1000000;
-#	endif
-#	ifdef B1152000
+#  endif
+#  ifdef B1152000
 	case 1152000UL:
 		return B1152000;
-#	endif
-#	ifdef B1500000
+#  endif
+#  ifdef B1500000
 	case 1500000UL:
 		return B1500000;
-#	endif
-#	ifdef B2000000
+#  endif
+#  ifdef B2000000
 	case 2000000UL:
 		return B2000000;
-#	endif
-#	ifdef B2500000
+#  endif
+#  ifdef B2500000
 	case 2500000UL:
 		return B2500000;
-#	endif
-#	ifdef B3000000
+#  endif
+#  ifdef B3000000
 	case 3000000UL:
 		return B3000000;
-#	endif
-#	ifdef B3500000
+#  endif
+#  ifdef B3500000
 	case 3500000UL:
 		return B3500000;
-#	endif
-#	ifdef B4000000
+#  endif
+#  ifdef B4000000
 	case 4000000UL:
 		return B4000000;
-#	endif
+#  endif
 	default:
 		return B0;
 	}
@@ -3732,14 +3729,14 @@ SerialLayer::SerialLayer(
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	config.c_cflag |= CS8;
 	if(rtscts) {
-#	ifdef CNEW_RTSCTS
+#  ifdef CNEW_RTSCTS
 		config.c_cflag |= CNEW_RTSCTS;
-#	elif defined(CRTSCTS)
+#  elif defined(CRTSCTS)
 		config.c_cflag |= CRTSCTS;
-#	else
+#  else
 		setLastError(EINVAL);
 		return;
-#	endif
+#  endif
 	}
 	config.c_cc[VMIN] = 0;
 	config.c_cc[VTIME] = 0;

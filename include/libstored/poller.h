@@ -208,6 +208,7 @@ public:
 	typedef std::type_info const& Type;
 	static Type staticType() noexcept
 	{
+		// cppcheck-suppress returnTempReference
 		return typeid(Pollable);
 	}
 #	else  // STORED_cpp_rtti
@@ -248,7 +249,7 @@ public:
 			static ::stored::TypedPollable::Type staticType() noexcept        \
 			{                                                                 \
 				static char const t = 0;                                  \
-				return (::stored::TypedPollable::Type)&t;                 \
+				return (::stored::TypedPollable::Type) & t;               \
 			}                                                                 \
 			virtual ::stored::TypedPollable::Type type() const noexcept final \
 			{                                                                 \
