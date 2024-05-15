@@ -6,35 +6,35 @@
 
 #ifdef __cplusplus
 
-#	include <libstored/macros.h>
-#	include <libstored/util.h>
+#  include <libstored/macros.h>
+#  include <libstored/util.h>
 
-#	include <cerrno>
-#	include <deque>
-#	include <string>
-#	include <vector>
+#  include <cerrno>
+#  include <deque>
+#  include <string>
+#  include <vector>
 
-#	if STORED_cplusplus >= 201103L
-#		include <functional>
-#		include <utility>
-#	endif
+#  if STORED_cplusplus >= 201103L
+#    include <functional>
+#    include <utility>
+#  endif
 
-#	ifdef STORED_COMPILER_MSVC
-#		include <io.h>
-#		ifndef STDERR_FILENO
-#			define STDERR_FILENO _fileno(stderr)
-#		endif
-#		ifndef STDOUT_FILENO
-#			define STDOUT_FILENO _fileno(stdout)
-#		endif
-#		ifndef STDIN_FILENO
-#			define STDIN_FILENO _fileno(stdin)
-#		endif
-#	elif !defined(STORED_OS_BAREMETAL)
-#		include <unistd.h>
-#	endif
+#  ifdef STORED_COMPILER_MSVC
+#    include <io.h>
+#    ifndef STDERR_FILENO
+#      define STDERR_FILENO _fileno(stderr)
+#    endif
+#    ifndef STDOUT_FILENO
+#      define STDOUT_FILENO _fileno(stdout)
+#    endif
+#    ifndef STDIN_FILENO
+#      define STDIN_FILENO _fileno(stdin)
+#    endif
+#  elif !defined(STORED_OS_BAREMETAL)
+#    include <unistd.h>
+#  endif
 
-#	include <cstdio>
+#  include <cstdio>
 
 namespace stored {
 
@@ -335,9 +335,9 @@ public:
 
 	virtual void decode(void* buffer, size_t len) override;
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#	ifndef DOXYGEN
+#  ifndef DOXYGEN
 	using base::encode;
-#	endif
+#  endif
 	virtual size_t mtu() const override;
 
 protected:
@@ -362,7 +362,7 @@ public:
 	static char const EscEnd = '\\';  // ST
 	enum { MaxBuffer = 1024 };
 
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	using NonDebugDecodeCallback = void(void* buf, size_t len);
 
 	template <typename F, SFINAE_IS_FUNCTION(F, NonDebugDecodeCallback, int) = 0>
@@ -374,22 +374,22 @@ public:
 		m_nonDebugDecodeCallback = // NOLINT(cppcoreguidelines-prefer-member-initializer)
 			std::forward<F>(cb);
 	}
-#	else
+#  else
 	typedef void(NonDebugDecodeCallback)(void* buf, size_t len);
 
 	explicit TerminalLayer(
 		NonDebugDecodeCallback* cb, ProtocolLayer* up = nullptr,
 		ProtocolLayer* down = nullptr);
-#	endif
+#  endif
 	explicit TerminalLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 
 	virtual ~TerminalLayer() override;
 
 	virtual void decode(void* buffer, size_t len) override;
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#	ifndef DOXYGEN
+#  ifndef DOXYGEN
 	using base::encode;
-#	endif
+#  endif
 	virtual size_t mtu() const override;
 	virtual void reset() override;
 
@@ -441,9 +441,9 @@ public:
 
 	virtual void decode(void* buffer, size_t len) override;
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#	ifndef DOXYGEN
+#  ifndef DOXYGEN
 	using base::encode;
-#	endif
+#  endif
 
 	size_t mtu() const final;
 	size_t lowerMtu() const;
@@ -524,9 +524,9 @@ public:
 
 	virtual void decode(void* buffer, size_t len) override;
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#	ifndef DOXYGEN
+#  ifndef DOXYGEN
 	using base::encode;
-#	endif
+#  endif
 
 	virtual size_t mtu() const override;
 	virtual bool flush() override;
@@ -565,7 +565,7 @@ public:
 		EventRetransmit,
 	};
 
-#	if STORED_cplusplus < 201103L
+#  if STORED_cplusplus < 201103L
 	/*!
 	 * \brief Callback type for #setEventCallback(EventCallbackArg*,void*).
 	 */
@@ -579,7 +579,7 @@ public:
 		m_cb = cb;
 		m_cbArg = arg;
 	}
-#	else
+#  else
 	/*!
 	 * \brief Callback type for #setEventCallback(EventCallbackArg*,void*).
 	 */
@@ -610,7 +610,7 @@ public:
 	{
 		m_cb = std::forward<F>(cb);
 	}
-#	endif
+#  endif
 
 	bool didTransmit() const;
 	void resetDidTransmit();
@@ -632,12 +632,12 @@ protected:
 	String::type& pushEncodeQueueRaw(bool back = true);
 
 private:
-#	if STORED_cplusplus < 201103L
+#  if STORED_cplusplus < 201103L
 	EventCallbackArg* m_cb;
 	void* m_cbArg;
-#	else
+#  else
 	Callable<EventCallback>::type m_cb;
-#	endif
+#  endif
 
 	size_t m_maxEncodeBuffer;
 	Deque<String::type*>::type m_encodeQueue;
@@ -750,9 +750,9 @@ public:
 
 	virtual void decode(void* buffer, size_t len) override;
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#	ifndef DOXYGEN
+#  ifndef DOXYGEN
 	using base::encode;
-#	endif
+#  endif
 
 	virtual void setPurgeableResponse(bool purgeable = true) override;
 	virtual size_t mtu() const override;
@@ -817,9 +817,9 @@ public:
 
 	virtual void decode(void* buffer, size_t len) override;
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#	ifndef DOXYGEN
+#  ifndef DOXYGEN
 	using base::encode;
-#	endif
+#  endif
 
 	virtual size_t mtu() const override;
 	virtual void reset() override;
@@ -849,9 +849,9 @@ public:
 
 	virtual void decode(void* buffer, size_t len) override;
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#	ifndef DOXYGEN
+#  ifndef DOXYGEN
 	using base::encode;
-#	endif
+#  endif
 
 	virtual size_t mtu() const override;
 	virtual void reset() override;
@@ -882,9 +882,9 @@ public:
 	virtual ~BufferLayer() override is_default
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#	ifndef DOXYGEN
+#  ifndef DOXYGEN
 	using base::encode;
-#	endif
+#  endif
 
 	virtual void reset() override;
 
@@ -916,9 +916,9 @@ public:
 
 	virtual void decode(void* buffer, size_t len) override;
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#	ifndef DOXYGEN
+#  ifndef DOXYGEN
 	using base::encode;
-#	endif
+#  endif
 
 	void setFile(FILE* f);
 	FILE* file() const;
@@ -966,9 +966,9 @@ public:
 		base::encode(buffer, len, last);
 	}
 
-#	ifndef DOXYGEN
+#  ifndef DOXYGEN
 	using base::encode;
-#	endif
+#  endif
 
 	/*!
 	 * \brief Checks if both up and down the stack was idle since the last call to #setIdle().
@@ -1008,7 +1008,7 @@ private:
 	bool m_idleDown;
 };
 
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 template <typename Up, typename Down, typename Connected>
 class CallbackLayer;
 
@@ -1083,9 +1083,9 @@ public:
 		base::connected();
 	}
 
-#		ifndef DOXYGEN
+#    ifndef DOXYGEN
 	using base::encode;
-#		endif
+#    endif
 
 private:
 	Up m_up;
@@ -1145,7 +1145,7 @@ make_callback(Up&& up, Down&& down, Connected&& connected)
 		typename std::decay<Connected>::type>{
 		std::forward<Up>(up), std::forward<Down>(down), std::forward<Connected>(connected)};
 }
-#	endif // C++11
+#  endif // C++11
 
 namespace impl {
 class Loopback1 final : public ProtocolLayer {
@@ -1272,11 +1272,11 @@ class PolledFileLayer : public PolledLayer {
 public:
 	typedef PolledLayer base;
 
-#	ifdef STORED_OS_WINDOWS
+#  ifdef STORED_OS_WINDOWS
 	typedef HANDLE fd_type;
-#	else
+#  else
 	typedef int fd_type;
-#	endif
+#  endif
 
 protected:
 	/*!
@@ -1301,7 +1301,7 @@ protected:
 	virtual int block(fd_type fd, bool forReading, long timeout_us = -1, bool suspend = false);
 };
 
-#	ifdef STORED_OS_WINDOWS
+#  ifdef STORED_OS_WINDOWS
 /*!
  * \brief A generalized layer that reads from and writes to a SOCKET.
  */
@@ -1324,12 +1324,12 @@ protected:
 	virtual int
 	block(fd_type fd, bool forReading, long timeout_us = -1, bool suspend = false) = 0;
 };
-#	else // !STORED_OS_WINDOWS
+#  else // !STORED_OS_WINDOWS
 
 // Sockets are just files.
 typedef PolledFileLayer PolledSocketLayer;
 
-#	endif // !STORED_OS_WINDOWS
+#  endif // !STORED_OS_WINDOWS
 
 /*!
  * \brief A layer that reads from and writes to file descriptors.
@@ -1365,19 +1365,19 @@ public:
 		char const* name_r, char const* name_w = nullptr,
 		size_t bufferSize = DefaultBufferSize, ProtocolLayer* up = nullptr,
 		ProtocolLayer* down = nullptr);
-#	ifdef STORED_OS_WINDOWS
+#  ifdef STORED_OS_WINDOWS
 	explicit FileLayer(
 		HANDLE h_r, HANDLE h_w = INVALID_HANDLE_VALUE,
 		size_t bufferSize = DefaultBufferSize, ProtocolLayer* up = nullptr,
 		ProtocolLayer* down = nullptr);
-#	endif
+#  endif
 
 	virtual ~FileLayer() override;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#	ifndef DOXYGEN
+#  ifndef DOXYGEN
 	using base::encode;
-#	endif
+#  endif
 
 	virtual fd_type fd() const override;
 	virtual int recv(long timeout_us = 0) override;
@@ -1390,7 +1390,7 @@ protected:
 	virtual void close() override;
 	void close_();
 
-#	ifdef STORED_OS_WINDOWS
+#  ifdef STORED_OS_WINDOWS
 	OVERLAPPED& overlappedRead();
 	OVERLAPPED& overlappedWrite();
 	void resetOverlappedRead();
@@ -1402,14 +1402,14 @@ protected:
 private:
 	static void writeCompletionRoutine(
 		DWORD dwErrorCode, DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped);
-#	endif
+#  endif
 
 private:
 	fd_type m_fd_r;
 	fd_type m_fd_w;
 	Vector<char>::type m_bufferRead;
 
-#	ifdef STORED_OS_WINDOWS
+#  ifdef STORED_OS_WINDOWS
 	OVERLAPPED m_overlappedRead;
 
 	struct {
@@ -1420,10 +1420,10 @@ private:
 
 	Vector<char>::type m_bufferWrite;
 	size_t m_writeLen;
-#	endif
+#  endif
 };
 
-#	if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
+#  if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
 /*!
  * \brief Server end of a named pipe.
  *
@@ -1451,9 +1451,9 @@ public:
 	bool isConnected() const;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#		ifndef DOXYGEN
+#    ifndef DOXYGEN
 	using base::encode;
-#		endif
+#    endif
 
 	virtual void reopen();
 
@@ -1474,7 +1474,7 @@ private:
 	DWORD m_openMode;
 };
 
-#	elif defined(STORED_OS_POSIX)
+#  elif defined(STORED_OS_POSIX)
 /*!
  * \brief Named pipe.
  *
@@ -1499,9 +1499,9 @@ public:
 	String::type const& name() const;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#		ifndef DOXYGEN
+#    ifndef DOXYGEN
 	using base::encode;
-#		endif
+#    endif
 
 	bool isConnected() const;
 	virtual void reopen();
@@ -1510,11 +1510,11 @@ private:
 	String::type m_name;
 	Access m_openMode;
 };
-#	else  // !STORED_OS_WINDOWS && !STORED_OS_POSIX
+#  else	 // !STORED_OS_WINDOWS && !STORED_OS_POSIX
 // Pipes are just files.
 typedef FileLayer NamedPipeLayer;
 typedef FileLayer DoublePipeLayer;
-#	endif // !STORED_OS_WINDOWS && !STORED_OS_POSIX
+#  endif // !STORED_OS_WINDOWS && !STORED_OS_POSIX
 
 /*!
  * \brief Server end of a pair of named pipes.
@@ -1533,9 +1533,9 @@ public:
 	virtual ~DoublePipeLayer() override;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#	ifndef DOXYGEN
+#  ifndef DOXYGEN
 	using base::encode;
-#	endif
+#  endif
 
 	virtual bool isOpen() const override;
 	virtual int recv(long timeout_us = 0) override;
@@ -1552,7 +1552,7 @@ private:
 	NamedPipeLayer m_w;
 };
 
-#	if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX)
+#  if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX)
 /*!
  * \brief XSIM interaction.
  *
@@ -1579,9 +1579,9 @@ public:
 	virtual ~XsimLayer() override;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#		ifndef DOXYGEN
+#    ifndef DOXYGEN
 	using base::encode;
-#		endif
+#    endif
 
 	virtual int recv(long timeout_us = 0) override;
 	virtual void reset() override;
@@ -1620,9 +1620,9 @@ private:
 	NamedPipeLayer m_req;
 	size_t m_inFlight;
 };
-#	endif // STORED_OS_WINDOWS || STORED_OS_POSIX
+#  endif // STORED_OS_WINDOWS || STORED_OS_POSIX
 
-#	if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
+#  if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
 /*!
  * \brief A stdin/stdout layer.
  *
@@ -1652,9 +1652,9 @@ public:
 	virtual int recv(long timeout_us = 0) override;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#		ifndef DOXYGEN
+#    ifndef DOXYGEN
 	using base::encode;
-#		endif
+#    endif
 
 	bool isPipeIn() const;
 	bool isPipeOut() const;
@@ -1675,7 +1675,7 @@ private:
 	Vector<char>::type m_bufferRead;
 };
 
-#	else // !STORED_OS_WINDOWS
+#  else // !STORED_OS_WINDOWS
 
 /*!
  * \brief A stdin/stdout layer.
@@ -1692,9 +1692,9 @@ public:
 	virtual ~StdioLayer() override is_default
 };
 
-#	endif // !STORED_OS_WINDOWS
+#  endif // !STORED_OS_WINDOWS
 
-#	if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX)
+#  if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX)
 /*!
  * \brief A serial port layer.
  *
@@ -1713,7 +1713,7 @@ public:
 	virtual ~SerialLayer() override is_default
 	int resetAutoBaud();
 };
-#	endif // STORED_OS_WINDOWS || STORED_OS_POSIX
+#  endif // STORED_OS_WINDOWS || STORED_OS_POSIX
 
 } // namespace stored
 #endif // __cplusplus
