@@ -1513,7 +1513,6 @@ private:
 #  else	 // !STORED_OS_WINDOWS && !STORED_OS_POSIX
 // Pipes are just files.
 typedef FileLayer NamedPipeLayer;
-typedef FileLayer DoublePipeLayer;
 #  endif // !STORED_OS_WINDOWS && !STORED_OS_POSIX
 
 /*!
