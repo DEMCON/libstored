@@ -1,9 +1,9 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 #
 # SPDX-License-Identifier: CC0-1.0
 
 ---
-# clang-format-10
+# clang-format-15
 Language:        Cpp
 AccessModifierOffset: -8
 AlignAfterOpenBracket: AlwaysBreak
@@ -108,6 +108,7 @@ PenaltyBreakTemplateDeclaration: 10
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 60
 PointerAlignment: Left
+PPIndentWidth: 2
 ReflowComments:  true
 SortIncludes:    true
 SortUsingDeclarations: true
