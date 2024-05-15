@@ -1,6 +1,6 @@
 #ifndef LIBSTORED_MACROS_H
 #define LIBSTORED_MACROS_H
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -141,7 +141,10 @@ typedef SSIZE_T ssize_t;
 // Platform
 //
 
-#if defined(_WIN32) || defined(__CYGWIN__)
+#ifdef __ZEPHYR__
+#  define STORED_OS_BAREMETAL 1
+#  include <zephyr/toolchain.h>
+#elif defined(_WIN32) || defined(__CYGWIN__)
 #  define STORED_OS_WINDOWS	 1
 #  define _WANT_IO_C99_FORMATS	 1
 #  define __USE_MINGW_ANSI_STDIO 1
