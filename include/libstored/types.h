@@ -6,25 +6,25 @@
 
 #ifdef __cplusplus
 
-#	include <libstored/macros.h>
-#	include <libstored/config.h>
-#	include <libstored/util.h>
+#  include <libstored/macros.h>
+#  include <libstored/config.h>
+#  include <libstored/util.h>
 
-#	include <algorithm>
-#	include <cstdlib>
-#	include <cstring>
-#	include <exception>
-#	include <limits>
+#  include <algorithm>
+#  include <cstdlib>
+#  include <cstring>
+#  include <exception>
+#  include <limits>
 
-#	if STORED_cplusplus >= 201103L
-#		include <cinttypes>
-#	else
-#		include <inttypes.h>
-#	endif
+#  if STORED_cplusplus >= 201103L
+#    include <cinttypes>
+#  else
+#    include <inttypes.h>
+#  endif
 
-#	ifdef STORED_HAVE_QT
-#		include <QVariant>
-#	endif
+#  ifdef STORED_HAVE_QT
+#    include <QVariant>
+#  endif
 
 namespace stored {
 
@@ -124,9 +124,9 @@ struct Type {
 	static constexpr bool isStoreSwapped(type t) noexcept
 	{
 		return
-#	ifdef STORED_LITTLE_ENDIAN
+#  ifdef STORED_LITTLE_ENDIAN
 			!
-#	endif
+#  endif
 			Config::StoreInLittleEndian
 			&& Type::isFixed(t);
 	}
@@ -219,7 +219,7 @@ struct fromType<stored::Type::Uint32> {
 	typedef uint32_t type;
 };
 
-#	ifdef ULLONG_MAX
+#  ifdef ULLONG_MAX
 template <>
 struct fromType<stored::Type::Int64> {
 	typedef int64_t type;
@@ -229,7 +229,7 @@ template <>
 struct fromType<stored::Type::Uint64> {
 	typedef uint64_t type;
 };
-#	endif
+#  endif
 
 template <>
 struct fromType<stored::Type::Float> {
@@ -304,14 +304,14 @@ struct toType<long> : public impl::toIntType<true, sizeof(long)> {};
 template <>
 struct toType<unsigned long> : public impl::toIntType<false, sizeof(long)> {};
 
-#	ifdef ULLONG_MAX
+#  ifdef ULLONG_MAX
 // long long only exist since C99 and C++11, but many compilers do support them anyway.
 template <>
 struct toType<long long> : public impl::toIntType<true, sizeof(long long)> {};
 
 template <>
 struct toType<unsigned long long> : public impl::toIntType<false, sizeof(long long)> {};
-#	endif
+#  endif
 
 template <>
 struct toType<float> {
@@ -401,7 +401,7 @@ public:
 		return *this;
 	}
 
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	/*!
 	 * \brief Move-construct.
 	 */
@@ -424,12 +424,12 @@ public:
 	 * \brief Dtor.
 	 */
 	~Variable() noexcept = default;
-#	else
+#  else
 	/*!
 	 * \brief Dtor.
 	 */
 	~Variable() noexcept {}
-#	endif
+#  endif
 
 	/*!
 	 * \brief Returns the value.
@@ -454,9 +454,9 @@ public:
 	/*!
 	 * \brief Returns the value, which is identical to #get().
 	 */
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	explicit
-#	endif
+#  endif
 	operator type() const noexcept
 	{
 		return get();
@@ -558,27 +558,27 @@ public:
 	constexpr Variable(Container& container, type& buffer) noexcept
 		: base(container, buffer)
 		, m_container(&container)
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 		, m_entry()
-#	endif
+#  endif
 	{}
 
 	/*! \copydoc stored::Variable::Variable() */
 	// cppcheck-suppress uninitMemberVar
 	constexpr Variable() noexcept
 		: m_container()
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 		, m_entry()
-#	endif
+#  endif
 	{}
 
 	/*! \copydoc stored::Variable::Variable(Variable const&) */
 	Variable(Variable const& v) noexcept
 		: base()
 		, m_container()
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 		, m_entry()
-#	endif
+#  endif
 	{
 		(*this) = v;
 	}
@@ -588,20 +588,20 @@ public:
 	Variable& operator=( // NOLINT(bugprone-unhandled-self-assignment,cert-oop54-cpp)
 		Variable const& v) noexcept
 	{
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 		stored_assert(m_entry == EntryNone);
-#	endif
+#  endif
 		base::operator=(v);
 		m_container = v.m_container;
 		return *this;
 	}
 
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	/*! \copydoc stored::Variable::Variable(Variable&&) */
 	Variable(Variable&& v) noexcept
-#		ifdef _DEBUG
+#    ifdef _DEBUG
 		: m_entry()
-#		endif
+#    endif
 	{
 		(*this) = std::move(v);
 	}
@@ -616,20 +616,20 @@ public:
 
 	/*! \copydoc stored::Variable::~Variable() */
 	~Variable() noexcept
-#		ifdef _DEBUG
+#    ifdef _DEBUG
 	{
 		stored_assert(m_entry == EntryNone);
 	}
-#		else
+#    else
 		= default;
-#		endif
-#	else
+#    endif
+#  else
 	/*! \copydoc stored::Variable::~Variable() */
 	~Variable() noexcept
 	{
 		stored_assert(m_entry == EntryNone);
 	}
-#	endif
+#  endif
 
 	/*!
 	 * \copydoc stored::Variable::get()
@@ -653,9 +653,9 @@ public:
 	/*!
 	 * \brief Returns the value, which is identical to #get().
 	 */
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	explicit
-#	endif
+#  endif
 	operator type() const noexcept
 	{
 		return get();
@@ -728,10 +728,10 @@ public:
 	void entryX() const noexcept
 	{
 		container().hookEntryX(toType<T>::type, &this->buffer(), sizeof(type));
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 		stored_assert(m_entry == EntryNone);
 		m_entry = EntryX;
-#	endif
+#  endif
 	}
 
 	/*!
@@ -740,10 +740,10 @@ public:
 	 */
 	void exitX(bool changed) const noexcept
 	{
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 		stored_assert(m_entry == EntryX);
 		m_entry = EntryNone;
-#	endif
+#  endif
 		container().hookExitX(toType<T>::type, &this->buffer(), sizeof(type), changed);
 	}
 
@@ -754,10 +754,10 @@ public:
 	void entryRO() const noexcept
 	{
 		container().hookEntryRO(toType<T>::type, &this->buffer(), sizeof(type));
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 		stored_assert(m_entry == EntryNone);
 		m_entry = EntryRO;
-#	endif
+#  endif
 	}
 
 	/*!
@@ -766,21 +766,21 @@ public:
 	 */
 	void exitRO() const noexcept
 	{
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 		stored_assert(m_entry == EntryRO);
 		m_entry = EntryNone;
-#	endif
+#  endif
 		container().hookExitRO(toType<T>::type, &this->buffer(), sizeof(type));
 	}
 
 private:
 	/*! \brief The container of this Variable. */
 	Container* m_container;
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 	enum {EntryNone, EntryRO, EntryX};
 	/*! \brief Tracking entry/exit calls. */
 	mutable uint_fast8_t m_entry;
-#	endif
+#  endif
 };
 
 /*!
@@ -836,9 +836,9 @@ public:
 	/*!
 	 * \brief Returns the value, which is identical to #get().
 	 */
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	explicit
-#	endif
+#  endif
 	operator type() const
 	{
 		return get();
@@ -1038,10 +1038,10 @@ protected:
 	constexpr explicit FreeVariable(size_t offset) noexcept
 		: m_offset(static_cast<offset_type>(offset))
 	{
-#	if STORED_cplusplus < 201103L || STORED_cplusplus >= 201402L
+#  if STORED_cplusplus < 201103L || STORED_cplusplus >= 201402L
 		// For C++11, the body must be empty.
 		stored_assert(offset < std::numeric_limits<offset_type>::max());
-#	endif
+#  endif
 	}
 
 	friend class Variant<void>;
@@ -1111,12 +1111,12 @@ public:
 	/*! \brief The full (bound) Function type. */
 	typedef Function_type Bound_type;
 	/*! \brief A type that is able to store the store's buffer offset. */
-#	ifdef DOXYGEN
+#  ifdef DOXYGEN
 	typedef unsigned int f_type;
-#	else
+#  else
 	typedef typename value_type<static_cast<uintmax_t>(
 		Container::FunctionCount > 0 ? Container::FunctionCount - 1 : 0)>::type f_type;
-#	endif
+#  endif
 
 	/*! \brief Constructor for an invalid variable. */
 	constexpr FreeFunction() noexcept
@@ -1131,10 +1131,10 @@ protected:
 	constexpr explicit FreeFunction(unsigned int f) noexcept
 		: m_f(static_cast<f_type>(f))
 	{
-#	if STORED_cplusplus < 201103L || STORED_cplusplus >= 201402L
+#  if STORED_cplusplus < 201103L || STORED_cplusplus >= 201402L
 		// For C++11, the body must be empty.
 		stored_assert(f < std::numeric_limits<f_type>::max());
-#	endif
+#  endif
 	}
 
 	friend class Variant<void>;
@@ -1201,9 +1201,9 @@ public:
 		, m_buffer(buffer)
 		, m_len(len)
 		, m_type((uint8_t)type)
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 		, m_entry()
-#	endif
+#  endif
 	{
 		stored_assert(!Type::isFunction(type));
 		// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -1223,9 +1223,9 @@ public:
 		, m_f((uintptr_t)f)
 		, m_len(len)
 		, m_type((uint8_t)type)
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 		, m_entry()
-#	endif
+#  endif
 	{
 		stored_assert(Type::isFunction(type));
 		static_assert(sizeof(uintptr_t) >= sizeof(unsigned int), "");
@@ -1240,9 +1240,9 @@ public:
 		, m_buffer()
 		, m_len()
 		, m_type()
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 		, m_entry()
-#	endif
+#  endif
 	{}
 
 	/*!
@@ -1255,9 +1255,9 @@ public:
 		, m_buffer(v.valid() ? &v.buffer() : nullptr)
 		, m_len(sizeof(T))
 		, m_type(toType<T>::type)
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 		, m_entry()
-#	endif
+#  endif
 	{}
 
 	/*!
@@ -1270,9 +1270,9 @@ public:
 		, m_f(f.valid() ? f.id() : 0)
 		, m_len(sizeof(T))
 		, m_type(f.type())
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 		, m_entry()
-#	endif
+#  endif
 	{}
 
 	/*!
@@ -1471,7 +1471,7 @@ public:
 			return container().callback(set, buffer, len, (unsigned int)m_f);
 	}
 
-#	ifdef STORED_HAVE_QT
+#  ifdef STORED_HAVE_QT
 	/*!
 	 * \brief Convert the value to a QVariant.
 	 */
@@ -1519,12 +1519,12 @@ public:
 		if(!v.isValid())
 			return false;
 
-#		define CASE_TYPE(T)           \
-		case stored::toType<T>::type:  \
-			if(!v.canConvert<T>()) \
-				return false;  \
-			set<T>(v.value<T>());  \
-			return true;
+#    define CASE_TYPE(T)           \
+    case stored::toType<T>::type:  \
+	    if(!v.canConvert<T>()) \
+		    return false;  \
+	    set<T>(v.value<T>());  \
+	    return true;
 
 		switch(type() & ~Type::FlagFunction) {
 			CASE_TYPE(int8_t)
@@ -1549,7 +1549,7 @@ public:
 		default:
 			return false;
 		}
-#		undef CASE_TYPE
+#    undef CASE_TYPE
 	}
 
 	/*!
@@ -1574,7 +1574,7 @@ public:
 		auto buf = value.toUtf8();
 		set(buf.constData());
 	}
-#	endif // STORED_HAVE_QT
+#  endif // STORED_HAVE_QT
 
 	/*!
 	 * \brief Invokes \c hookEntryX() on the #container().
@@ -1589,10 +1589,10 @@ public:
 	{
 		if(Config::EnableHooks) {
 			container().hookEntryX(type(), m_buffer, len);
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 			stored_assert(m_entry == EntryNone);
 			m_entry = EntryX;
-#	endif
+#  endif
 		}
 	}
 
@@ -1608,10 +1608,10 @@ public:
 	void exitX(bool changed, size_t len) const noexcept
 	{
 		if(Config::EnableHooks) {
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 			stored_assert(m_entry == EntryX);
 			m_entry = EntryNone;
-#	endif
+#  endif
 			container().hookExitX(type(), m_buffer, len, changed);
 		}
 	}
@@ -1629,10 +1629,10 @@ public:
 	{
 		if(Config::EnableHooks) {
 			container().hookEntryRO(type(), m_buffer, len);
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 			stored_assert(m_entry == EntryNone);
 			m_entry = EntryRO;
-#	endif
+#  endif
 		}
 	}
 
@@ -1648,10 +1648,10 @@ public:
 	void exitRO(size_t len) const noexcept
 	{
 		if(Config::EnableHooks) {
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 			stored_assert(m_entry == EntryRO);
 			m_entry = EntryNone;
-#	endif
+#  endif
 			container().hookExitRO(type(), m_buffer, len);
 		}
 	}
@@ -1859,11 +1859,11 @@ private:
 	size_t m_len;
 	/*! \brief Type of the object. */
 	uint8_t m_type;
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 	enum { EntryNone, EntryRO, EntryX };
 	/*! \brief Tracking entry/exit calls. */
 	mutable uint8_t m_entry;
-#	endif
+#  endif
 };
 
 /*!
@@ -1887,9 +1887,9 @@ public:
 		, m_offset(buffer_offset_or_f)
 		, m_len(len)
 		, m_type((uint8_t)type)
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 		, m_entry()
-#	endif
+#  endif
 	{
 		static_assert(sizeof(uintptr_t) >= sizeof(unsigned int), "");
 	}
@@ -1903,9 +1903,9 @@ public:
 		, m_offset()
 		, m_len()
 		, m_type((uint8_t)Type::Invalid)
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 		, m_entry()
-#	endif
+#  endif
 	{}
 
 	/*!
@@ -2097,11 +2097,11 @@ public:
 
 private:
 	// Make this class the same size as a non-void container.
-#	ifdef __clang__
+#  ifdef __clang__
 	void* m_dummy __attribute__((unused));
-#	else
+#  else
 	void* m_dummy;
-#	endif
+#  endif
 
 	/*!
 	 * \brief Encodes either the store's buffer offset or function.
@@ -2111,14 +2111,14 @@ private:
 	size_t m_len;
 	/*! \copydoc Variant::m_type */
 	uint8_t m_type;
-#	ifdef _DEBUG
+#  ifdef _DEBUG
 	/*! \copydoc Variant::m_entry */
-#		ifdef __clang__
+#    ifdef __clang__
 	uint8_t m_entry __attribute__((unused));
-#		else
+#    else
 	uint8_t m_entry;
-#		endif
-#	endif
+#    endif
+#  endif
 };
 
 
@@ -2148,7 +2148,7 @@ template <typename Store, typename Implementation, typename T, size_t offset, si
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class StoreVariable {
 public:
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	// Prevent accidental copying this object.  This only
 	// works for C++11, as these special functions must be
 	// trivial otherwise being used as union member.
@@ -2156,7 +2156,7 @@ public:
 	StoreVariable(StoreVariable&&) = delete;
 	void operator=(StoreVariable const&) = delete;
 	void operator=(StoreVariable&&) = delete;
-#	endif
+#  endif
 
 	typedef T type;
 	typedef Variable<type, Implementation> Variable_type;
@@ -2237,12 +2237,12 @@ template <
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class StoreFunction {
 public:
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	StoreFunction(StoreFunction const&) = delete;
 	StoreFunction(StoreFunction&&) = delete;
 	void operator=(StoreFunction const&) = delete;
 	void operator=(StoreFunction&&) = delete;
-#	endif
+#  endif
 
 	typedef typename FunctionMap<Implementation, F>::type type;
 	typedef Function<type, Implementation> Function_type;
@@ -2282,9 +2282,9 @@ public:
 		return v;
 	}
 
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	explicit
-#	endif
+#  endif
 	operator type() const
 	{
 		return get();
@@ -2361,12 +2361,12 @@ template <typename Store, typename Implementation, Type::type type_, size_t offs
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class StoreVariantV {
 public:
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	StoreVariantV(StoreVariantV const&) = delete;
 	StoreVariantV(StoreVariantV&&) = delete;
 	void operator=(StoreVariantV const&) = delete;
 	void operator=(StoreVariantV&&) = delete;
-#	endif
+#  endif
 
 	typedef Variant<Implementation> Variant_type;
 
@@ -2428,7 +2428,7 @@ public:
 		return variant().buffer();
 	}
 
-#	ifdef STORED_HAVE_QT
+#  ifdef STORED_HAVE_QT
 	QVariant toQVariant() const
 	{
 		return variant().toQVariant();
@@ -2448,7 +2448,7 @@ public:
 	{
 		variant().set(value);
 	}
-#	endif // STORED_HAVE_QT
+#  endif // STORED_HAVE_QT
 };
 
 /*!
@@ -2460,12 +2460,12 @@ template <typename Store, typename Implementation, Type::type type_, unsigned in
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class StoreVariantF {
 public:
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	StoreVariantF(StoreVariantF const&) = delete;
 	StoreVariantF(StoreVariantF&&) = delete;
 	void operator=(StoreVariantF const&) = delete;
 	void operator=(StoreVariantF&&) = delete;
-#	endif
+#  endif
 
 	typedef Variant<Implementation> Variant_type;
 
@@ -2522,7 +2522,7 @@ public:
 		return size_;
 	}
 
-#	ifdef STORED_HAVE_QT
+#  ifdef STORED_HAVE_QT
 	QVariant toQVariant() const
 	{
 		return variant().toQVariant();
@@ -2542,7 +2542,7 @@ public:
 	{
 		variant().set(value);
 	}
-#	endif // STORED_HAVE_QT
+#  endif // STORED_HAVE_QT
 };
 } // namespace impl
 
