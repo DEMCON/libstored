@@ -1,6 +1,6 @@
 #ifndef LIBSTORED_TYPES_H
 #define LIBSTORED_TYPES_H
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -364,6 +364,7 @@ public:
 	 */
 	// cppcheck-suppress uninitMemberVar
 	// cppcheck-suppress constParameter
+	// cppcheck-suppress constParameterReference
 	Variable(Container& container, type& buffer) noexcept
 		: m_buffer(&buffer)
 	{

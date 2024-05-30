@@ -8,3 +8,4 @@ unmatchedSuppression:examples/7_protocol/main.cpp
 unmatchedSuppression:src/debugger.cpp
 unmatchedSuppression:src/protocol.cpp
 throwInNoexceptFunction:include/libstored/spm.h
+duplInheritedMember:include/libstored/poller.h

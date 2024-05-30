@@ -1093,7 +1093,7 @@ public:
 	}
 
 	struct compare_FileLayer {
-		bool operator()(PollableFileLayer const& p, PolledFileLayer& l) const
+		bool operator()(PollableFileLayer const& p, PolledFileLayer const& l) const
 		{
 			return p.layer == &l;
 		}
