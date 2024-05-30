@@ -1,6 +1,7 @@
 missingIncludeSystem:*
 cstyleCast:*
 constParameter:*
+constParameterReference:*
 knownConditionTrueFalse:*
 unmatchedSuppression:*
 unmatchedSuppression:examples/1_hello/main.cpp

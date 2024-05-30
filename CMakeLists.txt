@@ -381,6 +381,16 @@ endif()
 
 find_program(CPPCHECK_CMD NAMES cppcheck)
 if(CPPCHECK_CMD)
+	execute_process(
+		COMMAND ${CPPCHECK_CMD} --version
+		OUTPUT_VARIABLE cppcheck_version
+	)
+
+	string(REGEX REPLACE "^Cppcheck " "" cppcheck_version "${cppcheck_version}")
+	if(NOT "${cppcheck_version}" VERSION_LESS 2.11)
+		list(APPEND CPPCHECK_ARGS "--check-level=exhaustive")
+	endif()
+
 	if(LIBSTORED_EXAMPLES)
 		macro(cppcheck_add app)
 			if(TARGET ${app}-libstored-generate)
@@ -428,6 +438,7 @@ if(CPPCHECK_CMD)
 			# --xml
 			-I include ${CPPCHECK_EXAMPLES} src
 			# --check-config
+			${CPPCHECK_ARGS}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		COMMENT "Running cppcheck..."
 		VERBATIM

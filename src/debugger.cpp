@@ -1124,6 +1124,7 @@ ScratchPad<>& Debugger::spm() const
 /*!
  * \brief #list() callback for processing #CmdList.
  */
+// cppcheck-suppress constParameterCallback
 void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* arg)
 {
 	stored_assert(arg);
