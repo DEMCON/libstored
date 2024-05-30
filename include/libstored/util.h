@@ -282,6 +282,7 @@
 /*!
  * \see CLASS_NO_WEAK_VTABLE
  */
+// cppcheck-suppress-macro duplInheritedMember
 #		define CLASS_NO_WEAK_VTABLE_DEF(Class)                       \
 			/*! \brief Dummy function to force the vtable of this \
 			 * class to this translation unit. Don't call. */     \

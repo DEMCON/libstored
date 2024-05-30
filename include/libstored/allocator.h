@@ -66,6 +66,7 @@ static inline void deallocate(T* p, size_t n = 1) noexcept
  *
  * \param T the type of the class for which the operators are to be defined
  */
+// cppcheck-suppress-macro duplInheritedMember
 #  define STORED_CLASS_NEW_DELETE(T)                                          \
   public:                                                                     \
 	  void* operator new(std::size_t n)                                   \
