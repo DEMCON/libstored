@@ -1,27 +1,27 @@
 #ifndef LIBSTORED_ALLOCATOR_H
 #define LIBSTORED_ALLOCATOR_H
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
 #include <libstored/config.h>
 
 #ifdef __cplusplus
-#	include <algorithm>
-#	include <deque>
-#	include <list>
-#	include <map>
-#	include <memory>
-#	include <set>
-#	include <string>
-#	include <vector>
+#  include <algorithm>
+#  include <deque>
+#  include <list>
+#  include <map>
+#  include <memory>
+#  include <set>
+#  include <string>
+#  include <vector>
 
-#	if STORED_cplusplus >= 201103L
-#		include <array>
-#		include <functional>
-#		include <unordered_map>
-#		include <utility>
-#	endif
+#  if STORED_cplusplus >= 201103L
+#    include <array>
+#    include <functional>
+#    include <unordered_map>
+#    include <utility>
+#  endif
 
 namespace stored {
 
@@ -31,14 +31,14 @@ namespace stored {
 template <typename T>
 __attribute__((warn_unused_result)) static inline T* allocate(size_t n = 1)
 {
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	using Allocator = typename Config::Allocator<T>::type;
 	Allocator a;
 	return std::allocator_traits<Allocator>::allocate(a, n);
-#	else
+#  else
 	typename Config::Allocator<T>::type allocator;
 	return allocator.allocate(n);
-#	endif
+#  endif
 }
 
 /*!
@@ -47,14 +47,14 @@ __attribute__((warn_unused_result)) static inline T* allocate(size_t n = 1)
 template <typename T>
 static inline void deallocate(T* p, size_t n = 1) noexcept
 {
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	using Allocator = typename Config::Allocator<T>::type;
 	Allocator a;
 	std::allocator_traits<Allocator>::deallocate(a, p, n);
-#	else
+#  else
 	typename Config::Allocator<T>::type allocator;
 	allocator.deallocate(p, n);
-#	endif
+#  endif
 }
 
 /*!
@@ -66,26 +66,26 @@ static inline void deallocate(T* p, size_t n = 1) noexcept
  *
  * \param T the type of the class for which the operators are to be defined
  */
-#	define STORED_CLASS_NEW_DELETE(T)                                          \
-	public:                                                                     \
-		void* operator new(std::size_t n)                                   \
-		{                                                                   \
-			STORED_UNUSED(n)                                            \
-			stored_assert(n == sizeof(T));                              \
-			return ::stored::allocate<T>();                             \
-		}                                                                   \
-		void* operator new(std::size_t n, void* ptr) /* NOLINT */           \
-		{                                                                   \
-			STORED_UNUSED(n)                                            \
-			stored_assert(n == sizeof(T));                              \
-			return ptr;                                                 \
-		}                                                                   \
-		void operator delete(void* ptr)                                     \
-		{                                                                   \
-			::stored::deallocate<T>(static_cast<T*>(ptr)); /* NOLINT */ \
-		}                                                                   \
-                                                                                    \
-	private:
+#  define STORED_CLASS_NEW_DELETE(T)                                          \
+  public:                                                                     \
+	  void* operator new(std::size_t n)                                   \
+	  {                                                                   \
+		  STORED_UNUSED(n)                                            \
+		  stored_assert(n == sizeof(T));                              \
+		  return ::stored::allocate<T>();                             \
+	  }                                                                   \
+	  void* operator new(std::size_t n, void* ptr) /* NOLINT */           \
+	  {                                                                   \
+		  STORED_UNUSED(n)                                            \
+		  stored_assert(n == sizeof(T));                              \
+		  return ptr;                                                 \
+	  }                                                                   \
+	  void operator delete(void* ptr)                                     \
+	  {                                                                   \
+		  ::stored::deallocate<T>(static_cast<T*>(ptr)); /* NOLINT */ \
+	  }                                                                   \
+                                                                              \
+  private:
 
 /*!
  * \brief Wrapper for Config::Allocator::type::deallocate() after destroying the given object.
@@ -96,26 +96,26 @@ static inline void cleanup(T* p) noexcept
 	if(!p)
 		return;
 
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	using Allocator = typename Config::Allocator<T>::type;
 	Allocator a;
 	std::allocator_traits<Allocator>::destroy(a, p);
 	std::allocator_traits<Allocator>::deallocate(a, p, 1U);
-#	else
+#  else
 	p->~T();
 	deallocate<T>(p);
-#	endif
+#  endif
 }
 
 /*!
  * \brief libstored-allocator-aware \c std::function-like type.
  */
-#	if STORED_cplusplus < 201103L
+#  if STORED_cplusplus < 201103L
 template <typename F>
 struct Callable {
 	typedef F* type;
 };
-#	else // STORED_cplusplus >= 201103L
+#  else // STORED_cplusplus >= 201103L
 namespace impl {
 
 // std::max() is not constexpr in C++11. So, implement it here (for what we need).
@@ -187,11 +187,11 @@ protected:
 
 		R operator()(typename CallableArgType<Args>::type... /*args*/) const final
 		{
-#		ifdef STORED_cpp_exceptions
+#    ifdef STORED_cpp_exceptions
 			throw std::bad_function_call();
-#		else
+#    else
 			std::terminate();
-#		endif
+#    endif
 		}
 
 		// NOLINTNEXTLINE(hicpp-explicit-conversions)
@@ -338,9 +338,9 @@ protected:
 					m_w = w;
 				} catch(...) {
 					cleanup(w);
-#		ifdef STORED_cpp_exceptions
+#    ifdef STORED_cpp_exceptions
 					throw;
-#		endif
+#    endif
 				}
 			}
 			return *this;
@@ -435,9 +435,9 @@ public:
 				c.get().clone(m_buffer.data());
 			} catch(...) {
 				construct<Reset>();
-#		ifdef STORED_cpp_exceptions
+#    ifdef STORED_cpp_exceptions
 				throw;
-#		endif
+#    endif
 			}
 		}
 		return *this;
@@ -514,9 +514,9 @@ protected:
 		} catch(...) {
 			// Make sure we always have a valid instance in the buffer.
 			construct<Reset>();
-#		ifdef STORED_cpp_exceptions
+#    ifdef STORED_cpp_exceptions
 			throw;
-#		endif
+#    endif
 		}
 	}
 
@@ -584,7 +584,7 @@ private:
 	bool m_valid = false;
 };
 
-#	endif // STORED_cplusplus >= 201103L
+#  endif // STORED_cplusplus >= 201103L
 
 /*!
  * \brief libstored-allocator-aware \c std::deque.
@@ -612,7 +612,7 @@ struct Map {
 		type;
 };
 
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 /*!
  * \brief libstored-allocator-aware \c std::unordered_map.
  */
@@ -632,7 +632,7 @@ struct UnorderedMultiMap {
 	using type = typename std::unordered_multimap<
 		Key, T, Hash, KeyEqual, typename Config::Allocator<std::pair<Key const, T>>::type>;
 };
-#	endif
+#  endif
 
 /*!
  * \brief libstored-allocator-aware \c std::set.
