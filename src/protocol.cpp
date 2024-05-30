@@ -27,7 +27,7 @@
 #elif defined(STORED_OS_WINDOWS)
 #  define delay_ms(ms) Sleep(ms)
 #else
-#  define delay_ms(ms) usleep((ms)*1000L)
+#  define delay_ms(ms) usleep((ms) * 1000L)
 #endif
 
 #if defined(STORED_OS_WINDOWS)
@@ -572,9 +572,9 @@ void ArqLayer::decode(void* buffer, size_t len)
 				for(Deque<String::type*>::type::iterator it =
 					    ++m_encodeQueue.begin();
 				    it != m_encodeQueue.end(); ++it) {
-					(**it)[0] =
-						(char)((uint8_t)((uint8_t)(**it)[0] & (uint8_t)~SeqMask)
-						       | m_sendSeq);
+					(**it)[0] = (char)((uint8_t)((uint8_t)(**it)[0]
+								     & (uint8_t)~SeqMask)
+							   | m_sendSeq);
 					m_sendSeq = nextSeq(m_sendSeq);
 				}
 			}
@@ -1843,7 +1843,9 @@ PolledSocketLayer::~PolledSocketLayer() is_default
 // FileLayer
 //
 
-#ifndef STORED_OS_WINDOWS
+#ifdef STORED_HAVE_STDIO
+
+#  ifndef STORED_OS_WINDOWS
 
 /*!
  * \brief Generic ctor for subclasses.
@@ -1875,12 +1877,12 @@ FileLayer::FileLayer(int fd_r, int fd_w, size_t bufferSize, ProtocolLayer* up, P
 	, m_fd_r(-1)
 	, m_fd_w(-1)
 {
-#  ifdef STORED_OS_POSIX
+#    ifdef STORED_OS_POSIX
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	fcntl(fd_r, F_SETFL, fcntl(fd_r, F_GETFL) | O_NONBLOCK);
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	fcntl(fd_w, F_SETFL, fcntl(fd_w, F_GETFL) | O_NONBLOCK);
-#  endif
+#    endif
 
 	init(fd_r, fd_w == -1 ? fd_r : fd_w, bufferSize);
 }
@@ -2025,9 +2027,9 @@ done:
 		switch(written) {
 		case -1:
 			switch(errno) {
-#  if EAGAIN != EWOULDBLOCK
+#    if EAGAIN != EWOULDBLOCK
 			case EWOULDBLOCK:
-#  endif
+#    endif
 			case EAGAIN: {
 				if(this->block(m_fd_w, false, -1, m_fd_w == STDOUT_FILENO))
 					return;
@@ -2098,9 +2100,9 @@ again:
 	if(cnt == -1) {
 		switch(errno) {
 		case EAGAIN:
-#  if EAGAIN != EWOULDBLOCK
+#    if EAGAIN != EWOULDBLOCK
 		case EWOULDBLOCK:
-#  endif
+#    endif
 			if(timeout_us == 0)
 				return setLastError(errno);
 
@@ -2122,7 +2124,7 @@ again:
 	}
 }
 
-#else // STORED_OS_WINDOWS
+#  else // STORED_OS_WINDOWS
 
 /*!
  * \brief Checks if the given handle is valid.
@@ -2749,7 +2751,7 @@ void FileLayer::resetOverlappedWrite()
 	ResetEvent(hEvent);
 }
 
-#endif // STORED_OS_WINDOWS
+#  endif // STORED_OS_WINDOWS
 
 
 
@@ -2757,7 +2759,7 @@ void FileLayer::resetOverlappedWrite()
 // NamedPipeLayer
 //
 
-#if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
+#  if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
 /*!
  * \brief Ctor for the server part of a named pipe.
  *
@@ -2983,7 +2985,7 @@ bool NamedPipeLayer::isConnected() const
 	return m_state == StateConnected;
 }
 
-#elif defined(STORED_OS_POSIX)
+#  elif defined(STORED_OS_POSIX)
 /*!
  * \brief Ctor.
  *
@@ -3013,6 +3015,9 @@ NamedPipeLayer::NamedPipeLayer(
 		int fd_w = open("/dev/null", O_WRONLY);
 		init(fd_r, fd_w);
 	} else {
+#    ifdef STORED_OS_OSX
+		typedef void (*sighandler_t)(int);
+#    endif
 		sighandler_t oldh = signal(SIGPIPE, SIG_IGN);
 
 		if(oldh == SIG_ERR) {
@@ -3022,11 +3027,11 @@ NamedPipeLayer::NamedPipeLayer(
 			// Oops, revert the handler and accept SIGPIPEs.
 			if(signal(SIGPIPE, oldh) == SIG_ERR) {
 				// Really oops... Now we broke something.
-#  ifdef STORED_cpp_exceptions
+#    ifdef STORED_cpp_exceptions
 				throw std::runtime_error("Cannot restore SIGPIPE handler");
-#  else
+#    else
 				std::terminate();
-#  endif
+#    endif
 			}
 		}
 
@@ -3094,7 +3099,7 @@ void NamedPipeLayer::reopen()
 	init(fd_r, fd_w);
 	connected();
 }
-#endif // STORED_OS_POSIX
+#  endif // STORED_OS_POSIX
 
 
 
@@ -3102,7 +3107,7 @@ void NamedPipeLayer::reopen()
 // DoublePipeLayer
 //
 
-#if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX) || defined(DOXYGEN)
+#  if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX) || defined(DOXYGEN)
 DoublePipeLayer::DoublePipeLayer(
 	char const* name_r, char const* name_w, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
@@ -3165,7 +3170,7 @@ void DoublePipeLayer::reset()
 	m_w.reset();
 	base::reset();
 }
-#endif // STORED_OS_WINDOWS || STORED_OS_POSIX
+#  endif // STORED_OS_WINDOWS || STORED_OS_POSIX
 
 
 
@@ -3173,7 +3178,7 @@ void DoublePipeLayer::reset()
 // XsimLayer
 //
 
-#if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX) || defined(DOXYGEN)
+#  if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX) || defined(DOXYGEN)
 /*!
  * \brief Ctor.
  *
@@ -3278,7 +3283,7 @@ void XsimLayer::reopen()
 	base::reopen();
 	keepAlive();
 }
-#endif // STORED_OS_WINDOWS || STORED_OS_POSIX
+#  endif // STORED_OS_WINDOWS || STORED_OS_POSIX
 
 
 
@@ -3286,7 +3291,7 @@ void XsimLayer::reopen()
 // StdioLayer
 //
 
-#ifdef STORED_OS_WINDOWS
+#  ifdef STORED_OS_WINDOWS
 /*!
  * \brief Ctor.
  */
@@ -3453,7 +3458,7 @@ StdioLayer::fd_type StdioLayer::fd() const
 	return fd_r();
 }
 
-#else // !STORED_OS_WINDOWS
+#  else // !STORED_OS_WINDOWS
 
 /*!
  * \brief Ctor.
@@ -3462,7 +3467,7 @@ StdioLayer::StdioLayer(size_t bufferSize, ProtocolLayer* up, ProtocolLayer* down
 	: base(STDIN_FILENO, STDOUT_FILENO, bufferSize, up, down)
 {}
 
-#endif // !STORED_OS_WINDOWS
+#  endif // !STORED_OS_WINDOWS
 
 
 
@@ -3470,7 +3475,7 @@ StdioLayer::StdioLayer(size_t bufferSize, ProtocolLayer* up, ProtocolLayer* down
 // SerialLayer
 //
 
-#ifdef STORED_OS_WINDOWS
+#  ifdef STORED_OS_WINDOWS
 SerialLayer::SerialLayer(
 	char const* name, unsigned long baud, bool rtscts, bool xonxoff, ProtocolLayer* up,
 	ProtocolLayer* down)
@@ -3560,130 +3565,130 @@ int SerialLayer::resetAutoBaud()
 	return lastError();
 }
 
-#elif defined(STORED_OS_POSIX)
+#  elif defined(STORED_OS_POSIX)
 static speed_t baud_to_speed_t(unsigned long baud)
 {
 	switch(baud) {
-#  ifdef B50
+#    ifdef B50
 	case 50UL:
 		return B50;
-#  endif
-#  ifdef B75
+#    endif
+#    ifdef B75
 	case 75UL:
 		return B75;
-#  endif
-#  ifdef B110
+#    endif
+#    ifdef B110
 	case 110UL:
 		return B110;
-#  endif
-#  ifdef B134
+#    endif
+#    ifdef B134
 	case 134UL:
 		return B134;
-#  endif
-#  ifdef B150
+#    endif
+#    ifdef B150
 	case 150UL:
 		return B150;
-#  endif
-#  ifdef B200
+#    endif
+#    ifdef B200
 	case 200UL:
 		return B200;
-#  endif
-#  ifdef B300
+#    endif
+#    ifdef B300
 	case 300UL:
 		return B300;
-#  endif
-#  ifdef B600
+#    endif
+#    ifdef B600
 	case 600UL:
 		return B600;
-#  endif
-#  ifdef B1200
+#    endif
+#    ifdef B1200
 	case 1200UL:
 		return B1200;
-#  endif
-#  ifdef B1800
+#    endif
+#    ifdef B1800
 	case 1800UL:
 		return B1800;
-#  endif
-#  ifdef B2400
+#    endif
+#    ifdef B2400
 	case 2400UL:
 		return B2400;
-#  endif
-#  ifdef B4800
+#    endif
+#    ifdef B4800
 	case 4800UL:
 		return B4800;
-#  endif
-#  ifdef B9600
+#    endif
+#    ifdef B9600
 	case 9600UL:
 		return B9600;
-#  endif
-#  ifdef B19200
+#    endif
+#    ifdef B19200
 	case 19200UL:
 		return B19200;
-#  endif
-#  ifdef B38400
+#    endif
+#    ifdef B38400
 	case 38400UL:
 		return B38400;
-#  endif
-#  ifdef B57600
+#    endif
+#    ifdef B57600
 	case 57600UL:
 		return B57600;
-#  endif
-#  ifdef B115200
+#    endif
+#    ifdef B115200
 	case 115200UL:
 		return B115200;
-#  endif
-#  ifdef B230400
+#    endif
+#    ifdef B230400
 	case 230400UL:
 		return B230400;
-#  endif
-#  ifdef B460800
+#    endif
+#    ifdef B460800
 	case 460800UL:
 		return B460800;
-#  endif
-#  ifdef B500000
+#    endif
+#    ifdef B500000
 	case 500000UL:
 		return B500000;
-#  endif
-#  ifdef B576000
+#    endif
+#    ifdef B576000
 	case 576000UL:
 		return B576000;
-#  endif
-#  ifdef B921600
+#    endif
+#    ifdef B921600
 	case 921600UL:
 		return B921600;
-#  endif
-#  ifdef B1000000
+#    endif
+#    ifdef B1000000
 	case 1000000UL:
 		return B1000000;
-#  endif
-#  ifdef B1152000
+#    endif
+#    ifdef B1152000
 	case 1152000UL:
 		return B1152000;
-#  endif
-#  ifdef B1500000
+#    endif
+#    ifdef B1500000
 	case 1500000UL:
 		return B1500000;
-#  endif
-#  ifdef B2000000
+#    endif
+#    ifdef B2000000
 	case 2000000UL:
 		return B2000000;
-#  endif
-#  ifdef B2500000
+#    endif
+#    ifdef B2500000
 	case 2500000UL:
 		return B2500000;
-#  endif
-#  ifdef B3000000
+#    endif
+#    ifdef B3000000
 	case 3000000UL:
 		return B3000000;
-#  endif
-#  ifdef B3500000
+#    endif
+#    ifdef B3500000
 	case 3500000UL:
 		return B3500000;
-#  endif
-#  ifdef B4000000
+#    endif
+#    ifdef B4000000
 	case 4000000UL:
 		return B4000000;
-#  endif
+#    endif
 	default:
 		return B0;
 	}
@@ -3729,14 +3734,14 @@ SerialLayer::SerialLayer(
 	// NOLINTNEXTLINE(hicpp-signed-bitwise)
 	config.c_cflag |= CS8;
 	if(rtscts) {
-#  ifdef CNEW_RTSCTS
+#    ifdef CNEW_RTSCTS
 		config.c_cflag |= CNEW_RTSCTS;
-#  elif defined(CRTSCTS)
+#    elif defined(CRTSCTS)
 		config.c_cflag |= CRTSCTS;
-#  else
+#    else
 		setLastError(EINVAL);
 		return;
-#  endif
+#    endif
 	}
 	config.c_cc[VMIN] = 0;
 	config.c_cc[VTIME] = 0;
@@ -3788,6 +3793,7 @@ int SerialLayer::resetAutoBaud()
 
 	return lastError();
 }
-#endif // STORED_OS_POSIX
+#  endif // STORED_OS_POSIX
+#endif	 // STORED_HAVE_STDIO
 
 } // namespace stored
