@@ -1331,6 +1331,7 @@ typedef PolledFileLayer PolledSocketLayer;
 
 #  endif // !STORED_OS_WINDOWS
 
+#  ifdef STORED_HAVE_STDIO
 /*!
  * \brief A layer that reads from and writes to file descriptors.
  *
@@ -1365,19 +1366,19 @@ public:
 		char const* name_r, char const* name_w = nullptr,
 		size_t bufferSize = DefaultBufferSize, ProtocolLayer* up = nullptr,
 		ProtocolLayer* down = nullptr);
-#  ifdef STORED_OS_WINDOWS
+#    ifdef STORED_OS_WINDOWS
 	explicit FileLayer(
 		HANDLE h_r, HANDLE h_w = INVALID_HANDLE_VALUE,
 		size_t bufferSize = DefaultBufferSize, ProtocolLayer* up = nullptr,
 		ProtocolLayer* down = nullptr);
-#  endif
+#    endif
 
 	virtual ~FileLayer() override;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#  ifndef DOXYGEN
+#    ifndef DOXYGEN
 	using base::encode;
-#  endif
+#    endif
 
 	virtual fd_type fd() const override;
 	virtual int recv(long timeout_us = 0) override;
@@ -1390,7 +1391,7 @@ protected:
 	virtual void close() override;
 	void close_();
 
-#  ifdef STORED_OS_WINDOWS
+#    ifdef STORED_OS_WINDOWS
 	OVERLAPPED& overlappedRead();
 	OVERLAPPED& overlappedWrite();
 	void resetOverlappedRead();
@@ -1402,14 +1403,14 @@ protected:
 private:
 	static void writeCompletionRoutine(
 		DWORD dwErrorCode, DWORD dwNumberOfBytesTransfered, LPOVERLAPPED lpOverlapped);
-#  endif
+#    endif
 
 private:
 	fd_type m_fd_r;
 	fd_type m_fd_w;
 	Vector<char>::type m_bufferRead;
 
-#  ifdef STORED_OS_WINDOWS
+#    ifdef STORED_OS_WINDOWS
 	OVERLAPPED m_overlappedRead;
 
 	struct {
@@ -1420,10 +1421,10 @@ private:
 
 	Vector<char>::type m_bufferWrite;
 	size_t m_writeLen;
-#  endif
+#    endif
 };
 
-#  if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
+#    if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
 /*!
  * \brief Server end of a named pipe.
  *
@@ -1451,9 +1452,9 @@ public:
 	bool isConnected() const;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#    ifndef DOXYGEN
+#      ifndef DOXYGEN
 	using base::encode;
-#    endif
+#      endif
 
 	virtual void reopen();
 
@@ -1474,7 +1475,7 @@ private:
 	DWORD m_openMode;
 };
 
-#  elif defined(STORED_OS_POSIX)
+#    elif defined(STORED_OS_POSIX)
 /*!
  * \brief Named pipe.
  *
@@ -1499,9 +1500,9 @@ public:
 	String::type const& name() const;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#    ifndef DOXYGEN
+#      ifndef DOXYGEN
 	using base::encode;
-#    endif
+#      endif
 
 	bool isConnected() const;
 	virtual void reopen();
@@ -1510,10 +1511,10 @@ private:
 	String::type m_name;
 	Access m_openMode;
 };
-#  else	 // !STORED_OS_WINDOWS && !STORED_OS_POSIX
+#    else  // !STORED_OS_WINDOWS && !STORED_OS_POSIX
 // Pipes are just files.
 typedef FileLayer NamedPipeLayer;
-#  endif // !STORED_OS_WINDOWS && !STORED_OS_POSIX
+#    endif // !STORED_OS_WINDOWS && !STORED_OS_POSIX
 
 /*!
  * \brief Server end of a pair of named pipes.
@@ -1532,9 +1533,9 @@ public:
 	virtual ~DoublePipeLayer() override;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#  ifndef DOXYGEN
+#    ifndef DOXYGEN
 	using base::encode;
-#  endif
+#    endif
 
 	virtual bool isOpen() const override;
 	virtual int recv(long timeout_us = 0) override;
@@ -1551,7 +1552,7 @@ private:
 	NamedPipeLayer m_w;
 };
 
-#  if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX)
+#    if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX)
 /*!
  * \brief XSIM interaction.
  *
@@ -1578,9 +1579,9 @@ public:
 	virtual ~XsimLayer() override;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#    ifndef DOXYGEN
+#      ifndef DOXYGEN
 	using base::encode;
-#    endif
+#      endif
 
 	virtual int recv(long timeout_us = 0) override;
 	virtual void reset() override;
@@ -1619,9 +1620,9 @@ private:
 	NamedPipeLayer m_req;
 	size_t m_inFlight;
 };
-#  endif // STORED_OS_WINDOWS || STORED_OS_POSIX
+#    endif // STORED_OS_WINDOWS || STORED_OS_POSIX
 
-#  if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
+#    if defined(STORED_OS_WINDOWS) || defined(DOXYGEN)
 /*!
  * \brief A stdin/stdout layer.
  *
@@ -1651,9 +1652,9 @@ public:
 	virtual int recv(long timeout_us = 0) override;
 
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#    ifndef DOXYGEN
+#      ifndef DOXYGEN
 	using base::encode;
-#    endif
+#      endif
 
 	bool isPipeIn() const;
 	bool isPipeOut() const;
@@ -1674,7 +1675,7 @@ private:
 	Vector<char>::type m_bufferRead;
 };
 
-#  else // !STORED_OS_WINDOWS
+#    else // !STORED_OS_WINDOWS
 
 /*!
  * \brief A stdin/stdout layer.
@@ -1691,9 +1692,9 @@ public:
 	virtual ~StdioLayer() override is_default
 };
 
-#  endif // !STORED_OS_WINDOWS
+#    endif // !STORED_OS_WINDOWS
 
-#  if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX)
+#    if defined(STORED_OS_WINDOWS) || defined(STORED_OS_POSIX)
 /*!
  * \brief A serial port layer.
  *
@@ -1712,7 +1713,8 @@ public:
 	virtual ~SerialLayer() override is_default
 	int resetAutoBaud();
 };
-#  endif // STORED_OS_WINDOWS || STORED_OS_POSIX
+#    endif // STORED_OS_WINDOWS || STORED_OS_POSIX
+#  endif   // STORED_HAVE_STDIO
 
 } // namespace stored
 #endif // __cplusplus

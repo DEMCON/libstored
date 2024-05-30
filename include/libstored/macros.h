@@ -144,6 +144,8 @@ typedef SSIZE_T ssize_t;
 #ifdef __ZEPHYR__
 #  define STORED_OS_BAREMETAL 1
 #  include <zephyr/toolchain.h>
+// By default, turn off; picolibc does not provide it by default.
+#  define STORED_NO_STDIO 1
 #elif defined(_WIN32) || defined(__CYGWIN__)
 #  define STORED_OS_WINDOWS	 1
 #  define _WANT_IO_C99_FORMATS	 1
@@ -186,6 +188,23 @@ typedef SSIZE_T ssize_t;
 #  define STORED_OS_POSIX 1
 #else
 #  define STORED_OS_GENERIC 1
+#endif
+
+#ifdef STORED_HAVE_STDIO
+#  ifdef STORED_NO_STDIO
+#    undef STORED_NO_STDIO
+#  endif
+#endif
+
+#ifndef STORED_HAVE_STDIO
+#  ifndef STORED_OS_BAREMETAL
+#    define STORED_HAVE_STDIO 1
+#    ifdef STORED_NO_STDIO
+#      undef STORED_NO_STDIO
+#    endif
+#  elif !defined(STORED_NO_STDIO)
+#    define STORED_HAVE_STDIO 1
+#  endif
 #endif
 
 // NOLINTNEXTLINE(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
