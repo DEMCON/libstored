@@ -385,7 +385,7 @@ void SegmentationLayer::decode(void* buffer, size_t len)
 	if(len == 0)
 		return;
 
-	char* buffer_ = static_cast<char*>(buffer);
+	char const* buffer_ = static_cast<char*>(buffer);
 	if(!m_decode.empty() || buffer_[len - 1] != EndMarker) {
 		// Save for later packet reassembling.
 		if(len > 1) {
