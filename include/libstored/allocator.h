@@ -183,7 +183,7 @@ protected:
 	class Reset final : public Base {
 	public:
 		// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
-		virtual ~Reset() noexcept = default;
+		virtual ~Reset() noexcept override = default;
 
 		R operator()(typename CallableArgType<Args>::type... /*args*/) const final
 		{
@@ -210,7 +210,7 @@ protected:
 	// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
 	class Wrapper final : public Base {
 	public:
-		virtual ~Wrapper() noexcept = default;
+		virtual ~Wrapper() noexcept override = default;
 
 		template <
 			typename F_,
@@ -245,7 +245,7 @@ protected:
 	// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
 	class Wrapper<R(Args...), Dummy> final : public Base {
 	public:
-		virtual ~Wrapper() noexcept = default;
+		virtual ~Wrapper() noexcept override = default;
 
 		template <typename F_>
 		explicit Wrapper(R (*f)(Args...)) noexcept
@@ -270,7 +270,7 @@ protected:
 	// NOLINTNEXTLINE(hicpp-special-member-functions,cppcoreguidelines-special-member-functions)
 	class Wrapper<T&, Dummy> final : public Base {
 	public:
-		virtual ~Wrapper() noexcept = default;
+		virtual ~Wrapper() noexcept override = default;
 
 		// cppcheck-suppress uninitMemberVar
 		explicit Wrapper(T& obj) noexcept
@@ -346,7 +346,7 @@ protected:
 			return *this;
 		}
 
-		virtual ~Forwarder() noexcept
+		virtual ~Forwarder() noexcept override
 		{
 			cleanup(m_w);
 		}
