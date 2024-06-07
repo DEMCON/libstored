@@ -1941,7 +1941,7 @@ error:
  *
  * Does not return, but sets #lastError() appropriately.
  */
-// cppcheck-suppress[passedByValue,unmatchedSuppression]
+// cppcheck-suppress passedByValue
 void FileLayer::init(FileLayer::fd_type fd_r, FileLayer::fd_type fd_w, size_t bufferSize)
 {
 	stored_assert(m_fd_r == -1);
