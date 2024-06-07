@@ -301,7 +301,9 @@ if(LIBSTORED_PYLIBSTORED)
 endif()
 
 option(LIBSTORED_REGEN_LAUNCH_JSON "Regenerate launch.json" OFF)
-if(NOT EXISTS ${LIBSTORED_SOURCE_DIR}/.vscode/launch.json OR LIBSTORED_REGEN_LAUNCH_JSON)
+if((NOT EXISTS ${LIBSTORED_SOURCE_DIR}/.vscode/launch.json AND NOT MSVC)
+   OR LIBSTORED_REGEN_LAUNCH_JSON
+)
 	set(LIBSTORED_GEN_LAUNCH_JSON ON)
 else()
 	set(LIBSTORED_GEN_LAUNCH_JSON OFF)
@@ -381,10 +383,7 @@ endif()
 
 find_program(CPPCHECK_CMD NAMES cppcheck)
 if(CPPCHECK_CMD)
-	execute_process(
-		COMMAND ${CPPCHECK_CMD} --version
-		OUTPUT_VARIABLE cppcheck_version
-	)
+	execute_process(COMMAND ${CPPCHECK_CMD} --version OUTPUT_VARIABLE cppcheck_version)
 
 	string(REGEX REPLACE "^Cppcheck " "" cppcheck_version "${cppcheck_version}")
 	if(NOT "${cppcheck_version}" VERSION_LESS 2.11)
@@ -504,5 +503,10 @@ if(LIBSTORED_GEN_LAUNCH_JSON)
 		GENERATE
 		OUTPUT ${LIBSTORED_SOURCE_DIR}/.vscode/launch.json
 		CONTENT "${LIBSTORED_LAUNCH_JSON}"
+	)
+
+	set(LIBSTORED_REGEN_LAUNCH_JSON
+	    OFF
+	    CACHE INTERNAL "" FORCE
 	)
 endif()

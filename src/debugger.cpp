@@ -1132,7 +1132,7 @@ void Debugger::listCmdCallback(char const* name, DebugVariant& variant, void* ar
 	ListCmdCallbackArg* a = (ListCmdCallbackArg*)arg;
 
 	// encodeHex() uses the spm for its result.
-	// cppcheck-suppress[unreadVariable,unmatchedSuppression]
+	// cppcheck-suppress unreadVariable
 	ScratchPad<>::Snapshot snapshot = a->that->spm().snapshot();
 	char const* buf = nullptr;
 	size_t buflen = 0;

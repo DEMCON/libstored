@@ -41,7 +41,7 @@ function do_install {
 	fi
 }
 
-do_install cmake pkgconfig gnutls doxygen plantuml ninja coreutils git jq
+do_install cmake pkgconfig gnutls doxygen plantuml ninja coreutils git jq libxcb
 
 if which python3 > /dev/null; then
 	echo Skip install python3
