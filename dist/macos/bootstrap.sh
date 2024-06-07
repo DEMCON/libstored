@@ -43,7 +43,7 @@ function do_install {
 
 do_install cmake pkgconfig gnutls doxygen plantuml ninja coreutils git jq libxcb
 
-if which python3 > /dev/null; then
+if which -a python3; then
 	echo Skip install python3
 elif [[ ${do_brew} == 1 ]]; then
 	do_install python3
