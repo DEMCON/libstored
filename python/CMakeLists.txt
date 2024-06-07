@@ -212,12 +212,12 @@ if(NOT "${pylibstored_wheel}" STREQUAL "")
 	install(
 		CODE "
 		execute_process(
-			COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/libstored
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pylibstored_wheel}
-				${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/libstored/${pylibstored_wheel_file}
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pylibstored_tar}
-				${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/libstored/${pylibstored_tar_file}
-			COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target pylibstored-install
+			COMMAND \"${CMAKE_COMMAND}\" -E make_directory \"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/libstored\"
+			COMMAND \"${CMAKE_COMMAND}\" -E copy_if_different \"${pylibstored_wheel}\"
+				\"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/libstored/${pylibstored_wheel_file}\"
+			COMMAND \"${CMAKE_COMMAND}\" -E copy_if_different \"${pylibstored_tar}\"
+				\"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/libstored/${pylibstored_tar_file}\"
+			COMMAND \"${CMAKE_COMMAND}\" --build \"${CMAKE_BINARY_DIR}\" --target pylibstored-install
 			RESULT_VARIABLE _res
 		)
 		if(NOT \${_res} EQUAL 0)
