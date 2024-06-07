@@ -19,7 +19,7 @@ reverse link TypedPollable to PollableSocket--><path d="M589.89,175.05 C613.96,1
 reverse link TypedPollable to PollableZmqLayer--><path d="M616.66,166.26 C670.95,183.8 742.71,206.99 795.39,224.02 " fill="none" id="TypedPollable&lt;-PollableZmqLayer" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="none" points="614.4,172.88,597.52,160.07,618.7,159.56,614.4,172.88" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[8e1cd12102fd7159c67279f6dce138be]
 reverse link TypedPollable to PollableZmqSocket--><path d="M617.13,162.76 C618.93,163.18 620.73,163.6 622.5,164 C769.17,197.22 808.43,192.6 955.5,224 C961.03,225.18 966.73,226.45 972.46,227.77 " fill="none" id="TypedPollable&lt;-PollableZmqSocket" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="none" points="615.25,169.5,597.53,157.87,618.63,155.92,615.25,169.5" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[a48c18929628aa6b5274a1dead7434d3]
 reverse link InheritablePoller to Poller--><path d="M677.66,76.02 C676.76,89.58 675.81,104.04 675.04,115.68 " fill="none" id="InheritablePoller&lt;-Poller" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="none" points="670.68,75.5,678.98,56,684.65,76.42,670.68,75.5" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[f07ffb3eca879604dcb192ce98ad431b]
-reverse link Pollable to Poller--><path d="M571.83,59.17 C593.88,76.48 622.53,98.98 643.8,115.68 " fill="none" id="Pollable&lt;-Poller" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#A80036" points="567.79,56,572.3774,64.7152,571.7151,59.0973,577.3331,58.435,567.79,56" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[50e716973ca5156319859ca890e47656]
+reverse link Pollable to Poller--><path d="M571.83,59.17 C593.88,76.48 622.53,98.98 643.8,115.68 " fill="none" id="Pollable&lt;-Poller" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#A80036" points="567.79,56,572.3774,64.7152,571.7151,59.0973,577.3331,58.435,567.79,56" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[b1f72bd929b3b988a26c22954625c951]
 @startuml
 abstract Pollable
 abstract TypedPollable
@@ -43,7 +43,7 @@ PlantUML version 1.2020.02(Sun Mar 01 10:22:07 UTC 2020)
 (GPL source distribution)
 Java Runtime: OpenJDK Runtime Environment
 JVM: OpenJDK 64-Bit Server VM
-Java Version: 11.0.22+7
+Java Version: 11.0.23+9
 Operating System: Linux
 Default Encoding: UTF-8
 Language: en

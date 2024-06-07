@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>9_fpga &mdash; libstored 1.7.2-alpha documentation</title>
+  <title>9_fpga &mdash; libstored 1.8.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -15,8 +15,8 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=2bffa182"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/documentation_options.js?v=ff5cf444"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -37,7 +37,7 @@
             libstored
           </a>
               <div class="version">
-                1.7.2.dev0
+                1.8.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -177,7 +177,7 @@ int8 other store&#39;s int8
 </section>
 <section id="application">
 <h2>Application<a class="headerlink" href="#application" title="Link to this heading"></a></h2>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers</span>
 <span class="c1">//</span>
 <span class="c1">// SPDX-License-Identifier: CC0-1.0</span>
 
@@ -213,7 +213,7 @@ int8 other store&#39;s int8
 <span class="w">	</span><span class="n">ExampleFpga2</span><span class="p">()</span><span class="w"> </span><span class="n">is_default</span>
 <span class="p">};</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">	</span><span class="n">puts</span><span class="p">(</span><span class="n">stored</span><span class="o">::</span><span class="n">banner</span><span class="p">());</span>
 
@@ -235,23 +235,59 @@ int8 other store&#39;s int8
 <span class="w">	</span><span class="n">synchronizer</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">exampleFpga</span><span class="p">);</span>
 <span class="w">	</span><span class="n">synchronizer</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">exampleFpga2</span><span class="p">);</span>
 
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">SegmentationLayer</span><span class="w"> </span><span class="n">segmentation</span><span class="p">(</span><span class="mi">24</span><span class="p">);</span>
+<span class="w">	</span><span class="n">synchronizer</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">segmentation</span><span class="p">);</span>
+
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">ArqLayer</span><span class="w"> </span><span class="n">arq</span><span class="p">;</span>
+<span class="w">	</span><span class="n">arq</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">segmentation</span><span class="p">);</span>
+
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">Crc16Layer</span><span class="w"> </span><span class="n">crc</span><span class="p">;</span>
+<span class="w">	</span><span class="n">crc</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">arq</span><span class="p">);</span>
+
 <span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">AsciiEscapeLayer</span><span class="w"> </span><span class="n">ascii</span><span class="p">;</span>
-<span class="w">	</span><span class="n">synchronizer</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">ascii</span><span class="p">);</span>
+<span class="w">	</span><span class="n">ascii</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">crc</span><span class="p">);</span>
+
 <span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">TerminalLayer</span><span class="w"> </span><span class="n">term</span><span class="p">;</span>
 <span class="w">	</span><span class="n">term</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">ascii</span><span class="p">);</span>
+
 <span class="cp">#ifdef STORED_OS_WINDOWS</span>
 <span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">XsimLayer</span><span class="w"> </span><span class="n">xsim</span><span class="p">(</span><span class="s">&quot;9_fpga&quot;</span><span class="p">);</span>
 <span class="cp">#else</span>
 <span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">XsimLayer</span><span class="w"> </span><span class="n">xsim</span><span class="p">(</span><span class="s">&quot;/tmp/9_fpga&quot;</span><span class="p">);</span>
 <span class="cp">#endif</span>
 
-<span class="cp">#if 0</span><span class="c"> // Enable to dump all data to the terminal for debugging.</span>
-<span class="c">	stored::PrintLayer print(stdout);</span>
-<span class="c">	print.wrap(term);</span>
-<span class="c">	xsim.wrap(print);</span>
-<span class="cp">#else</span>
 <span class="w">	</span><span class="n">xsim</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">term</span><span class="p">);</span>
-<span class="cp">#endif</span>
+
+<span class="w">	</span><span class="n">stored</span><span class="o">::</span><span class="n">PrintLayer</span><span class="w"> </span><span class="n">print</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+
+<span class="w">	</span><span class="kt">int</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">	</span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">argc</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">strcmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="s">&quot;-v&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">			</span><span class="n">verbose</span><span class="o">++</span><span class="p">;</span>
+<span class="w">	</span><span class="p">}</span>
+
+<span class="w">	</span><span class="k">switch</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">	</span><span class="k">case</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span>
+<span class="w">		</span><span class="n">print</span><span class="p">.</span><span class="n">stack</span><span class="p">(</span><span class="n">segmentation</span><span class="p">);</span>
+<span class="w">		</span><span class="k">break</span><span class="p">;</span>
+<span class="w">	</span><span class="k">case</span><span class="w"> </span><span class="mi">2</span><span class="p">:</span>
+<span class="w">		</span><span class="n">print</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">segmentation</span><span class="p">);</span>
+<span class="w">		</span><span class="k">break</span><span class="p">;</span>
+<span class="w">	</span><span class="k">case</span><span class="w"> </span><span class="mi">3</span><span class="p">:</span>
+<span class="w">		</span><span class="n">print</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">arq</span><span class="p">);</span>
+<span class="w">		</span><span class="k">break</span><span class="p">;</span>
+<span class="w">	</span><span class="k">case</span><span class="w"> </span><span class="mi">4</span><span class="p">:</span>
+<span class="w">		</span><span class="n">print</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">crc</span><span class="p">);</span>
+<span class="w">		</span><span class="k">break</span><span class="p">;</span>
+<span class="w">	</span><span class="k">case</span><span class="w"> </span><span class="mi">5</span><span class="p">:</span>
+<span class="w">		</span><span class="n">print</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">ascii</span><span class="p">);</span>
+<span class="w">		</span><span class="k">break</span><span class="p">;</span>
+<span class="w">	</span><span class="k">case</span><span class="w"> </span><span class="mi">6</span><span class="p">:</span>
+<span class="w">		</span><span class="n">print</span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">term</span><span class="p">);</span>
+<span class="w">		</span><span class="k">break</span><span class="p">;</span>
+<span class="w">	</span><span class="k">case</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span>
+<span class="w">	</span><span class="k">default</span><span class="o">:</span><span class="p">;</span>
+<span class="w">	</span><span class="p">}</span>
 
 <span class="w">	</span><span class="k">if</span><span class="p">((</span><span class="n">errno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">xsim</span><span class="p">.</span><span class="n">lastError</span><span class="p">())</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">errno</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">EAGAIN</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">		</span><span class="n">perror</span><span class="p">(</span><span class="s">&quot;Cannot initialize XSIM interface&quot;</span><span class="p">);</span>
@@ -275,7 +311,9 @@ int8 other store&#39;s int8
 
 <span class="w">	</span><span class="k">while</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">		</span><span class="c1">// 1 s timeout, to force keep alive once in a while.</span>
-<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">(</span><span class="mi">1000</span><span class="p">).</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">		</span><span class="n">stored</span><span class="o">::</span><span class="n">Poller</span><span class="o">::</span><span class="n">Result</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">poller</span><span class="p">.</span><span class="n">poll</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+
+<span class="w">		</span><span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">			</span><span class="k">switch</span><span class="p">(</span><span class="n">errno</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">			</span><span class="k">case</span><span class="w"> </span><span class="no">EAGAIN</span><span class="p">:</span>
 <span class="w">			</span><span class="k">case</span><span class="w"> </span><span class="no">EINTR</span><span class="p">:</span>
@@ -350,8 +388,14 @@ architecture rtl of example_9_fpga is
 	signal sync_in, sync_out, sync_chained_in, sync_chained_out : msg_t;
 	signal sync_chained_id : unsigned(15 downto 0);
 
+	signal segment_encode_in, segment_decode_out : msg_t;
+	signal arq_encode_in, arq_decode_out : msg_t;
+	signal crc16_encode_in, crc16_decode_out : msg_t;
+	signal ascii_encode_in, ascii_decode_out : msg_t;
 	signal term_encode_in, term_decode_out : msg_t;
 	signal uart_encode_in, uart_decode_out : msg_t;
+
+	signal segment_mtu, arq_mtu, crc16_mtu, ascii_mtu, term_mtu, uart_mtu  : natural := 0;
 
 	signal clk_cnt, write_cnt : unsigned(31 downto 0);
 begin
@@ -398,14 +442,68 @@ begin
 	-- Protocol stack for Synchronizer
 	-----------------------------------------
 
+	segment_encode_in &lt;= sync_out;
+	sync_in &lt;= segment_decode_out;
+
+	SegmentationLayer_inst : entity work.SegmentationLayer
+		generic map (
+			MTU =&gt; 24
+		)
+		port map (
+			clk =&gt; clk,
+			rstn =&gt; rstn,
+			encode_in =&gt; segment_encode_in,
+			encode_out =&gt; arq_encode_in,
+			decode_in =&gt; arq_decode_out,
+			decode_out =&gt; segment_decode_out,
+
+			-- The following two lines are not required, but they
+			-- statically check the configured MTU.
+			mtu_decode_in =&gt; arq_mtu,
+			mtu_decode_out =&gt; segment_mtu
+		);
+
+	ArqLayer_inst : entity work.ArqLayer
+		generic map (
+			MTU =&gt; 24,
+			SYSTEM_CLK_FREQ =&gt; SYSTEM_CLK_FREQ
+		)
+		port map (
+			clk =&gt; clk,
+			rstn =&gt; rstn,
+			encode_in =&gt; arq_encode_in,
+			encode_out =&gt; crc16_encode_in,
+			decode_in =&gt; crc16_decode_out,
+			decode_out =&gt; arq_decode_out,
+			mtu_decode_in =&gt; crc16_mtu,
+			mtu_decode_out =&gt; arq_mtu
+		);
+
+	Crc16Layer_inst : entity work.Crc16Layer
+		generic map (
+			MTU =&gt; 25
+		)
+		port map (
+			clk =&gt; clk,
+			rstn =&gt; rstn,
+			encode_in =&gt; crc16_encode_in,
+			encode_out =&gt; ascii_encode_in,
+			decode_in =&gt; ascii_decode_out,
+			decode_out =&gt; crc16_decode_out,
+			mtu_decode_in =&gt; term_mtu,
+			mtu_decode_out =&gt; crc16_mtu
+		);
+
 	ASCIIEscapeLayer_inst : entity work.ASCIIEscapeLayer
 		port map (
 			clk =&gt; clk,
 			rstn =&gt; rstn,
-			encode_in =&gt; sync_out,
+			encode_in =&gt; ascii_encode_in,
 			encode_out =&gt; term_encode_in,
 			decode_in =&gt; term_decode_out,
-			decode_out =&gt; sync_in
+			decode_out =&gt; ascii_decode_out,
+			mtu_decode_in =&gt; term_mtu,
+			mtu_decode_out =&gt; ascii_mtu
 		);
 
 	TerminalLayer_inst : entity work.TerminalLayer
@@ -415,7 +513,9 @@ begin
 			encode_in =&gt; term_encode_in,
 			encode_out =&gt; uart_encode_in,
 			decode_in =&gt; uart_decode_out,
-			decode_out =&gt; term_decode_out
+			decode_out =&gt; term_decode_out,
+			mtu_decode_in =&gt; uart_mtu,
+			mtu_decode_out =&gt; term_mtu
 		);
 
 	uart_g : if not SIMULATION generate
@@ -433,7 +533,8 @@ begin
 				rx =&gt; rx,
 				tx =&gt; tx,
 				cts =&gt; cts,
-				rts =&gt; rts
+				rts =&gt; rts,
+				mtu_decode_out =&gt; uart_mtu
 			);
 	end generate;
 
@@ -456,7 +557,8 @@ begin
 				clk =&gt; clk,
 				rstn =&gt; rstn,
 				encode_in =&gt; uart_encode_in,
-				decode_out =&gt; uart_decode_out
+				decode_out =&gt; uart_decode_out,
+				mtu_decode_out =&gt; uart_mtu
 			);
 	end generate;
 --pragma translate_on

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>C++ &mdash; libstored 1.7.2-alpha documentation</title>
+  <title>C++ &mdash; libstored 1.8.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -15,8 +15,8 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=2bffa182"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/documentation_options.js?v=ff5cf444"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -37,7 +37,7 @@
             libstored
           </a>
               <div class="version">
-                1.7.2.dev0
+                1.8.0.dev0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -1001,11 +1001,12 @@ your application.</p>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-callbacklayer">stored::CallbackLayer</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cpp_protocol.html#_CPPv4I00EN6stored13CallbackLayerE"><code class="docutils literal notranslate"><span class="pre">CallbackLayer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cpp_protocol.html#_CPPv4I000EN6stored13CallbackLayerE"><code class="docutils literal notranslate"><span class="pre">CallbackLayer</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayer4baseE"><code class="docutils literal notranslate"><span class="pre">CallbackLayer::base</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayer13CallbackLayerERR13CallbackLayer"><code class="docutils literal notranslate"><span class="pre">CallbackLayer::CallbackLayer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayer13CallbackLayerERK13CallbackLayer"><code class="docutils literal notranslate"><span class="pre">CallbackLayer::CallbackLayer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayerD0Ev"><code class="docutils literal notranslate"><span class="pre">CallbackLayer::~CallbackLayer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayer9connectedEv"><code class="docutils literal notranslate"><span class="pre">CallbackLayer::connected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayer6decodeEPv6size_t"><code class="docutils literal notranslate"><span class="pre">CallbackLayer::decode()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayer6encodeEPKv6size_tb"><code class="docutils literal notranslate"><span class="pre">CallbackLayer::encode()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayeraSERR13CallbackLayer"><code class="docutils literal notranslate"><span class="pre">CallbackLayer::operator=()</span></code></a></li>
@@ -1351,6 +1352,7 @@ your application.</p>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ArqLayer16EventCallbackArgE"><code class="docutils literal notranslate"><span class="pre">ArqLayer::EventCallbackArg</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ArqLayer8ArqLayerE6size_tP13ProtocolLayerP13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">ArqLayer::ArqLayer()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ArqLayerD0Ev"><code class="docutils literal notranslate"><span class="pre">ArqLayer::~ArqLayer()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ArqLayer9connectedEv"><code class="docutils literal notranslate"><span class="pre">ArqLayer::connected()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ArqLayer6decodeEPv6size_t"><code class="docutils literal notranslate"><span class="pre">ArqLayer::decode()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored8ArqLayer11didTransmitEv"><code class="docutils literal notranslate"><span class="pre">ArqLayer::didTransmit()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ArqLayer6encodeEPKv6size_tb"><code class="docutils literal notranslate"><span class="pre">ArqLayer::encode()</span></code></a></li>
@@ -1396,6 +1398,9 @@ your application.</p>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer</span></code></a><ul>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer13ProtocolLayerEP13ProtocolLayerP13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer::ProtocolLayer()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerD0Ev"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer::~ProtocolLayer()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer6bottomEv"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer::bottom()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored13ProtocolLayer6bottomEv"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer::bottom()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer9connectedEv"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer::connected()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer6decodeEPv6size_t"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer::decode()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored13ProtocolLayer4downEv"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer::down()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer6encodeEv"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer::encode()</span></code></a></li>
@@ -1407,6 +1412,8 @@ your application.</p>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer20setPurgeableResponseEb"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer::setPurgeableResponse()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer5setUpEP13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer::setUp()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer5stackER13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer::stack()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer3topEv"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer::top()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored13ProtocolLayer3topEv"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer::top()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored13ProtocolLayer2upEv"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer::up()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer4wrapER13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer::wrap()</span></code></a></li>
 </ul>
