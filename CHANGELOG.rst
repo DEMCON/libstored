@@ -25,12 +25,14 @@ Added
 `````
 
 - Implement ``ArqLayer`` in VHDL.
+- Added connected event to all protocol layers.
 
 Changed
 ```````
 
 - ``examples/9_fpga`` now implements a full protocol stack over a potentially
   lossy channel.
+- Improved handling reconnection of protocol layers.
 
 Fixed
 ``````
