@@ -32,7 +32,7 @@ fi
 function do_install {
 	if [[ ${do_brew} == 1 ]]; then
 		for p in "$@"; do
-			if ! brew ls --versions "$p" >/dev/null; then
+			if ! brew ls --versions "$p"; then
 				HOMEBREW_NO_AUTO_UPDATE=1 brew install "$p" || gotErr
 			fi
 		done
@@ -48,10 +48,9 @@ if which python3 > /dev/null; then
 elif [[ ${do_brew} == 1 ]]; then
 	do_install python3
 elif [[ ${do_port} == 1 ]]; then
-	do_install python311
+	do_install python312
+	do_install py312-pip
 fi
-
-python3 -m ensurepip
 
 if [[ ${do_brew} == 1 ]]; then
 	do_install zeromq
@@ -63,7 +62,7 @@ set +x
 
 if [[ ${do_brew} == 1 ]]; then
 	echo -e "\nSuggested packages to install manually:\n"
-	echo -e "  brew install cppcheck clang-format@11 lcov"
+	echo -e "  brew install cppcheck clang-format@18 lcov"
 elif [[ ${do_port} == 1 ]]; then
 	echo -e "\nSuggested packages to install manually:\n"
 	echo -e "  sudo port install cppcheck lcov"
