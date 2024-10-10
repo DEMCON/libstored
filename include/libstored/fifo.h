@@ -1,30 +1,30 @@
 #ifndef LIBSTORED_FIFO_H
 #define LIBSTORED_FIFO_H
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
 #ifdef __cplusplus
 
-#	include <libstored/macros.h>
+#  include <libstored/macros.h>
 
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 
-#		include <libstored/protocol.h>
-#		include <libstored/util.h>
+#    include <libstored/protocol.h>
+#    include <libstored/util.h>
 
-#		include <array>
-#		include <atomic>
-#		include <cstring>
-#		include <functional>
-#		include <iterator>
-#		include <new>
-#		include <string>
-#		include <type_traits>
-#		include <utility>
-#		if STORED_cplusplus >= 201703L
-#			include <string_view>
-#		endif
+#    include <array>
+#    include <atomic>
+#    include <cstring>
+#    include <functional>
+#    include <iterator>
+#    include <new>
+#    include <string>
+#    include <type_traits>
+#    include <utility>
+#    if STORED_cplusplus >= 201703L
+#      include <string_view>
+#    endif
 
 namespace stored {
 
@@ -263,21 +263,21 @@ public:
 		return v;
 	}
 
-#		ifdef NDEBUG
+#    ifdef NDEBUG
 	constexpr
-#		endif
+#    endif
 		bool
 		operator==(PopIterator const& rhs) const noexcept
 	{
-#		ifndef NDEBUG
+#    ifndef NDEBUG
 		stored_assert(!m_fifo || !rhs.m_fifo || m_fifo == rhs.m_fifo);
-#		endif
+#    endif
 		return m_count == rhs.m_count;
 	}
 
-#		ifdef NDEBUG
+#    ifdef NDEBUG
 	constexpr
-#		endif
+#    endif
 		bool
 		operator!=(PopIterator const& rhs) const noexcept
 	{
@@ -342,6 +342,13 @@ public:
 		pointer wp = m_wp.load(std::memory_order_relaxed);
 		pointer rp = m_rp.load(std::memory_order_relaxed);
 		return wp >= rp ? wp - rp : wp + m_buffer.size() - rp;
+	}
+
+	size_t available_chunk() const noexcept
+	{
+		pointer wp = m_wp.load(std::memory_order_relaxed);
+		pointer rp = m_rp.load(std::memory_order_relaxed);
+		return wp >= rp ? wp - rp : m_buffer.size() - rp;
 	}
 
 	size_t space() const noexcept
@@ -575,19 +582,19 @@ public:
 		return m_length;
 	}
 
-#		if STORED_cplusplus >= 201703L
+#    if STORED_cplusplus >= 201703L
 	constexpr operator std::string_view() const noexcept
 	{
 		return std::string_view(data(), size());
 	}
-#		endif
+#    endif
 
 private:
 	char* m_message;
 	size_t m_length;
 };
 
-#		if STORED_cplusplus < 201703L
+#    if STORED_cplusplus < 201703L
 /*!
  * \brief A minimal C++17's std::string_view for MessageFifo.
  */
@@ -619,9 +626,9 @@ private:
 	char const* m_message;
 	size_t m_length;
 };
-#		else
+#    else
 using MessageView = std::string_view;
-#		endif
+#    endif
 
 namespace impl {
 static constexpr size_t defaultMessages(size_t capacity)
@@ -798,11 +805,11 @@ public:
 
 		if(unlikely(Capacity > 0 && message.size() + partial > Capacity)) {
 			// Will never fit.
-#		ifdef STORED_cpp_exceptions
+#    ifdef STORED_cpp_exceptions
 			throw std::bad_alloc();
-#		else
+#    else
 			std::terminate();
-#		endif
+#    endif
 		}
 
 		if(wp == rp && partial == 0) {
@@ -908,11 +915,11 @@ private:
 	Fifo<Msg, Messages> m_msg;
 };
 
-#		ifdef STORED_COMPILER_GCC
+#    ifdef STORED_COMPILER_GCC
 // We seem to trigger https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105469
-#			pragma GCC push_options
-#			pragma GCC optimize("no-devirtualize")
-#		endif
+#      pragma GCC push_options
+#      pragma GCC optimize("no-devirtualize")
+#    endif
 
 /*!
  * \brief A ProtocolLayer that buffers downstream messages.
@@ -1029,9 +1036,9 @@ public:
 		m_overflowCallback = std::forward<F>(cb);
 	}
 
-#		ifndef DOXYGEN
+#    ifndef DOXYGEN
 	using base::encode;
-#		endif
+#    endif
 
 	virtual void reset() override
 	{
@@ -1165,12 +1172,12 @@ private:
 	FifoLoopback1_type m_b2a;
 };
 
-#		ifdef STORED_COMPILER_GCC
-#			pragma GCC pop_options
-#		endif
+#    ifdef STORED_COMPILER_GCC
+#      pragma GCC pop_options
+#    endif
 
 } // namespace stored
 
-#	endif // STORED_cplusplus
-#endif	       // __cplusplus
-#endif	       // LIBSTORED_FIFO_H
+#  endif // STORED_cplusplus
+#endif	 // __cplusplus
+#endif	 // LIBSTORED_FIFO_H
