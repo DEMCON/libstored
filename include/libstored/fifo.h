@@ -98,7 +98,7 @@ public:
 		sizeof(typename value_type<Capacity>::type) < sizeof(uintptr_t),
 		typename value_type<Capacity>::type, uintptr_t>::type pointer;
 
-	size_t size() const noexcept
+	constexpr size_t size() const noexcept
 	{
 		return m_buffer.size();
 	}
