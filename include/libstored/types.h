@@ -1280,9 +1280,11 @@ public:
 	 * \details For variables, #entryRO()/#exitRO() is called.
 	 * \details In case #type() is Type::String, only up to the first null byte are copied.
 	 *          If \p dst is sufficiently large (\p len &gt; #size()), a null terminator is
-	 * always written after the string. \details Only call this function when #valid(). \param
-	 * dst the buffer to copy to \param len the length of \p dst, when this is a fixed type, 0
-	 * implies the normal size \return the number of bytes written into \p dst
+	 *          always written after the string.
+	 * \details Only call this function when #valid().
+	 * \param dst the buffer to copy to
+	 * \param len the length of \p dst, when this is a fixed type, 0 implies the normal size
+	 * \return the number of bytes written into \p dst
 	 */
 	size_t get(void* dst, size_t len = 0) const
 	{
@@ -1519,12 +1521,12 @@ public:
 		if(!v.isValid())
 			return false;
 
-#    define CASE_TYPE(T)           \
-    case stored::toType<T>::type:  \
-	    if(!v.canConvert<T>()) \
-		    return false;  \
-	    set<T>(v.value<T>());  \
-	    return true;
+#    define CASE_TYPE(T)          \
+    case stored::toType<T>::type: \
+      if(!v.canConvert<T>())      \
+	return false;             \
+      set<T>(v.value<T>());       \
+      return true;
 
 		switch(type() & ~Type::FlagFunction) {
 			CASE_TYPE(int8_t)
