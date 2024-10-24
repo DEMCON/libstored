@@ -35,7 +35,11 @@ namespace stored {
  * It always fits in a signed char.
  */
 struct Type {
-	enum type {
+	enum type
+#  if STORED_cplusplus >= 201103L
+		: uint8_t
+#  endif
+	{
 		MaskSize = 0x07U,
 		MaskFlags = 0x78U,
 		FlagSigned = 0x08U,
