@@ -982,9 +982,10 @@ static char encodeNibble(uint8_t n)
  *
  * \param type the type of the data
  * \param data a pointer to the data to be encoded, where the pointer is overwritten by a #spm()
- * allocated buffer with the result \param len the length of \p data, which is overwritten with the
- * length of the result \param shortest if \c true, trim the 0 from the left, if the type allows
- * that \see #decodeHex()
+ *	allocated buffer with the result
+ * \param len the length of \p data, which is overwritten with the length of the result
+ * \param shortest if \c true, trim the 0 from the left, if the type allows that
+ * \see #decodeHex()
  */
 void Debugger::encodeHex(Type::type type, void*& data, size_t& len, bool shortest)
 {
