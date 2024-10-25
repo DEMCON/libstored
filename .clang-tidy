@@ -16,6 +16,7 @@ Checks: >
 
   clang-analyzer-*,
   -clang-diagnostic-defaulted-function-deleted,
+  -clang-analyzer-optin.*,
 
   concurrency-*,
 
