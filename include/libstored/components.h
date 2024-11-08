@@ -8,13 +8,13 @@
 
 #if defined(__cplusplus) && STORED_cplusplus >= 201402L && defined(STORED_DRAFT_API)
 
-#	include <libstored/config.h>
-#	include <libstored/types.h>
-#	include <libstored/util.h>
+#  include <libstored/config.h>
+#  include <libstored/types.h>
+#  include <libstored/util.h>
 
-#	include <cmath>
-#	include <type_traits>
-#	include <utility>
+#  include <cmath>
+#  include <type_traits>
+#  include <utility>
 
 namespace stored {
 
@@ -549,7 +549,7 @@ public:
 	 */
 	template <char Id_>
 	static constexpr decltype(std::enable_if_t<!has<Id_>(), size_t>())
-		validIndex(Flags) noexcept
+	validIndex(Flags) noexcept
 	{
 		return 0;
 	}
@@ -1807,10 +1807,20 @@ public:
 	 * \brief Return the last computed \c input value, or compute the pin state when the object
 	 *	is not available.
 	 */
+	template <char I = 'i', std::enable_if_t<Bound::template has<I>(), int> = 0>
 	bool input() const noexcept
 	{
-		decltype(auto) o = inputObject();
-		return o.valid() ? o.get() : (*this)();
+		return inputObject().get();
+	}
+
+	/*!
+	 * \brief Return the last computed \c input value, or compute the pin state when the object
+	 *	is not available.
+	 */
+	template <char I = 'i', std::enable_if_t<!Bound::template has<I>(), int> = 0>
+	bool input() noexcept
+	{
+		return (*this)();
 	}
 
 	/*! \brief Determine pin input, given the current hardware state. */
