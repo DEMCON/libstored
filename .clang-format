@@ -70,6 +70,8 @@ ForEachMacros:
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
+IfMacros:
+  - if_constexpr
 IncludeBlocks:   Preserve
 IncludeCategories:
   - Regex:           '^["<]libstored/macros.h[">]$'
