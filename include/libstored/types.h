@@ -674,12 +674,12 @@ public:
 		entryX();
 
 		bool changed = false;
-		if(Type::isStoreSwapped(toType<type>::type))
+		if_constexpr(Type::isStoreSwapped(toType<type>::type))
 			changed = memcmp_swap(&v, &this->buffer(), sizeof(v)) != 0;
-		else if(std::numeric_limits<type>::is_integer)
+		else if_constexpr(std::numeric_limits<type>::is_integer)
 			// NOLINTNEXTLINE(clang-diagnostic-float-equal)
 			changed = v != this->buffer();
-		else if(sizeof(v) == sizeof(float)) {
+		else if_constexpr(sizeof(v) == sizeof(float)) {
 			void const* v_ = (void const*)&v;
 			void const* b_ = (void const*)&this->buffer();
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
