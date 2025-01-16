@@ -26,6 +26,7 @@ Added
 
 - Implement ``ArqLayer`` in VHDL.
 - Added connected event to all protocol layers.
+- Added ``Fifo::view()`` for read-only iterable view on available data elements.
 
 Changed
 ```````

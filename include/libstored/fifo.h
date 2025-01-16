@@ -209,6 +209,144 @@ private:
 };
 
 /*!
+ * \brief Read-only view on a Buffer.
+ *
+ * It supports wrap-arounds, such that the Fifo can also provide a view on its valid contents.
+ */
+template <typename B>
+class BufferView {
+public:
+	using Buffer = typename std::decay<B>::type;
+	using type = typename Buffer::type;
+	using pointer = typename Buffer::pointer;
+
+	BufferView(Buffer const& b, pointer from, pointer to)
+		: m_b{&b}
+		, m_from{from}
+		, m_to{to}
+	{}
+
+	size_t size() const
+	{
+		if(!m_b)
+			return 0;
+
+		return m_from <= m_to ? m_to - m_from : m_b->size() - m_from + m_to;
+	}
+
+	type const& operator[](pointer i) const
+	{
+		stored_assert(m_b);
+		return (*m_b)[absolute(i)];
+	}
+
+	void copy(type* dst) const
+	{
+		if(m_from == m_to) {
+			// Done.
+		} else if(m_from < m_to) {
+			pointer len = m_to - m_from;
+			type const* src = &(*m_b)[m_from];
+			for(pointer i = 0; i < len; i++)
+				dst[i] = src[i];
+		} else {
+			copy2(dst);
+		}
+	}
+
+	type const* contiguous(void* scratchpad) const
+	{
+		auto* sp = static_cast<type*>(scratchpad);
+
+		if(m_from == m_to) {
+			// Null-range. Don't dereference.
+			return sp;
+		} else if(m_from < m_to) {
+			// No copy required.
+			return &(*m_b)[m_from];
+		} else {
+			copy2(sp);
+			return sp;
+		}
+	}
+
+	class Iterator {
+	protected:
+		Iterator(BufferView const& b, BufferView::pointer i = 0)
+			: m_b{&b}
+			, m_i{i}
+		{}
+
+	public:
+		void operator++()
+		{
+			++m_i;
+		}
+
+		decltype(auto) operator*() const
+		{
+			stored_assert(m_b);
+			return (*m_b)[m_i];
+		}
+
+		bool operator!=(Iterator const& rhs) const
+		{
+			return m_i != rhs.m_i || m_b != rhs.m_b;
+		}
+
+	private:
+		BufferView const* m_b{};
+		BufferView::pointer m_i{};
+
+		friend class BufferView;
+	};
+
+	Iterator begin() const
+	{
+		return Iterator(*this);
+	}
+
+	Iterator end() const
+	{
+		return Iterator(*this, (pointer)size());
+	}
+
+protected:
+	pointer absolute(pointer relative) const
+	{
+		stored_assert(relative < size());
+
+		if(m_from <= m_to)
+			return m_from + relative;
+
+		auto s = (pointer)m_b->size();
+		auto c = s - m_from;
+		return relative < c ? m_from + relative : relative - c;
+	}
+
+	void copy2(type* dst) const
+	{
+		pointer sz = (pointer)m_b->size();
+		stored_assert(sz > 0 && m_to < m_from && m_b);
+
+		pointer len0 = sz - m_from;
+		pointer len1 = m_to;
+		type const* src0 = &(*m_b)[m_from];
+		type const* src1 = &(*m_b)[0];
+
+		for(pointer i = 0; i < len0; i++)
+			dst[i] = src0[i];
+		for(pointer i = 0; i < len1; i++)
+			dst[i + len0] = src1[i];
+	}
+
+private:
+	Buffer const* m_b;
+	pointer m_from;
+	pointer m_to;
+};
+
+/*!
  * \brief LegacyInputIterator for FIFOs.
  */
 template <typename Fifo>
@@ -385,7 +523,7 @@ public:
 		stored_assert(offset < available());
 		pointer rp = m_rp.load(
 			ThreadSafe ? std::memory_order_consume : std::memory_order_relaxed);
-		return m_buffer[(rp + offset) % m_buffer.size()];
+		return m_buffer[(pointer)((rp + offset) % m_buffer.size())];
 	}
 
 	type const& operator[](size_t offset) const noexcept
@@ -517,6 +655,21 @@ public:
 		} else {
 			m_rp.store(m_wp.load(std::memory_order_relaxed), std::memory_order_relaxed);
 		}
+	}
+
+	typedef BufferView<Buffer_type> View;
+
+	View view() const
+	{
+		pointer rp = m_rp.load(
+			ThreadSafe ? std::memory_order_consume : std::memory_order_relaxed);
+		pointer wp = m_wp.load(std::memory_order_relaxed);
+		return View{m_buffer, rp, wp};
+	}
+
+	operator View() const
+	{
+		return view();
 	}
 
 protected:
