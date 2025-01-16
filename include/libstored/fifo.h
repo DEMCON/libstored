@@ -1,6 +1,6 @@
 #ifndef LIBSTORED_FIFO_H
 #define LIBSTORED_FIFO_H
-// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
