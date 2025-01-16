@@ -7,8 +7,33 @@
 #include "gtest/gtest.h"
 
 #include <thread>
+#include <vector>
 
 namespace {
+
+#define EXPECT_EQ_VIEW(f)                           \
+  do {                                              \
+    using type = std::decay_t<decltype((f))>::type; \
+                                                    \
+    auto view = (f).view();                         \
+    EXPECT_EQ((f).available(), view.size());        \
+    std::vector<type> v;                            \
+    v.resize(view.size());                          \
+    view.copy(v.data());                            \
+                                                    \
+    std::vector<type> spm;                          \
+    spm.resize(view.size());                        \
+    auto const* p = view.contiguous(spm.data());    \
+                                                    \
+    size_t i = 0;                                   \
+    for(auto x : view) {                            \
+      EXPECT_EQ(x, (f).peek(i));                    \
+      EXPECT_EQ(x, v[i]);                           \
+      EXPECT_EQ(x, p[i]);                           \
+      i++;                                          \
+    }                                               \
+    EXPECT_EQ(i, (f).available());                  \
+  } while(0)
 
 TEST(Fifo, UnboundedFifo)
 {
@@ -18,33 +43,40 @@ TEST(Fifo, UnboundedFifo)
 	EXPECT_TRUE(f.empty());
 	EXPECT_FALSE(f.full());
 	EXPECT_EQ(f.size(), 0u);
+	EXPECT_EQ_VIEW(f);
 
 	f.push_back(1);
 	EXPECT_FALSE(f.empty());
 	EXPECT_FALSE(f.full());
 	EXPECT_EQ(f.size(), 1u);
 	EXPECT_EQ(f.front(), 1u);
+	EXPECT_EQ_VIEW(f);
 
 	f.push_back(2);
 	EXPECT_EQ(f.size(), 2u);
 	EXPECT_EQ(f.front(), 1u);
+	EXPECT_EQ_VIEW(f);
 
 	f.push_back(3);
 	f.push_back(4);
 	EXPECT_EQ(f.size(), 4u);
+	EXPECT_EQ_VIEW(f);
 
 	f.pop_front();
 	EXPECT_EQ(f.front(), 2u);
+	EXPECT_EQ_VIEW(f);
 
 	f.push_back(5);
 	// Not empty, should still be growing.
 	EXPECT_EQ(f.size(), 5u);
+	EXPECT_EQ_VIEW(f);
 
 	f.pop_front();
 	f.pop_front();
 	f.pop_front();
 	f.pop_front();
 	EXPECT_TRUE(f.empty());
+	EXPECT_EQ_VIEW(f);
 
 	f.push_back(6);
 	f.push_back(7);
@@ -52,6 +84,7 @@ TEST(Fifo, UnboundedFifo)
 	// Restarted at beginning of buffer.
 	EXPECT_EQ(f.size(), 5u);
 	EXPECT_EQ(f.front(), 6u);
+	EXPECT_EQ_VIEW(f);
 }
 
 TEST(Fifo, BoundedFifo)
@@ -62,38 +95,48 @@ TEST(Fifo, BoundedFifo)
 	EXPECT_TRUE(f.empty());
 	EXPECT_FALSE(f.full());
 	EXPECT_LE(f.size(), 5u);
+	EXPECT_EQ_VIEW(f);
 
 	f.push_back(1);
 	EXPECT_FALSE(f.empty());
 	EXPECT_FALSE(f.full());
 	EXPECT_LE(f.size(), 5u);
 	EXPECT_EQ(f.front(), 1u);
+	EXPECT_EQ_VIEW(f);
 
 	f.push_back(2);
 	EXPECT_LE(f.size(), 5u);
 	EXPECT_EQ(f.front(), 1u);
+	EXPECT_EQ_VIEW(f);
 
 	f.push_back(3);
 	f.push_back(4);
 	EXPECT_TRUE(f.full());
 	EXPECT_LE(f.size(), 5u);
+	EXPECT_EQ_VIEW(f);
 
 	f.pop_front();
 	EXPECT_FALSE(f.full());
 	EXPECT_EQ(f.front(), 2u);
+	EXPECT_EQ_VIEW(f);
 
 	f.push_back(5);
 	EXPECT_TRUE(f.full());
 	EXPECT_LE(f.size(), 5u);
+	EXPECT_EQ_VIEW(f);
 
 	f.pop_front();
 	EXPECT_EQ(f.front(), 3u);
+	EXPECT_EQ_VIEW(f);
 	f.pop_front();
 	EXPECT_EQ(f.front(), 4u);
+	EXPECT_EQ_VIEW(f);
 	f.pop_front();
 	EXPECT_EQ(f.front(), 5u);
+	EXPECT_EQ_VIEW(f);
 	f.pop_front();
 	EXPECT_TRUE(f.empty());
+	EXPECT_EQ_VIEW(f);
 }
 
 TEST(Fifo, IterateFifo)
@@ -122,13 +165,13 @@ TEST(Fifo, IterateFifo)
 	EXPECT_TRUE(f.empty());
 }
 
-#define EXPECT_EQ_MSG(msg, str)                       \
-	do {                                          \
-		auto m_ = (msg);                      \
-		EXPECT_NE(m_.data(), nullptr);        \
-		std::string s_(m_.data(), m_.size()); \
-		EXPECT_EQ(s_, "" str);                \
-	} while(0)
+#define EXPECT_EQ_MSG(msg, str)           \
+  do {                                    \
+    auto m_ = (msg);                      \
+    EXPECT_NE(m_.data(), nullptr);        \
+    std::string s_(m_.data(), m_.size()); \
+    EXPECT_EQ(s_, "" str);                \
+  } while(0)
 
 TEST(Fifo, UnboundedMessageFifo)
 {
