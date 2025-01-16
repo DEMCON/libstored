@@ -234,10 +234,37 @@ public:
 		return m_from <= m_to ? m_to - m_from : m_b->size() - m_from + m_to;
 	}
 
-	type const& operator[](pointer i) const
+	bool empty() const
+	{
+		return m_from == m_to;
+	}
+
+	BufferView subview(size_t offset, size_t len) const
+	{
+		return BufferView{*m_b, absolute(offset), absolute(offset + len)};
+	}
+
+	BufferView subview(size_t offset) const
+	{
+		return BufferView{*m_b, absolute(offset), m_to};
+	}
+
+	void lstrip(size_t amount)
+	{
+		stored_assert(amount <= size());
+		m_from = absolute((pointer)amount);
+	}
+
+	void rstrip(size_t amount)
+	{
+		stored_assert(amount <= size());
+		m_to = absolute(size() - (pointer)amount);
+	}
+
+	type const& operator[](size_t i) const
 	{
 		stored_assert(m_b);
-		return (*m_b)[absolute(i)];
+		return (*m_b)[absolute((pointer)i)];
 	}
 
 	void copy(type* dst) const
