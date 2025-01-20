@@ -341,7 +341,7 @@ public:
 protected:
 	pointer absolute(pointer relative) const
 	{
-		stored_assert(relative < size());
+		stored_assert(relative <= size());
 
 		if(m_from <= m_to)
 			return m_from + relative;
