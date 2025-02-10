@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -40,6 +40,7 @@ option(LIBSTORED_HAVE_QT "Use Qt" OFF)
 # ##################################################################################################
 # Prepare environment
 
+enable_language(CXX)
 include(CheckIncludeFileCXX)
 include(CMakeParseArguments)
 include(GNUInstallDirs)
@@ -166,7 +167,7 @@ CMake ${CMAKE_VERSION}, built with ${CMAKE_BUILD_TYPE} configuration for ${CMAKE
 \${_stores}</text>
 PackageLicenseConcluded: MPL-2.0
 PackageLicenseDeclared: MPL-2.0
-PackageCopyrightText: <text>2020-2023 Jochem Rutgers</text>
+PackageCopyrightText: <text>2020-2025 Jochem Rutgers</text>
 ExternalRef: PACKAGE-MANAGER purl pkg:github/DEMCON/libstored@${LIBSTORED_VERSION_BASE}
 PrimaryPackagePurpose: LIBRARY
 
@@ -325,13 +326,15 @@ Relationship: SPDXRef-compiler BUILD_DEPENDENCY_OF SPDXRef-libstored
 		set(_fields)
 
 		if("${Zth_VERSION}" STREQUAL "")
-			set(_fields "${_fields}
+			set(_fields
+			    "${_fields}
 PackageVersion: preinstalled
 PackageDownloadLocation: NOASSERTION
 ExternalRef: PACKAGE-MANAGER purl pkg:github/jhrutgers/zth"
 			)
 		else()
-			set(_fields "${_fields}
+			set(_fields
+			    "${_fields}
 PackageVersion: ${Zth_VERSION}
 PackageDownloadLocation: https://github.com/jhrutgers/zth/releases/tag/v${Zth_VERSION}
 ExternalRef: PACKAGE-MANAGER purl pkg:github/jhrutgers/zth@${Zth_VERSION}"
@@ -364,13 +367,15 @@ Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-Zth
 		set(_fields)
 
 		if("${ZeroMQ_VERSION}" STREQUAL "")
-			set(_fields "${_fields}
+			set(_fields
+			    "${_fields}
 PackageVersion: preinstalled
 PackageDownloadLocation: NOASSERTION
 ExternalRef: PACKAGE-MANAGER purl pkg:github/zeromq/libzmq"
 			)
 		else()
-			set(_fields "${_fields}
+			set(_fields
+			    "${_fields}
 PackageVersion: ${ZeroMQ_VERSION}
 PackageDownloadLocation: https://github.com/zeromq/libzmq/releases
 ExternalRef: PACKAGE-MANAGER purl pkg:github/zeromq/libzmq@${ZeroMQ_VERSION}"
@@ -471,13 +476,15 @@ Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-Qt6
 		set(_fields)
 
 		if("${Heatshrink_VERSION}" STREQUAL "")
-			set(_fields "${_fields}
+			set(_fields
+			    "${_fields}
 PackageVersion: preinstalled
 PackageDownloadLocation: NOASSERTION
 ExternalRef: PACKAGE-MANAGER purl pkg:github/atomicobject/heatshrink"
 			)
 		else()
-			set(_fields "${_fields}
+			set(_fields
+			    "${_fields}
 PackageVersion: ${Heatshrink_VERSION}
 PackageDownloadLocation: https://github.com/atomicobject/heatshrink/releases/tag/v${Heatshrink_VERSION}
 ExternalRef: PACKAGE-MANAGER purl pkg:github/atomicobject/heatshrink@${Heatshrink_VERSION}"
