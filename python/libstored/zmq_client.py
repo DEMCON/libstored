@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -1315,7 +1315,10 @@ class ZmqClient(QObject):
         try:
             app = QCoreApplication.instance()
             if not app is None:
-                app.aboutToQuit.disconnect(self._aboutToQuit)
+                try:
+                    app.aboutToQuit.disconnect(self._aboutToQuit)
+                except RuntimeWarning:
+                    pass
         except:
             pass
 
