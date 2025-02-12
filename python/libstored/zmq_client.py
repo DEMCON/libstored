@@ -770,7 +770,7 @@ class Stream(object):
         self._raw = raw
 
         if not isinstance(name, str) or len(name) != 1:
-            raise ValueError('Invalid stream name ' + s)
+            raise ValueError('Invalid stream name ' + name)
 
         self._name = name
         self._finishing = False
