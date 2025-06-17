@@ -1,6 +1,6 @@
 #ifndef LIBSTORED_DIRECTORY_H
 #define LIBSTORED_DIRECTORY_H
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -51,19 +51,19 @@ constexpr14 void skipOffset(uint8_t const*& p) noexcept
  * \see #stored::find()
  * \private
  */
-#	if defined(STORED_ENABLE_UBSAN) \
-		&& (defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG))
+#  if defined(STORED_ENABLE_UBSAN) \
+	  && (defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG))
 // Somehow, ubsan thinks that we are working outside of the directory definition.
-#		if GCC_VERSION < 80000L
-#			pragma GCC diagnostic push
-#			pragma GCC diagnostic ignored "-Wattributes"
-#		endif
-#		if defined(STORED_COMPILER_CLANG)
-#			pragma clang diagnostic push
-#			pragma clang diagnostic ignored "-Wunknown-sanitizers"
-#		endif
+#    if GCC_VERSION < 80000L
+#      pragma GCC diagnostic push
+#      pragma GCC diagnostic ignored "-Wattributes"
+#    endif
+#    if defined(STORED_COMPILER_CLANG)
+#      pragma clang diagnostic push
+#      pragma clang diagnostic ignored "-Wunknown-sanitizers"
+#    endif
 __attribute__((no_sanitize("pointer-overflow")))
-#	endif
+#  endif
 constexpr14 Variant<>
 find(uint8_t const* directory, char const* name,
      size_t len = std::numeric_limits<size_t>::max()) noexcept
@@ -75,7 +75,7 @@ find(uint8_t const* directory, char const* name,
 
 	uint8_t const* p = directory;
 	while(true) {
-		bool nameEnd = !*name || len == 0;
+		bool nameEnd = len == 0 || !*name;
 		if(*p == 0) {
 			// end
 			break;
@@ -143,15 +143,15 @@ find(uint8_t const* directory, char const* name,
 
 	return Variant<>();
 }
-#	if defined(STORED_ENABLE_UBSAN) \
-		&& (defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG))
-#		if defined(STORED_COMPILER_CLANG)
-#			pragma clang diagnostic pop
-#		endif
-#		if GCC_VERSION < 80000L
-#			pragma GCC diagnostic pop
-#		endif
-#	endif
+#  if defined(STORED_ENABLE_UBSAN) \
+	  && (defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG))
+#    if defined(STORED_COMPILER_CLANG)
+#      pragma clang diagnostic pop
+#    endif
+#    if GCC_VERSION < 80000L
+#      pragma GCC diagnostic pop
+#    endif
+#  endif
 } // namespace impl
 
 /*!
@@ -189,7 +189,7 @@ void list(
 	void* container, void* buffer, uint8_t const* directory, String::type* nameBuffer,
 	ListCallbackArg* f, void* arg = nullptr, char const* prefix = nullptr);
 
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 /*!
  * \brief Iterates over all objects in the directory and invoke a callback for every object.
  * \param container the container that contains \p buffer and \p directory
@@ -208,7 +208,7 @@ list(Container* container, void* buffer, uint8_t const* directory, F&& f)
 	};
 	list(container, buffer, directory, static_cast<ListCallbackArg*>(cb), &f);
 }
-#	endif
+#  endif
 
 } // namespace stored
 #endif // __cplusplus
