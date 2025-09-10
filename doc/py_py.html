@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Base classes &mdash; libstored 1.8.0-alpha documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+  <title>Base classes &mdash; libstored 1.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=ff5cf444"></script>
-        <script src="../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -36,9 +34,6 @@
           <a href="../index.html" class="icon icon-home">
             libstored
           </a>
-              <div class="version">
-                1.8.0.dev0
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +117,7 @@
 <h2>ZmqClient<a class="headerlink" href="#zmqclient" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.ZmqClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.</span></span><span class="sig-name descname"><span class="pre">ZmqClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">19026</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.ZmqClient" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.</span></span><span class="sig-name descname"><span class="pre">ZmqClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">19026</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.ZmqClient" title="Link to this definition"></a></dt>
 <dd><p>A ZMQ client.</p>
 <p>This client can connect to either the libstored.zmq_server.ZmqServer and stored::DebugZmqLayer.</p>
 <p>Instantiate as libstored.ZmqClient().</p>
@@ -163,7 +158,7 @@
 
 <dl class="py property">
 <dt class="sig sig-object py" id="libstored.ZmqClient.context">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">context</span></span><a class="headerlink" href="#libstored.ZmqClient.context" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">context</span></span><a class="headerlink" href="#libstored.ZmqClient.context" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -208,7 +203,7 @@
 
 <dl class="py property">
 <dt class="sig sig-object py" id="libstored.ZmqClient.multi">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">multi</span></span><a class="headerlink" href="#libstored.ZmqClient.multi" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">multi</span></span><a class="headerlink" href="#libstored.ZmqClient.multi" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -218,7 +213,7 @@
 
 <dl class="py property">
 <dt class="sig sig-object py" id="libstored.ZmqClient.objects">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objects</span></span><a class="headerlink" href="#libstored.ZmqClient.objects" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objects</span></span><a class="headerlink" href="#libstored.ZmqClient.objects" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -278,7 +273,7 @@
 
 <dl class="py property">
 <dt class="sig sig-object py" id="libstored.ZmqClient.socket">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">socket</span></span><a class="headerlink" href="#libstored.ZmqClient.socket" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">socket</span></span><a class="headerlink" href="#libstored.ZmqClient.socket" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -325,7 +320,7 @@ and process data that is expected via the trace stream.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="libstored.ZmqClient.useEventLoop">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">useEventLoop</span></span><a class="headerlink" href="#libstored.ZmqClient.useEventLoop" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">useEventLoop</span></span><a class="headerlink" href="#libstored.ZmqClient.useEventLoop" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -345,7 +340,7 @@ and process data that is expected via the trace stream.</p>
 <h2>Protocol layers<a class="headerlink" href="#protocol-layers" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.ProtocolLayer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">ProtocolLayer</span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">ProtocolLayer</span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer" title="Link to this definition"></a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="libstored.protocol.ProtocolLayer.activity">
 <span class="sig-name descname"><span class="pre">activity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.ProtocolLayer.activity" title="Link to this definition"></a></dt>
@@ -363,7 +358,7 @@ and process data that is expected via the trace stream.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="libstored.protocol.ProtocolLayer.down">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">down</span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer.down" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">down</span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer.down" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -378,7 +373,7 @@ and process data that is expected via the trace stream.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="libstored.protocol.ProtocolLayer.mtu">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mtu</span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer.mtu" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mtu</span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer.mtu" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -393,7 +388,7 @@ and process data that is expected via the trace stream.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="libstored.protocol.ProtocolLayer.up">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">up</span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer.up" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">up</span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer.up" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -405,48 +400,48 @@ and process data that is expected via the trace stream.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.AsciiEscapeLayer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">AsciiEscapeLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.AsciiEscapeLayer" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">AsciiEscapeLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.AsciiEscapeLayer" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.TerminalLayer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">TerminalLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fdout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignoreEscapesTillFirstEncode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.TerminalLayer" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">TerminalLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fdout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignoreEscapesTillFirstEncode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.TerminalLayer" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.PubTerminalLayer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">PubTerminalLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*:19027'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.PubTerminalLayer" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">PubTerminalLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*:19027'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.PubTerminalLayer" title="Link to this definition"></a></dt>
 <dd><p>A TerminalLayer (term), that also forwards all non-debug data over a PUB socket.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.SegmentationLayer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">SegmentationLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.SegmentationLayer" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">SegmentationLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.SegmentationLayer" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.DebugArqLayer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">DebugArqLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.DebugArqLayer" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">DebugArqLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.DebugArqLayer" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.Crc8Layer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">Crc8Layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.Crc8Layer" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">Crc8Layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.Crc8Layer" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.Crc16Layer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">Crc16Layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.Crc16Layer" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">Crc16Layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.Crc16Layer" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.LoopbackLayer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">LoopbackLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.LoopbackLayer" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">LoopbackLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.LoopbackLayer" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.RawLayer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">RawLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.RawLayer" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">RawLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.RawLayer" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>
@@ -454,10 +449,10 @@ and process data that is expected via the trace stream.</p>
 <h2>Protocol stack<a class="headerlink" href="#protocol-stack" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.ProtocolStack">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">ProtocolStack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.ProtocolStack" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">ProtocolStack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.ProtocolStack" title="Link to this definition"></a></dt>
 <dd><dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.ProtocolStack.Iterator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Iterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stack</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.ProtocolStack.Iterator" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Iterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stack</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.ProtocolStack.Iterator" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -477,7 +472,7 @@ and process data that is expected via the trace stream.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="libstored.protocol.ProtocolStack.mtu">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mtu</span></span><a class="headerlink" href="#libstored.protocol.ProtocolStack.mtu" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mtu</span></span><a class="headerlink" href="#libstored.protocol.ProtocolStack.mtu" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
