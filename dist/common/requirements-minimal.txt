@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: CC0-1.0
 
@@ -6,3 +6,8 @@
 jinja2
 textx
 argparse
+pyzmq
+PySide6
+pyserial
+natsort
+crcmod
