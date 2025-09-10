@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -126,7 +126,7 @@ notfound:
 	else if(strcmp(prefix, it->first) == 0) // Rule 1.
 		goto gotit;			// NOLINT(bugprone-branch-clone)
 	else if(::strncmp(prefix, it->first, prefix_len) == 0
-		&& (++it == m_map.end()
+		&& (++it == m_map.end() // NOLINT(bugprone-inc-dec-in-conditions)
 		    || ::strncmp(prefix, it->first, prefix_len) != 0)) { // Rule 2.
 		--it;
 		goto gotit;
@@ -425,7 +425,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 			goto error;
 
 		size_t valuelen =
-			(size_t)(static_cast<char const*>(p) - static_cast<char const*>(value));
+			(size_t)(p - static_cast<char const*>(value));
 		DebugVariant variant = find(p, len);
 		if(!variant.valid())
 			goto error;

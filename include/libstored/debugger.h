@@ -815,6 +815,7 @@ public:
 	 */
 	template <typename F>
 	SFINAE_IS_FUNCTION(F, ListCallback, void)
+	// NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward)
 	list(F&& f) const
 	{
 		// cppcheck-suppress constParameter

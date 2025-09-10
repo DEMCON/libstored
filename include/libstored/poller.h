@@ -1,6 +1,6 @@
 #ifndef LIBSTORED_POLLER_H
 #define LIBSTORED_POLLER_H
-// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -194,7 +194,8 @@ protected:
 	// NOLINTNEXTLINE(hicpp-use-equals-default)
 	TypedPollable& operator=(TypedPollable const& p)
 	{
-		Pollable::operator=(p);
+		if(&p != this)
+			Pollable::operator=(p);
 		return *this;
 	}
 
@@ -1168,7 +1169,8 @@ public:
 	struct compare_socket {
 		bool operator()(PollableZmqSocket const& p, void* socket) const
 		{
-			return p.socket == &socket;
+			// NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
+			return p.socket == (void*)&socket;
 		}
 	};
 

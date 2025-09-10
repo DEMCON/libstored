@@ -89,7 +89,7 @@ public:
 			m_old.clear();
 			try {
 				reserve(m_max);
-			} catch(...) {
+			} catch(...) { // NOLINT(bugprone-empty-catch)
 				// Leave for now.
 			}
 		}

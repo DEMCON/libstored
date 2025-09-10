@@ -1078,6 +1078,7 @@ public:
 };
 
 template <typename... S_>
+// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 constexpr auto operator>>(Segments<S_...>&& s, Cap&& e)
 {
 	STORED_UNUSED(e)
@@ -1085,6 +1086,7 @@ constexpr auto operator>>(Segments<S_...>&& s, Cap&& e)
 }
 
 template <typename... S_>
+// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 constexpr auto& operator>>(Segments<S_...>&& s, Ref&& e)
 {
 	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
@@ -1185,6 +1187,7 @@ private:
 };
 
 template <typename... S_>
+// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 constexpr auto operator>>(Segments<S_...>&& s, Exit&& e)
 {
 	STORED_UNUSED(e)
@@ -2291,6 +2294,7 @@ public:
 	{}
 
 	template <typename Key>
+	// NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward)
 	constexpr value_type const& find(Key&& index) const
 	{
 		size_t index_ = static_cast<size_t>(index);
