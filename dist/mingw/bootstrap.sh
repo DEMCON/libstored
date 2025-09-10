@@ -22,6 +22,6 @@ fi
 
 sudo apt install -y gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64
 
-CC=x86_64-w64-mingw32-gcc
-CXX=x86_64-w64-mingw32-g++
+CC=x86_64-w64-mingw32-gcc-posix
+CXX=x86_64-w64-mingw32-g++-posix
 "${here}/../ubuntu/bootstrap.sh" || exit 1

@@ -143,7 +143,7 @@ jobs:
           dist/ubuntu/bootstrap.sh
           sudo apt install libegl1
       - name: build
-        run: dist/ubuntu/build.sh -DLIBSTORED_DOCUMENTATION=ON -DLIBSTORED_PYLIBSTORED=ON -DLIBSTORED_HAVE_ZTH=ON
+        run: dist/ubuntu/build.sh -DLIBSTORED_DOCUMENTATION=ON -DLIBSTORED_PYLIBSTORED=ON -DLIBSTORED_HAVE_ZTH=OFF
 
   # If everything is OK, publish documentation
   documentation:
