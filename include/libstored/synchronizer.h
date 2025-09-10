@@ -142,6 +142,7 @@ public:
 	 */
 	template <typename F>
 	SFINAE_IS_FUNCTION(F, void(Key), void)
+	// NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward)
 	iterateChanged(Seq since, F&& cb) const
 	{
 		iterateChanged(

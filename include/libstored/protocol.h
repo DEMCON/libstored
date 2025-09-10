@@ -1600,17 +1600,17 @@ protected:
 		STORED_CLASS_NOCOPY(DecodeCallback)
 	public:
 		explicit DecodeCallback(XsimLayer& xsim)
-			: m_xsim(xsim)
+			: m_xsim(&xsim)
 		{}
 		~DecodeCallback() final is_default
 		void decode(void* buffer, size_t len) final
 		{
 			STORED_UNUSED(buffer)
-			m_xsim.decoded(len);
+			m_xsim->decoded(len);
 		}
 
 	private:
-		XsimLayer& m_xsim;
+		XsimLayer* m_xsim;
 	};
 
 	friend class DecodeCallback;

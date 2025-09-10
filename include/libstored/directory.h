@@ -199,6 +199,7 @@ void list(
  */
 template <typename Container, typename F>
 SFINAE_IS_FUNCTION(F, void(Container*, char const*, Type::type, void*, size_t), void)
+// NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward)
 list(Container* container, void* buffer, uint8_t const* directory, F&& f)
 {
 	auto cb = [](void* container_, char const* name, Type::type type, void* buffer_, size_t len,
