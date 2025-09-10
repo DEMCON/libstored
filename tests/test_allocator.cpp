@@ -11,12 +11,20 @@
 static bool verbose_new;
 static size_t new_count;
 
-void* operator new(std::size_t count)
+void* operator new(std::size_t count, std::nothrow_t const& /*tag*/) noexcept
 {
 	void* ptr = malloc(count);
 	if(verbose_new)
 		printf("new %zu -> %p\n", count, ptr);
 	new_count++;
+	return ptr;
+}
+
+void* operator new(std::size_t count) noexcept(false)
+{
+	void* ptr = operator new(count, std::nothrow_t{});
+	if(!ptr)
+		throw std::bad_alloc{};
 	return ptr;
 }
 

@@ -310,7 +310,7 @@ public:
 			++m_i;
 		}
 
-		decltype(auto) operator*() const
+		BufferView::type const& operator*() const
 		{
 			stored_assert(m_b);
 			return (*m_b)[m_i];
