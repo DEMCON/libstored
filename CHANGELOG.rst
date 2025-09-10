@@ -24,6 +24,18 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 Added
 `````
 
+...
+
+.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.8.0...HEAD
+
+
+
+`1.8.0`_ - 2025-09-11
+---------------------
+
+Added
+`````
+
 - Implement ``ArqLayer`` in VHDL.
 - Added connected event to all protocol layers.
 - Added ``Fifo::view()`` for read-only iterable view on available data elements.
@@ -42,7 +54,7 @@ Fixed
   stability issues over IPC and other possibly non-stable connections.
 - A bug that ignored ``o_commit`` signal on ``libstored_pkg.libstored_fifo``.
 
-.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.7.1...HEAD
+.. _1.8.0: https://github.com/DEMCON/libstored/releases/tag/v1.8.0
 
 
 
