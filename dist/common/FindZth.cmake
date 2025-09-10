@@ -81,11 +81,12 @@ if(NOT Zth_FOUND AND Zth_FIND_REQUIRED)
 			libzth-extern
 			GIT_REPOSITORY ${libzth_repo}
 			GIT_TAG ${libzth_tag}
-			CMAKE_ARGS ${libzth_flags}
-				   "-DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH_}"
-				   "-DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH_}"
-				   "-DCMAKE_CXX_FLAGS=-Wno-error=overloaded-virtual" # Work-around
-										     # for 1.1.0
+			CMAKE_ARGS
+				${libzth_flags}
+				"-DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH_}"
+				"-DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH_}"
+				# Work-around for 1.1.0
+				"-DCMAKE_CXX_FLAGS=-Wno-error=overloaded-virtual -Wno-error=mismatched-new-delete"
 			INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
 			BUILD_BYPRODUCTS ${_libzth_loc}
 			UPDATE_DISCONNECTED 1
