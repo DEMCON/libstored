@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-cmake_policy(VERSION 3.5)
+cmake_policy(VERSION 3.10)
 
 include(ExternalProject)
 include(GNUInstallDirs)

@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-cmake_policy(VERSION 3.5)
+cmake_policy(VERSION 3.10)
 
 include(ExternalProject)
 include(CheckIncludeFileCXX)
@@ -22,31 +22,37 @@ if(NOT Zth_FOUND AND Zth_FIND_REQUIRED)
 	message(STATUS "Cannot find installed Zth. Building from source.")
 
 	if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-		message(WARNING "Zth requires gcc, but you are using a different compiler. Cannot build from source.")
+		message(
+			WARNING
+				"Zth requires gcc, but you are using a different compiler. Cannot build from source."
+		)
 	else()
 		set(Zth_FOUND 1)
 
-		# CMAKE_MODULE_PATH and CMAKE_PREFIX_PATH may be ;-separated
-		# list. Passing ; via ExternalProject_Add is a bit awkward...
+		# CMAKE_MODULE_PATH and CMAKE_PREFIX_PATH may be ;-separated list. Passing ; via
+		# ExternalProject_Add is a bit awkward...
 		string(REPLACE ";" "\\\\\\\\\\\\\\\\;" CMAKE_MODULE_PATH_ "${CMAKE_MODULE_PATH}")
 		string(REPLACE ";" "\\\\\\\\\\\\\\\\;" CMAKE_PREFIX_PATH_ "${CMAKE_PREFIX_PATH}")
 
 		set(libzth_flags
-			-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-			-DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-			-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
-			-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-			-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-			-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-			-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-			-DZTH_BUILD_EXAMPLES=OFF
-			-DZTH_TESTS=OFF
-			-DZTH_DOCUMENTATION=OFF
-			-DZTH_THREADS=ON
+		    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+		    -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+		    -DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
+		    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+		    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+		    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+		    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+		    -DZTH_BUILD_EXAMPLES=OFF
+		    -DZTH_TESTS=OFF
+		    -DZTH_DOCUMENTATION=OFF
+		    -DZTH_THREADS=ON
 		)
 
 		if(LIBSTORED_DIST_DIR AND EXISTS ${LIBSTORED_DIST_DIR}/include)
-			set(libzth_flags ${libzth_flags} -DZTH_PREPEND_INCLUDE_DIRECTORIES=${LIBSTORED_DIST_DIR}/include)
+			set(libzth_flags
+			    ${libzth_flags}
+			    -DZTH_PREPEND_INCLUDE_DIRECTORIES=${LIBSTORED_DIST_DIR}/include
+			)
 		endif()
 
 		if(LIBSTORED_HAVE_LIBZMQ)
@@ -75,7 +81,8 @@ if(NOT Zth_FOUND AND Zth_FIND_REQUIRED)
 			libzth-extern
 			GIT_REPOSITORY ${libzth_repo}
 			GIT_TAG ${libzth_tag}
-			CMAKE_ARGS ${libzth_flags} "-DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH_}" "-DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH_}"
+			CMAKE_ARGS ${libzth_flags} "-DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH_}"
+				   "-DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH_}"
 			INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
 			BUILD_BYPRODUCTS ${_libzth_loc}
 			UPDATE_DISCONNECTED 1
@@ -89,20 +96,22 @@ if(NOT Zth_FOUND AND Zth_FIND_REQUIRED)
 			set_property(TARGET libzth PROPERTY IMPORTED_LOCATION ${_libzth_loc})
 		endif()
 
-		set_property(TARGET libzth PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/include)
+		set_property(
+			TARGET libzth PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+					       ${CMAKE_INSTALL_PREFIX}/include
+		)
 		add_dependencies(libzth libzth-extern)
 
-		# It would be nicer to extract this information from the
-		# exported libzth.cmake file, but ExternalProject installs it
-		# during the build stage, while we need the information when
-		# configuring...
+		# It would be nicer to extract this information from the exported libzth.cmake file,
+		# but ExternalProject installs it during the build stage, while we need the
+		# information when configuring...
 		target_compile_options(libzth INTERFACE -DZTH_THREADS=1)
 		target_link_libraries(libzth INTERFACE pthread)
 		if(UNIX)
 			target_link_libraries(libzth INTERFACE rt dl)
 		endif()
 		if(NOT APPLE)
-			CHECK_INCLUDE_FILE_CXX("libunwind.h" ZTH_HAVE_LIBUNWIND)
+			check_include_file_cxx("libunwind.h" ZTH_HAVE_LIBUNWIND)
 			if(ZTH_HAVE_LIBUNWIND)
 				target_link_libraries(libzth INTERFACE unwind)
 			endif()
