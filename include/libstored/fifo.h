@@ -348,7 +348,7 @@ protected:
 
 		auto s = (pointer)m_b->size();
 		auto c = s - m_from;
-		return relative < c ? m_from + relative : relative - c;
+		return relative < c ? m_from + relative : (pointer)(relative - c);
 	}
 
 	void copy2(type* dst) const
