@@ -674,9 +674,9 @@ public:
 		static_assert(impl::is_unique<OnlyId...>::value, "");
 		static_assert(impl::is_unique<IdMap...>::value, "");
 		return FreeObjectsList{
-			Head::template create(
+			Head::create(
 				prefix, ids<OnlyId...>(), ids<IdMap...>(), longNames...),
-			Tail::template create(
+			Tail::create(
 				prefix, ids<OnlyId...>(), ids<IdMap...>(), longNames...)};
 	}
 
