@@ -317,8 +317,8 @@ typedef SSIZE_T ssize_t;
 #    ifndef constexpr14
 #      define constexpr14 inline
 #    endif
-#    ifndef if_constexpr(...)
-#      define if_constexpr if(__VA_ARGS__)
+#    ifndef if_constexpr
+#      define if_constexpr(...) if(__VA_ARGS__)
 #    endif
 #    ifndef thread_local
 #      ifdef STORED_COMPILER_GCC
