@@ -40,10 +40,10 @@
 			"detail": "(Re)configure the project as Debug",
 			"type": "shell",
 			"osx": {
-				"command": "${workspaceFolder}/dist/macos/build.sh Debug conf test dev nosan clean"
+				"command": "${workspaceFolder}/dist/macos/build.sh Debug conf test dev san clean"
 			},
 			"linux": {
-				"command": "${workspaceFolder}/dist/ubuntu/build.sh Debug conf test dev nosan clean"
+				"command": "${workspaceFolder}/dist/ubuntu/build.sh Debug conf test dev san clean"
 			},
 			"windows": {
 				"command": "${workspaceFolder}\\dist\\win32\\build.cmd Debug conf test dev clean"
