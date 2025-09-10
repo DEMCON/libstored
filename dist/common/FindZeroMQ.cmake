@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-cmake_policy(VERSION 3.5)
+cmake_policy(VERSION 3.10)
 
 include(ExternalProject)
 
@@ -24,11 +24,23 @@ if(NOT TARGET libzmq)
 				set(ZeroMQ_LINK_LIBRARIES ${pkgcfg_lib_ZeroMQ_zmq})
 			endif()
 			if(ZeroMQ_LINK_LIBRARIES)
-				message(STATUS "Found ZeroMQ via pkg-config at ${ZeroMQ_LINK_LIBRARIES}")
+				message(
+					STATUS
+						"Found ZeroMQ via pkg-config at ${ZeroMQ_LINK_LIBRARIES}"
+				)
 				add_library(libzmq SHARED IMPORTED GLOBAL)
-				set_property(TARGET libzmq PROPERTY IMPORTED_LOCATION ${ZeroMQ_LINK_LIBRARIES})
-				set_property(TARGET libzmq PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${ZeroMQ_INCLUDE_DIRS})
-				set_property(TARGET libzmq PROPERTY INTERFACE_COMPILE_OPTIONS ${ZeroMQ_CFLAGS})
+				set_property(
+					TARGET libzmq PROPERTY IMPORTED_LOCATION
+							       ${ZeroMQ_LINK_LIBRARIES}
+				)
+				set_property(
+					TARGET libzmq PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+							       ${ZeroMQ_INCLUDE_DIRS}
+				)
+				set_property(
+					TARGET libzmq PROPERTY INTERFACE_COMPILE_OPTIONS
+							       ${ZeroMQ_CFLAGS}
+				)
 				target_link_libraries(libzmq INTERFACE ${ZeroMQ_LDFLAGS})
 			endif()
 		endif()
@@ -49,12 +61,15 @@ if(NOT TARGET libzmq AND ZeroMQ_FIND_REQUIRED)
 	message(STATUS "Building ZeroMQ from source")
 	set(ZeroMQ_FOUND 1)
 
-	set(libzmq_flags -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
-		-DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-		-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
-		-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+	set(libzmq_flags
+	    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+	    -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
+	    -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+	    -DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
+	    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+	    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+	    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+	    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
 	)
 
 	if(MINGW)
@@ -68,8 +83,8 @@ if(NOT TARGET libzmq AND ZeroMQ_FIND_REQUIRED)
 	endif()
 
 	if(CMAKE_CROSSCOMPILING)
-		# It seems that in case of crosscompiling, the host headers are
-		# found anyway. Force using builtins instead.
+		# It seems that in case of crosscompiling, the host headers are found anyway. Force
+		# using builtins instead.
 		if(NOT WITH_LIBBSD)
 			set(libzmq_flags ${libzmq_flags} -DWITH_LIBBSD=OFF)
 		endif()
@@ -123,7 +138,8 @@ if(NOT TARGET libzmq AND ZeroMQ_FIND_REQUIRED)
 			BUILD_BYPRODUCTS ${_libzmq_loc} ${_libzmq_implib}
 			UPDATE_DISCONNECTED 1
 			BUILD_COMMAND ""
-			INSTALL_COMMAND "${CMAKE_COMMAND}" --build . --target install --config ${CMAKE_BUILD_TYPE}
+			INSTALL_COMMAND "${CMAKE_COMMAND}" --build . --target install --config
+					${CMAKE_BUILD_TYPE}
 		)
 	else()
 		ExternalProject_Add(
@@ -155,6 +171,9 @@ if(NOT TARGET libzmq AND ZeroMQ_FIND_REQUIRED)
 		target_link_libraries(libzmq INTERFACE pthread rt)
 	endif()
 
-	set_property(TARGET libzmq PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/include)
+	set_property(
+		TARGET libzmq PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+				       ${CMAKE_INSTALL_PREFIX}/include
+	)
 	add_dependencies(libzmq libzmq-extern)
 endif()
