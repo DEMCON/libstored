@@ -2,7 +2,10 @@
 	"editor.formatOnSave": true,
 	"cmake.configureOnOpen": false,
 	"files.associations": {
-		"stored": "cpp"
+		"stored": "cpp",
+		".clang-tidy": "yaml",
+		"*.h": "cpp",
+		"**/include/**": "cpp"
 	},
 	"cSpell.words": [
 		"libstored"
