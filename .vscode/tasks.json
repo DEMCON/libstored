@@ -97,6 +97,9 @@
 			"group": {
 				"kind": "build",
 				"isDefault": true
+			},
+			"presentation": {
+				"clear": true
 			}
 		},
 		{
@@ -130,6 +133,9 @@
 			},
 			"group": {
 				"kind": "build"
+			},
+			"presentation": {
+				"clear": true
 			}
 		},
 		{
@@ -163,6 +169,9 @@
 			},
 			"group": {
 				"kind": "build"
+			},
+			"presentation": {
+				"clear": true
 			}
 		},
 		{
@@ -197,6 +206,9 @@
 			},
 			"group": {
 				"kind": "build",
+			},
+			"presentation": {
+				"clear": true
 			}
 		},
 		{
@@ -224,6 +236,9 @@
 			},
 			"group": {
 				"kind": "test"
+			},
+			"presentation": {
+				"clear": true
 			}
 		}
 	],
