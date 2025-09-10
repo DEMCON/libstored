@@ -5,7 +5,7 @@
 # Assume this is your project, and you have generated the FindLibstored.cmake file, which can be
 # found in the CMAKE_MODULE_PATH.
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 project(1_hello_pip)
 
 # Default integration of ZeroMQ, Heathshrink, Zth, Qt5 and Qt6 can be enabled by providing these as

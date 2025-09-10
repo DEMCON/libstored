@@ -5,7 +5,7 @@
 # Assume this is your project, and you have installed libstored as a submodule somewhere.  Now,
 # include libstored, such that you can generate stores.
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 project(1_hello_submodule)
 
 # Point to the directory where you have cloned libstored.

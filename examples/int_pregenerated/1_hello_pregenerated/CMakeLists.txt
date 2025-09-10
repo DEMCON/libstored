@@ -5,7 +5,7 @@
 # Assume this is your project, and you don't have libstored as submodule, but use the generated
 # library source files directly. This top-level cmake file shows how to do that.
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 project(1_hello_pregenerated)
 
 # In the 1_hello example, the files are generated. Include the generated CMakeLists.txt file.  Note
