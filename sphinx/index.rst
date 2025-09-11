@@ -19,6 +19,7 @@ debug it remotely.
    CHANGELOG <doc/changelog>
    Presentation <https://demcon.github.io/libstored/libstored.sozi.html>
    doc/workflow
+   doc/usage
    doc/cpp
    doc/fpga
    doc/py
