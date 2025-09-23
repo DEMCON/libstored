@@ -241,12 +241,12 @@ public:
 
 	BufferView subview(size_t offset, size_t len) const
 	{
-		return BufferView{*m_b, absolute(offset), absolute(offset + len)};
+		return BufferView{*m_b, absolute((pointer)offset), absolute((pointer)(offset + len))};
 	}
 
 	BufferView subview(size_t offset) const
 	{
-		return BufferView{*m_b, absolute(offset), m_to};
+		return BufferView{*m_b, absolute((pointer)offset), m_to};
 	}
 
 	void lstrip(size_t amount)
