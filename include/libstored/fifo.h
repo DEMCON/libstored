@@ -241,12 +241,12 @@ public:
 
 	BufferView subview(size_t offset, size_t len) const
 	{
-		return BufferView{*m_b, absolute(offset), absolute(offset + len)};
+		return BufferView{*m_b, absolute((pointer)offset), absolute((pointer)(offset + len))};
 	}
 
 	BufferView subview(size_t offset) const
 	{
-		return BufferView{*m_b, absolute(offset), m_to};
+		return BufferView{*m_b, absolute((pointer)offset), m_to};
 	}
 
 	void lstrip(size_t amount)
@@ -258,7 +258,7 @@ public:
 	void rstrip(size_t amount)
 	{
 		stored_assert(amount <= size());
-		m_to = absolute(size() - (pointer)amount);
+		m_to = absolute((pointer)(size() - amount));
 	}
 
 	type const& operator[](size_t i) const
@@ -348,7 +348,7 @@ protected:
 
 		auto s = (pointer)m_b->size();
 		auto c = s - m_from;
-		return relative < c ? m_from + relative : (pointer)(relative - c);
+		return relative < c ? (pointer)(m_from + relative) : (pointer)(relative - c);
 	}
 
 	void copy2(type* dst) const
