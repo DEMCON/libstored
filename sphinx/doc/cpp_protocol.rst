@@ -65,6 +65,41 @@ Standard layer implementations can be used to construct the following stacks (to
   :cpp:class:`stored::TerminalLayer`,
   :cpp:class:`stored::XsimLayer`
 
+Protocol layers make an onion shape either around a debugger or a synchronizer.
+Following the example of the lossless UART:
+
+.. uml::
+
+   left to right direction
+
+   component "StdioLayer" {
+      () "Decode" as decode3
+      () "Encode" as encode3
+
+      component "TerminalLayer" {
+         () "Decode" as decode2
+         () "Encode" as encode2
+
+         component "AsciiEscapeLayer" {
+            () "Decode" as decode1
+            () "Encode" as encode1
+
+            component "Synchronizer / Debugger" as core {
+            }
+         }
+      }
+   }
+
+   [In] --> decode3
+   decode3 --> decode2
+   decode2 --> decode1
+   decode1 --> core
+
+   core --> encode1
+   encode1 --> encode2
+   encode2 --> encode3
+   encode3 --> [Out]
+
 If you have to implement you own protocol layer, start with
 :cpp:class:`stored::ProtocolLayer`. Especially, override
 :cpp:func:`stored::ProtocolLayer::encode()` for messages passed down the stack
