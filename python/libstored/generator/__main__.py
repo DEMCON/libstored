@@ -406,6 +406,9 @@ def generate_store(model_file, output_dir, littleEndian=True):
     with open(os.path.join(output_dir, 'doc', mname + '.json'), 'w') as f:
         f.write(store_json_tmpl.render())
 
+    with open(os.path.join(output_dir, 'doc', mname + '.json.license'), 'w') as f:
+        f.write(spdx('CC0-1.0'))
+
     with open(os.path.join(output_dir, 'rtl', mname + '.vhd'), 'w') as f:
         f.write(store_vhd_tmpl.render())
 
