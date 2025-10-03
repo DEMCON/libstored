@@ -7,10 +7,10 @@ name: CI
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 jobs:
@@ -91,13 +91,14 @@ jobs:
         with:
           python-version: '3.12'
       - name: bootstrap
-        run: dist\win32\bootstrap.cmd
+        run: |
+          dist\win32\bootstrap.cmd
       - name: build Debug
-        run: dist\win32\build.cmd Debug dev ${{matrix.compiler}} ${{matrix.cxx}} ${{matrix.zmq}} ${{matrix.zth}} test
+        run: dist\win32\build.cmd Debug dev ${{matrix.compiler}} ${{matrix.cxx}} ${{matrix.zmq}} ${{matrix.zth}} test -DLIBSTORED_CPPCHECK=OFF
       - name: build Release
         run: |
           Remove-Item -path dist\win32\build -recurse -force
-          dist\win32\build.cmd Release ${{matrix.compiler}} ${{matrix.cxx}} ${{matrix.zmq}} ${{matrix.zth}} test
+          dist\win32\build.cmd Release ${{matrix.compiler}} ${{matrix.cxx}} ${{matrix.zmq}} ${{matrix.zth}} test -DLIBSTORED_CPPCHECK=OFF
 
   build-mac:
     runs-on: macos-latest
@@ -147,7 +148,7 @@ jobs:
 
   # If everything is OK, publish documentation
   documentation:
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac, build-mingw]
     runs-on: ubuntu-latest
     steps:

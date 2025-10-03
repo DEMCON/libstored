@@ -1,6 +1,6 @@
 @echo off
 
-rem SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+rem SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 rem
 rem SPDX-License-Identifier: MPL-2.0
 
@@ -21,7 +21,7 @@ set msvc=1
 
 :parse_param
 
-if "%1" == "" (
+if .%1. == .. (
 	goto go_build
 )
 if %1 == -h (
@@ -122,8 +122,18 @@ if %1 == zth (
 	set cmake_opts=%cmake_opts% -DLIBSTORED_HAVE_ZTH=ON
 	goto next_param
 )
-if %1 == zth (
+if %1 == clean (
 	set do_clean=1
+	goto next_param
+)
+set "arg=%1"
+if %arg:~0,2% == -D (
+	if %arg:^==% == %arg% (
+		set cmake_opts=%cmake_opts% %arg%=%2
+		shift
+	) else (
+		set cmake_opts=%cmake_opts% %arg%
+	)
 	goto next_param
 )
 if %1 == -- (
