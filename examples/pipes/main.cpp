@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: CC0-1.0
 
@@ -120,7 +120,6 @@ static void measurement()
 		Exit{};
 
 	// Create some class that allows dynamic callbacks to be connected.
-	// Something like Qt's signal/slot mechanism.
 	stored::Signal<void*, void*, double> sig;
 
 	// This is the view, which allows the unit selection.
@@ -138,10 +137,10 @@ static void measurement()
 		//
 		Exit{};
 
-	// Let's connect some callback to sig. In case you have Qt, you may
-	// trigger some Qt signal to actually update the view.  (However, there
-	// are also other ways to do that, like using the Call pipe segment,
-	// and probably you want also some RateLimit first.)
+	// Let's connect some callback to sig. In case you have a GUI, you may
+	// trigger some GUI signal to actually update the view.  (However, there
+	// are also other ways to do that, like using the Call pipe segment, and
+	// probably you want also some RateLimit first.)
 	sig.connect([](double x) { printf("signalled %g\n", x); });
 
 

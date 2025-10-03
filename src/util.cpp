@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -222,15 +222,6 @@ char const* banner() noexcept
 #endif
 #ifdef STORED_HAVE_ZMQ
 	       " zmq"
-#endif
-#ifdef STORED_HAVE_QT
-#	if STORED_HAVE_QT == 5
-	       " qt5"
-#	elif STORED_HAVE_QT == 6
-	       " qt6"
-#	else
-	       " qt"
-#	endif
 #endif
 #ifdef STORED_POLL_ZTH_WFMO
 	       " poll=zth-wfmo"

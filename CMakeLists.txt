@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -158,45 +158,6 @@ option(LIBSTORED_HAVE_ZTH "Use Zth" OFF)
 
 if(LIBSTORED_HAVE_ZTH)
 	find_package(Zth REQUIRED)
-endif()
-
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10")
-	cmake_policy(SET CMP0071 NEW)
-
-	find_package(
-		Qt6
-		COMPONENTS Core
-		QUIET
-	)
-	if(Qt6_FOUND)
-		set(LIBSTORED_FOUND_QT ON)
-	else()
-		# Fallback to Qt5
-		find_package(
-			Qt5
-			COMPONENTS Core
-			QUIET
-		)
-		if(Qt5_FOUND)
-			set(LIBSTORED_FOUND_QT ON)
-		endif()
-	endif()
-
-	option(LIBSTORED_HAVE_QT "Use Qt" ${LIBSTORED_FOUND_QT})
-
-	if(NOT LIBSTORED_FOUND_QT AND LIBSTORED_HAVE_QT)
-		message(FATAL_ERROR "Cannot find Qt")
-	endif()
-
-	if(LIBSTORED_HAVE_QT)
-		if(Qt6_FOUND)
-			message(STATUS "Found Qt6")
-		elseif(Qt5_FOUND)
-			message(STATUS "Found Qt5")
-		else()
-			message(WARNING "Found unknown Qt version")
-		endif()
-	endif()
 endif()
 
 set(LIBSTORED_CLANG_TIDY_DEFAULT OFF)
@@ -421,7 +382,6 @@ if(CPPCHECK_CMD)
 			set(CPPCHECK_DEPENDS ${CPPCHECK_DEPENDS} meta-generate)
 		endif()
 		cppcheck_add(pipes)
-		cppcheck_add(qt)
 		cppcheck_add(terminal)
 		cppcheck_add(zmqserver)
 	endif()

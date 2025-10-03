@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -32,10 +32,4 @@ set +x
 echo -e "\nSuggested packages to install manually:\n"
 echo -e "  sudo apt install -y ninja-build spin gdb-multiarch cppcheck flawfinder\\"
 echo -e "                      clang clang-tidy clang-format-11 libzmq3-dev \\"
-echo -e "                      qt6-base-dev qt6-declarative-dev afl++ lcov\n"
-
-if [[ `lsb_release -r -s | sed 's/\..*//'` -lt 20 ]]; then
-	echo -e "\nQt6 (and therefore PySide6) requires Ubuntu 20.04 or later."
-	echo -e "You seem to have an older version (`lsb_release -r -s`)."
-	echo -e "Python packages will not be available in this build."
-fi
+echo -e "                      afl++ lcov\n"
