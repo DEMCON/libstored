@@ -535,11 +535,11 @@ License, v. 2.0, as specified in LICENSE. This project complies to `REUSE`_.
 
 
 .. _presentation: https://demcon.github.io/libstored/libstored.sozi.html
-.. _examples: https://github.com/DEMCON/libstored/tree/master/examples
+.. _examples: https://github.com/DEMCON/libstored/tree/main/examples
 .. _fibers: https://github.com/jhrutgers/zth
 .. _documentation: https://demcon.github.io/libstored
-.. _8_sync: https://github.com/DEMCON/libstored/tree/master/examples/8_sync
+.. _8_sync: https://github.com/DEMCON/libstored/tree/main/examples/8_sync
 .. _heatshrink: https://github.com/atomicobject/heatshrink
 .. _Kst: https://kst-plot.kde.org/
-.. _python: https://github.com/DEMCON/libstored/tree/master/python
+.. _python: https://github.com/DEMCON/libstored/tree/main/python
 .. _REUSE: https://reuse.software/
