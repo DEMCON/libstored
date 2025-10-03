@@ -7,10 +7,10 @@ name: CI
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 jobs:
@@ -147,7 +147,7 @@ jobs:
 
   # If everything is OK, publish documentation
   documentation:
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     needs: [build-ubuntu, build-ubuntu-prev, build-windows, build-mac, build-mingw]
     runs-on: ubuntu-latest
     steps:
