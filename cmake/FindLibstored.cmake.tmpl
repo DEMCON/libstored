@@ -1,7 +1,7 @@
 {#
 # vim:filetype=cmake
 -#}
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -36,12 +36,6 @@ if(EXISTS ${LIBSTORED_SOURCE_DIR}/cmake/libstored.cmake)
 		elseif("${c}" STREQUAL "Heatshrink")
 			find_package(Heatshrink ${_req})
 			set(LIBSTORED_HAVE_HEATSHRINK ON CACHE INTERNAL "Enable heatshrink" FORCE)
-		elseif("${c}" STREQUAL "Qt5")
-			find_package(Qt5 ${_req} COMPONENTS Core)
-			set(LIBSTORED_HAVE_QT ON CACHE INTERNAL "Enable Qt5" FORCE)
-		elseif("${c}" STREQUAL "Qt6")
-			find_package(Qt6 ${_req} COMPONENTS Core)
-			set(LIBSTORED_HAVE_QT ON CACHE INTERNAL "Enable Qt6" FORCE)
 		endif()
 	endforeach()
 

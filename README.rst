@@ -1,7 +1,7 @@
 ﻿
 
 ..
-   SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+   SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
    
    SPDX-License-Identifier: CC-BY-4.0
 
@@ -79,7 +79,7 @@ changes.  This library helps you managing data in three ways:
    plots. It offers streams to have a sort of stdout redirection or debugging
    output from your application. The protocol is ASCII based, and usable via
    PuTTY, for example.  However, there is GUI and CLI implementation available,
-   which can be extended easily to build your custom (Qt) debugging GUI.
+   which can be extended easily to build your custom debugging GUI.
 
 See next sections for details, but the following is worth to mention here:
 
@@ -456,7 +456,7 @@ generate stuff for you.  This is how to integrate it in your project:
 
    Before including ``libstored``, you can specify several options (see
    ``cmake/libstored.cmake``), such as enabling ASan or clang-tidy.
-   Especially the library dependencies (ZeroMQ, Zth, Qt, heatshrink) are
+   Especially the library dependencies (ZeroMQ, Zth, heatshrink) are
    relevant to consider.  For example, to enable ZeroMQ:
 
    .. code:: cmake
@@ -513,12 +513,11 @@ approach.  In that case:
 3. In your project, call ``find_package(Libstored)``, while having the
    generated ``FindLibstored.cmake`` in your ``CMAKE_MODULE_PATH``.
 
-   ``Libstored`` accepts ``ZeroMQ``, ``Zth``, ``Heatshrink``, ``Qt5``, ``Qt6``
-   as ``COMPONENTS``.  Setting these enables integration of these libraries
-   with libstored. When possible, they are taken from your host system, or
-   built from source (except Qt).  If you want more control over these
-   libraries, you can also use the mechanism described above with manually
-   setting ``LIBSTORED_HAVE_LIBZMQ`` and friends.
+   ``Libstored`` accepts ``ZeroMQ``, ``Zth``, ``Heatshrink`` as ``COMPONENTS``.
+   Setting these enables integration of these libraries with libstored. When
+   possible, they are taken from your host system, or built from source.  If you
+   want more control over these libraries, you can also use the mechanism
+   described above with manually setting ``LIBSTORED_HAVE_LIBZMQ`` and friends.
 4. Continue with step 5 of the submodule-approach above.
 
 Check out the examples of libstored, which are all independent applications

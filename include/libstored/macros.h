@@ -1,6 +1,6 @@
 #ifndef LIBSTORED_MACROS_H
 #define LIBSTORED_MACROS_H
-// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -88,12 +88,6 @@
 #  define _USE_MATH_DEFINES
 #  pragma warning( \
 	  disable : 4061 4068 4100 4127 4200 4201 4296 4324 4355 4459 4514 4571 4625 4626 4706 4710 4711 4774 4789 4820 5026 5027 5039 5045)
-#  if _MSC_VER >= 1800
-#    ifdef STORED_HAVE_QT
-// Qt's moc generates relative paths.
-#      pragma warning(disable : 4464)
-#    endif
-#  endif
 #  if _MSC_FULL_VER >= 190023918
 #    pragma warning(disable : 4868)
 #  endif
@@ -245,22 +239,6 @@ typedef SSIZE_T ssize_t;
 #    endif
 #  else
 #    undef STORED_ENABLE_ASAN
-#  endif
-#endif
-
-#ifdef STORED_HAVE_QT
-#  if STORED_HAVE_QT == 6
-#    define STORED_HAVE_QT6
-#    if STORED_cplusplus < 201703L
-#      error Qt6 requires C++17 or later.
-#    endif
-#  elif STORED_HAVE_QT == 5
-#    define STORED_HAVE_QT5
-#    if STORED_cplusplus < 201103L
-#      error Qt5 requires C++11 or later.
-#    endif
-#  else
-#    error Unsupported QT version.
 #  endif
 #endif
 

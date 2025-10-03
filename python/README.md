@@ -30,10 +30,7 @@ Debugging client below.
 Execute these modules like `python3 -m libstored.gui`, optionally with `-h`
 argument to get some more help:
 
-- `libstored.gui`: a GUI that connects to a debug target.  The GUI has by
-  default high DPI support. If the scaling is not satisfactory, try setting the
-  `QT_SCALE_FACTOR` environment variable before starting the GUI, or use
-  Ctrl+Scroll wheel to dynamically resize the fonts.
+- `libstored.gui`: a GUI that connects to a debug target.
 - `libstored.cli`: a command line interface that connects to a debug target.
 - `libstored.wrapper.stdio`: a stdin/stdout wrapper, which is a bridge between
   Embedded Debugger messages within the stdin/stdout streams of the application

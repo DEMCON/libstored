@@ -26,6 +26,11 @@ Added
 
 ...
 
+Changed
+```````
+
+- Drop Qt support.
+
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.8.0...HEAD
 
 
