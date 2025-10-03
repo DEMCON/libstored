@@ -1,6 +1,6 @@
 @echo off
 
-rem SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+rem SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 rem
 rem SPDX-License-Identifier: MPL-2.0
 
@@ -21,7 +21,7 @@ set msvc=1
 
 :parse_param
 
-if "%1" == "" (
+if .%1. == .. (
 	goto go_build
 )
 if %1 == -h (
