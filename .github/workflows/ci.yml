@@ -91,7 +91,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: bootstrap
-        run: dist\win32\bootstrap.cmd
+        run: |
+          dist\win32\bootstrap.cmd
+          choco install -y --no-progress --ignore-package-exit-codes=3010 cppcheck
       - name: build Debug
         run: dist\win32\build.cmd Debug dev ${{matrix.compiler}} ${{matrix.cxx}} ${{matrix.zmq}} ${{matrix.zth}} test
       - name: build Release
