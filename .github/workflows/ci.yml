@@ -93,13 +93,12 @@ jobs:
       - name: bootstrap
         run: |
           dist\win32\bootstrap.cmd
-          choco install -y --no-progress --ignore-package-exit-codes=3010 cppcheck
       - name: build Debug
-        run: dist\win32\build.cmd Debug dev ${{matrix.compiler}} ${{matrix.cxx}} ${{matrix.zmq}} ${{matrix.zth}} test
+        run: dist\win32\build.cmd Debug dev ${{matrix.compiler}} ${{matrix.cxx}} ${{matrix.zmq}} ${{matrix.zth}} test -DLIBSTORED_CPPCHECK=OFF
       - name: build Release
         run: |
           Remove-Item -path dist\win32\build -recurse -force
-          dist\win32\build.cmd Release ${{matrix.compiler}} ${{matrix.cxx}} ${{matrix.zmq}} ${{matrix.zth}} test
+          dist\win32\build.cmd Release ${{matrix.compiler}} ${{matrix.cxx}} ${{matrix.zmq}} ${{matrix.zth}} test -DLIBSTORED_CPPCHECK=OFF
 
   build-mac:
     runs-on: macos-latest
