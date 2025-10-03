@@ -1,0 +1,30 @@
+{
+  "name": "{{store.name}}",
+  "hash": "{{store.hash}}",
+  "init": "{{store.buffer.init | hexstringarray}}",
+  "littleEndian": {{store.littleEndian | jsonliteral}},
+  "variables": [
+{% for o in store.objects | sort(attribute='offset') if o is variable %}
+    {
+      "name": "{{o.name}}",
+      "cname": "{{o.cname}}",
+      "type": "{{o.type}}",
+      "size": {{o.size}},
+      "offset": {{o.offset}}
+    }{% if not loop.last %},{% endif %}
+
+{% endfor %}
+  ],
+  "functions": [
+{% for o in store.objects | sort(attribute='offset,f') if o is function %}
+    {
+      "name": "{{o.name}}",
+      "cname": "{{o.cname}}",
+      "type": "{{o.type}}",
+      "size": {{o.size}},
+      "function": {{o.f}}
+    }{% if not loop.last %},{% endif %}
+    
+{% endfor %}
+  ]
+}
