@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VHDL &mdash; libstored 1.8.0 documentation</title>
+  <title>VHDL &mdash; libstored 1.8.1-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/documentation_options.js?v=ef19cc8a"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -280,7 +280,7 @@ this:</p>
 </pre></div>
 </div>
 <p>The output timing is exemplified below.</p>
-<img alt="../_images/wavedrom-3d04efb5-45f1-4018-a22c-28d0bcaf63a1.svg" src="../_images/wavedrom-3d04efb5-45f1-4018-a22c-28d0bcaf63a1.svg" />
+<img alt="../_images/wavedrom-1d5ede8d-be1a-430e-8d13-e2489a3e01b5.svg" src="../_images/wavedrom-1d5ede8d-be1a-430e-8d13-e2489a3e01b5.svg" />
 <p>During reset, the initial value is set at the output, 1 in this example.
 When the value is written, via <code class="docutils literal notranslate"><span class="pre">var_in</span></code>, the AXI interface, or via the
 Synchronizer, <code class="docutils literal notranslate"><span class="pre">value</span></code> is updated and <code class="docutils literal notranslate"><span class="pre">updated</span></code> is flagged for one
@@ -317,7 +317,7 @@ this:</p>
 </pre></div>
 </div>
 <p>When <code class="docutils literal notranslate"><span class="pre">we</span></code> is high, the <code class="docutils literal notranslate"><span class="pre">value</span></code> is written to the store.</p>
-<img alt="../_images/wavedrom-bb38e0ea-1910-4a26-be2b-d2e52b6b224d.svg" src="../_images/wavedrom-bb38e0ea-1910-4a26-be2b-d2e52b6b224d.svg" />
+<img alt="../_images/wavedrom-3523d6ba-b74d-4fe8-94eb-99e8d35799ef.svg" src="../_images/wavedrom-3523d6ba-b74d-4fe8-94eb-99e8d35799ef.svg" />
 <p>In this example, the variable is set to 1 in the second cycle.  Consider
 the case that a microcontroller and the FPGA synchronize a store.  If a
 variable should be read-only for the microcontroller, <code class="docutils literal notranslate"><span class="pre">we</span></code> can be tied
@@ -436,7 +436,7 @@ layer in the stack.</p>
 </dd>
 </dl>
 <p>Passing messages follows this scheme, which is resembles the AXI4-Stream Protocol:</p>
-<img alt="../_images/wavedrom-64bae7e0-718d-4aea-bb23-c94b4548ac90.svg" src="../_images/wavedrom-64bae7e0-718d-4aea-bb23-c94b4548ac90.svg" />
+<img alt="../_images/wavedrom-eaceca0c-ca61-484d-bf11-1a9b741f7ece.svg" src="../_images/wavedrom-eaceca0c-ca61-484d-bf11-1a9b741f7ece.svg" />
 <p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
 clock edge.  In the example above, this happens at edge 2, 3, 6, 9, and 10.
 There is no order or dependency in <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code>; both can be
@@ -763,7 +763,7 @@ Only available in simulation.</p>
 </pre></div>
 </div>
 <p>Example that drops a tail of length 1:</p>
-<img alt="../_images/wavedrom-e10eb9de-1b94-4f37-8cfc-d692746f46bc.svg" src="../_images/wavedrom-e10eb9de-1b94-4f37-8cfc-d692746f46bc.svg" />
+<img alt="../_images/wavedrom-b787e093-c72f-4a1b-bcc0-f7583d9001ea.svg" src="../_images/wavedrom-b787e093-c72f-4a1b-bcc0-f7583d9001ea.svg" />
 <p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
 unspecified.</p>
 <dl class="simple">
@@ -846,9 +846,9 @@ This is effectively a FIFO of size 1.</p>
 </pre></div>
 </div>
 <p>Example to drop and commit pushed data:</p>
-<img alt="../_images/wavedrom-6eb770a7-881a-46c9-a39a-76d3ac282423.svg" src="../_images/wavedrom-6eb770a7-881a-46c9-a39a-76d3ac282423.svg" />
+<img alt="../_images/wavedrom-89c653be-690b-4b15-a99f-d184989c2012.svg" src="../_images/wavedrom-89c653be-690b-4b15-a99f-d184989c2012.svg" />
 <p>Example to drop and commit popped data having a FIFO size of 4:</p>
-<img alt="../_images/wavedrom-58fce929-ca31-4fc6-bb8d-1d5781df5336.svg" src="../_images/wavedrom-58fce929-ca31-4fc6-bb8d-1d5781df5336.svg" />
+<img alt="../_images/wavedrom-124ab0de-d058-4453-be0b-7b49681d2ab9.svg" src="../_images/wavedrom-124ab0de-d058-4453-be0b-7b49681d2ab9.svg" />
 <dl class="simple">
 <dt>WIDTH<span class="classifier">positive</span></dt><dd><p>Data width.</p>
 </dd>

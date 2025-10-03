@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>libstored &mdash; libstored 1.8.0 documentation</title>
+  <title>libstored &mdash; libstored 1.8.1-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/documentation_options.js?v=ef19cc8a"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -130,7 +130,7 @@ interfaces, but everything else is ready to use.</p>
 </section>
 <section id="great-how-do-i-use-it">
 <h3>Great! How do I use it?<a class="headerlink" href="#great-how-do-i-use-it" title="Link to this heading"></a></h3>
-<p>Have a look at the <a class="reference external" href="https://github.com/DEMCON/libstored/tree/master/examples">examples</a>.</p>
+<p>Have a look at the <a class="reference external" href="https://github.com/DEMCON/libstored/tree/main/examples">examples</a>.</p>
 </section>
 </section>
 <section id="table-of-contents">
@@ -189,13 +189,13 @@ Vivado).</p></li>
 <li><p>The store and all other libstored classes are not thread-safe.
 Using threads is troubling anyway, use <a class="reference external" href="https://github.com/jhrutgers/zth">fibers</a> instead.</p></li>
 </ul>
-<p>Have a look in the <a class="reference external" href="https://github.com/DEMCON/libstored/tree/master/examples">examples</a> directory for further in-depth reading.
+<p>Have a look in the <a class="reference external" href="https://github.com/DEMCON/libstored/tree/main/examples">examples</a> directory for further in-depth reading.
 Refer to the <a class="reference external" href="https://demcon.github.io/libstored">documentation</a> for the C++ API.
 See also the <a class="reference external" href="https://demcon.github.io/libstored/libstored.sozi.html">presentation</a>.</p>
 </section>
 <section id="libstored-store-by-description">
 <h2>libstored - Store by description<a class="headerlink" href="#libstored-store-by-description" title="Link to this heading"></a></h2>
-<p>The store is described in a simple grammar.  See the <a class="reference external" href="https://github.com/DEMCON/libstored/tree/master/examples">examples</a> directory for
+<p>The store is described in a simple grammar.  See the <a class="reference external" href="https://github.com/DEMCON/libstored/tree/main/examples">examples</a> directory for
 more explanation. This is just an impression of the syntax:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>// Comment
 // Grammar: type:size[array]=initializer long name with any character
@@ -274,7 +274,7 @@ so on.</p>
 <p>Different stores can have different topologies for synchronization, and
 synchronization may happen at different speed or interval. Everything is
 possible, and you can define it based on your application’s needs.</p>
-<p>The example <a class="reference external" href="https://github.com/DEMCON/libstored/tree/master/examples/8_sync">8_sync</a> implements an application with two
+<p>The example <a class="reference external" href="https://github.com/DEMCON/libstored/tree/main/examples/8_sync">8_sync</a> implements an application with two
 stores, which can be connected arbitrarily using command line arguments. You
 can play with it to see the synchronization.</p>
 <p>The store implementation in VHDL integrates a Synchronizer instance.  However,
@@ -382,7 +382,7 @@ used for live viewing the file.</p></li>
 +----------+
 </pre></div>
 </div>
-<p>There are some more ready-to-use clients, and a Python module in the <a class="reference external" href="https://github.com/DEMCON/libstored/tree/master/python">python</a>
+<p>There are some more ready-to-use clients, and a Python module in the <a class="reference external" href="https://github.com/DEMCON/libstored/tree/main/python">python</a>
 directory.</p>
 </section>
 <section id="embedded-debugger-protocol">
