@@ -47,6 +47,7 @@ set(package_data_
     doc/store.csv.tmpl
     doc/store.py.tmpl
     doc/store.rtf.tmpl
+    doc/store.json.tmpl
     fpga/rtl/pkg.vhd
     fpga/rtl/protocol.vhd
     fpga/rtl/store.vhd.tmpl
