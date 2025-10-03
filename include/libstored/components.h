@@ -6,7 +6,7 @@
 
 #include <libstored/macros.h>
 
-#if defined(__cplusplus) && STORED_cplusplus >= 201402L && defined(STORED_DRAFT_API)
+#if defined(__cplusplus) && STORED_cplusplus >= 201402L
 
 #  include <libstored/config.h>
 #  include <libstored/types.h>
