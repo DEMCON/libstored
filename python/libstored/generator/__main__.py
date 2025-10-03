@@ -336,7 +336,6 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.tests['blob'] = is_blob
     jenv.tests['string'] = is_string
     jenv.tests['pointer'] = is_pointer
-    jenv.tests['qml_compatible'] = is_qml_compatible
 
     store_h_tmpl = jenv.get_template('store.h.tmpl')
     store_cpp_tmpl = jenv.get_template('store.cpp.tmpl')
