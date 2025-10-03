@@ -30,6 +30,7 @@ Changed
 ```````
 
 - Drop Qt support.
+- Components API is not draft anymore.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.8.0...HEAD
 
