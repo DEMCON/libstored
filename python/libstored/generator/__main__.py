@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -74,28 +74,6 @@ def ctype(o):
             'blob': 'void',
             'string': 'char'
     }[o.type]
-
-def qtype(o):
-    return {
-            'bool': 'bool',
-            'int8': 'int',
-            'uint8': 'uint',
-            'int16': 'int',
-            'uint16': 'uint',
-            'int32': 'int',
-            'uint32': 'uint',
-            'int64': 'qlonglong',
-            'uint64': 'qulonglong',
-            'float': 'float',
-            'double': 'double',
-            'ptr32': None,
-            'ptr64': None,
-            'blob': None,
-            'string': 'QString'
-    }[o.type]
-
-def is_qml_compatible(o):
-    return qtype(o) is not None
 
 def stype(o):
     t = {
@@ -338,7 +316,6 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.globals['store'] = model
     jenv.globals['win32'] = platform_win32()
     jenv.filters['ctype'] = ctype
-    jenv.filters['qtype'] = qtype
     jenv.filters['stype'] = stype
     jenv.filters['vhdltype'] = vhdltype
     jenv.filters['vhdlinit'] = vhdlinit

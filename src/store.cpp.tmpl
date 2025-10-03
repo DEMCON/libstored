@@ -2,7 +2,7 @@
 {#
 // vim:filetype=cpp
 -#}
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -90,23 +90,5 @@ uint8_t const* {{store.name}}Data::longDirectory() noexcept
 	return Config::FullNames ? (uint8_t const*){{store.name}}Data_directory_full : shortDirectory();
 }
 
-#ifdef STORED_HAVE_QT
-Qtified{{store.name}}Base::Qtified{{store.name}}Base(QObject* parent)
-	: QObject{parent}
-{}
-
-Qtified{{store.name}}Base::~Qtified{{store.name}}Base() = default;
-
-Q{{store.name}}::Q{{store.name}}(QObject* parent)
-	: base{parent}
-{}
-
-Q{{store.name}}::~Q{{store.name}}() = default;
-
-#	ifndef DOXYGEN
-		// NOLINTNEXTLINE(bugprone-suspicious-include)
-#		include "moc_{{store.filename}}.cpp"
-#	endif // !DOXYGEN
-#endif // STORED_HAVE_QT
 } // namespace stored
 // clang-format on

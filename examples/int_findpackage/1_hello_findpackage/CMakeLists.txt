@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: CC0-1.0
 
@@ -8,7 +8,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(1_hello_findpackage)
 
-# Default integration of ZeroMQ, Heathshrink, Zth, Qt5 and Qt6 can be enabled by providing these as
+# Default integration of ZeroMQ, Heathshrink, and Zth can be enabled by providing these as
 # COMPONENTS to find_package().
 #
 # If you want to have more control over these libraries, you have to do a find_package() yourself,

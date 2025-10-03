@@ -34,9 +34,6 @@ option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" OFF)
 # from source.
 option(LIBSTORED_HAVE_ZTH "Use Zth" OFF)
 
-# When enabled, the Qt5 or Qt6 namespace must exist, created via find_package().
-option(LIBSTORED_HAVE_QT "Use Qt" OFF)
-
 # ##################################################################################################
 # Prepare environment
 
@@ -94,11 +91,11 @@ add_custom_target(all-libstored-generate)
 # Old interface: libstored_lib(libprefix libpath store1 store2 ...)
 #
 # New interface: libstored_lib(TARGET lib DESTINATION libpath STORES store1 store1 ... [ZTH]
-# [ZMQ|NO_ZMQ] [QT])
+# [ZMQ|NO_ZMQ])
 function(libstored_lib libprefix libpath)
 	if("${libprefix}" STREQUAL "TARGET")
 		cmake_parse_arguments(
-			LIBSTORED_LIB "ZTH;ZMQ;NO_ZMQ;QT" "TARGET;DESTINATION" "STORES" ${ARGV}
+			LIBSTORED_LIB "ZTH;ZMQ;NO_ZMQ" "TARGET;DESTINATION" "STORES" ${ARGV}
 		)
 	else()
 		message(DEPRECATION "Use keyword-based libstored_lib() instead.")
@@ -250,9 +247,6 @@ Relationship: SPDXRef-compiler BUILD_DEPENDENCY_OF SPDXRef-libstored
 
 	if(MSVC)
 		target_compile_options(${LIBSTORED_LIB_TARGET} PRIVATE /Wall)
-		if(NOT (MSVC_VERSION LESS 1800) AND LIBSTORED_LIB_QT)
-			target_compile_options(${LIBSTORED_LIB_TARGET} PRIVATE /wd4464)
-		endif()
 		if(LIBSTORED_DEV)
 			target_compile_options(${LIBSTORED_LIB_TARGET} PRIVATE /WX)
 		endif()
@@ -399,68 +393,6 @@ Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-libzmq
 \")
 			"
 		)
-	endif()
-
-	if(LIBSTORED_HAVE_QT AND LIBSTORED_LIB_QT)
-		if(TARGET Qt5::Core)
-			message(STATUS "Enable Qt5 integration for ${LIBSTORED_LIB_TARGET}")
-			target_compile_definitions(
-				${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_QT=5
-			)
-			target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC Qt5::Core)
-
-			file(
-				APPEND "${LIBSTORED_LIB_SBOM_CMAKE}"
-				"
-				file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
-PackageName: Qt5
-SPDXID: SPDXRef-Qt5
-PackageVersion: ${Qt5Core_VERSION}
-PackageDownloadLocation: https://download.qt.io/
-PackageHomePage: https://www.qt.io/
-ExternalRef: PACKAGE-MANAGER purl pkg:github/qt/qt5@v${Qt5Core_VERSION}
-FilesAnalyzed: false
-PackageLicenseConcluded: NOASSERTION
-PackageLicenseDeclared: LGPL-3.0-or-later
-PackageCopyrightText: NOASSERTION
-PrimaryPackagePurpose: LIBRARY
-Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-Qt5
-\")
-				"
-			)
-		else()
-			message(STATUS "Enable Qt6 integration for ${LIBSTORED_LIB_TARGET}")
-			target_compile_definitions(
-				${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_QT=6
-			)
-			target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC Qt::Core)
-
-			file(
-				APPEND "${LIBSTORED_LIB_SBOM_CMAKE}"
-				"
-				file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
-PackageName: Qt6
-SPDXID: SPDXRef-Qt6
-PackageVersion: ${Qt6Core_VERSION}
-PackageDownloadLocation: https://download.qt.io/
-PackageHomePage: https://www.qt.io/
-ExternalRef: PACKAGE-MANAGER purl pkg:github/qt/qt5@v${Qt6Core_VERSION}
-FilesAnalyzed: false
-PackageLicenseConcluded: NOASSERTION
-PackageLicenseDeclared: LGPL-3.0-or-later
-PackageCopyrightText: NOASSERTION
-PrimaryPackagePurpose: LIBRARY
-Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-Qt6
-\")
-				"
-			)
-		endif()
-
-		if(COMMAND qt_disable_unicode_defines)
-			qt_disable_unicode_defines(${LIBSTORED_LIB_TARGET})
-		endif()
-
-		set_target_properties(${LIBSTORED_LIB_TARGET} PROPERTIES AUTOMOC ON)
 	endif()
 
 	if(WIN32)
@@ -695,8 +627,7 @@ endfunction()
 function(libstored_generate target)
 	if("${target}" STREQUAL "TARGET")
 		cmake_parse_arguments(
-			LIBSTORED_GENERATE "ZTH;ZMQ;NO_ZMQ;QT" "TARGET;DESTINATION" "STORES"
-			${ARGV}
+			LIBSTORED_GENERATE "ZTH;ZMQ;NO_ZMQ" "TARGET;DESTINATION" "STORES" ${ARGV}
 		)
 	else()
 		message(DEPRECATION "Use keyword-based libstored_generate() instead.")
@@ -713,9 +644,6 @@ function(libstored_generate target)
 	endif()
 	if(LIBSTORED_GENERATE_NO_ZMQ)
 		set(LIBSTORED_GENERATE_FLAGS ${LIBSTORED_GENERATE_FLAGS} NO_ZMQ)
-	endif()
-	if(LIBSTORED_GENERATE_QT)
-		set(LIBSTORED_GENERATE_FLAGS ${LIBSTORED_GENERATE_FLAGS} QT)
 	endif()
 
 	if("${LIBSTORED_GENERATE_DESTINATION}" STREQUAL "")

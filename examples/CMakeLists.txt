@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -58,19 +58,13 @@ if(NOT MINGW AND NOT CMAKE_CXX_STANDARD EQUAL 98)
 endif()
 
 if(LIBSTORED_HAVE_LIBZMQ)
-	if(LIBSTORED_DRAFT_API)
-		add_subdirectory(components)
-	endif()
+	add_subdirectory(components)
 	add_subdirectory(control)
 	add_subdirectory(zmqserver)
 endif()
 
 if(LIBSTORED_HAVE_ZTH AND LIBSTORED_HAVE_LIBZMQ)
 	add_subdirectory(fibered)
-endif()
-
-if(LIBSTORED_HAVE_QT AND LIBSTORED_HAVE_LIBZMQ)
-	add_subdirectory(qt)
 endif()
 
 if(LIBSTORED_PYLIBSTORED AND TARGET pylibstored-install)
@@ -83,10 +77,7 @@ if(${_cxx17} GREATER -1)
 		set(CMAKE_CXX_STANDARD 17)
 	endif()
 
-	if(CMAKE_CXX_STANDARD GREATER_EQUAL 17
-	   AND CMAKE_CXX_STANDARD LESS 98
-	   AND LIBSTORED_DRAFT_API
-	)
+	if(CMAKE_CXX_STANDARD GREATER_EQUAL 17 AND CMAKE_CXX_STANDARD LESS 98)
 		add_subdirectory(pipes)
 	endif()
 endif()

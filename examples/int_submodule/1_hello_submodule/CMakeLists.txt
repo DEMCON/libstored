@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: CC0-1.0
 
@@ -15,8 +15,8 @@ list(APPEND CMAKE_MODULE_PATH ${LIBSTORED_CLONE}/cmake)
 # libstored requires python. Make sure that PYTHON_EXECUTABLE is set if you have a venv, otherwise
 # it is searched for using find_program().
 
-# If you want to have ZMQ, heatshrink, Zth, and Qt, you have to do a find_package() yourself, and
-# set LIBSTORED_HAVE_LIBZMQ (and friends) to ON. Refer to the list of options() at the top of of
+# If you want to have ZMQ, heatshrink, and Zth you have to do a find_package() yourself, and set
+# LIBSTORED_HAVE_LIBZMQ (and friends) to ON. Refer to the list of options() at the top of of
 # cmake/libstored.cmake for details.
 
 # Include all libstored functions.
