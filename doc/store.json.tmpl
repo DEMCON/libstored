@@ -1,16 +1,16 @@
 {
-  "name": "{{store.name}}",
-  "hash": "{{store.hash}}",
-  "init": "{{store.buffer.init | hexstringarray}}",
-  "littleEndian": {{store.littleEndian | jsonliteral}},
+  "name": {{store.name | jsonstring}},
+  "hash": {{store.hash | jsonstring}},
+  "init": {{store.buffer.init | hexstringarray | jsonstring}},
+  "littleEndian": {{store.littleEndian | jsonstring}},
   "variables": [
 {% for o in store.objects | sort(attribute='offset') if o is variable %}
     {
-      "name": "{{o.name}}",
-      "cname": "{{o.cname}}",
-      "type": "{{o.type}}",
-      "size": {{o.size}},
-      "offset": {{o.offset}}
+      "name": {{o.name | jsonstring}},
+      "cname": {{o.cname | jsonstring}},
+      "type": {{o.type | jsonstring}},
+      "size": {{o.size | jsonstring}},
+      "offset": {{o.offset | jsonstring}}
     }{% if not loop.last %},{% endif %}
 
 {% endfor %}
@@ -18,11 +18,11 @@
   "functions": [
 {% for o in store.objects | sort(attribute='offset,f') if o is function %}
     {
-      "name": "{{o.name}}",
-      "cname": "{{o.cname}}",
-      "type": "{{o.type}}",
-      "size": {{o.size}},
-      "function": {{o.f}}
+      "name": {{o.name | jsonstring}},
+      "cname": {{o.cname | jsonstring}},
+      "type": {{o.type | jsonstring}},
+      "size": {{o.size | jsonstring}},
+      "function": {{o.f | jsonstring}}
     }{% if not loop.last %},{% endif %}
     
 {% endfor %}
