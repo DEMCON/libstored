@@ -8,6 +8,7 @@ import argparse
 import datetime
 import hashlib
 import jinja2
+import json
 import logging
 import re
 import shutil
@@ -202,6 +203,10 @@ def carray(a):
             line = 0
     return s
 
+def hexstringarray(a):
+    barray = bytes(a)
+    return barray.hex()
+
 def escapebs(s):
     return re.sub(r'\\', r'\\\\', s)
 
@@ -232,6 +237,9 @@ def pyliteral(x):
     else:
         return repr(x)
 
+def jsonstring(s):
+    return json.dumps(s)
+
 def tab_indent(s, num):
     return ('\t' * num).join(s.splitlines(True))
 
@@ -249,10 +257,10 @@ def model_cname(model_file):
 def platform_win32():
     return sys.platform == 'win32'
 
-def spdx(license='MPL-2.0', prefix=''):
+def spdx(license='MPL-2.0', prefix='', copyright='2020-2023 Jochem Rutgers'):
     # REUSE-IgnoreStart
     return \
-        f'{prefix}SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers\n' + \
+        f'{prefix}SPDX-FileCopyrightText: {copyright}\n' + \
         f'{prefix}\n' + \
         f'{prefix}SPDX-License-Identifier: {license}\n'
     # REUSE-IgnoreEnd
@@ -346,6 +354,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.filters['vhdlkey'] = vhdlkey
     jenv.filters['cname'] = types.cname
     jenv.filters['carray'] = carray
+    jenv.filters['hexstringarray'] = hexstringarray
     jenv.filters['vhdlname'] = types.vhdlname
     jenv.filters['len'] = len
     jenv.filters['hasfunction'] = has_function
@@ -353,6 +362,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.filters['csvstring'] = csvstring
     jenv.filters['pystring'] = pystring
     jenv.filters['pyliteral'] = pyliteral
+    jenv.filters['jsonstring'] = jsonstring
     jenv.filters['tab_indent'] = tab_indent
     jenv.tests['variable'] = is_variable
     jenv.tests['function'] = is_function
@@ -368,6 +378,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
     store_py_tmpl = jenv.get_template('store.py.tmpl')
     store_vhd_tmpl = jenv.get_template('store.vhd.tmpl')
     store_pkg_vhd_tmpl = jenv.get_template('store_pkg.vhd.tmpl')
+    store_json_tmpl = jenv.get_template('store.json.tmpl')
 
     with open(os.path.join(output_dir, 'include', mname + '.h'), 'w') as f:
         f.write(store_h_tmpl.render())
@@ -389,6 +400,12 @@ def generate_store(model_file, output_dir, littleEndian=True):
 
     with open(os.path.join(output_dir, 'doc', mname + 'Meta.py'), 'w') as f:
         f.write(store_py_tmpl.render())
+
+    with open(os.path.join(output_dir, 'doc', mname + '.json'), 'w') as f:
+        f.write(store_json_tmpl.render())
+
+    with open(os.path.join(output_dir, 'doc', mname + '.json.license'), 'w') as f:
+        f.write(spdx('CC0-1.0', copyright='2025 Guus Kuiper'))
 
     with open(os.path.join(output_dir, 'rtl', mname + '.vhd'), 'w') as f:
         f.write(store_vhd_tmpl.render())
