@@ -22,7 +22,7 @@ class AsyncioWorker:
         self.logger = logging.getLogger(__class__.__name__)
         self._loop = None
         self._started = False
-        self._thread = threading.Thread(target=self._run, daemon=daemon)
+        self._thread = threading.Thread(target=self._run, daemon=daemon, name='AsyncioWorker')
         self._thread.start()
         self.logger.debug("Waiting for event loop to start")
         while not self._started:
@@ -181,6 +181,22 @@ class AsyncioWorker:
     async def _execute(self, f, *args, **kwargs) -> typing.Any:
         return f(*args, **kwargs)
 
+class Work:
+    def __init__(self, worker : AsyncioWorker | None=None, logger : logging.Logger | None=None):
+        self.logger = logger or logging.getLogger(self.__class__.__name__)
+
+        if worker is None:
+            global default_worker
+            worker = default_worker
+            if worker is None or not worker.is_running():
+                worker = AsyncioWorker(daemon=True)
+
+        self._worker = worker
+
+    @property
+    def worker(self) -> AsyncioWorker:
+        return self._worker
+
 def run_sync(f : typing.Callable) -> typing.Callable:
     '''
     Decorator to run an async function synchronously.
@@ -191,7 +207,7 @@ def run_sync(f : typing.Callable) -> typing.Callable:
     '''
 
     @functools.wraps(f)
-    def wrapper(*args, **kwargs):
+    def wrapper(self, *args, **kwargs):
         assert asyncio.iscoroutinefunction(f)
 
         loop = None
@@ -202,15 +218,23 @@ def run_sync(f : typing.Callable) -> typing.Callable:
 
         if loop is not None:
             # We are in an event loop, just start the coro.
-            return f(*args, **kwargs)
+            return f(self, *args, **kwargs)
         else:
-            # We are not in an event loop, run the coro in the default worker.
-            global default_worker
-            w = default_worker
+            # We are not in an event loop, run the coro in the (default) worker.
+            w = None
+            if isinstance(self, Work):
+                self.logger.debug("Running %s in worker %s", f.__name__, self.worker)
+                w = self.worker
+            else:
+                if self.hasattr('logger'):
+                    self.logger.debug("Running %s in default worker", f.__name__)
+                global default_worker
+                w = default_worker
+
             if w is None or not w.is_running():
                 w = AsyncioWorker(daemon=True)
 
-            future = w.execute(f(*args, **kwargs))
+            future = w.execute(f(self, *args, **kwargs))
             return future.result()
 
     return wrapper
