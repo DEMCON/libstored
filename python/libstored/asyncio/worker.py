@@ -100,7 +100,7 @@ class AsyncioWorker:
         for task in asyncio.all_tasks(self._loop):
             task.cancel()
 
-    def stop(self):
+    def stop(self, timeout_s : float | None=None):
         '''
         Request to stop the event loop and wait for the thread to exit.
 
@@ -114,7 +114,10 @@ class AsyncioWorker:
         self._loop.call_soon_threadsafe(self._loop.stop)
 
         assert self._thread is not None
-        self._thread.join()
+        self._thread.join(timeout_s)
+        if self._thread.is_alive():
+            raise TimeoutError()
+
         self._thread = None
 
         assert default_worker is not self
@@ -234,6 +237,7 @@ def run_sync(f : typing.Callable) -> typing.Callable:
                 w = default_worker
 
             if w is None or not w.is_running():
+                self.logger.debug('No worker running, creating new one')
                 w = AsyncioWorker(daemon=True)
 
             future = w.execute(f(self, *args, **kwargs))

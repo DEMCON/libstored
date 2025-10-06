@@ -337,6 +337,29 @@ function(add_launch_json_py NAME FILE)
 	)
 endfunction()
 
+function(add_launch_json_pymod NAME MODULE)
+	get_property(_launch GLOBAL PROPERTY LIBSTORED_LAUNCH_JSON)
+	string(JOIN "\", \"" _args ${ARGN})
+	if(NOT "${_args}" STREQUAL "")
+		set(_args "\"${_args}\"")
+	endif()
+	set_property(
+		GLOBAL
+		PROPERTY
+			LIBSTORED_LAUNCH_JSON
+			"${_launch}
+		{
+			\"type\": \"debugpy\",
+			\"request\": \"launch\",
+			\"name\": \"${NAME}\",
+			\"module\": \"${MODULE}\",
+			\"args\": [${_args}],
+			\"python\": \"$<SHELL_PATH:${PYTHON_EXECUTABLE}>\",
+			\"cwd\": \"$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/python>\"
+		},"
+	)
+endfunction()
+
 option(LIBSTORED_EXAMPLES "Build examples" ON)
 add_custom_target(examples)
 if(LIBSTORED_EXAMPLES)
