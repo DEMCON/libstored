@@ -283,7 +283,7 @@ if(LIBSTORED_HAVE_LIBZMQ
    AND LIBSTORED_PYLIBSTORED
 )
 	add_test(
-		NAME ZmqClient
+		NAME test_ZmqClient
 		COMMAND
 			${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../python
 			"PATH=$<SHELL_PATH:$<TARGET_FILE_DIR:libzmq>>${ENV_PATH_SEP}$ENV{PATH}"
@@ -291,7 +291,11 @@ if(LIBSTORED_HAVE_LIBZMQ
 			${CMAKE_INSTALL_PREFIX}/bin/$<TARGET_FILE_NAME:zmqserver>
 	)
 
-	set_tests_properties(ZmqClient PROPERTIES TIMEOUT 60)
+	set_tests_properties(test_ZmqClient PROPERTIES TIMEOUT 60)
+	add_launch_json_py(
+		test_ZmqClient ${CMAKE_CURRENT_SOURCE_DIR}/test_ZmqClient.py
+		"$<SHELL_PATH:$<TARGET_FILE:zmqserver>>"
+	)
 endif()
 
 if(VIVADO_CMD)

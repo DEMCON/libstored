@@ -315,6 +315,28 @@ function(add_launch_json TARGET)
 	endif()
 endfunction()
 
+function(add_launch_json_py NAME FILE)
+	get_property(_launch GLOBAL PROPERTY LIBSTORED_LAUNCH_JSON)
+	string(JOIN "\", \"" _args ${ARGN})
+	if(NOT "${_args}" STREQUAL "")
+		set(_args "\"${_args}\"")
+	endif()
+	set_property(
+		GLOBAL
+		PROPERTY
+			LIBSTORED_LAUNCH_JSON
+			"${_launch}
+		{
+			\"type\": \"debugpy\",
+			\"request\": \"launch\",
+			\"name\": \"${NAME}\",
+			\"program\": \"$<SHELL_PATH:${FILE}>\",
+			\"args\": [${_args}],
+			\"python\": \"$<SHELL_PATH:${PYTHON_EXECUTABLE}>\"
+		},"
+	)
+endfunction()
+
 option(LIBSTORED_EXAMPLES "Build examples" ON)
 add_custom_target(examples)
 if(LIBSTORED_EXAMPLES)
