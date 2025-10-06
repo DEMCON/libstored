@@ -11,4 +11,7 @@
 		"libstored"
 	],
 	"cSpell.diagnosticLevel": "Hint",
+	"python.analysis.extraPaths": [
+		"${workspaceFolder}/python"
+	]
 }

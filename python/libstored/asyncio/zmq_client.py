@@ -19,8 +19,33 @@ import zmq.asyncio
 from .event import Event, Value, ValueWrapper
 from ..zmq_server import ZmqServer
 from .worker import Work, run_sync
+from ..heatshrink import HeatshrinkDecoder
 
-class Object(Work):
+class ZmqClientWork(Work):
+    def __init__(self, client : ZmqClient, *args, **kwargs):
+        super().__init__(worker=client.worker, *args, **kwargs)
+        self._client : ZmqClient | None = client
+
+    def alive(self) -> bool:
+        '''Check if this object is still alive, i.e. the client connection is still active.'''
+        return not self._client is None
+
+    def destroy(self):
+        '''Destroy this object, as the client connection is closed.'''
+        self._client = None
+
+    def __del__(self):
+        self.destroy()
+
+    @property
+    def client(self) -> ZmqClient:
+        '''The ZmqClient this object belongs to.'''
+        if not self.alive():
+            raise RuntimeError('Object destroyed, client connection closed')
+        assert self._client is not None
+        return self._client
+
+class Object(ZmqClientWork, Value):
     """A variable or function as handled by a ZmqClient
 
     Do not instantiate directly, but as a ZmqClient for its objects.
@@ -43,43 +68,30 @@ class Object(Work):
         except ValueError:
             return None
 
-    def __init__(self, name : str, type : int, size : int, client : ZmqClient):
-        super().__init__(worker=client.worker)
+    def __init__(self, name : str, type : int, size : int, client : ZmqClient, *args, **kwargs):
         self._name = name
-        self._type = type
+        self._type_id = type
         self._size = size
-        self._client = client
-        self._format = None
-        self._formatter = None
+        super().__init__(client=client, type=self.value_type, *args, **kwargs)
+
+        self._format : str = ''
+        self._formatter : typing.Callable[..., str] | None = None
+        self._poller : asyncio.Task | None = None
+        self._poll_interval_s : float | None = None
 
         self.alias = Value(str)
-        self.value = Value(self.value_type())
         self.t = Value(float)
         self.value_str = ValueWrapper(str, self._value_str_get, self._value_str_set)
 
         self.format = 'default'
 
-    def alive(self) -> bool:
-        '''Check if this object is still alive, i.e. the client connection is still active.'''
-        return not self._client is None
-
-    def destroy(self):
-        '''Destroy this object, as the client connection is closed.'''
-        self._client = None
-
-    def __del__(self):
-        self.destroy()
-
-    @property
-    def client(self) -> ZmqClient:
-        if not self.alive():
-            raise RuntimeError('Object destroyed, client connection closed')
-        assert self._client is not None
-        return self._client
-
     @property
     def name(self):
+        '''The full name of this object.'''
         return self._name
+
+    def __str__(self) -> str:
+        return f'{self.name} = {repr(self.value_str.value)}'
 
 
 
@@ -87,11 +99,13 @@ class Object(Work):
     # Type
 
     @property
-    def type(self):
-        return self._type
+    def type_id(self):
+        '''The type code of this object.'''
+        return self._type_id
 
     @property
     def size(self):
+        '''The size of this object.'''
         return self._size
 
     FlagSigned = 0x8
@@ -121,25 +135,28 @@ class Object(Work):
     Invalid = 0xff
 
     def is_valid_type(self) -> bool:
-        return self._type & 0x80 == 0
+        return self._type_id & 0x80 == 0
 
     def is_function(self) -> bool:
-        return self._type & self.FlagFunction != 0
+        return self._type_id & self.FlagFunction != 0
 
     def is_fixed(self) -> bool:
-        return self._type & self.FlagFixed != 0
+        return self._type_id & self.FlagFixed != 0
 
     def is_int(self) -> bool:
-        return self.is_fixed() and self._type & self.FlagInt != 0
+        return self.is_fixed() and self._type_id & self.FlagInt != 0
 
     def is_signed(self) -> bool:
-        return self.is_fixed() and self._type & self.FlagSigned != 0
+        return self.is_fixed() and self._type_id & self.FlagSigned != 0
 
     def is_special(self) -> bool:
-        return self._type & 0x78 == 0
+        return self._type_id & 0x78 == 0
 
-    def type_name(self):
-        dtype = self._type & ~self.FlagFunction
+    @property
+    def type_name(self) -> str:
+        '''Get the type name as used in the store definition.'''
+
+        dtype = self._type_id & ~self.FlagFunction
         t = {
                 self.Int8: 'int8',
                 self.Uint8: 'uint8',
@@ -162,8 +179,11 @@ class Object(Work):
             t = f'{t}:{self.size}'
         return f'({t})' if self.is_function() else t
 
+    @property
     def value_type(self) -> typing.Type:
-        dtype = self._type & ~self.FlagFunction
+        '''Get the Python type used for the value of this object.'''
+
+        dtype = self._type_id & ~self.FlagFunction
         t = {
                 self.Int8: int,
                 self.Uint8: int,
@@ -189,9 +209,10 @@ class Object(Work):
     ###############################################
     # Read
 
-    # Return the alias or the normal name, if no alias was set.
     @run_sync
     async def short_name(self, acquire = True) -> str:
+        '''Get the alias of this object, or its full name if no alias is set.'''
+
         if not self.alias.value is None:
             return self.alias.value
 
@@ -208,19 +229,22 @@ class Object(Work):
 
     @run_sync
     async def read(self, acquire_alias : bool=True) -> typing.Any:
+        '''Read the value of this object from the server.'''
+
         name = await self.short_name(acquire_alias)
         rep = await self.client.req(b'r' + name.encode())
         return self.handle_read(rep)
 
-    # Decode a read reply.
     def handle_read(self, rep : bytes, t=None) -> typing.Any:
+        '''Handle a read reply.'''
+
         if rep == b'?':
             return None
         try:
             self.set(self._decode(rep), t)
         except ValueError:
             pass
-        return self.value.value
+        return self.value
 
     def _decode_hex(self, data : bytes) -> bytearray:
         if len(data) % 2 == 1:
@@ -236,7 +260,7 @@ class Object(Work):
         return (value & (sign_bit - 1)) - (value & sign_bit)
 
     def _decode(self, rep : bytes) -> typing.Any:
-        dtype = self._type & ~self.FlagFunction
+        dtype = self._type_id & ~self.FlagFunction
         if self.is_fixed():
             binint = int(rep.decode(), 16)
             if self.is_int() and not self.is_signed():
@@ -268,6 +292,10 @@ class Object(Work):
         else:
             raise ValueError()
 
+    def get(self) -> typing.Any:
+        '''Get the locally cached value of this object.'''
+        return self.value
+
 
 
     ###############################################
@@ -275,6 +303,8 @@ class Object(Work):
 
     @run_sync
     async def write(self, value : typing.Any = None):
+        '''Write a value to this object on the server.'''
+
         if not value is None:
             self.set(value)
 
@@ -294,7 +324,7 @@ class Object(Work):
         return s
 
     def _encode(self, value : typing.Any) -> bytes:
-        dtype = self._type & ~self.FlagFunction
+        dtype = self._type_id & ~self.FlagFunction
 
         if dtype == self.Void:
             return b''
@@ -322,8 +352,10 @@ class Object(Work):
             return self._encode_hex(struct.pack('>Q', value)[-self._size:], True)
 
     def set(self, value : typing.Any, t = None):
-        if type(value) != self.value_type():
-            raise TypeError(f'Expected value of type {self.value_type()}, got {type(value)}')
+        '''Set the value of this object, without actually writing it yet to the server.'''
+
+        if type(value) != self.value_type:
+            raise TypeError(f'Expected value of type {self.value_type}, got {type(value)}')
 
         if t is None:
             t = time.time()
@@ -336,13 +368,13 @@ class Object(Work):
             if isinstance(value, str) or isinstance(value, bytes):
                 value = value[0:self.size]
 
-        if isinstance(value, float) and math.isnan(value) and self.value.type == float and math.isnan(self.value.value):
+        if isinstance(value, float) and math.isnan(value) and self.type == float and math.isnan(self.value):
             # Not updated, even though value != self._value would be True
             pass
-        elif value != self.value.value:
+        elif value != self.value:
             self.t.pause()
             self.t.value = t
-            self.value.value = value
+            self.value = value
             self.value_str.trigger()
             self.t.resume()
 
@@ -358,7 +390,10 @@ class Object(Work):
         if gs != '':
             value = value.replace(gs, '')
 
-        return locale.atoi(value)
+        try:
+            return locale.atoi(value)
+        except ValueError:
+            return int(value, 0)
 
     def _interpret_float(self, value):
         # Remove all group separators. They are irrelevant, but prevent
@@ -367,11 +402,18 @@ class Object(Work):
         if gs != '':
             value = value.replace(gs, '')
 
-        return locale.atof(value)
+        try:
+            return locale.atof(value)
+        except ValueError:
+            return float(self._interpret_int(value))
 
-    def interpret(self, value):
-        if isinstance(value,str):
-            value = {
+    def interpret(self, value : str) -> typing.Any:
+        '''Interpret a string as a value of the appropriate type for this object.'''
+
+        value = value.strip().replace(' ', '')
+
+        if not hasattr(self, '_interpret_map'):
+            self._interpret_map = {
                 self.Int8: self._interpret_int,
                 self.Uint8: self._interpret_int,
                 self.Int16: self._interpret_int,
@@ -388,7 +430,10 @@ class Object(Work):
                 self.Blob: lambda x: x.encode(),
                 self.String: lambda x: x,
                 self.Void: lambda x: bytes(),
-            }.get(self._type & ~self.FlagFunction, lambda x: x)(value)
+            }
+
+        value = self._interpret_map.get(self._type_id & ~self.FlagFunction, lambda x: x)(value)
+
         return value
 
     def _format_int(self, x : int) -> str:
@@ -409,10 +454,11 @@ class Object(Work):
 
     @property
     def format(self):
+        '''Get or set the format used to convert the value to a string.'''
         return self._format
 
     @format.setter
-    def format(self, f):
+    def format(self, f : str):
         if self._format == f:
             return
         if not f in self.formats():
@@ -424,13 +470,13 @@ class Object(Work):
             self._formatter = lambda x: hex(x & (1 << self._size * 8) - 1)
         elif f == 'bin':
             self._formatter = bin
-        elif f == 'bytes' or self._type & ~self.FlagFunction == self.Blob:
+        elif f == 'bytes' or self._type_id & ~self.FlagFunction == self.Blob:
             self._formatter = self._format_bytes
-        elif self._type & ~self.FlagFunction == self.Float:
+        elif self._type_id & ~self.FlagFunction == self.Float:
             self._formatter = lambda x: self._format_float(x, 'g', 6)
-        elif self._type & ~self.FlagFunction == self.Double:
+        elif self._type_id & ~self.FlagFunction == self.Double:
             self._formatter = lambda x: self._format_float(x, 'g', 15)
-        elif self._type & self.FlagInt:
+        elif self._type_id & self.FlagInt:
             self._formatter = self._format_int
         else:
             self._formatter = str
@@ -438,24 +484,31 @@ class Object(Work):
         self.value_str.trigger()
 
     def formats(self) -> list[str]:
+        '''Get the list of supported formats for this object.'''
+
         f = ['default', 'bytes']
-        if self._type & ~self.FlagFunction == self.Blob:
+        if self._type_id & ~self.FlagFunction == self.Blob:
             return f
         if self.is_fixed():
             f += ['hex', 'bin']
         return f
 
     def _value_str_get(self) -> str:
-        if self.value.value is None:
+        '''Get the string representation of the value of this object.'''
+
+        x = self.value
+        if x is None:
             return ''
 
         assert self._formatter is not None
         try:
-            return self._formatter(self.value.value)
+            return self._formatter(x)
         except:
             return '?'
 
     def _value_str_set(self, s : str):
+        '''Set the value of this object from a string representation.'''
+
         if s == '':
             self.set(None)
         else:
@@ -464,6 +517,254 @@ class Object(Work):
             except:
                 self.value_str.trigger()
 
+
+
+    ###############################################
+    # Polling
+
+    @run_sync
+    async def poll(self, interval_s : float | None=None):
+        '''Set up polling of this object.
+
+        If interval_s is None (the default), stop polling.
+        If interval_s is 0, poll as fast as possible.
+        If interval_s > 0, poll at that interval in seconds.
+        '''
+
+        if not self.alive():
+            raise RuntimeError('Object destroyed, client connection closed')
+
+        if not interval_s is None and interval_s < 0:
+            raise ValueError('interval_s must be None or >= 0')
+
+        if not self._poller is None:
+            self._poller.cancel()
+            self._poller = None
+            self._poll_interval_s = None
+
+        if not interval_s is None:
+            self._poll_interval_s = interval_s
+            self._poller = asyncio.get_running_loop().create_task(self._poll_loop(interval_s))
+
+    @property
+    def poll_interval(self) -> float | None:
+        '''Get the current polling interval, or None if not polling.'''
+        return self._poll_interval_s
+
+    async def _poll_loop(self, interval_s : float):
+        try:
+            while True:
+                t_start = time.time()
+                try:
+                    await self.read()
+                except asyncio.CancelledError:
+                    raise
+                except Exception as e:
+                    self.logger.exception(f'Exception while polling {self.name}: {e}')
+
+                if interval_s == 0:
+                    await asyncio.sleep(0)
+                else:
+                    t_end = time.time()
+                    dt = t_end - t_start
+                    if dt < interval_s:
+                        await asyncio.sleep(interval_s - dt)
+        except asyncio.CancelledError:
+            pass
+
+
+
+class Stream(ZmqClientWork):
+    def __init__(self, client : ZmqClient, name : str, raw : bool=False, *args, **kwargs):
+        super().__init__(client=client, *args, **kwargs)
+        self._raw = raw
+
+        if not isinstance(name, str) or len(name) != 1:
+            raise ValueError('Invalid stream name ' + name)
+
+        self._name = name
+        self._finishing = False
+        self._flushing = False
+        self._decoder : HeatshrinkDecoder | None = None
+        self._initialized = False
+        self._compressed = False
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def raw(self) -> bool:
+        return self._raw
+
+    async def _init(self):
+        if self._initialized:
+            return
+
+        cap = await self.client.capabilities()
+        if not 's' in cap:
+            raise ValueError('Stream capability missing')
+
+        self._compressed = 'f' in cap
+        self._initialized = True
+        self.reset()
+
+    @run_sync
+    async def poll(self, suffix : str=''):
+        await self._init()
+        req = b's' + (self.name + suffix).encode()
+        return self._decode(await self.client.req(req))
+
+    def _decode(self, x : bytes) -> str | bytes | bytearray:
+        if self._decoder is not None:
+            x = self._decoder.fill(x)
+            if self._finishing:
+                x += self._decoder.finish()
+                self._reset()
+
+        if self.raw:
+            return x
+        else:
+            return x.decode(errors='backslashreplace')
+
+    @run_sync
+    async def flush(self):
+        if self._compressed and not self._flushing and not self._finishing:
+            self._flushing = True
+            await self.client.req(b'f' + self.name.encode())
+            self._flushing = False
+            self._finishing = True
+
+    @run_sync
+    async def reset(self):
+        if self._compressed:
+            await self.client.req(b'f' + self.name.encode())
+            # Drop old data, as we missed the start of the stream.
+            await self.client.req(b's' + self.name.encode())
+            self._reset()
+
+    def _reset(self):
+        if self._compressed:
+            self._decoder = HeatshrinkDecoder()
+            self._finishing = False
+            self._flushing = False
+
+
+
+class Macro(ZmqClientWork):
+    """Macro object as returned by ZmqClient.macro()
+
+    Do not instantiate directly, but let ZmqClient acquire one for you.
+    """
+
+    def __init__(self, client : ZmqClient, macro : str | None=None, reqsep : bytes=b'\n', repsep : bytes=b' ', *args, **kwargs):
+        super().__init__(client=client, *args, **kwargs)
+
+        if macro is not None and len(macro) != 1:
+            raise ValueError('Invalid macro name ' + macro)
+        self._macro = None if macro is None else macro.encode()
+
+        self._cmds : dict[typing.Hashable, tuple[bytes, typing.Callable[[bytes, float | None], None] | None]] = {}
+        self._key = 0
+
+        if len(reqsep) != 1:
+            raise ValueError('Invalid request separator')
+        self._reqsep = reqsep
+
+        self._repsep = repsep
+
+    def __del__(self):
+        if self.alive():
+            self.client.release_macro(self)
+
+        super().__del__()
+
+    @property
+    def macro(self) -> bytes | None:
+        return self._macro
+
+    @run_sync
+    async def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None) -> bool:
+        '''Add a command to this macro.'''
+
+        if key is None:
+            key = self._key
+            self._key += 1
+
+        self._cmds[key] = (cmd.encode(), cb)
+        if not await self._update():
+            # Update failed, remove command again.
+            del self._cmds[key]
+            return False
+
+        # Check if it still works...
+        if cb is None:
+            # No response expected
+            return True
+
+        try:
+            self.run()
+            # Success.
+            return True
+        except RuntimeError:
+            pass
+
+        # Rollback.
+        await self.remove(key)
+        return False
+
+    @run_sync
+    async def remove(self, key : typing.Hashable) -> bool:
+        if key in self._cmds:
+            del self._cmds[key]
+            await self._update()
+            return True
+        else:
+            return False
+
+    async def _update(self):
+        m = self.macro
+        if m is None:
+            return
+
+        cmds = [b'm' + m]
+        first = True
+        for c in self._cmds.values():
+            if not first:
+                cmds.append(b'e' + self._repsep)
+            cmds.append(c[0])
+            first = False
+
+        definition = self._reqsep.join(cmds)
+        return await self.client.req(definition) == b'!'
+
+    @run_sync
+    async def run(self):
+        m = self.macro
+        if m is not None:
+            self.decode(await self.client.req(m))
+        else:
+            for c in self._cmds.values():
+                if c[1] is not None:
+                    c[1](await self.client.req(c[0]), None)
+                else:
+                    await self.client.req(c[0])
+
+    def decode(self, rep : bytes, t : float | None=None, skip : int=0):
+        cb = [x[1] for x in self._cmds.values()]
+        values = rep.split(self._repsep)
+        if len(cb) != len(values) + skip:
+            raise RuntimeError('Unexpected number of responses')
+
+        for i in range(0, len(values)):
+            f = cb[i + skip]
+            if f is not None:
+                f(values[i], t)
+
+        return True
+
+    def __len__(self):
+        return len(self._cmds)
 
 
 
@@ -476,9 +777,10 @@ class ZmqClient(Work):
 
     def __init__(self, host : str='localhost', port : int=ZmqServer.default_port,
                 multi : bool=False, timeout : float | None=None, context : None | zmq.asyncio.Context=None,
-                **kwargs):
+                t : str | None = None,
+                *args, **kwargs):
 
-        super().__init__(**kwargs)
+        super().__init__(*args, **kwargs)
         self._context = context or zmq.asyncio.Context.instance()
         self._host = host
         self._port = port
@@ -486,6 +788,10 @@ class ZmqClient(Work):
         self._timeout = timeout if timeout is None or timeout > 0 else None
         self._socket = None
         self._lock = asyncio.Lock()
+        self._alias_lock = asyncio.Lock()
+        self._t : str | Object | None | bool = t
+        self._t0 : float = 0
+        self._timestamp_to_time = lambda t: t
 
         self._reset()
 
@@ -541,7 +847,7 @@ class ZmqClient(Work):
         '''The ZMQ socket used by this client, or None if not connected.'''
         return self._socket
 
-    def isConnected(self) -> bool:
+    def is_connected(self) -> bool:
         '''Check if connected to the ZMQ server.'''
         return self.socket is not None
 
@@ -550,17 +856,37 @@ class ZmqClient(Work):
         self._identification = None
         self._version = None
 
+        self._available_aliases : list[str] | None = None
+        self._temporary_aliases : dict[str, Object] = {}
+        self._permanent_aliases : dict[str, tuple[Object, list[typing.Any]]] = {}
+
+        self._available_macros : list[str] | None = None
+        self._used_macros : list[str] = []
+        if hasattr(self, '_macros'):
+            if not self._macros is None:
+                for m in self._macros:
+                    m.destroy()
+        self._macros : list[Macro] = []
+
+        self._t = None
+
         if hasattr(self, '_objects'):
             if not self._objects is None:
                 for o in self._objects:
                     o.destroy()
-        self._objects = None
+        self._objects : typing.List[Object] | None = None
 
         if hasattr(self, '_objects_attr'):
             for o in self._objects_attr:
                 if hasattr(self, o):
                     delattr(self, o)
-        self._objects_attr = set()
+        self._objects_attr : set[str] = set()
+
+        if hasattr(self, '_streams'):
+            if not self._streams is None:
+                for s, o in self._streams.items():
+                    o.destroy()
+        self._streams : typing.Dict[str, Stream] = {}
 
     @run_sync
     async def connect(self, host : str | None=None, port : int | None=None, multi : bool | None=None):
@@ -570,12 +896,13 @@ class ZmqClient(Work):
 
         if 'l' in await self.capabilities():
             await self.list()
+            await self.find_time()
 
         self.connected.trigger()
 
     @locked
     async def _connect(self, host : str | None=None, port : int | None=None, multi : bool | None=None):
-        if self.isConnected():
+        if self.is_connected():
             raise RuntimeError('Already connected')
 
         if host is not None:
@@ -610,7 +937,7 @@ class ZmqClient(Work):
     async def disconnect(self):
         '''Disconnect from the ZMQ server.'''
 
-        if not self.isConnected():
+        if not self.is_connected():
             return
 
         self.logger.debug('disconnect')
@@ -631,7 +958,7 @@ class ZmqClient(Work):
         await self.disconnect()
 
     def __del__(self):
-        if self.isConnected():
+        if self.is_connected():
             self.disconnect()
 
     def __enter__(self):
@@ -640,6 +967,13 @@ class ZmqClient(Work):
 
     def __exit__(self, *args):
         self.disconnect()
+
+    async def __aenter__(self):
+        await self.connect()
+        return self
+
+    async def __aexit__(self, *args):
+        await self.disconnect()
 
 
 
@@ -657,7 +991,7 @@ class ZmqClient(Work):
             return await self._req(msg)
 
     async def _req(self, msg : bytes) -> bytes:
-        if not self.isConnected():
+        if not self.is_connected():
             raise RuntimeError('Not connected')
 
         assert self._socket is not None
@@ -935,39 +1269,410 @@ class ZmqClient(Work):
     ##############################################
     # Time
 
-    def time(self):
-        pass
+    def time(self) -> Object | None:
+        if isinstance(self._t, Object):
+            # Already initialized
+            return self._t
+        else:
+            # Not initialized yet, or could not find.
+            return None
 
-    def timestampToTime(self, t = None):
-        pass
+    @run_sync
+    async def find_time(self) -> Object | None:
+        if isinstance(self._t, str):
+            # Take the given time variable
+            t = self.find(self._t)
+        else:
+            # Try finding /t (unit)
+            t = self.find('/t (')
+
+        # Not initialized.
+        self._t = False
+
+        if t is None:
+            # Not found, try the first /store/t (unit)
+            for o in self.objects:
+                chunks = o.name.split('/', 4)
+                if len(chunks) != 3:
+                    # Strange name
+                    continue
+                elif chunks[2].startswith('t ('):
+                    # Got some
+                    t = o
+                    break
+            if t is None:
+                # Still not found. Give up.
+                return None
+        elif isinstance(t, set):
+            # Multiple found. Just take first one.
+            t = next(iter(t))
+        else:
+            # One found
+            pass
+
+        try:
+            t0 = await t.read()
+            self._t0 = time.time()
+        except:
+            # Cannot read. Give up.
+            return None
+
+        # Try parse the unit
+        unit = re.sub(r'.*/t \((.*)\)$', r'\1', t.name)
+        if unit == 's':
+            self._timestamp_to_time = lambda t: float(t - t0) + self._t0
+        elif unit == 'ms':
+            self._timestamp_to_time = lambda t: float(t - t0) / 1e3 + self._t0
+        elif unit == 'us':
+            self._timestamp_to_time = lambda t: float(t - t0) / 1e6 + self._t0
+        elif unit == 'ns':
+            self._timestamp_to_time = lambda t: float(t - t0) / 1e9 + self._t0
+        else:
+            # Don't know a conversion, just use the raw value.
+            self._timestamp_to_time = lambda t: t - t0
+
+        # Make alias permanent.
+        await self.alias(t, t.alias.value, False)
+
+        # All set.
+        self._t = t
+        self.logger.info('time object: %s', t.name)
+        return self._t
+
+    def timestamp_to_time(self, t = None):
+        if not isinstance(self._t, Object):
+            # No time object found.
+            return time.time()
+        else:
+            # Override to implement arbitrary conversion.
+            return self._timestamp_to_time(t)
 
 
 
     ##############################################
     # Streams
 
-    def streams(self):
+    @run_sync
+    async def streams(self) -> typing.List[str]:
+        '''Get the list of available streams.'''
+
+        if 's' not in await self.capabilities():
+            return []
+
+        rep = await self.req(b's')
+        if rep == b'?':
+            return []
+        else:
+            return list(map(lambda b: chr(b), rep))
+
+    @run_sync
+    async def otherStreams(self):
+        # TODO
         pass
 
-    def otherStreams(self):
-        pass
+    def stream(self, s : str, raw : bool=False) -> Stream:
+        '''Get a Stream object for the given stream name.'''
 
-    def stream(self, s, raw=False):
-        pass
+        if not isinstance(s, str) or len(s) != 1:
+            raise ValueError('Invalid stream name ' + s)
+
+        if s in self._streams:
+            return self._streams[s]
+
+        self._streams[s] = Stream(self, s, raw)
+        return self._streams[s]
 
 
 
     ##############################################
     # Alias
 
-    async def alias(self, o : str | Object) -> str | None:
-        if isinstance(o, Object):
-            o = o.name
+    @run_sync
+    async def alias(self, obj : str | Object, prefer : str | None=None,
+                    temporary : bool=True, permanentRef : typing.Any=None) -> str | None:
 
-        return o
+        '''Assign an alias to an object.'''
+
+        if isinstance(obj, str):
+            obj = self.obj(obj)
+
+        async with self._alias_lock:
+            if self._available_aliases is None:
+                # Not yet initialized
+                if 'a' in await self.capabilities():
+                    self._available_aliases = list(map(chr, range(0x20, 0x7f)))
+                    self._available_aliases.remove('/')
+                else:
+                    self._available_aliases = []
+
+            if prefer is None and not obj.alias.value is None:
+                if temporary != self._is_temporary_alias(obj.alias.value):
+                    # Switch type
+                    return await self._reassign_alias(obj.alias.value, obj, temporary, permanentRef)
+                else:
+                    if not temporary:
+                        self._inc_permanent_alias(obj.alias.value, permanentRef)
+                    # Already assigned one.
+                    return obj.alias.value
+
+            if not prefer is None:
+                if obj.alias != prefer:
+                    # Go assign one.
+                    pass
+                elif temporary != self._is_temporary_alias(prefer):
+                    # Switch type
+                    return await self._reassign_alias(prefer, obj, temporary, permanentRef)
+                else:
+                    if not temporary:
+                        self._inc_permanent_alias(prefer, permanentRef)
+                    # Already assigned preferred one.
+                    return prefer
+
+            if not prefer is None:
+                if self._is_alias_available(prefer):
+                    return await self._acquire_alias(prefer, obj, temporary, permanentRef)
+                elif self._is_temporary_alias(prefer):
+                    return await self._reassign_alias(prefer, obj, temporary, permanentRef)
+                else:
+                    # Cannot reassign permanent alias.
+                    return None
+            else:
+                a = self._get_free_alias()
+                if a is None:
+                    a = self._get_temporary_alias()
+                if a is None:
+                    # Nothing free.
+                    return None
+                return await self._acquire_alias(a, obj, temporary, permanentRef)
+
+    def _is_alias_available(self, a : str) -> bool:
+        return self._available_aliases is not None and a in self._available_aliases
+
+    def _is_temporary_alias(self, a : str) -> bool:
+        return a in self._temporary_aliases
+
+    def _is_alias_in_use(self, a : str) -> bool:
+        return a in self._temporary_aliases or a in self._permanent_aliases
+
+    def _inc_permanent_alias(self, a : str, permanentRef : typing.Any):
+        assert a in self._permanent_aliases
+        self.logger.debug(f'increment permanent alias {a} use')
+        self._permanent_aliases[a][1].append(permanentRef)
+
+    def _dec_permanent_alias(self, a : str, permanentRef : typing.Any):
+        assert a in self._permanent_aliases
+        if permanentRef is None:
+            self.logger.debug(f'ignored decrement permanent alias {a} use')
+            return False
+
+        try:
+            self._permanent_aliases[a][1].remove(permanentRef)
+            self.logger.debug(f'decrement permanent alias {a} use')
+        except ValueError:
+            # Unknown ref.
+            pass
+
+        return self._permanent_aliases[a][1] == []
+
+    async def _acquire_alias(self, a : str, obj : Object, temporary : bool, permanentRef : typing.Any) -> str | None:
+        assert not self._is_alias_in_use(a)
+        assert self._available_aliases is not None
+
+        if not (isinstance(a, str) and len(a) == 1):
+            raise ValueError('Invalid alias ' + a)
+
+        available_upon_rollback = False
+        if a in self._available_aliases:
+            self.logger.debug('available: ' + ''.join(self._available_aliases))
+            self._available_aliases.remove(a)
+            available_upon_rollback = True
+
+        if not await self._set_alias(a, obj.name):
+            # Too many aliases, apparently. Drop a temporary one.
+            tmp = self._get_temporary_alias()
+            if tmp is None:
+                # Nothing to drop.
+                if available_upon_rollback:
+                    self._available_aliases.append(a)
+                return None
+
+            self._release_alias(tmp)
+
+            # OK, we should have some more space now. Retry.
+            if not await self._set_alias(a, obj.name):
+                # Still failing, give up.
+                if available_upon_rollback:
+                    self._available_aliases.append(a)
+                return None
+
+        # Success!
+        if temporary:
+            self.logger.debug(f'new temporary alias {a} for {obj.name}')
+            self._temporary_aliases[a] = obj
+        else:
+            self.logger.debug(f'new permanent alias {a} for {obj.name}')
+            self._permanent_aliases[a] = (obj, [permanentRef])
+        obj.alias.value = a
+        return a
+
+    async def _set_alias(self, a : str, name : str) -> bool:
+        rep = await self.req(b'a' + a.encode() + name.encode())
+        return rep == b'!'
+
+    async def _reassign_alias(self, a : str, obj : Object, temporary : bool, permanentRef : typing.Any) -> str | None:
+        assert a in self._temporary_aliases or a in self._permanent_aliases
+        assert not self._is_alias_available(a)
+        assert self._available_aliases is not None
+
+        if not await self._set_alias(a, obj.name):
+            return None
+
+        if not self._release_alias(a, permanentRef):
+            # Not allowed, still is use as permanent alias.
+            self.logger.debug(f'cannot release alias {a}; still in use')
+            pass
+        else:
+            if a in self._available_aliases:
+                self._available_aliases.remove(a)
+            if temporary:
+                self.logger.debug(f'reassigned temporary alias {a} to {obj.name}')
+                self._temporary_aliases[a] = obj
+            else:
+                self.logger.debug(f'reassigned permanent alias {a} to {obj.name}')
+                self._permanent_aliases[a] = (obj, [permanentRef])
+
+        obj.alias.value = a
+        return a
+
+    def _release_alias(self, alias : str, permanentRef : typing.Any = None) -> bool:
+        assert self._available_aliases is not None
+
+        obj = None
+        if alias in self._temporary_aliases:
+            obj = self._temporary_aliases[alias]
+            del self._temporary_aliases[alias]
+            self.logger.debug(f'released temporary alias {alias}')
+        elif alias in self._permanent_aliases:
+            if not self._dec_permanent_alias(alias, permanentRef):
+                # Do not release (yet).
+                return False
+            obj = self._permanent_aliases[alias][0]
+            del self._permanent_aliases[alias]
+            self.logger.debug(f'released permanent alias {alias}')
+        else:
+            self.logger.debug(f'released unused alias {alias}')
+
+        if not obj is None:
+            obj.alias.value = None
+            self._available_aliases.append(alias)
+
+        return True
+
+    def _get_free_alias(self) -> str | None:
+        if not self._available_aliases:
+            return None
+        else:
+            return self._available_aliases.pop()
+
+    def _get_temporary_alias(self) -> str | None:
+        keys = list(self._temporary_aliases.keys())
+        if not keys:
+            return None
+        a = keys[0] # pick oldest one
+        self.logger.debug(f'stealing temporary alias {a}')
+        self._release_alias(a)
+        return a
+
+    @run_sync
+    async def release_alias(self, alias : str, permanentRef=None):
+        '''Release an alias.'''
+        if self._release_alias(alias, permanentRef):
+            await self.req(b'a' + alias.encode())
+
+    @run_sync
+    async def _print_alias_map(self):
+        '''Print the current alias map.'''
+
+        async with self._alias_lock:
+            if self._available_aliases is None:
+                print("Not initialized")
+            else:
+                print("Available aliases: " + ''.join(self._available_aliases))
+
+                if len(self._temporary_aliases) == 0:
+                    print("No temporary aliases")
+                else:
+                    print("Temporary aliases:\n\t" + '\n\t'.join([f'{a}: {o.name}' for a,o in self._temporary_aliases.items()]))
+
+                if len(self._permanent_aliases) == 0:
+                    print("No permanent aliases")
+                else:
+                    print("Permanent aliases: \n\t" + '\n\t'.join([f'{a}: {o[0].name} ({len(o[1])})' for a,o in self._permanent_aliases.items()]))
+
+
 
     ##############################################
     # Macro
+
+    @run_sync
+    async def macro(self, *args, **kwargs) -> Macro:
+        '''Get a free macro, and optionally assign commands to it.'''
+
+        if self._available_macros is None:
+            # Not initialized yet.
+            capabilities = await self.capabilities()
+            if 'm' not in capabilities:
+                # Not supported.
+                self._available_macros = []
+            else:
+                self._available_macros = list(map(chr, range(0x20, 0x7f)))
+                for c in capabilities:
+                    self._available_macros.remove(c)
+
+        if self._available_macros == []:
+            mo = Macro(self, None, *args, **kwargs)
+        else:
+            m = self._available_macros.pop()
+            self._used_macros.append(m)
+            mo = Macro(self, m, *args, **kwargs)
+
+        self._macros.append(mo)
+        return mo
+
+    @run_sync
+    async def release_macro(self, m : str | bytes | Macro):
+        '''Release a macro.'''
+
+        macro = None
+        mo = None
+        if isinstance(m, Macro):
+            mo = m
+            macro = mo.macro
+        if isinstance(m, bytes):
+            macro = m.decode()
+
+        assert macro is not None or mo is not None
+        assert macro is None or isinstance(macro, str)
+
+        if macro in self._used_macros:
+            assert self._available_macros is not None
+            self._used_macros.remove(macro)
+            self._available_macros.append(macro)
+            await self.req(b'm' + macro.encode())
+
+        if mo is None:
+            assert isinstance(macro, str)
+            mb = macro.encode()
+            for x in self._macros:
+                if x.macro == mb:
+                    mo = x
+                    break
+
+        if mo in self._macros:
+            self._macros.remove(mo)
+            mo.destroy()
+
+
 
     ##############################################
     # Poll

@@ -10,7 +10,8 @@ import typing
 class Event:
     logger = logging.getLogger(__name__)
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._callbacks = {}
         self._key = 0
         self._queued = None
@@ -74,8 +75,9 @@ class Event:
 class ValueWrapper(Event):
     def __init__(self, type : typing.Type,
                  get : typing.Callable[[], typing.Any] | None = None,
-                 set : typing.Callable[[typing.Any], None] | None = None):
-        super().__init__()
+                 set : typing.Callable[[typing.Any], None] | None = None,
+                 *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._type = type
         self._get = get
         self._set = set
@@ -91,7 +93,7 @@ class ValueWrapper(Event):
         if value is not None and not isinstance(value, self.type):
             raise TypeError(f"expected {self.type}, got {type(value)}")
         self._set(value)
-        self._trigger(value)
+        self.trigger()
 
     def trigger(self):
         self._trigger(self.value)
@@ -109,8 +111,8 @@ class ValueWrapper(Event):
         return str(self.value)
 
 class Value(ValueWrapper):
-    def __init__(self, type : typing.Type, initial : typing.Any=None):
-        super().__init__(type, self._get, self._set)
+    def __init__(self, type : typing.Type, initial : typing.Any=None, *args, **kwargs):
+        super().__init__(type, self._get, self._set, *args, **kwargs)
         if initial is not None and not isinstance(initial, type):
             raise TypeError(f"expected {type}, got {type(initial)}")
         self._value = initial

@@ -18,7 +18,8 @@ class AsyncioWorker:
     A worker thread running an asyncio event loop.
     '''
 
-    def __init__(self, daemon : bool=False):
+    def __init__(self, daemon : bool=False, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.logger = logging.getLogger(__class__.__name__)
         self._loop = None
         self._started = False
@@ -182,7 +183,8 @@ class AsyncioWorker:
         return f(*args, **kwargs)
 
 class Work:
-    def __init__(self, worker : AsyncioWorker | None=None, logger : logging.Logger | None=None):
+    def __init__(self, worker : AsyncioWorker | None=None, logger : logging.Logger | None=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.logger = logger or logging.getLogger(self.__class__.__name__)
 
         if worker is None:
@@ -226,7 +228,7 @@ def run_sync(f : typing.Callable) -> typing.Callable:
                 self.logger.debug("Running %s in worker %s", f.__name__, self.worker)
                 w = self.worker
             else:
-                if self.hasattr('logger'):
+                if hasattr(self, 'logger'):
                     self.logger.debug("Running %s in default worker", f.__name__)
                 global default_worker
                 w = default_worker
