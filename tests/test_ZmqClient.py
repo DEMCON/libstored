@@ -178,6 +178,40 @@ class ZmqClientTest(unittest.TestCase):
             locale.setlocale(locale.LC_NUMERIC, l)
         f(self)
 
+    def test_events(self):
+        an_int8 = self.c['/an int8']
+        v = an_int8.read()
+
+        events = []
+        def callback(v):
+            events.append(v)
+        an_int8.register(callback)
+
+        v = an_int8.read()
+        an_int8.write(v + 1)
+        an_int8.write(v + 2)
+        an_int8.write(v + 3)
+        an_int8.write(v)
+        an_int8.write(v)
+        self.assertEqual(events, [v + 1, v + 2, v + 3, v])
+
+        @libstored.asyncio.run_sync
+        async def f(self):
+            an_int8 = self.c['/an int8']
+            events = []
+            def callback(v):
+                events.append(v)
+            an_int8.register(callback)
+
+            v = await an_int8.read()
+            await an_int8.write(v + 1)
+            await an_int8.write(v + 2)
+            await an_int8.write(v + 3)
+            await an_int8.write(v)
+            await an_int8.write(v)
+            self.assertEqual(events, [v + 1, v + 2, v + 3, v])
+        f(self)
+
 def main():
     if len(sys.argv) == 0 or not 'zmqserver' in sys.argv[-1]:
         raise Exception('Provide path to examples/zmqserver binary as last argument')

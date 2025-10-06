@@ -5,50 +5,77 @@
 import asyncio
 import inspect
 import logging
+import threading
 import typing
 
 class Event:
     logger = logging.getLogger(__name__)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, event_name : str | None=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._callbacks = {}
+        self._callbacks : typing.Dict[typing.Hashable, typing.Callable] = {}
         self._key = 0
         self._queued = None
         self._paused = False
+        self._event_name = event_name
+        self._lock = threading.RLock()
 
-    def connect(self, callback : typing.Callable[..., None], id : typing.Hashable | None=None):
-        if id is None:
-            id = self._key
-            self._key += 1
-        self._callbacks[id] = callback
-        return id
+    def __repr__(self) -> str:
+        return f'Event({self._event_name})' if self._event_name is not None else super().__repr__()
 
-    def disconnect(self, id : typing.Hashable):
-        if id in self._callbacks:
-            del self._callbacks[id]
+    def __str__(self) -> str:
+        return self._event_name if self._event_name is not None else super().__str__()
+
+    def register(self, callback : typing.Callable, id : typing.Hashable | None=None):
+        with self._lock:
+            if id is not None and id in self._callbacks:
+                raise KeyError(f"Callback with id {id} already registered")
+
+            if id is None:
+                while id is None or id in self._callbacks:
+                    id = self._key
+                    self._key += 1
+
+            self._callbacks[id] = callback
+            return id
+
+    def unregister(self, id : typing.Hashable):
+        with self._lock:
+            if id in self._callbacks:
+                del self._callbacks[id]
 
     def pause(self):
-        self._paused = True
+        with self._lock:
+            self._paused = True
 
     def resume(self):
-        self._paused = False
-        if self._queued is not None:
-            args, kwargs = self._queued
-            self._queued = None
-            self.trigger(*args, **kwargs)
+        trigger = None
+        with self._lock:
+            self._paused = False
+            if self._queued is not None:
+                trigger = self._queued
+                self._queued = None
+
+        if trigger is not None:
+            self.trigger(*trigger[0], **trigger[1])
 
     @property
     def paused(self):
         return self._paused
 
     def trigger(self, *args, **kwargs):
-        if self._paused:
-            if self._callbacks:
-                self._queued = (args, kwargs)
-            return
+        self.logger.debug('trigger %s', repr(self))
 
-        for callback in self._callbacks.values():
+        callbacks = []
+        with self._lock:
+            if self._paused:
+                if self._callbacks:
+                    self._queued = (args, kwargs)
+                return
+
+            callbacks = list(self._callbacks.values())
+
+        for callback in callbacks:
             try:
                 bound = None
                 try:
@@ -66,11 +93,11 @@ class Event:
         def _callback():
             if not fut.done():
                 fut.set_result(None)
-        key = self.connect(_callback)
+        key = self.register(_callback)
         try:
             await fut
         finally:
-            self.disconnect(key)
+            self.unregister(key)
 
 class ValueWrapper(Event):
     def __init__(self, type : typing.Type,
@@ -93,7 +120,6 @@ class ValueWrapper(Event):
         if value is not None and not isinstance(value, self.type):
             raise TypeError(f"expected {self.type}, got {type(value)}")
         self._set(value)
-        self.trigger()
 
     def trigger(self):
         self._trigger(self.value)
@@ -121,4 +147,6 @@ class Value(ValueWrapper):
         return self._value
 
     def _set(self, value : typing.Any):
-        self._value = value
+        if self._value != value:
+            self._value = value
+            self.trigger()

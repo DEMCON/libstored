@@ -134,6 +134,8 @@ endif()
 
 add_subdirectory(libstored/gui)
 
+add_launch_json_pymod(libstored.gui libstored.gui -v -v)
+
 macro(find_latest file pattern)
 	file(GLOB ${file}_ALL CONFIGURE_DEPENDS ${pattern})
 

@@ -14,14 +14,17 @@ import tkinter.ttk as ttk
 import queue
 import typing
 
-from .worker import AsyncioWorker
+from .event import Event
+from .worker import AsyncioWorker, Work, default_worker
+from .zmq_client import Object
 
 class AsyncTk:
     '''
     A thread running a tkinter mainloop.
     '''
 
-    def __init__(self, cb_init=None):
+    def __init__(self, cb_init=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.logger = logging.getLogger(__class__.__name__)
 
         self._thread = None
@@ -46,7 +49,7 @@ class AsyncTk:
             raise RuntimeError("Mainloop already started")
 
         self.logger.debug("Starting mainloop")
-        self._thread = threading.Thread(target=self.run, daemon=False)
+        self._thread = threading.Thread(target=self.run, daemon=False, name='AsyncTk')
         self._thread.start()
         while not self._started:
             time.sleep(0.1)
@@ -172,7 +175,7 @@ class AsyncTk:
         future = concurrent.futures.Future()
         self._queue.put((f, args, kwargs, future))
         assert self._root is not None
-        self._root.event_generate('<<async_call>>')
+        self._root.event_generate('<<async_call>>', when='tail')
         return future
 
     def _on_async_call(self, event):
@@ -191,25 +194,41 @@ class AsyncApp(ttk.Frame):
     Calling between contexts is thread-safe, as long functions are decorated with @tk_func or @worker_func.
     '''
 
-    def __init__(self, atk : AsyncTk, worker : AsyncioWorker, logger=None):
+    def __init__(self, atk : AsyncTk, worker : AsyncioWorker, logger=None, *args, **kwargs):
         '''
         Initialize the application.
         Do not call directly. Use create() instead.
         '''
 
-        super().__init__(atk.root)
+        super().__init__(atk.root, *args, **kwargs)
         self.logger = logger if logger is not None else logging.getLogger(__class__.__name__)
         self._atk = atk
         self._worker = worker
+        self._connections : dict[typing.Hashable, Event] = {}
         self.bind("<Destroy>", self._on_destroy)
 
+        self.grid(sticky='nsew')
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
+
     class Context:
-        def __init__(self, cls, *args, **kwargs):
+        def __init__(self, cls : typing.Type, worker : AsyncioWorker | Work | None=None, *args, **kwargs):
+            global default_worker
+
             self.cls = cls
             self.args = args
             self.kwargs = kwargs
             self.logger = logging.getLogger(cls.__name__)
-            self.worker = AsyncioWorker()
+
+            if isinstance(worker, AsyncioWorker):
+                self.worker = worker
+            elif isinstance(worker, Work):
+                self.worker = worker.worker
+            elif default_worker is not None:
+                self.worker = default_worker
+            else:
+                self.worker = AsyncioWorker()
+
             self.atk = AsyncTk(cb_init=self._init)
 
         def _init(self, atk : AsyncTk):
@@ -230,9 +249,9 @@ class AsyncApp(ttk.Frame):
 
         Usage:
 
-        with App.create() as app:
-            # do something in main thread...
-            app.atk.wait()
+            with App.create() as app:
+                # do something in main thread...
+                app.atk.wait()
         '''
         return cls.Context(cls, *arg, **kwargs)
 
@@ -243,6 +262,10 @@ class AsyncApp(ttk.Frame):
     @property
     def worker(self) -> AsyncioWorker:
         return self._worker
+
+    @property
+    def root(self) -> tk.Tk:
+        return self.atk.root
 
     @staticmethod
     def worker_func(f) -> typing.Callable[..., typing.Any | asyncio.Future | concurrent.futures.Future]:
@@ -257,19 +280,19 @@ class AsyncApp(ttk.Frame):
         @functools.wraps(f)
         def wrapper(self, *args, **kwargs):
             if asyncio.iscoroutinefunction(f):
-                if threading.current_thread() == self._worker.thread:
+                if threading.current_thread() == self.worker.thread:
                     # Directly create coro in the same worker context and return future.
                     return f(self, *args, **kwargs)
                 else:
                     # Create coro in the worker thread context, and return concurrent future.
-                    return self._worker.execute(f(self, *args, **kwargs))
+                    return self.worker.execute(f(self, *args, **kwargs))
             else:
-                if threading.current_thread() == self._worker.thread:
+                if threading.current_thread() == self.worker.thread:
                     # Direct call in the same worker context.
                     return f(self, *args, **kwargs)
                 else:
                     # Wait for the worker thread to complete the function.
-                    return self._worker.execute(f, self, *args, **kwargs).result()
+                    return self.worker.execute(f, self, *args, **kwargs).result()
         return wrapper
 
     @staticmethod
@@ -284,16 +307,16 @@ class AsyncApp(ttk.Frame):
 
         @functools.wraps(f)
         def wrapper(self, *args, **kwargs):
-            if threading.current_thread() == self._atk.thread:
+            if threading.current_thread() == self.atk.thread:
                 # Direct call in the same tk context.
                 return f(self, *args, **kwargs)
-            elif threading.current_thread() == self._worker.thread:
+            elif threading.current_thread() == self.worker.thread:
                 # Schedule the function in the tk thread, and return an asyncio future.
-                future = self._atk.execute(f, self, *args, **kwargs)
-                return asyncio.wrap_future(future, loop=self._worker.loop)
+                future = self.atk.execute(f, self, *args, **kwargs)
+                return asyncio.wrap_future(future, loop=self.worker.loop)
             else:
                 # Schedule the function in the tk thread, and return a concurrent future.
-                return self._atk.execute(f, self, *args, **kwargs)
+                return self.atk.execute(f, self, *args, **kwargs)
         return wrapper
 
     def _on_destroy(self, event):
@@ -301,43 +324,172 @@ class AsyncApp(ttk.Frame):
         assert threading.current_thread() == self._atk.thread
         # Make sure to clean up all worker tasks, as they keep a reference to
         # Tk, which is going to be destroyed.
-        self._worker.cancel()
+        self.cleanup()
+
+    @tk_func
+    def cleanup(self):
+        for k, v in self._connections.items():
+            v.unregister(k)
+        self._connections.clear()
+
+        self.logger.debug('Cleanup worker')
+        try:
+            self.worker.stop(5)
+        except TimeoutError:
+            self.worker.cancel()
 
     def __del__(self):
         self.logger.debug("App deleted")
         assert threading.current_thread() == self._atk.thread
+        assert not self.worker.is_running()
 
-class App(AsyncApp):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.pack()
+    @tk_func
+    def connect(self, event : Event, callback : typing.Callable) -> typing.Hashable:
+        k = event.register(callback, callback)
+        assert k not in self._connections
+        self._connections[k] = event
+        return k
 
-        label = ttk.Label(self, text="Hello, TTK!")
-        label.pack()
+    @tk_func
+    def disconnect(self, id : typing.Hashable):
+        if id in self._connections:
+            event = self._connections[id]
+            event.unregister(id)
+            del self._connections[id]
 
-        button = ttk.Button(self, text="Click Me", command=self.on_button_click)
-        button.pack()
+class AsyncWidget:
+    '''
+    Mixin class for all async widgets.
+    '''
 
-        self._text = ttk.Label(self, text='0')
-        self._text.pack()
+    def __init__(self, app : AsyncApp, logger : logging.Logger | None= None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self._app = app
 
-    @AsyncApp.tk_func
-    def on_button_click(self):
-        print("Button clicked!")
-        self.do_work()
+    @property
+    def app(self) -> AsyncApp:
+        return self._app
+
+    @property
+    def worker(self) -> AsyncioWorker:
+        return self._app.worker
+
+    @property
+    def atk(self) -> AsyncTk:
+        return self._app.atk
+
+    @property
+    def root(self) -> tk.Tk:
+        return self._app.root
+
+    @staticmethod
+    def worker_func(f) -> typing.Callable[..., typing.Any | asyncio.Future | concurrent.futures.Future]:
+        return AsyncApp.worker_func(f)
+
+    @staticmethod
+    def tk_func(f) -> typing.Callable[..., typing.Any | asyncio.Future | concurrent.futures.Future]:
+        return AsyncApp.tk_func(f)
+
+    def connect(self, event : Event, callback : typing.Callable) -> typing.Hashable:
+        return self.app.connect(event, callback)
+
+    def disconnect(self, id : typing.Hashable):
+        self.app.disconnect(id)
+
+class ZmqObjectEntry(AsyncWidget, ttk.Entry):
+    '''
+    An Entry widget, bound to a libstored Object.
+    '''
+
+    def __init__(self, app : AsyncApp, parent : tk.Widget, obj : Object, *args, **kwargs):
+        super().__init__(app=app, master=parent, *args, **kwargs)
+        self._obj = obj
+        self._focus = False
+        self._editing = False
+        self._empty = True
+
+        self._var = tk.StringVar()
+        self['textvariable'] = self._var
+        self.connect(self.obj.value_str, self._refresh)
+        self.bind('<Return>', self._write)
+        self.bind('<KP_Enter>', self._write)
+        self.bind('<FocusIn>', self._focus_in)
+        self.bind('<FocusOut>', self._focus_out)
+        self.bind('<Key>', self._edit)
+        self.bind('<Control-KeyRelease-a>', lambda e: self.select_range(0, 'end'))
+        self.bind('<KeyRelease-Escape>', self._revert)
+
+        self['justify'] = 'right'
+        self._refresh()
+
+    @property
+    def alive(self):
+        return self.obj.alive
+
+    @property
+    def focused(self):
+        return self._focus
+
+    @property
+    def editing(self):
+        return self._editing
+
+    @property
+    def valid(self) -> bool:
+        return self.alive and self.obj.value is not None
+
+    @property
+    def obj(self) -> Object:
+        return self._obj
 
     @AsyncApp.worker_func
-    async def do_work(self):
-        await asyncio.sleep(1)
-        print("Work done!")
-        self._update_label()
+    async def refresh(self):
+        if self.alive:
+            await self.obj.read()
 
     @AsyncApp.tk_func
-    def _update_label(self):
-        print("Updating label")
-        self._text.config(text=str(int(self._text.cget("text")) + 1))
+    def _refresh(self, value : str | None = None):
+        if value is None:
+            value = self.obj.value_str.value
 
-logging.basicConfig(level=logging.DEBUG)
+        if value is None or (value == '' and not self.valid):
+            value = '?'
+            self['foreground'] = 'gray'
+            self._empty = True
+        elif value is not None and self._empty:
+            self._empty = False
+            if not self.editing:
+                self['foreground'] = 'black'
 
-with App.create() as app:
-    app.atk.wait()
+        if not self.editing:
+            self._var.set(value)
+
+    def _write(self, *args):
+        x = self._var.get()
+        if self._editing:
+            self._editing = False
+            self['foreground'] = 'black'
+        if self.alive:
+            self.obj.value_str.value = x
+            self.obj.write()
+
+    def _focus_in(self, *args):
+        self._focus = True
+        if self._var.get() == '?':
+            self._var.set('')
+            self['foreground'] = 'black'
+
+    def _focus_out(self, *args):
+        self._focus = False
+        self._revert()
+
+    def _edit(self, *args):
+        self._editing = True
+        self['foreground'] = 'red'
+
+    def _revert(self, *args):
+        if self.editing:
+            self._editing = False
+            self['foreground'] = 'black'
+        self._refresh()
