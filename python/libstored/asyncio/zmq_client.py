@@ -18,7 +18,7 @@ import zmq.asyncio
 
 from .event import Event, Value, ValueWrapper
 from ..zmq_server import ZmqServer
-from .worker import Work, run_sync
+from .worker import Work, run_sync, run_async
 from ..heatshrink import HeatshrinkDecoder
 
 class ZmqClientWork(Work):
@@ -82,6 +82,7 @@ class Object(ZmqClientWork, Value):
         self.alias = Value(str, event_name=f'{name}/alias')
         self.t = Value(float, event_name=f'{name}/t')
         self.value_str = ValueWrapper(str, self._value_str_get, self._value_str_set, event_name=f'{name}/value_str')
+        self.polling = ValueWrapper(float, lambda: self.poll_interval, self.poll, event_name=f'{name}/polling')
 
         self.format = 'default'
 
@@ -401,26 +402,11 @@ class Object(ZmqClientWork, Value):
     # String conversion
 
     def _interpret_int(self, value):
-        # Remove all group separators. They are irrelevant, but prevent
-        # parsing.
-        gs = locale.localeconv().get('thousand_sep', '')
-        if gs != '':
-            value = value.replace(gs, '')
-
-        try:
-            return locale.atoi(value)
-        except ValueError:
-            return int(value, 0)
+        return int(locale.delocalize(value), 0)
 
     def _interpret_float(self, value):
-        # Remove all group separators. They are irrelevant, but prevent
-        # parsing when not at the right place.
-        gs = locale.localeconv().get('thousands_sep', '')
-        if gs != '':
-            value = value.replace(gs, '')
-
         try:
-            return locale.atof(value)
+            return float(locale.delocalize(value))
         except ValueError:
             return float(self._interpret_int(value))
 
@@ -449,9 +435,7 @@ class Object(ZmqClientWork, Value):
                 self.Void: lambda x: bytes(),
             }
 
-        value = self._interpret_map.get(self._type_id & ~self.FlagFunction, lambda x: x)(value)
-
-        return value
+        return self._interpret_map.get(self._type_id & ~self.FlagFunction, lambda x: x)(value)
 
     def _format_int(self, x : int) -> str:
         return locale.format_string('%d', x, True)
@@ -539,7 +523,7 @@ class Object(ZmqClientWork, Value):
     ###############################################
     # Polling
 
-    @run_sync
+    @run_async
     async def poll(self, interval_s : float | None=None):
         '''Set up polling of this object.
 
@@ -562,6 +546,8 @@ class Object(ZmqClientWork, Value):
         if interval_s is not None:
             self._poll_interval_s = interval_s
             self._poller = await self.client.periodic(interval_s, self._read)
+
+        self.polling.trigger()
 
     @property
     def poll_interval(self) -> float | None:

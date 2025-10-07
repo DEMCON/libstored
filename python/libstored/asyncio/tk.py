@@ -28,6 +28,7 @@ class AsyncTk:
         self.logger = logging.getLogger(__class__.__name__)
 
         self._thread = None
+        self._run_from_main = False
         self._queue = queue.Queue()
         self._root = None
         self._started = False
@@ -35,6 +36,9 @@ class AsyncTk:
 
     @property
     def thread(self) -> threading.Thread | None:
+        if self._run_from_main:
+            return threading.main_thread()
+
         return self._thread
 
     def start(self):
@@ -43,13 +47,16 @@ class AsyncTk:
 
         Call only once.
         Alternatively, call run() directly from the main thread.
+
+        Note that Tk is not fully thread-safe. This call is not recommended.
+        Just call run() from the main thread instead.
         '''
 
         if self._started:
             raise RuntimeError("Mainloop already started")
 
         self.logger.debug("Starting mainloop")
-        self._thread = threading.Thread(target=self.run, daemon=False, name='AsyncTk')
+        self._thread = threading.Thread(target=self._run, daemon=False, name='AsyncTk')
         self._thread.start()
         while not self._started:
             time.sleep(0.1)
@@ -64,7 +71,7 @@ class AsyncTk:
         Only to be called from within the Tk context (run()).
         '''
 
-        if threading.current_thread() != self._thread:
+        if threading.current_thread() != self.thread:
             raise RuntimeError("Accessing tk from wrong thread")
 
         assert self._root is not None
@@ -74,13 +81,35 @@ class AsyncTk:
         '''
         Run the tkinter mainloop.
 
+        Call from the main thread.
+        '''
+
+        if threading.current_thread() != threading.main_thread():
+            raise RuntimeError("run() must be called from the main thread")
+        if self.is_running():
+            raise RuntimeError("Mainloop already started")
+
+        self._run_from_main = True
+        try:
+            self._run()
+        finally:
+            self._run_from_main = False
+
+    def _run(self):
+        '''
+        Run the tkinter mainloop.
+
         Call from the main thread, or via start().
         '''
 
         self._started = True
 
+        if not self._run_from_main:
+            self.logger.warning('Running Tk mainloop in a separate thread. This is not recommended, as Tk is not fully thread-safe.')
+
         try:
             self._root = tk.Tk()
+            self._root.report_callback_exception = lambda *args: self.logger.exception('Unhandled exception in Tk', exc_info=args)
             self._root.bind('<<async_call>>', self._on_async_call)
 
             init = None
@@ -90,12 +119,34 @@ class AsyncTk:
             self.logger.debug("Running mainloop")
             self._root.mainloop()
             self.logger.debug("Mainloop exited")
+
+            gc.collect()
+            if not self._run_from_main:
+                self._dump_referrers(init, 1)
+
             del init
+            self.logger.debug("deleted init")
         finally:
             self._root = None
 
+            while not self._queue.empty():
+                self._queue.get()
+
         gc.collect()
         self.logger.debug("thread exit")
+
+    def _dump_referrers(self, obj, depth : int=3, indent : str=''):
+        if depth < 0 or obj is None:
+            return
+
+        ref = gc.get_referrers(obj)
+        if ref == []:
+            return
+
+        self.logger.debug(f'{indent}{repr(obj)}: {len(ref)} referrers')
+
+        for r in ref:
+            self._dump_referrers(r, depth-1, indent + '  ')
 
     def _stop(self):
         if self._root is None:
@@ -121,7 +172,6 @@ class AsyncTk:
         self._thread.join()
         self._thread = None
 
-        gc.collect()
         self.logger.debug("Mainloop stopped")
 
     def wait(self, timeout=None):
@@ -140,7 +190,6 @@ class AsyncTk:
             raise TimeoutError("Mainloop did not exit in time")
 
         self._thread = None
-        gc.collect()
         self.logger.debug("Mainloop stopped")
 
     def is_running(self):
@@ -149,7 +198,8 @@ class AsyncTk:
 
         Thread-safe.
         '''
-        return self._thread is not None and self._thread.is_alive() and self._root is not None
+        return self._run_from_main or \
+            (self._thread is not None and self._thread.is_alive() and self._root is not None)
 
     def __del__(self):
         self.stop()
@@ -205,6 +255,7 @@ class AsyncApp(ttk.Frame):
         self._atk = atk
         self._worker = worker
         self._connections : dict[typing.Hashable, Event] = {}
+        self._connections_key = 0
         self.bind("<Destroy>", self._on_destroy)
 
         self.grid(sticky='nsew')
@@ -235,7 +286,9 @@ class AsyncApp(ttk.Frame):
             return self.cls(*self.args, **self.kwargs, atk=atk, worker=self.worker, logger=self.logger)
 
         def __enter__(self):
-            self.atk.start()
+            # Disabled, as Tk is not fully thread-safe.
+            # Just call run() from the main thread instead.
+            #self.atk.start()
             return self
 
         def __exit__(self, exc_type, exc_val, exc_tb):
@@ -249,11 +302,33 @@ class AsyncApp(ttk.Frame):
 
         Usage:
 
+            async def stuff():
+                ...
+
             with App.create() as app:
-                # do something in main thread...
-                app.atk.wait()
+                app.worker.execute(stuff())
+                app.atk.run()
         '''
         return cls.Context(cls, *arg, **kwargs)
+
+    @classmethod
+    def run(cls, *args, coro: typing.Coroutine | None=None, **kwargs):
+        '''
+        Create and run an instance of the application, running Tk in the main thread, and an asyncio worker in another thread.
+        When coro is provided, coro is started in the worker context.
+
+        Usage:
+
+            async def stuff():
+                ...
+                return result
+
+            stuff_result = App.run(stuff())
+        '''
+        with cls.create(*args, **kwargs) as context:
+            res = None if coro is None else context.worker.execute(coro)
+            context.atk.run()
+            return res.result() if res is not None else None
 
     @property
     def atk(self) -> AsyncTk:
@@ -339,13 +414,16 @@ class AsyncApp(ttk.Frame):
             self.worker.cancel()
 
     def __del__(self):
-        self.logger.debug("App deleted")
-        assert threading.current_thread() == self._atk.thread
         assert not self.worker.is_running()
+
+        # Tk is not thread-safe. Ignore this check.
+        #assert threading.current_thread() == self._atk.thread
 
     @tk_func
     def connect(self, event : Event, callback : typing.Callable) -> typing.Hashable:
-        k = event.register(callback, callback)
+        k = (self, self._connections_key)
+        self._connections_key += 1
+        k = event.register(callback, k)
         assert k not in self._connections
         self._connections[k] = event
         return k
@@ -397,6 +475,14 @@ class AsyncWidget:
     def disconnect(self, id : typing.Hashable):
         self.app.disconnect(id)
 
+    def __del__(self):
+        pass
+        # Tk is not thread-safe. Ignore this check.
+        #assert threading.current_thread() == self.atk.thread, \
+        #    f'Widget {repr(self)} deleted from wrong thread'
+
+
+
 class ZmqObjectEntry(AsyncWidget, ttk.Entry):
     '''
     An Entry widget, bound to a libstored Object.
@@ -408,6 +494,7 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
         self._focus = False
         self._editing = False
         self._empty = True
+        self._updated : float = 0
 
         self._var = tk.StringVar()
         self['textvariable'] = self._var
@@ -417,11 +504,22 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
         self.bind('<FocusIn>', self._focus_in)
         self.bind('<FocusOut>', self._focus_out)
         self.bind('<Key>', self._edit)
-        self.bind('<Control-KeyRelease-a>', lambda e: self.select_range(0, 'end'))
+
+        def select_all(event):
+            event.widget.select_range(0, 'end')
+            event.widget.icursor('end')
+            return 'break'
+
+        self.bind('<Control-a>', select_all)
+        self.bind('<Control-A>', select_all)
+
         self.bind('<KeyRelease-Escape>', self._revert)
 
         self['justify'] = 'right'
         self._refresh()
+
+    def __repr__(self):
+        return f'ZmqObjectEntry({self.obj.name})@0x{id(self):x}'
 
     @property
     def alive(self):
@@ -443,6 +541,10 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
     def obj(self) -> Object:
         return self._obj
 
+    @property
+    def updated(self) -> bool:
+        return self.valid and self._updated >= time.time()
+
     @AsyncApp.worker_func
     async def refresh(self):
         if self.alive:
@@ -463,7 +565,18 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
                 self['foreground'] = 'black'
 
         if not self.editing:
+            if not self._empty and self._var.get() != value:
+                self._updated = time.time() + 1.05
+                self['foreground'] = 'blue'
+                self.after(1100, self._updated_end)
+
             self._var.set(value)
+
+    def _updated_end(self):
+        if self.updated:
+            return
+        if not self.editing and not self._empty:
+            self['foreground'] = 'black'
 
     def _write(self, *args):
         x = self._var.get()
@@ -471,6 +584,7 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
             self._editing = False
             self['foreground'] = 'black'
         if self.alive:
+            self.logger.debug(f'Write {x} to {self.obj.name}')
             self.obj.value_str.value = x
             self.obj.write()
 
