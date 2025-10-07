@@ -5,6 +5,7 @@
 import asyncio
 import concurrent.futures
 import functools
+import gc
 import time
 import threading
 import time
@@ -63,6 +64,7 @@ class AsyncioWorker:
             if default_worker == self:
                 default_worker = None
 
+        gc.collect()
         self.logger.debug("Event loop stopped")
 
     async def _flag_started(self):
@@ -88,11 +90,13 @@ class AsyncioWorker:
         Thread-safe.
         '''
 
-        if self._loop is None:
+        loop = self._loop
+        if loop is None:
             return
 
         self.logger.debug("Cancelling event loop")
-        self._loop.call_soon_threadsafe(self._cancel)
+        loop.call_soon_threadsafe(self._cancel)
+        del loop
         self.stop()
 
     def _cancel(self):
@@ -107,11 +111,13 @@ class AsyncioWorker:
         Thread-safe.
         '''
 
-        if self._loop is None:
+        loop = self._loop
+        if loop is None:
             return
 
         self.logger.debug("Stopping event loop")
-        self._loop.call_soon_threadsafe(self._loop.stop)
+        loop.call_soon_threadsafe(loop.stop)
+        del loop
 
         assert self._thread is not None
         self._thread.join(timeout_s)
@@ -155,10 +161,12 @@ class AsyncioWorker:
             if len(args) > 0 or len(kwargs) > 0:
                 raise TypeError("When passing a coroutine function, no additional arguments are supported")
             coro = f
-        else:
-            if not callable(f):
-                raise TypeError("First argument must be a coroutine function or a callable returning a coroutine")
+        elif asyncio.iscoroutinefunction(f):
+            coro = f(*args, **kwargs)
+        elif callable(f):
             coro = self._execute(f, *args, **kwargs)
+        else:
+            raise TypeError("First argument must be a coroutine function or a callable returning a coroutine")
 
         self.logger.debug("Scheduling coroutine")
 
@@ -202,13 +210,10 @@ class Work:
     def worker(self) -> AsyncioWorker:
         return self._worker
 
-def run_sync(f : typing.Callable) -> typing.Callable:
+def run_async(f : typing.Callable) -> typing.Callable:
     '''
-    Decorator to run an async function synchronously.
-
-    If called from within an event loop, the coroutine is directly started,
-    returning an awaitable.  If called from outside an event loop, the coroutine
-    is executed in the default worker (creating one if needed).
+    Decorator to start a function asynchronously in the default worker, and
+    return the future.
     '''
 
     @functools.wraps(f)
@@ -228,7 +233,7 @@ def run_sync(f : typing.Callable) -> typing.Callable:
             # We are not in an event loop, run the coro in the (default) worker.
             w = None
             if isinstance(self, Work):
-                self.logger.debug("Running %s in worker %s", f.__name__, self.worker)
+                self.logger.debug("Running %s in worker %s", f.__name__, str(self.worker))
                 w = self.worker
             else:
                 if hasattr(self, 'logger'):
@@ -240,7 +245,27 @@ def run_sync(f : typing.Callable) -> typing.Callable:
                 self.logger.debug('No worker running, creating new one')
                 w = AsyncioWorker(daemon=True)
 
-            future = w.execute(f(self, *args, **kwargs))
-            return future.result()
+            return w.execute(f(self, *args, **kwargs))
+
+    return wrapper
+
+def run_sync(f : typing.Callable) -> typing.Callable:
+    '''
+    Decorator to run an async function synchronously.
+
+    If called from within an event loop, the coroutine is directly started,
+    returning an awaitable.  If called from outside an event loop, the coroutine
+    is executed in the default worker (creating one if needed).
+    '''
+
+    run_async_f = run_async(f)
+
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        x = run_async_f(*args, **kwargs)
+        if asyncio.coroutines.iscoroutine(x):
+            return x
+        else:
+            return x.result()
 
     return wrapper
