@@ -4,6 +4,7 @@
 
 import asyncio
 import concurrent.futures
+import enum
 import functools
 import gc
 import logging
@@ -403,9 +404,7 @@ class AsyncApp(ttk.Frame):
 
     @tk_func
     def cleanup(self):
-        for k, v in self._connections.items():
-            v.unregister(k)
-        self._connections.clear()
+        self.disconnect_all()
 
         self.logger.debug('Cleanup worker')
         try:
@@ -434,6 +433,14 @@ class AsyncApp(ttk.Frame):
             event = self._connections[id]
             event.unregister(id)
             del self._connections[id]
+
+    @tk_func
+    def disconnect_all(self):
+        for k, v in self._connections.items():
+            v.unregister(k)
+        self._connections.clear()
+
+
 
 class AsyncWidget:
     '''
@@ -488,13 +495,20 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
     An Entry widget, bound to a libstored Object.
     '''
 
+    class State(enum.IntEnum):
+        INIT = enum.auto()
+        DEFAULT = enum.auto()
+        INVALID = enum.auto()
+        VALID = enum.auto()
+        UPDATED = enum.auto()
+        FOCUSED = enum.auto()
+        EDITING = enum.auto()
+
     def __init__(self, app : AsyncApp, parent : tk.Widget, obj : Object, *args, **kwargs):
         super().__init__(app=app, master=parent, *args, **kwargs)
         self._obj = obj
-        self._focus = False
-        self._editing = False
-        self._empty = True
         self._updated : float = 0
+        self._state = ZmqObjectEntry.State.INIT
 
         self._var = tk.StringVar()
         self['textvariable'] = self._var
@@ -516,6 +530,7 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
         self.bind('<KeyRelease-Escape>', self._revert)
 
         self['justify'] = 'right'
+        self._set_state(ZmqObjectEntry.State.DEFAULT)
         self._refresh()
 
     def __repr__(self):
@@ -526,16 +541,16 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
         return self.obj.alive
 
     @property
-    def focused(self):
-        return self._focus
+    def focused(self) -> bool:
+        return self._state >= ZmqObjectEntry.State.FOCUSED
 
     @property
     def editing(self):
-        return self._editing
+        return self._state >= ZmqObjectEntry.State.EDITING
 
     @property
     def valid(self) -> bool:
-        return self.alive and self.obj.value is not None
+        return self.alive and self._state >= ZmqObjectEntry.State.VALID
 
     @property
     def obj(self) -> Object:
@@ -543,7 +558,36 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
 
     @property
     def updated(self) -> bool:
-        return self.valid and self._updated >= time.time()
+        return self._state == ZmqObjectEntry.State.UPDATED
+
+    def _set_state(self, state : State):
+        if state <= ZmqObjectEntry.State.DEFAULT:
+            if not self.alive:
+                state = ZmqObjectEntry.State.INVALID
+            elif self.obj.value_str.value is None or self.obj.value is None:
+                state = ZmqObjectEntry.State.INVALID
+            else:
+                state = ZmqObjectEntry.State.VALID
+
+        if state == self._state:
+            return
+
+        if self._state == ZmqObjectEntry.State.INVALID:
+            self._var.set('')
+
+        self._state = state
+
+        if self._state == ZmqObjectEntry.State.INVALID:
+            self['foreground'] = 'gray'
+            self._var.set('?')
+        elif self._state == ZmqObjectEntry.State.VALID:
+            self['foreground'] = 'black'
+        elif self._state == ZmqObjectEntry.State.UPDATED:
+            self['foreground'] = 'blue'
+        elif self._state == ZmqObjectEntry.State.FOCUSED:
+            self['foreground'] = 'black'
+        elif self._state == ZmqObjectEntry.State.EDITING:
+            self['foreground'] = 'red'
 
     @AsyncApp.worker_func
     async def refresh(self):
@@ -555,55 +599,63 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
         if value is None:
             value = self.obj.value_str.value
 
-        if value is None or (value == '' and not self.valid):
-            value = '?'
-            self['foreground'] = 'gray'
-            self._empty = True
-        elif value is not None and self._empty:
-            self._empty = False
-            if not self.editing:
-                self['foreground'] = 'black'
+        if self.focused:
+            return
+        elif value is None or self.obj.value is None:
+            self._set_state(ZmqObjectEntry.State.INVALID)
+            return
 
-        if not self.editing:
-            if not self._empty and self._var.get() != value:
-                self._updated = time.time() + 1.05
-                self['foreground'] = 'blue'
-                self.after(1100, self._updated_end)
+        if not self.focused:
+            self._set_state(ZmqObjectEntry.State.UPDATED)
 
-            self._var.set(value)
+        self._updated = time.time() + 1.05
+        self.after(1100, self._updated_end)
+        self._var.set(value)
 
     def _updated_end(self):
-        if self.updated:
+        if not self.updated:
             return
-        if not self.editing and not self._empty:
-            self['foreground'] = 'black'
+        if time.time() >= self._updated:
+            self._set_state(ZmqObjectEntry.State.DEFAULT)
 
     def _write(self, *args):
+        if not self.alive:
+            self._set_state(ZmqObjectEntry.State.DEFAULT)
+            return
+
+        if self.editing:
+            self._set_state(ZmqObjectEntry.State.FOCUSED)
+
         x = self._var.get()
-        if self._editing:
-            self._editing = False
-            self['foreground'] = 'black'
-        if self.alive:
-            self.logger.debug(f'Write {x} to {self.obj.name}')
-            self.obj.value_str.value = x
-            self.obj.write()
+        self.logger.debug(f'Write {x} to {self.obj.name}')
+        self.obj.value_str.value = x
+        self.obj.write()
 
     def _focus_in(self, *args):
-        self._focus = True
-        if self._var.get() == '?':
-            self._var.set('')
-            self['foreground'] = 'black'
+        if not self.focused:
+            self._set_state(ZmqObjectEntry.State.FOCUSED)
 
     def _focus_out(self, *args):
-        self._focus = False
         self._revert()
 
-    def _edit(self, *args):
-        self._editing = True
-        self['foreground'] = 'red'
+        if self.focused:
+            self._set_state(ZmqObjectEntry.State.DEFAULT)
+
+    def _edit(self, e):
+        try:
+            if e.keysym == 'Escape':
+                return
+        except:
+            pass
+
+        self._set_state(ZmqObjectEntry.State.EDITING)
 
     def _revert(self, *args):
         if self.editing:
-            self._editing = False
-            self['foreground'] = 'black'
-        self._refresh()
+            self._set_state(ZmqObjectEntry.State.FOCUSED)
+
+        if self.focused:
+            value = self.obj.value_str.value
+            self._var.set(value if value is not None else '')
+        else:
+            self._refresh()

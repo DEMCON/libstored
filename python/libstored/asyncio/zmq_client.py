@@ -15,6 +15,7 @@ import time
 import typing
 import zmq
 import zmq.asyncio
+import zmq.utils.monitor
 
 from .event import Event, Value, ValueWrapper
 from ..zmq_server import ZmqServer
@@ -874,6 +875,11 @@ class ZmqClient(Work):
                 t.cancel()
         self._periodic_tasks : set[asyncio.Task] = set()
 
+        if hasattr(self, '_monitor'):
+            if self._monitor is not None:
+                self._monitor.cancel()
+        self._monitor = None
+
     @run_sync
     async def connect(self, host : str | None=None, port : int | None=None, multi : bool | None=None):
         '''Connect to the ZMQ server.'''
@@ -883,6 +889,8 @@ class ZmqClient(Work):
         if 'l' in await self.capabilities():
             await self.list()
             await self.find_time()
+
+        self._monitor = asyncio.create_task(self._monitor_socket())
 
         self.connected.trigger()
 
@@ -919,12 +927,22 @@ class ZmqClient(Work):
             raise
 
     @run_sync
-    @locked
     async def disconnect(self):
         '''Disconnect from the ZMQ server.'''
 
+        try:
+            if await self._disconnect():
+                self.disconnected.trigger()
+        except asyncio.CancelledError:
+            raise
+        except:
+            self.disconnected.trigger()
+            raise
+
+    @locked
+    async def _disconnect(self) -> bool:
         if not self.is_connected():
-            return
+            return False
 
         self.logger.debug('disconnect')
 
@@ -933,10 +951,10 @@ class ZmqClient(Work):
             s = self._socket
             self._socket = None
             s.close(0)
+            return True
         finally:
             self._socket = None
             self._reset()
-            self.disconnected.trigger()
 
     @run_sync
     async def close(self):
@@ -1709,6 +1727,34 @@ class ZmqClient(Work):
                     self._periodic_tasks.remove(t)
             except:
                 pass
+
+
+
+    ##############################################
+    # Socket monitor
+
+    async def _monitor_socket(self):
+        if not self.is_connected():
+            self.logger.debug('Not connected, not starting socket monitor')
+            return
+
+        assert self._socket is not None
+        monitor = self._socket.get_monitor_socket()
+
+        try:
+            while self.is_connected():
+                event = await monitor.recv_multipart()
+                evt = zmq.utils.monitor.parse_monitor_message(event)
+                self.logger.debug(f'socket event: {repr(evt['event'])}')
+                if evt['event'] == zmq.EVENT_DISCONNECTED:
+                    self.logger.info('socket disconnected')
+                    await self.disconnect()
+        except asyncio.CancelledError:
+            pass
+        except Exception as e:
+            self.logger.exception('exception in socket monitor: %s', e)
+        finally:
+            monitor.close(0)
 
 
 
