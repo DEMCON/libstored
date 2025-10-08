@@ -14,7 +14,7 @@ import typing
 
 from ..version import __version__
 from ..zmq_server import ZmqServer
-from ..asyncio import ZmqClient, Object
+from ..asyncio import ZmqClient, Object, Event
 from ..asyncio.tk import AsyncApp, ZmqObjectEntry, AsyncWidget
 
 def darken_color(color, factor=0.9):
@@ -26,6 +26,91 @@ def darken_color(color, factor=0.9):
 
 class Style:
     grid_padding = 2
+
+class ClientConnection(AsyncWidget, ttk.Frame):
+    def __init__(self, app : AsyncApp, parent : ttk.Widget, client : ZmqClient, *args, **kwargs):
+        super().__init__(app=app, master=parent, *args, **kwargs)
+        self._client = client
+
+        self.columnconfigure(1, weight=1)
+
+        self._host_label = ttk.Label(self, text='Host:')
+        self._host_label.grid(row=0, column=0, sticky='e', padx=(0, Style.grid_padding), pady=Style.grid_padding)
+
+        self._host = ttk.Entry(self)
+        self._host.insert(0, self.host)
+        self._host.grid(row=0, column=1, sticky='we', padx=Style.grid_padding, pady=Style.grid_padding)
+
+        self._port_label = ttk.Label(self, text='Port:')
+        self._port_label.grid(row=0, column=2, sticky='e', padx=Style.grid_padding, pady=Style.grid_padding)
+
+        self._port = ttk.Entry(self)
+        self._port.insert(0, str(self.port))
+        self._port.grid(row=0, column=3, sticky='we', padx=Style.grid_padding, pady=Style.grid_padding)
+
+        self._multi_var = tk.BooleanVar(value=client.multi)
+        self._multi = ttk.Checkbutton(self, text='Multi', variable=self._multi_var)
+        self._multi.grid(row=0, column=4, sticky='we', padx=Style.grid_padding, pady=Style.grid_padding)
+
+        self._connect = ttk.Button(self, text='Connect')
+        self._connect.grid(row=0, column=5, sticky='we', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+        self._connect['command'] = self._on_connect_button
+
+        self.connect(self.client.connected, self._on_connected)
+        self.connect(self.client.disconnected, self._on_disconnected)
+
+        if self.client.is_connected():
+            self._on_connected()
+        else:
+            self._on_disconnected()
+
+    @property
+    def client(self) -> ZmqClient:
+        return self._client
+
+    @property
+    def host(self) -> str:
+        return self.client.host
+
+    @property
+    def port(self) -> int:
+        return int(self.client.port)
+
+    @AsyncApp.tk_func
+    def _on_connected(self, *args, **kwargs):
+        self._connect['text'] = 'Disconnect'
+        self._host['state'] = 'disabled'
+        self._port['state'] = 'disabled'
+        self._multi['state'] = 'disabled'
+
+    @AsyncApp.tk_func
+    def _on_disconnected(self, *args, **kwargs):
+        self._connect['text'] = 'Connect'
+        self._host['state'] = 'normal'
+        self._port['state'] = 'normal'
+        self._multi['state'] = 'normal'
+        self.app.root.title(f'libstored GUI')
+
+    def _on_connect_button(self):
+        try:
+            self._do_connect_button(self._host.get(), int(self._port.get()), self._multi_var.get())
+        except ValueError:
+            self.logger.error('Invalid port number')
+
+    @AsyncApp.worker_func
+    async def _do_connect_button(self, host : str, port : int, multi : bool):
+        if self.client.is_connected():
+            await self.client.disconnect()
+        else:
+            await self.client.connect(host, port, multi)
+            self._after_connection(await self.client.identification(), await self.client.version())
+
+    @AsyncApp.tk_func
+    def _after_connection(self, identification : str, version : str):
+        self.logger.info(f'Connected to {identification} ({version})')
+        self.app.root.title(f'libstored GUI - {identification} ({version})')
+
+
 
 class ObjectRow(AsyncWidget, ttk.Frame):
     def __init__(self, app : AsyncApp, parent : ttk.Widget, obj : Object, style : str | None=None, *args, **kwargs):
@@ -75,23 +160,31 @@ class ObjectRow(AsyncWidget, ttk.Frame):
 
 
 class ObjectList(ttk.Frame):
-    def __init__(self, app : AsyncApp, parent : ttk.Widget, objects : list[Object], filter : typing.Callable[[Object], bool] | None=None, *args, **kwargs):
+    def __init__(self, app : AsyncApp, parent : ttk.Widget, objects : list[Object]=[], filter : typing.Callable[[Object], bool] | None=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self._app = app
         self._objects : list[ObjectRow] = []
         self._filter = filter
-
         self.columnconfigure(0, weight=1)
-
-        for o in natsort.natsorted(objects, key=lambda o: o.name, alg=natsort.ns.IGNORECASE):
-            object_row = ObjectRow(app, self, o)
-            self._objects.append(object_row)
-
-        self.filter()
+        self.filtered = Event('filtered')
+        self.changed = Event('changed')
+        self.set_objects(objects)
 
     @property
-    def objects(self):
+    def objects(self) -> list[ObjectRow]:
         return self._objects
+
+    def set_objects(self, objects : list[Object]):
+        for o in self._objects:
+            o.destroy()
+        self._objects = []
+
+        for o in natsort.natsorted(objects, key=lambda o: o.name, alg=natsort.ns.IGNORECASE):
+            object_row = ObjectRow(self._app, self, o)
+            self._objects.append(object_row)
+
+        self.changed.trigger()
+        self.filter()
 
     def filter(self, f : typing.Callable[[Object], bool] | None | bool=True):
         if f is False:
@@ -116,12 +209,18 @@ class ObjectList(ttk.Frame):
             else:
                 o.grid_forget()
 
+        if row == 0:
+            self.configure(height=1)
+
+        self.filtered.trigger()
+
 class ScrollableFrame(ttk.Frame):
     def __init__(self, parent : ttk.Widget, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         self._canvas = tk.Canvas(self)
         self._scrollbar = ttk.Scrollbar(self, orient='vertical', command=self._canvas.yview)
+        self._scrollbar.grid(column=1, row=0, sticky='ns', padx=(Style.grid_padding, 0))
         self._content = ttk.Frame(self._canvas)
 
         self._content.bind("<Configure>", self._update_scrollregion)
@@ -132,16 +231,14 @@ class ScrollableFrame(ttk.Frame):
         self._canvas.configure(background=s.lookup('TFrame', 'background'), highlightthickness=0)
 
         self._canvas.grid(column=0, row=0, sticky='nsew', padx=(0, Style.grid_padding))
-        self._scrollbar.grid(column=1, row=0, sticky='ns', padx=(Style.grid_padding, 0))
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
         self._canvas.bind("<Configure>", self._fit_content_to_canvas)
-        self._canvas.bind_all("<MouseWheel>", self._on_mousewheel)      # Windows and macOS
-        self._canvas.bind_all("<Button-4>", self._on_linux_scroll)      # Linux scroll up
-        self._canvas.bind_all("<Button-5>", self._on_linux_scroll)      # Linux scroll down
+        self.after_idle(self.bind_scroll)
 
     def _update_scrollregion(self, event):
+        self.update_idletasks()
         self._canvas.configure(scrollregion=self._canvas.bbox("all"))
 
     def _fit_content_to_canvas(self, event):
@@ -156,9 +253,29 @@ class ScrollableFrame(ttk.Frame):
         elif event.num == 5:
             self._canvas.yview_scroll(1, "units")
 
+    @staticmethod
+    def _children(widget : tk.Widget) -> set[tk.Widget]:
+        return set(widget.winfo_children()).union(*(ScrollableFrame._children(w) for w in widget.winfo_children()))
+
+    def bind_scroll(self):
+        # find all children recursively and bind to mousewheel
+        for child in self._children(self._canvas):
+            child.bind("<MouseWheel>", self._on_mousewheel)     # Windows and macOS
+            child.bind("<Button-4>", self._on_linux_scroll)     # Linux scroll up
+            child.bind("<Button-5>", self._on_linux_scroll)     # Linux scroll down
+
+    def updated_content(self):
+        self._update_scrollregion(None)
+
     @property
     def content(self) -> ttk.Frame:
         return self._content
+
+    @property
+    def canvas(self) -> tk.Canvas:
+        return self._canvas
+
+
 
 class FilterEntry(ttk.Entry):
     '''
@@ -222,13 +339,9 @@ class GUIClient(AsyncApp):
     def __init__(self, client : ZmqClient, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._client = client
+        self._client_connections = set()
 
         self.root.title(f'libstored GUI')
-
-        self.connect(self.client.disconnected, self._on_disconnected)
-        identification, version = self._wait_connected().result()
-
-        self.root.title(f'libstored GUI - {identification} ({version})')
         self.root.geometry("800x600")
 
         s = ttk.Style()
@@ -248,36 +361,65 @@ class GUIClient(AsyncApp):
         s.map("Even.TCheckbutton", background=[("active", even_bg)])
         s.configure('Even.TButton', width=8, padding=3)
 
-        scrollable_objects = ScrollableFrame(self)
-        objects = ObjectList(self, scrollable_objects.content, self.client.objects)
-        objects.pack(fill='both', expand=True)
-        scrollable_objects.grid(column=0, row=1, sticky='nsew', columnspan=2)
+        connect = ClientConnection(self, self, self.client)
+        connect.grid(column=0, row=0, sticky='we', pady=Style.grid_padding, columnspan=2)
 
-        filter = FilterEntry(self, objects)
-        filter.grid(column=0, row=0, sticky='we', pady=Style.grid_padding)
+        scrollable_objects = ScrollableFrame(self)
+        self._objects = ObjectList(self, scrollable_objects.content)
+        self._objects.pack(fill='both', expand=True)
+        scrollable_objects.grid(column=0, row=2, sticky='nsew', columnspan=2)
+        self.connect(self._objects.changed, scrollable_objects.bind_scroll)
+        self.connect(self._objects.filtered, scrollable_objects.updated_content)
+
+        filter = FilterEntry(self, self._objects)
+        filter.grid(column=0, row=1, sticky='we', padx=(0, Style.grid_padding), pady=Style.grid_padding)
 
         refresh_all = ttk.Button(self, text='Refresh all', command=self._refresh_all)
-        refresh_all.grid(row=0, column=1, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+        refresh_all.grid(row=1, column=1, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
 
-        self._polled_objects = ObjectList(self, self, self.client.objects, lambda o: o.polling.value is not None)
-        self._polled_objects.grid(column=0, row=2, sticky='nsew', columnspan=2)
-        for o in self.client.objects:
-            self.connect(o.polling, self._filter_polled)
+        self._scrollable_polled = ScrollableFrame(self)
+        self._polled_objects = ObjectList(self, self._scrollable_polled.content, filter=lambda o: o.polling.value is not None)
+        self._polled_objects.pack(fill='both', expand=True)
+        self.connect(self._polled_objects.changed, self._scrollable_polled.bind_scroll)
+        self.connect(self._polled_objects.filtered, self._scrollable_polled.updated_content)
 
         self.columnconfigure(0, weight=1)
-        self.rowconfigure(1, weight=2)
         self.rowconfigure(2, weight=1)
+
+        self.bind("<Configure>", self._resize_polled_objects)
+        self.connect(self._polled_objects.filtered, self._resize_polled_objects)
+        self._resize_polled_objects()
+
+        self.connect(self.client.connected, self._on_connected)
+        self.connect(self.client.disconnected, self._on_disconnected)
+        if self.client.is_connected():
+            self._on_connected()
+        else:
+            self._on_disconnected()
 
     @property
     def client(self):
         return self._client
 
     @AsyncApp.tk_func
+    def _on_connected(self, *args, **kwargs):
+        self._polled_objects.set_objects(self.client.objects)
+        self._objects.set_objects(self.client.objects)
+        for o in self.client.objects:
+            self._client_connections.add(self.connect(o.polling, self._filter_polled))
+        self._resize_polled_objects()
+
+    @AsyncApp.tk_func
     def _on_disconnected(self, *args, **kwargs):
-        self.quit()
+        for c in self._client_connections:
+            self.disconnect(c)
+        self._client_connections.clear()
+        self._polled_objects.set_objects([])
+        self._objects.set_objects([])
 
     @AsyncApp.tk_func
     def cleanup(self):
+        self.disconnect_all()
         self.logger.debug('Close client')
         self._close_async()
         super().cleanup()
@@ -301,6 +443,27 @@ class GUIClient(AsyncApp):
     @AsyncApp.tk_func
     def _filter_polled(self, interval_s):
         self._polled_objects.filter()
+
+    @AsyncApp.tk_func
+    def _resize_polled_objects(self, *args):
+        self._scrollable_polled.update_idletasks()
+        height = 0
+        for o in self._polled_objects.objects:
+            if o.obj.polling.value is not None:
+                height += o.winfo_reqheight()
+
+        if height > 0:
+            self._scrollable_polled.grid(column=0, row=3, sticky='nsew', columnspan=2, pady=(Style.grid_padding * 10, 0))
+            self._scrollable_polled.update_idletasks()
+            total_height = self.winfo_height()
+            if total_height > 0:
+                max_height = total_height // 3
+                if height > max_height:
+                    height = max_height
+            print(f'Setting polled height to {height}')
+            self._scrollable_polled.canvas.config(height=height)
+        else:
+            self._scrollable_polled.grid_forget()
 
 
 

@@ -5,7 +5,6 @@
 import asyncio
 import concurrent.futures
 import functools
-import gc
 import time
 import threading
 import time
@@ -64,7 +63,6 @@ class AsyncioWorker:
             if default_worker == self:
                 default_worker = None
 
-        gc.collect()
         self.logger.debug("Event loop stopped")
 
     async def _flag_started(self):
