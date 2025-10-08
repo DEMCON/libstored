@@ -122,16 +122,25 @@ class ObjectRow(AsyncWidget, ttk.Frame):
         self._label = ttk.Label(self, text=obj.name)
         self._label.grid(row=0, column=0, sticky='w', padx=(0, Style.grid_padding), pady=Style.grid_padding)
 
+        self._format = ttk.Combobox(self, values=obj.formats(), width=10, state='readonly')
+        self._format.set(obj.format)
+        self._format.bind('<<ComboboxSelected>>', lambda e: obj.format.set(self._format.get()))
+        self._format.grid(row=0, column=1, sticky='nswe', padx=Style.grid_padding, pady=Style.grid_padding)
+        app.connect(obj.format, self._format.set)
+
+        self._type = ttk.Label(self, text=obj.type_name, width=10, anchor='e')
+        self._type.grid(row=0, column=2, sticky='e', padx=Style.grid_padding, pady=Style.grid_padding)
+
         self._value = ZmqObjectEntry(app, self, obj)
-        self._value.grid(row=0, column=1, sticky='nswe', padx=Style.grid_padding, pady=Style.grid_padding)
+        self._value.grid(row=0, column=3, sticky='nswe', padx=Style.grid_padding, pady=Style.grid_padding)
 
         self._poll_var = tk.BooleanVar(value=obj.polling.value is not None)
         app.connect(obj.polling, self._on_poll_obj_change)
         self._poll = ttk.Checkbutton(self, variable=self._poll_var, command=self._on_poll_check_change)
-        self._poll.grid(row=0, column=2, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+        self._poll.grid(row=0, column=4, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
 
         self._refresh = ttk.Button(self, text='Refresh', command=self._value.refresh)
-        self._refresh.grid(row=0, column=3, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+        self._refresh.grid(row=0, column=5, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
 
         if style is not None:
             self.style(style)
@@ -146,6 +155,8 @@ class ObjectRow(AsyncWidget, ttk.Frame):
 
         self['style'] = f'{style}TFrame'
         self._label['style'] = f'{style}TLabel'
+        self._format['style'] = f'{style}TCombobox'
+        self._type['style'] = f'{style}TLabel'
         self._value['style'] = f'{style}TEntry'
         self._poll['style'] = f'{style}TCheckbutton'
         self._refresh['style'] = f'{style}TButton'
@@ -246,12 +257,14 @@ class ScrollableFrame(ttk.Frame):
 
     def _on_mousewheel(self, event):
         self._canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        return "break"
 
     def _on_linux_scroll(self, event):
         if event.num == 4:
             self._canvas.yview_scroll(-1, "units")
         elif event.num == 5:
             self._canvas.yview_scroll(1, "units")
+        return "break"
 
     @staticmethod
     def _children(widget : tk.Widget) -> set[tk.Widget]:

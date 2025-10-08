@@ -121,6 +121,12 @@ class ValueWrapper(Event):
             raise TypeError(f"expected {self.type}, got {type(value)}")
         self._set(value)
 
+    def get(self) -> typing.Any:
+        return self.value
+
+    def set(self, value : typing.Any):
+        self.value = value
+
     def trigger(self):
         self._trigger(self.value)
 

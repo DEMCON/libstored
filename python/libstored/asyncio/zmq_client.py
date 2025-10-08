@@ -84,8 +84,8 @@ class Object(ZmqClientWork, Value):
         self.t = Value(float, event_name=f'{name}/t')
         self.value_str = ValueWrapper(str, self._value_str_get, self._value_str_set, event_name=f'{name}/value_str')
         self.polling = ValueWrapper(float, lambda: self.poll_interval, self.poll, event_name=f'{name}/polling')
-
-        self.format = 'default'
+        self.format = ValueWrapper(str, self._format_get, self._format_set, event_name=f'{name}/format')
+        self.format.value = 'default'
 
     @property
     def name(self):
@@ -454,13 +454,11 @@ class Object(ZmqClientWork, Value):
             res += value[i:i+2]
         return res
 
-    @property
-    def format(self):
+    def _format_get(self):
         '''Get or set the format used to convert the value to a string.'''
         return self._format
 
-    @format.setter
-    def format(self, f : str):
+    def _format_set(self, f : str):
         if self._format == f:
             return
         if not f in self.formats():
@@ -484,6 +482,7 @@ class Object(ZmqClientWork, Value):
             self._formatter = str
 
         self.value_str.trigger()
+        self.format.trigger()
 
     def formats(self) -> list[str]:
         '''Get the list of supported formats for this object.'''
@@ -491,7 +490,7 @@ class Object(ZmqClientWork, Value):
         f = ['default', 'bytes']
         if self._type_id & ~self.FlagFunction == self.Blob:
             return f
-        if self.is_fixed():
+        if self.is_int():
             f += ['hex', 'bin']
         return f
 
