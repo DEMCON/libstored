@@ -132,7 +132,7 @@ if(LIBSTORED_EXAMPLES)
 	)
 endif()
 
-add_subdirectory(libstored/gui)
+add_subdirectory(libstored/gui-qt)
 
 add_launch_json_pymod(libstored.gui libstored.gui -v -v)
 

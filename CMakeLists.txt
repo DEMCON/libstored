@@ -257,10 +257,6 @@ option(LIBSTORED_PIP_INSTALL_USER "Run pip install with --user flag when install
        ${LIBSTORED_PIP_INSTALL_USER_DEFAULT}
 )
 
-if(LIBSTORED_PYLIBSTORED)
-	add_subdirectory(python)
-endif()
-
 option(LIBSTORED_REGEN_LAUNCH_JSON "Regenerate launch.json" OFF)
 if((NOT EXISTS ${LIBSTORED_SOURCE_DIR}/.vscode/launch.json AND NOT MSVC)
    OR LIBSTORED_REGEN_LAUNCH_JSON
@@ -359,6 +355,10 @@ function(add_launch_json_pymod NAME MODULE)
 		},"
 	)
 endfunction()
+
+if(LIBSTORED_PYLIBSTORED)
+	add_subdirectory(python)
+endif()
 
 option(LIBSTORED_EXAMPLES "Build examples" ON)
 add_custom_target(examples)
