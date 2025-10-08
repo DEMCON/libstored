@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: CC0-1.0
 
@@ -25,7 +25,7 @@ namespace stored {
  */
 struct Config : public DefaultConfig {
 	// Override defaults from DefaultConfig here for your local setup.
-	// static bool const HookSetOnChangeOnly = true;
+	// static int const DebuggerStreams = 5;
 
 	// template <typename T>
 	// struct Allocator {

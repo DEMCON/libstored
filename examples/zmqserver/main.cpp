@@ -84,7 +84,7 @@ protected:
 		}
 	}
 
-	void __hookSet(stored::Type::type type, void* buffer, size_t len)
+	void __hookChanged(stored::Type::type type, void* buffer, size_t len)
 	{
 		STORED_UNUSED(type)
 		STORED_UNUSED(buffer)
