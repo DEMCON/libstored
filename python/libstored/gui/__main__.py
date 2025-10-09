@@ -11,15 +11,25 @@ import logging
 import natsort
 import re
 import sys
+import time
 import tkinter as tk
 import tkinter.ttk as ttk
 import typing
 
-from ..version import __version__
+try:
+    import matplotlib.pyplot as plt
+    haveMpl = True
+except ImportError:
+    plt = None
+    haveMpl = False
+
+from .. import __version__
+from .. import asyncio as laio
+from ..asyncio import event as laio_event
+from ..asyncio import tk as laio_tk
+from .. import tk as ltk
+
 from ..zmq_server import ZmqServer
-from ..asyncio import ZmqClient, Object, Event
-from ..asyncio.tk import AsyncApp, ZmqObjectEntry, AsyncWidget
-from ..tk import Entry
 
 def darken_color(color, factor=0.9):
     color = color.lstrip('#')
@@ -34,8 +44,334 @@ class Style:
     grid_padding = 2
     separator_padding = grid_padding * 10
 
-class ClientConnection(AsyncWidget, ttk.Frame):
-    def __init__(self, app : AsyncApp, parent : ttk.Widget, client : ZmqClient, *args, **kwargs):
+
+class PlotData:
+    WINDOW_s = 30
+
+    def __init__(self):
+        self.t : list[float] = []
+        self.values : list[float] = []
+        self.connection : typing.Hashable | None = None
+        self.line : plt.Line2D | None = None # type: ignore
+
+    def append(self, value, t=time.time()):
+        self.t.append(t)
+        self.values.append(value)
+
+    def cleanup(self):
+        if self.t == []:
+            return
+
+        drop = 0
+        threshold = self.t[-1] - self.WINDOW_s
+
+        for t in self.t:
+            if t < threshold:
+                drop += 1
+            else:
+                break
+
+        if drop == 0:
+            return
+
+        self.t = self.t[drop:]
+        self.values = self.values[drop:]
+
+
+
+class Plotter(laio.Work):
+    _instance : Plotter | None = None
+
+    available : bool = plt is not None
+    title : str | None = None
+
+    @classmethod
+    def instance(cls):
+        '''
+        Get the singleton instance of the Plotter.
+        '''
+
+        if not cls.available:
+            raise RuntimeError("Matplotlib is not available")
+
+        if cls._instance is None:
+            cls._instance = Plotter()
+
+        return cls._instance
+
+    def __init__(self, *args, **kwargs):
+        assert self.available, "Matplotlib is not available"
+
+        super().__init__(*args, **kwargs)
+        self._data : dict[laio.Object, PlotData] = {}
+        self._fig : plt.Figure | None = None # type: ignore
+        self._ax : plt.Axes | None = None # type: ignore
+        self._first = True
+        self._changed : set[PlotData] = set()
+        self._run = asyncio.Event()
+        self._paused = False
+
+        self._timer : asyncio.Task | None = None
+
+        self.plotting = laio_event.ValueWrapper(bool, self._plotting_get, event_name='plotting')
+        self.paused = laio_event.ValueWrapper(bool, self._paused_get, self._paused_set, event_name='paused')
+
+    @classmethod
+    def start(cls):
+        '''
+        Start the plotter.
+        '''
+
+        p = cls.instance()
+        p.worker.execute(p._start).result()
+
+    async def _start(self):
+        self._timer = asyncio.create_task(self._timer_loop())
+
+    async def _timer_loop(self):
+        try:
+            while await self._run.wait():
+                self._update_plot()
+                await asyncio.sleep(0.1)
+        finally:
+            self._timer = None
+
+    @classmethod
+    def stop(cls):
+        '''
+        Stop the plotter.
+        '''
+
+        p = cls._instance
+        if p is None:
+            return
+
+        if p._timer is None:
+            return
+
+        p.worker.execute(p._stop)
+
+    async def _stop(self):
+        t = self._timer
+        if t is None:
+            return
+
+        t.cancel()
+        try:
+            await t
+        except asyncio.CancelledError:
+            me = asyncio.current_task()
+            if me is not None and me.cancelled():
+                # That was not t that was cancelled...
+                raise
+            pass
+
+        for o in list(self._data.keys()):
+            self._remove(o)
+
+    def __del__(self):
+        Plotter.stop()
+
+        if self._instance is self:
+            Plotter._instance = None
+
+    @classmethod
+    def add(cls, o : laio.Object):
+        '''
+        Add a libstored.asyncio.Object to the plotter.
+        '''
+
+        if not cls.available:
+            # Silently ignore.
+            return
+
+        p = cls.instance()
+        p.worker.execute(p._add, o)
+
+    async def _add(self, o : laio.Object):
+        if o in self._data:
+            return
+
+        if not o.is_fixed:
+            return
+
+        if self._fig is None:
+            assert plt
+            self._fig, self._ax = plt.subplots()
+
+        assert self._ax is not None
+
+        data = PlotData()
+        self._data[o] = data
+
+        value = o.value
+        if value is not None:
+            self._data[o].append(value, o.t.value)
+
+        data.connection = o.register(lambda: self._update(o, o.value, o.t.value))
+
+        data.line = self._ax.plot([], [], label=o.name)[0]
+        self._update_legend()
+
+        self._show()
+
+        if not self._paused:
+            self._run.set()
+        if len(self._data) == 1:
+            if self._timer is None:
+                await self._start()
+
+            self.plotting.trigger()
+
+    def _update(self, o : laio.Object, value : typing.Any, t : float=time.time()):
+        if o not in self._data:
+            return
+        if value is None:
+            return
+
+        data = self._data[o]
+        data.append(float(value), t)
+        self._changed.add(data)
+
+    def _update_plot(self):
+        if len(self._changed) == 0 or self._paused:
+            return
+
+        for data in self._changed:
+            data.cleanup()
+            assert data.line is not None
+            data.line.set_data(data.t, data.values)
+
+        self._changed.clear()
+
+        assert self._ax is not None
+        self._ax.relim()
+        self._ax.autoscale()
+
+        assert self._fig is not None
+        self._fig.canvas.draw()
+
+    @classmethod
+    def remove(cls, o : laio.Object):
+        '''
+        Remove a libstored.asyncio.Object from the plotter.
+        '''
+
+        if not cls.available:
+            return
+
+        p = cls._instance
+        if p is None:
+            return
+        p.worker.execute(p._remove, o)
+
+    def _remove(self, o : laio.Object):
+        if o not in self._data:
+            return
+
+        data = self._data[o]
+        o.unregister(data.connection)
+
+        assert self._ax is not None
+        assert data.line is not None
+
+        try:
+            self._ax.lines.remove(data.line)
+        except AttributeError:
+            # This is a newer MPL, apparently.
+            data.line.remove()
+            pass
+
+        del self._data[o]
+
+        if len(self._data) > 0:
+            self._update_legend()
+        else:
+            self._run.clear()
+            self.plotting.trigger()
+
+    @classmethod
+    def show(cls):
+        '''
+        Show the plotter window.
+        '''
+
+        p = cls._instance
+        if p is None:
+            return
+
+        p.worker.execute(p._show)
+
+    def _show(self):
+        if self._fig is None or self._ax is None:
+            return
+
+        if self._first:
+
+            if self.title is not None:
+                self._ax.set_title(self.title)
+                self._fig.canvas.manager.set_window_title(f'libstored GUI plots: {self.title}')
+            else:
+                self._fig.canvas.manager.set_window_title(f'libstored GUI plots')
+
+            self._ax.grid(True)
+            self._ax.set_xlabel('t (s)')
+            self._update_legend()
+
+            assert plt is not None
+            plt.show(block=False)
+            self._first = False
+        else:
+            self._fig.show()
+
+    def _update_legend(self):
+        assert self._ax is not None
+        self._ax.legend().set_draggable(True)
+
+    @classmethod
+    def pause(cls, paused : bool=True):
+        '''
+        Pause or resume the plotter.
+        '''
+
+        p = cls._instance
+        if p is None:
+            return
+
+        p.worker.execute(p._pause, paused)
+
+    def _pause(self, paused=True):
+        if self._paused == paused:
+            return
+
+        self._paused = paused
+        self.paused.trigger()
+
+    @classmethod
+    def resume(cls):
+        cls.pause(False)
+
+    @classmethod
+    def togglePause(cls):
+        p = cls._instance
+        if p is None:
+            return
+
+        cls.pause(not p._paused)
+
+    def _paused_get(self) -> bool:
+        return self._paused
+
+    def _paused_set(self, x : bool):
+        self._pause(x)
+
+    def _plotting_get(self):
+        return len(self._data) != 0 and self._run.is_set() and self._timer is not None
+
+
+
+class ClientConnection(laio_tk.AsyncWidget, ttk.Frame):
+    def __init__(self, app : laio_tk.AsyncApp, parent : ttk.Widget, client : laio.ZmqClient, *args, **kwargs):
         super().__init__(app=app, master=parent, *args, **kwargs)
         self._client = client
 
@@ -44,13 +380,13 @@ class ClientConnection(AsyncWidget, ttk.Frame):
         self._host_label = ttk.Label(self, text='Host:')
         self._host_label.grid(row=0, column=0, sticky='e', padx=(0, Style.grid_padding), pady=Style.grid_padding)
 
-        self._host = Entry(self, text=self.host)
+        self._host = ltk.Entry(self, text=self.host)
         self._host.grid(row=0, column=1, sticky='we', padx=Style.grid_padding, pady=Style.grid_padding)
 
         self._port_label = ttk.Label(self, text='Port:')
         self._port_label.grid(row=0, column=2, sticky='e', padx=Style.grid_padding, pady=Style.grid_padding)
 
-        self._port = Entry(self, text=str(self.port), hint=f'default: {ZmqServer.default_port}', validation=r'^[0-9]{0,5}$')
+        self._port = ltk.Entry(self, text=str(self.port), hint=f'default: {ZmqServer.default_port}', validation=r'^[0-9]{0,5}$')
         self._port.grid(row=0, column=3, sticky='we', padx=Style.grid_padding, pady=Style.grid_padding)
 
         self._multi_var = tk.BooleanVar(value=client.multi)
@@ -71,7 +407,7 @@ class ClientConnection(AsyncWidget, ttk.Frame):
             self._on_connect_button()
 
     @property
-    def client(self) -> ZmqClient:
+    def client(self) -> laio.ZmqClient:
         return self._client
 
     @property
@@ -82,20 +418,21 @@ class ClientConnection(AsyncWidget, ttk.Frame):
     def port(self) -> int:
         return int(self.client.port)
 
-    @AsyncApp.tk_func
+    @laio_tk.AsyncApp.tk_func
     def _on_connected(self, *args, **kwargs):
         self._connect['text'] = 'Disconnect'
         self._host['state'] = 'disabled'
         self._port['state'] = 'disabled'
         self._multi['state'] = 'disabled'
 
-    @AsyncApp.tk_func
+    @laio_tk.AsyncApp.tk_func
     def _on_disconnected(self, *args, **kwargs):
         self._connect['text'] = 'Connect'
         self._host['state'] = 'normal'
         self._port['state'] = 'normal'
         self._multi['state'] = 'normal'
         self.app.root.title(f'libstored GUI')
+        Plotter.stop()
 
     def _on_connect_button(self):
         host = self._host.get()
@@ -112,7 +449,7 @@ class ClientConnection(AsyncWidget, ttk.Frame):
 
         self._do_connect_button(host, port, self._multi_var.get())
 
-    @AsyncApp.worker_func
+    @laio_tk.AsyncApp.worker_func
     async def _do_connect_button(self, host : str, port : int, multi : bool):
         if self.client.is_connected():
             await self.client.disconnect()
@@ -125,15 +462,15 @@ class ClientConnection(AsyncWidget, ttk.Frame):
             except Exception as e:
                 self.logger.warning('Connect failed: %s', e)
 
-    @AsyncApp.tk_func
+    @laio_tk.AsyncApp.tk_func
     def _after_connection(self, identification : str, version : str):
         self.logger.info(f'Connected to {identification} ({version})')
         self.app.root.title(f'libstored GUI - {identification} ({version})')
 
 
 
-class ObjectRow(AsyncWidget, ttk.Frame):
-    def __init__(self, app : GUIClient, parent : ttk.Widget, obj : Object, style : str | None=None, *args, **kwargs):
+class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
+    def __init__(self, app : GUIClient, parent : ttk.Widget, obj : laio.Object, style : str | None=None, *args, **kwargs):
         super().__init__(app=app, master=parent, *args, **kwargs)
         self._obj = obj
 
@@ -142,25 +479,28 @@ class ObjectRow(AsyncWidget, ttk.Frame):
         self._label = ttk.Label(self, text=obj.name)
         self._label.grid(row=0, column=0, sticky='w', padx=(0, Style.grid_padding), pady=Style.grid_padding)
 
+        self._plot_var = tk.BooleanVar(value=False)
+        self._plot = ttk.Checkbutton(self, variable=self._plot_var, command=self._on_plot_check_change)
+
         self._format = ttk.Combobox(self, values=obj.formats(), width=10, state='readonly')
         self._format.set(obj.format)
         self._format.bind('<<ComboboxSelected>>', lambda e: obj.format.set(self._format.get()))
-        self._format.grid(row=0, column=1, sticky='nswe', padx=Style.grid_padding, pady=Style.grid_padding)
+        self._format.grid(row=0, column=2, sticky='nswe', padx=Style.grid_padding, pady=Style.grid_padding)
         app.connect(obj.format, self._format.set)
 
         self._type = ttk.Label(self, text=obj.type_name, width=10, anchor='e')
-        self._type.grid(row=0, column=2, sticky='e', padx=Style.grid_padding, pady=Style.grid_padding)
+        self._type.grid(row=0, column=3, sticky='e', padx=Style.grid_padding, pady=Style.grid_padding)
 
-        self._value = ZmqObjectEntry(app, self, obj)
-        self._value.grid(row=0, column=3, sticky='nswe', padx=Style.grid_padding, pady=Style.grid_padding)
+        self._value = laio_tk.ZmqObjectEntry(app, self, obj)
+        self._value.grid(row=0, column=4, sticky='nswe', padx=Style.grid_padding, pady=Style.grid_padding)
 
         self._poll_var = tk.BooleanVar(value=obj.polling.value is not None)
         app.connect(obj.polling, self._on_poll_obj_change)
         self._poll = ttk.Checkbutton(self, variable=self._poll_var, command=self._on_poll_check_change)
-        self._poll.grid(row=0, column=4, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+        self._poll.grid(row=0, column=5, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
 
         self._refresh = ttk.Button(self, text='Refresh', command=self._value.refresh)
-        self._refresh.grid(row=0, column=5, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+        self._refresh.grid(row=0, column=6, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
 
         if style is not None:
             self.style(style)
@@ -175,37 +515,55 @@ class ObjectRow(AsyncWidget, ttk.Frame):
 
         self['style'] = f'{style}TFrame'
         self._label['style'] = f'{style}TLabel'
+        self._plot['style'] = f'{style}TCheckbutton'
         self._format['style'] = f'{style}TCombobox'
         self._type['style'] = f'{style}TLabel'
         self._value['style'] = f'{style}TEntry'
         self._poll['style'] = f'{style}TCheckbutton'
         self._refresh['style'] = f'{style}TButton'
 
-    @AsyncApp.tk_func
+    @laio_tk.AsyncApp.tk_func
     def _on_poll_obj_change(self, x):
-        self._poll_var.set(x is not None)
+        if x is not None:
+            self._poll_var.set(True)
+            self._plot.grid(row=0, column=1, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+        else:
+            self._poll_var.set(False)
+            self._plot.grid_forget()
+            self._plot_var.set(False)
+            Plotter.remove(self._obj)
 
     def _on_poll_check_change(self):
-        self._obj.polling.value = typing.cast(GUIClient, self.app).default_poll() if self._poll_var.get() else None
+        if self._poll_var.get():
+            if self._obj.polling.value is None:
+                self._obj.polling.value = typing.cast(GUIClient, self.app).default_poll()
+        else:
+            self._obj.polling.value = None
+
+    def _on_plot_check_change(self):
+        if self._plot_var.get():
+            Plotter.add(self._obj)
+        else:
+            Plotter.remove(self._obj)
 
 
 
 class ObjectList(ttk.Frame):
-    def __init__(self, app : GUIClient, parent : ttk.Widget, objects : list[Object]=[], filter : typing.Callable[[Object], bool] | None=None, *args, **kwargs):
+    def __init__(self, app : GUIClient, parent : ttk.Widget, objects : list[laio.Object]=[], filter : typing.Callable[[laio.Object], bool] | None=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self._app = app
         self._objects : list[ObjectRow] = []
         self._filter = filter
         self.columnconfigure(0, weight=1)
-        self.filtered = Event('filtered')
-        self.changed = Event('changed')
+        self.filtered = laio_event.Event('filtered')
+        self.changed = laio_event.Event('changed')
         self.set_objects(objects)
 
     @property
     def objects(self) -> list[ObjectRow]:
         return self._objects
 
-    def set_objects(self, objects : list[Object]):
+    def set_objects(self, objects : list[laio.Object]):
         for o in self._objects:
             o.destroy()
         self._objects = []
@@ -217,7 +575,7 @@ class ObjectList(ttk.Frame):
         self.changed.trigger()
         self.filter()
 
-    def filter(self, f : typing.Callable[[Object], bool] | None | bool=True):
+    def filter(self, f : typing.Callable[[laio.Object], bool] | None | bool=True):
         if f is False:
             return
         elif f is True:
@@ -310,7 +668,7 @@ class ScrollableFrame(ttk.Frame):
 
 
 
-class FilterEntry(Entry):
+class FilterEntry(ltk.Entry):
     '''
     Regex filter on a given ObjectList.
     '''
@@ -333,19 +691,19 @@ class FilterEntry(Entry):
                 self['foreground'] = 'red'
                 return
 
-            def f(o : Object) -> bool:
+            def f(o : laio.Object) -> bool:
                 return regex.search(o.name) is not None
 
             self._object_list.filter(f)
 
 
-class ManualCommand(AsyncWidget, ttk.Frame):
-    def __init__(self, app : GUIClient, parent : ttk.Widget, client : ZmqClient, *args, **kwargs):
+class ManualCommand(laio_tk.AsyncWidget, ttk.Frame):
+    def __init__(self, app : GUIClient, parent : ttk.Widget, client : laio.ZmqClient, *args, **kwargs):
         super().__init__(app=app, master=parent, *args, **kwargs)
         self._client = client
         self._empty = True
 
-        self._req = Entry(self, hint='enter command')
+        self._req = ltk.Entry(self, hint='enter command')
         self._req.grid(column=0, row=0, sticky='we')
         self.columnconfigure(0, weight=1)
 
@@ -378,7 +736,7 @@ class ManualCommand(AsyncWidget, ttk.Frame):
         self._do_command(self._req.text)
         return 'break'
 
-    @AsyncApp.worker_func
+    @laio_tk.AsyncApp.worker_func
     async def _do_command(self, command : str):
         if not self._client.is_connected():
             return
@@ -390,7 +748,7 @@ class ManualCommand(AsyncWidget, ttk.Frame):
         except Exception as e:
             self.logger.exception(f'Manual command: {e}')
 
-    @AsyncApp.tk_func
+    @laio_tk.AsyncApp.tk_func
     def _response(self, response : str):
         self._rep.configure(state='normal')
         self._rep.delete('1.0', 'end')
@@ -408,8 +766,8 @@ class ManualCommand(AsyncWidget, ttk.Frame):
 
 
 
-class GUIClient(AsyncApp):
-    def __init__(self, client : ZmqClient, *args, **kwargs):
+class GUIClient(laio_tk.AsyncApp):
+    def __init__(self, client : laio.ZmqClient, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._client = client
         self._client_connections = set()
@@ -457,7 +815,7 @@ class GUIClient(AsyncApp):
         filter = FilterEntry(self, self._objects)
         filter.grid(column=0, row=1, sticky='nswe', padx=(0, Style.grid_padding), pady=Style.grid_padding)
 
-        self._default_poll = Entry(self, text='1', hint='poll (s)', width=7, justify='right')
+        self._default_poll = ltk.Entry(self, text='1', hint='poll (s)', width=7, justify='right')
         self._default_poll.grid(row=1, column=1, sticky='nswe', padx=Style.grid_padding, pady=Style.grid_padding)
 
         refresh_all = ttk.Button(self, text='Refresh all', command=self._refresh_all)
@@ -491,7 +849,7 @@ class GUIClient(AsyncApp):
     def client(self):
         return self._client
 
-    @AsyncApp.tk_func
+    @laio_tk.AsyncApp.tk_func
     def _on_connected(self, *args, **kwargs):
         self._polled_objects.set_objects(self.client.objects)
         self._objects.set_objects(self.client.objects)
@@ -499,7 +857,7 @@ class GUIClient(AsyncApp):
             self._client_connections.add(self.connect(o.polling, self._filter_polled))
         self._resize_polled_objects()
 
-    @AsyncApp.tk_func
+    @laio_tk.AsyncApp.tk_func
     def _on_disconnected(self, *args, **kwargs):
         for c in self._client_connections:
             self.disconnect(c)
@@ -507,27 +865,27 @@ class GUIClient(AsyncApp):
         self._polled_objects.set_objects([])
         self._objects.set_objects([])
 
-    @AsyncApp.tk_func
+    @laio_tk.AsyncApp.tk_func
     def cleanup(self):
         self.disconnect_all()
         self.logger.debug('Close client')
         self._close_async()
         super().cleanup()
 
-    @AsyncApp.worker_func
+    @laio_tk.AsyncApp.worker_func
     async def _close_async(self):
         self.logger.debug('Closing client')
         await self.client.close()
 
-    @AsyncApp.worker_func
+    @laio_tk.AsyncApp.worker_func
     async def _refresh_all(self):
         await asyncio.gather(*(o.read(acquire_alias=False) for o in self.client.objects))
 
-    @AsyncApp.tk_func
+    @laio_tk.AsyncApp.tk_func
     def _filter_polled(self, interval_s):
         self._polled_objects.filter()
 
-    @AsyncApp.tk_func
+    @laio_tk.AsyncApp.tk_func
     def _resize_polled_objects(self, *args):
         self._scrollable_polled.update_idletasks()
         height = 0
@@ -548,7 +906,7 @@ class GUIClient(AsyncApp):
         else:
             self._scrollable_polled.grid_forget()
 
-    @AsyncApp.tk_func
+    @laio_tk.AsyncApp.tk_func
     def default_poll(self) -> float:
         try:
             v = locale.atof(self._default_poll.get())
@@ -582,7 +940,7 @@ def main():
     else:
         logging.basicConfig(level=logging.DEBUG)
 
-    client = ZmqClient(host=args.server, port=args.port, multi=args.multi)
+    client = laio.ZmqClient(host=args.server, port=args.port, multi=args.multi)
     GUIClient.run(worker=client.worker, client=client)
 
 if __name__ == '__main__':
