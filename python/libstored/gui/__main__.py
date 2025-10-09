@@ -18,10 +18,8 @@ import typing
 
 try:
     import matplotlib.pyplot as plt
-    haveMpl = True
 except ImportError:
     plt = None
-    haveMpl = False
 
 from .. import __version__
 from .. import asyncio as laio
@@ -78,15 +76,14 @@ class PlotData:
         self.values = self.values[drop:]
 
 
+plotter : Plotter | None = None
 
-class Plotter(laio.Work):
-    _instance : Plotter | None = None
-
+class Plotter(laio_tk.Work):
     available : bool = plt is not None
     title : str | None = None
 
     @classmethod
-    def instance(cls):
+    def instance(cls) -> Plotter:
         '''
         Get the singleton instance of the Plotter.
         '''
@@ -94,10 +91,12 @@ class Plotter(laio.Work):
         if not cls.available:
             raise RuntimeError("Matplotlib is not available")
 
-        if cls._instance is None:
-            cls._instance = Plotter()
+        global plotter
 
-        return cls._instance
+        if plotter is None:
+            raise RuntimeError("Construct Plotter first")
+
+        return plotter
 
     def __init__(self, *args, **kwargs):
         assert self.available, "Matplotlib is not available"
@@ -106,94 +105,83 @@ class Plotter(laio.Work):
         self._data : dict[laio.Object, PlotData] = {}
         self._fig : plt.Figure | None = None # type: ignore
         self._ax : plt.Axes | None = None # type: ignore
-        self._first = True
+        self._ready = False
         self._changed : set[PlotData] = set()
-        self._run = asyncio.Event()
         self._paused = False
 
-        self._timer : asyncio.Task | None = None
+        self._timer : typing.Any = None
 
         self.plotting = laio_event.ValueWrapper(bool, self._plotting_get, event_name='plotting')
         self.paused = laio_event.ValueWrapper(bool, self._paused_get, self._paused_set, event_name='paused')
+        self.closed = laio_event.Event('closed')
 
-    @classmethod
-    def start(cls):
+    @laio_tk.Work.tk_func
+    def start(self):
         '''
         Start the plotter.
         '''
 
-        p = cls.instance()
-        p.worker.execute(p._start).result()
+        self._timer_start()
 
-    async def _start(self):
-        self._timer = asyncio.create_task(self._timer_loop())
+    def _timer_start(self):
+        if self._timer is not None:
+            return
 
-    async def _timer_loop(self):
-        try:
-            while await self._run.wait():
-                self._update_plot()
-                await asyncio.sleep(0.1)
-        finally:
-            self._timer = None
+        self._update_plot()
 
-    @classmethod
-    def stop(cls):
+    def _timer_stop(self):
+        if self._timer is None:
+            return
+
+        self.atk.root.after_cancel(self._timer)
+        self._timer = None
+
+    @laio_tk.Work.tk_func
+    def stop(self):
         '''
         Stop the plotter.
         '''
 
-        p = cls._instance
-        if p is None:
-            return
-
-        if p._timer is None:
-            return
-
-        p.worker.execute(p._stop)
-
-    async def _stop(self):
-        t = self._timer
-        if t is None:
-            return
-
-        t.cancel()
-        try:
-            await t
-        except asyncio.CancelledError:
-            me = asyncio.current_task()
-            if me is not None and me.cancelled():
-                # That was not t that was cancelled...
-                raise
-            pass
+        self._timer_stop()
 
         for o in list(self._data.keys()):
-            self._remove(o)
+            self.remove(o)
+
+        if not self._ready:
+            return
+
+        self.logger.debug('Closing plotter')
+
+        self._ready = False
+        assert plt is not None
+        plt.close()
+
+        self._fig = None
+        self._ax = None
+
+        self.closed.trigger()
+        self.plotting.trigger()
 
     def __del__(self):
-        Plotter.stop()
+        self.stop()
 
-        if self._instance is self:
-            Plotter._instance = None
+        global plotter
+        if plotter is self:
+            plotter = None
 
-    @classmethod
-    def add(cls, o : laio.Object):
+    @laio_tk.Work.tk_func
+    def add(self, o : laio.Object):
         '''
         Add a libstored.asyncio.Object to the plotter.
         '''
 
-        if not cls.available:
-            # Silently ignore.
-            return
-
-        p = cls.instance()
-        p.worker.execute(p._add, o)
-
-    async def _add(self, o : laio.Object):
         if o in self._data:
             return
 
         if not o.is_fixed:
             return
+
+        self.logger.debug(f'Plot {o.name}')
 
         if self._fig is None:
             assert plt
@@ -208,21 +196,19 @@ class Plotter(laio.Work):
         if value is not None:
             self._data[o].append(value, o.t.value)
 
-        data.connection = o.register(lambda: self._update(o, o.value, o.t.value))
+        data.connection = self.connect(o, lambda: self._update(o, o.value, o.t.value))
 
         data.line = self._ax.plot([], [], label=o.name)[0]
         self._update_legend()
 
-        self._show()
+        self.show()
 
         if not self._paused:
-            self._run.set()
+            self._timer_start()
         if len(self._data) == 1:
-            if self._timer is None:
-                await self._start()
-
             self.plotting.trigger()
 
+    @laio_tk.Work.tk_func
     def _update(self, o : laio.Object, value : typing.Any, t : float=time.time()):
         if o not in self._data:
             return
@@ -232,9 +218,13 @@ class Plotter(laio.Work):
         data = self._data[o]
         data.append(float(value), t)
         self._changed.add(data)
+        self._timer_start()
 
     def _update_plot(self):
+        self.logger.debug('Update plot')
+
         if len(self._changed) == 0 or self._paused:
+            self._timer = None
             return
 
         for data in self._changed:
@@ -251,26 +241,23 @@ class Plotter(laio.Work):
         assert self._fig is not None
         self._fig.canvas.draw()
 
-    @classmethod
-    def remove(cls, o : laio.Object):
+        self._timer = self.atk.root.after(100, self._update_plot)
+        assert self._timer is not None
+
+    @laio_tk.Work.tk_func
+    def remove(self, o : laio.Object):
         '''
         Remove a libstored.asyncio.Object from the plotter.
         '''
 
-        if not cls.available:
-            return
-
-        p = cls._instance
-        if p is None:
-            return
-        p.worker.execute(p._remove, o)
-
-    def _remove(self, o : laio.Object):
         if o not in self._data:
             return
 
+        self.logger.debug(f'Remove plot {o.name}')
+
         data = self._data[o]
-        o.unregister(data.connection)
+        del self._data[o]
+        self.disconnect(data.connection)
 
         assert self._ax is not None
         assert data.line is not None
@@ -280,34 +267,24 @@ class Plotter(laio.Work):
         except AttributeError:
             # This is a newer MPL, apparently.
             data.line.remove()
-            pass
 
-        del self._data[o]
+        del data
 
-        if len(self._data) > 0:
-            self._update_legend()
-        else:
-            self._run.clear()
-            self.plotting.trigger()
+        self._update_legend()
 
-    @classmethod
-    def show(cls):
+        if len(self._data) == 0:
+            self.stop()
+
+    @laio_tk.Work.tk_func
+    def show(self):
         '''
         Show the plotter window.
         '''
 
-        p = cls._instance
-        if p is None:
-            return
-
-        p.worker.execute(p._show)
-
-    def _show(self):
         if self._fig is None or self._ax is None:
             return
 
-        if self._first:
-
+        if not self._ready:
             if self.title is not None:
                 self._ax.set_title(self.title)
                 self._fig.canvas.manager.set_window_title(f'libstored GUI plots: {self.title}')
@@ -318,55 +295,53 @@ class Plotter(laio.Work):
             self._ax.set_xlabel('t (s)')
             self._update_legend()
 
+            self._fig.canvas.mpl_connect('close_event', lambda _: self.stop())
+
             assert plt is not None
             plt.show(block=False)
-            self._first = False
+            self._ready = True
         else:
             self._fig.show()
 
     def _update_legend(self):
+        if len(self._data) == 0:
+            return
         assert self._ax is not None
         self._ax.legend().set_draggable(True)
 
-    @classmethod
-    def pause(cls, paused : bool=True):
+    @laio_tk.Work.tk_func
+    def pause(self, paused : bool=True):
         '''
         Pause or resume the plotter.
         '''
 
-        p = cls._instance
-        if p is None:
-            return
-
-        p.worker.execute(p._pause, paused)
-
-    def _pause(self, paused=True):
         if self._paused == paused:
             return
 
         self._paused = paused
+        if paused:
+            self._timer_stop()
+        else:
+            self._timer_start()
+
         self.paused.trigger()
 
-    @classmethod
-    def resume(cls):
-        cls.pause(False)
+    @laio_tk.Work.tk_func
+    def resume(self):
+        self.pause(False)
 
-    @classmethod
-    def togglePause(cls):
-        p = cls._instance
-        if p is None:
-            return
-
-        cls.pause(not p._paused)
+    @laio_tk.Work.tk_func
+    def togglePause(self):
+        self.pause(not self._paused)
 
     def _paused_get(self) -> bool:
         return self._paused
 
     def _paused_set(self, x : bool):
-        self._pause(x)
+        self.pause(x)
 
     def _plotting_get(self):
-        return len(self._data) != 0 and self._run.is_set() and self._timer is not None
+        return len(self._data) > 0
 
 
 
@@ -432,7 +407,8 @@ class ClientConnection(laio_tk.AsyncWidget, ttk.Frame):
         self._port['state'] = 'normal'
         self._multi['state'] = 'normal'
         self.app.root.title(f'libstored GUI')
-        Plotter.stop()
+        if plotter is not None:
+            plotter.stop()
 
     def _on_connect_button(self):
         host = self._host.get()
@@ -470,7 +446,7 @@ class ClientConnection(laio_tk.AsyncWidget, ttk.Frame):
 
 
 class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
-    def __init__(self, app : GUIClient, parent : ttk.Widget, obj : laio.Object, style : str | None=None, *args, **kwargs):
+    def __init__(self, app : GUIClient, parent : ttk.Widget, obj : laio.Object, style : str | None=None, show_plot : bool=False, *args, **kwargs):
         super().__init__(app=app, master=parent, *args, **kwargs)
         self._obj = obj
 
@@ -479,6 +455,7 @@ class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
         self._label = ttk.Label(self, text=obj.name)
         self._label.grid(row=0, column=0, sticky='w', padx=(0, Style.grid_padding), pady=Style.grid_padding)
 
+        self._show_plot = show_plot and Plotter.available and plotter
         self._plot_var = tk.BooleanVar(value=False)
         self._plot = ttk.Checkbutton(self, variable=self._plot_var, command=self._on_plot_check_change)
 
@@ -498,6 +475,8 @@ class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
         app.connect(obj.polling, self._on_poll_obj_change)
         self._poll = ttk.Checkbutton(self, variable=self._poll_var, command=self._on_poll_check_change)
         self._poll.grid(row=0, column=5, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+        if plotter:
+            app.connect(plotter.closed, lambda: self._plot_var.set(False))
 
         self._refresh = ttk.Button(self, text='Refresh', command=self._value.refresh)
         self._refresh.grid(row=0, column=6, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
@@ -526,12 +505,14 @@ class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
     def _on_poll_obj_change(self, x):
         if x is not None:
             self._poll_var.set(True)
-            self._plot.grid(row=0, column=1, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+            if self._show_plot:
+                self._plot.grid(row=0, column=1, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
         else:
             self._poll_var.set(False)
             self._plot.grid_forget()
             self._plot_var.set(False)
-            Plotter.remove(self._obj)
+            if plotter is not None:
+                plotter.remove(self._obj)
 
     def _on_poll_check_change(self):
         if self._poll_var.get():
@@ -541,19 +522,24 @@ class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
             self._obj.polling.value = None
 
     def _on_plot_check_change(self):
+        if plotter is None:
+            return
+
         if self._plot_var.get():
-            Plotter.add(self._obj)
+            plotter.add(self._obj)
         else:
-            Plotter.remove(self._obj)
+            plotter.remove(self._obj)
 
 
 
 class ObjectList(ttk.Frame):
-    def __init__(self, app : GUIClient, parent : ttk.Widget, objects : list[laio.Object]=[], filter : typing.Callable[[laio.Object], bool] | None=None, *args, **kwargs):
+    def __init__(self, app : GUIClient, parent : ttk.Widget, objects : list[laio.Object]=[], \
+                 filter : typing.Callable[[laio.Object], bool] | None=None, show_plot : bool=False, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self._app = app
         self._objects : list[ObjectRow] = []
         self._filter = filter
+        self._show_plot = show_plot
         self.columnconfigure(0, weight=1)
         self.filtered = laio_event.Event('filtered')
         self.changed = laio_event.Event('changed')
@@ -569,7 +555,7 @@ class ObjectList(ttk.Frame):
         self._objects = []
 
         for o in natsort.natsorted(objects, key=lambda o: o.name, alg=natsort.ns.IGNORECASE):
-            object_row = ObjectRow(self._app, self, o)
+            object_row = ObjectRow(self._app, self, o, show_plot=self._show_plot)
             self._objects.append(object_row)
 
         self.changed.trigger()
@@ -774,6 +760,10 @@ class GUIClient(laio_tk.AsyncApp):
 
         self.root.title(f'libstored GUI')
 
+        global plotter
+        if Plotter.available and plotter is None:
+            plotter = Plotter(atk=self.atk)
+
         w = Style.root_width
         h = Style.root_height
 
@@ -822,7 +812,7 @@ class GUIClient(laio_tk.AsyncApp):
         refresh_all.grid(row=1, column=2, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
 
         self._scrollable_polled = ScrollableFrame(self)
-        self._polled_objects = ObjectList(self, self._scrollable_polled.content, filter=lambda o: o.polling.value is not None)
+        self._polled_objects = ObjectList(self, self._scrollable_polled.content, filter=lambda o: o.polling.value is not None, show_plot=True)
         self._polled_objects.pack(fill='both', expand=True)
         self.connect(self._polled_objects.changed, self._scrollable_polled.bind_scroll)
         self.connect(self._polled_objects.filtered, self._scrollable_polled.updated_content)
@@ -867,10 +857,17 @@ class GUIClient(laio_tk.AsyncApp):
 
     @laio_tk.AsyncApp.tk_func
     def cleanup(self):
+        global plotter
+        if plotter is not None:
+            plotter.stop()
+            plotter = None
+
         self.disconnect_all()
         self.logger.debug('Close client')
         self._close_async()
         super().cleanup()
+
+        self.root.quit()
 
     @laio_tk.AsyncApp.worker_func
     async def _close_async(self):
