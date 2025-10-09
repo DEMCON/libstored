@@ -778,6 +778,7 @@ class ZmqClient(Work):
         self._reset()
 
         # Events
+        self.connecting = Event('connecting')
         self.connected = Event('connected')
         self.disconnected = Event('disconnected')
 
@@ -879,6 +880,11 @@ class ZmqClient(Work):
                 self._monitor.cancel()
         self._monitor = None
 
+        if hasattr(self, '_req_task'):
+            if self._req_task is not None:
+                self._req_task.cancel()
+        self._req_task = None
+
     @run_sync
     async def connect(self, host : str | None=None, port : int | None=None, multi : bool | None=None):
         '''Connect to the ZMQ server.'''
@@ -888,8 +894,6 @@ class ZmqClient(Work):
         if 'l' in await self.capabilities():
             await self.list()
             await self.find_time()
-
-        self._monitor = asyncio.create_task(self._monitor_socket())
 
         self.connected.trigger()
 
@@ -908,6 +912,7 @@ class ZmqClient(Work):
         self._reset()
 
         self._socket = self._context.socket(zmq.REQ)
+        self.connecting.trigger()
 
         try:
             if self._timeout is not None:
@@ -918,6 +923,7 @@ class ZmqClient(Work):
 
             self.logger.debug(f'connect to tcp://{self._host}:{self._port}')
             self._socket.connect(f'tcp://{self._host}:{self._port}')
+            self._monitor = asyncio.create_task(self._monitor_socket())
         except:
             s = self._socket
             self._socket = None
@@ -929,31 +935,25 @@ class ZmqClient(Work):
     async def disconnect(self):
         '''Disconnect from the ZMQ server.'''
 
+        s = self._socket
+        self._socket = None
+
+        if s is None:
+            # Not connected
+            return
+
+        self.logger.debug('disconnect')
         try:
-            if await self._disconnect():
-                self.disconnected.trigger()
+            s.close(0)
         except asyncio.CancelledError:
             raise
         except:
-            self.disconnected.trigger()
-            raise
+            pass
 
-    @locked
-    async def _disconnect(self) -> bool:
-        if not self.is_connected():
-            return False
-
-        self.logger.debug('disconnect')
-
-        try:
-            assert self._socket is not None
-            s = self._socket
-            self._socket = None
-            s.close(0)
-            return True
-        finally:
-            self._socket = None
+        async with self._lock:
             self._reset()
+
+        self.disconnected.trigger()
 
     @run_sync
     async def close(self):
@@ -989,10 +989,32 @@ class ZmqClient(Work):
     async def req(self, msg : bytes | str) -> bytes | str:
         '''Send a request to the ZMQ server and wait for a reply.'''
 
-        if isinstance(msg, str):
-            return (await self._req(msg.encode())).decode()
-        else:
-            return await self._req(msg)
+        if len(msg) == 0:
+            raise ValueError('Empty request')
+
+        try:
+            if isinstance(msg, str):
+                self._req_task = asyncio.create_task(self._req(msg.encode()))
+                return (await self._req_task).decode()
+            else:
+                self._req_task = asyncio.create_task(self._req(msg))
+                return await self._req_task
+        except asyncio.CancelledError:
+            if self._req_task is not None:
+                t = asyncio.current_task()
+                assert t is not None
+
+                if t.cancelled():
+                    # We are cancelled, so cancel the req task too.
+                    self._req_task.cancel()
+                elif self._req_task.cancelled():
+                    # The exception is not due to us being cancelled.  Someone
+                    # just aborted the req.  Raise another exception instead.
+                    raise RuntimeError('Request aborted')
+
+            raise
+        finally:
+            self._req_task = None
 
     async def _req(self, msg : bytes) -> bytes:
         if not self.is_connected():

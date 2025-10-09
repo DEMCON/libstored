@@ -449,7 +449,7 @@ class AsyncWidget:
 
     def __init__(self, app : AsyncApp, logger : logging.Logger | None= None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = logger if logger is not None else logging.getLogger(self.__class__.__name__)
         self._app = app
 
     @property

@@ -2,8 +2,11 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
+from __future__ import annotations
+
 import argparse
 import asyncio
+import locale
 import logging
 import natsort
 import re
@@ -16,6 +19,7 @@ from ..version import __version__
 from ..zmq_server import ZmqServer
 from ..asyncio import ZmqClient, Object, Event
 from ..asyncio.tk import AsyncApp, ZmqObjectEntry, AsyncWidget
+from ..tk import Entry
 
 def darken_color(color, factor=0.9):
     color = color.lstrip('#')
@@ -25,7 +29,10 @@ def darken_color(color, factor=0.9):
     return '#{:02x}{:02x}{:02x}'.format(*darker)
 
 class Style:
+    root_width = 800
+    root_height = 600
     grid_padding = 2
+    separator_padding = grid_padding * 10
 
 class ClientConnection(AsyncWidget, ttk.Frame):
     def __init__(self, app : AsyncApp, parent : ttk.Widget, client : ZmqClient, *args, **kwargs):
@@ -37,15 +44,13 @@ class ClientConnection(AsyncWidget, ttk.Frame):
         self._host_label = ttk.Label(self, text='Host:')
         self._host_label.grid(row=0, column=0, sticky='e', padx=(0, Style.grid_padding), pady=Style.grid_padding)
 
-        self._host = ttk.Entry(self)
-        self._host.insert(0, self.host)
+        self._host = Entry(self, text=self.host)
         self._host.grid(row=0, column=1, sticky='we', padx=Style.grid_padding, pady=Style.grid_padding)
 
         self._port_label = ttk.Label(self, text='Port:')
         self._port_label.grid(row=0, column=2, sticky='e', padx=Style.grid_padding, pady=Style.grid_padding)
 
-        self._port = ttk.Entry(self)
-        self._port.insert(0, str(self.port))
+        self._port = Entry(self, text=str(self.port), hint=f'default: {ZmqServer.default_port}', validation=r'^[0-9]{0,5}$')
         self._port.grid(row=0, column=3, sticky='we', padx=Style.grid_padding, pady=Style.grid_padding)
 
         self._multi_var = tk.BooleanVar(value=client.multi)
@@ -56,13 +61,14 @@ class ClientConnection(AsyncWidget, ttk.Frame):
         self._connect.grid(row=0, column=5, sticky='we', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
         self._connect['command'] = self._on_connect_button
 
-        self.connect(self.client.connected, self._on_connected)
+        self.connect(self.client.connecting, self._on_connected)
         self.connect(self.client.disconnected, self._on_disconnected)
 
         if self.client.is_connected():
             self._on_connected()
         else:
             self._on_disconnected()
+            self._on_connect_button()
 
     @property
     def client(self) -> ZmqClient:
@@ -92,18 +98,32 @@ class ClientConnection(AsyncWidget, ttk.Frame):
         self.app.root.title(f'libstored GUI')
 
     def _on_connect_button(self):
+        host = self._host.get()
+        if host == '':
+            return
+
         try:
-            self._do_connect_button(self._host.get(), int(self._port.get()), self._multi_var.get())
+            port = int(self._port.get())
         except ValueError:
-            self.logger.error('Invalid port number')
+            return
+
+        if port == 0:
+            return
+
+        self._do_connect_button(host, port, self._multi_var.get())
 
     @AsyncApp.worker_func
     async def _do_connect_button(self, host : str, port : int, multi : bool):
         if self.client.is_connected():
             await self.client.disconnect()
         else:
-            await self.client.connect(host, port, multi)
-            self._after_connection(await self.client.identification(), await self.client.version())
+            try:
+                await self.client.connect(host, port, multi)
+                self._after_connection(await self.client.identification(), await self.client.version())
+            except asyncio.CancelledError:
+                raise
+            except Exception as e:
+                self.logger.warning('Connect failed: %s', e)
 
     @AsyncApp.tk_func
     def _after_connection(self, identification : str, version : str):
@@ -113,7 +133,7 @@ class ClientConnection(AsyncWidget, ttk.Frame):
 
 
 class ObjectRow(AsyncWidget, ttk.Frame):
-    def __init__(self, app : AsyncApp, parent : ttk.Widget, obj : Object, style : str | None=None, *args, **kwargs):
+    def __init__(self, app : GUIClient, parent : ttk.Widget, obj : Object, style : str | None=None, *args, **kwargs):
         super().__init__(app=app, master=parent, *args, **kwargs)
         self._obj = obj
 
@@ -166,12 +186,12 @@ class ObjectRow(AsyncWidget, ttk.Frame):
         self._poll_var.set(x is not None)
 
     def _on_poll_check_change(self):
-        self._obj.polling.value = 1.0 if self._poll_var.get() else None
+        self._obj.polling.value = typing.cast(GUIClient, self.app).default_poll() if self._poll_var.get() else None
 
 
 
 class ObjectList(ttk.Frame):
-    def __init__(self, app : AsyncApp, parent : ttk.Widget, objects : list[Object]=[], filter : typing.Callable[[Object], bool] | None=None, *args, **kwargs):
+    def __init__(self, app : GUIClient, parent : ttk.Widget, objects : list[Object]=[], filter : typing.Callable[[Object], bool] | None=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self._app = app
         self._objects : list[ObjectRow] = []
@@ -214,7 +234,7 @@ class ObjectList(ttk.Frame):
         row = 0
         for o in self._objects:
             if f(o.obj):
-                o.grid(column=0, row=row, columnspan=3, sticky='nsew')
+                o.grid(column=0, row=row, sticky='nsew')
                 o.style('Even' if row % 2 == 0 else 'Odd')
                 row += 1
             else:
@@ -290,41 +310,24 @@ class ScrollableFrame(ttk.Frame):
 
 
 
-class FilterEntry(ttk.Entry):
+class FilterEntry(Entry):
     '''
     Regex filter on a given ObjectList.
     '''
 
     def __init__(self, parent : ttk.Widget, object_list : ObjectList, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+        super().__init__(parent, hint='enter regex filter', *args, **kwargs)
         self._object_list = object_list
-        self._var = tk.StringVar()
-        self['textvariable'] = self._var
         self._var.trace_add('write', self._on_change)
-        self._empty = True
-
-        self.bind('<FocusIn>', self._focus_in)
-        self.bind('<FocusOut>', self._focus_out)
-
-        def select_all(event):
-            event.widget.select_range(0, 'end')
-            event.widget.icursor('end')
-            return 'break'
-
-        self.bind('<Control-a>', select_all)
-        self.bind('<Control-A>', select_all)
-
-        self._focus_out()
 
     def _on_change(self, *args):
-        if self._empty:
-            return
+        text = self.text
 
-        if self._var.get() == '':
+        if text == '':
             self._object_list.filter(None)
         else:
             try:
-                regex = re.compile(self._var.get(), re.IGNORECASE)
+                regex = re.compile(text, re.IGNORECASE)
                 self['foreground'] = 'black'
             except re.error:
                 self['foreground'] = 'red'
@@ -335,16 +338,73 @@ class FilterEntry(ttk.Entry):
 
             self._object_list.filter(f)
 
+
+class ManualCommand(AsyncWidget, ttk.Frame):
+    def __init__(self, app : GUIClient, parent : ttk.Widget, client : ZmqClient, *args, **kwargs):
+        super().__init__(app=app, master=parent, *args, **kwargs)
+        self._client = client
+        self._empty = True
+
+        self._req = Entry(self, hint='enter command')
+        self._req.grid(column=0, row=0, sticky='we')
+        self.columnconfigure(0, weight=1)
+
+        self._req.bind('<Return>', self._on_enter)
+
+        def select_all(event):
+            if isinstance(event.widget, ttk.Entry):
+                event.widget.select_range(0, 'end')
+                event.widget.icursor('end')
+                return 'break'
+            elif isinstance(event.widget, tk.Text):
+                event.widget.tag_add('sel', '1.0', 'end')
+                event.widget.mark_set('insert', 'end')
+                return 'break'
+
+        self._req.bind('<Control-a>', select_all)
+        self._req.bind('<Control-A>', select_all)
+
+        self._rep = tk.Text(self, height=5)
+        self._rep.configure(state='disabled')
+        self._rep.bind('<Control-a>', select_all)
+        self._rep.bind('<Control-A>', select_all)
+
+        self.bind('<FocusIn>', self._focus_in)
+        self.bind('<FocusOut>', self._focus_out)
+
+        self._focus_out()
+
+    def _on_enter(self, event):
+        self._do_command(self._req.text)
+        return 'break'
+
+    @AsyncApp.worker_func
+    async def _do_command(self, command : str):
+        if not self._client.is_connected():
+            return
+        if command == '':
+            return
+
+        try:
+            self._response(await self._client.req(command))
+        except Exception as e:
+            self.logger.exception(f'Manual command: {e}')
+
+    @AsyncApp.tk_func
+    def _response(self, response : str):
+        self._rep.configure(state='normal')
+        self._rep.delete('1.0', 'end')
+        self._rep.insert('end', response)
+        self._rep.see('1.0')
+        self._rep.configure(state='disabled')
+
     def _focus_in(self, *args):
-        if self._empty:
-            self._var.set('')
-            self._empty = False
+        self._rep.grid(column=0, row=1, sticky='nsew', pady=(Style.grid_padding, 0))
+        self.rowconfigure(1, weight=1)
 
     def _focus_out(self, *args):
-        if self._var.get() == '':
-            self._empty = True
-            self._var.set('Filter (regex)')
-            self['foreground'] = 'grey'
+        self._rep.grid_forget()
+        self.rowconfigure(1, weight=0)
 
 
 
@@ -355,7 +415,17 @@ class GUIClient(AsyncApp):
         self._client_connections = set()
 
         self.root.title(f'libstored GUI')
-        self.root.geometry("800x600")
+
+        w = Style.root_width
+        h = Style.root_height
+
+        ws = self.root.winfo_screenwidth() # width of the screen
+        hs = self.root.winfo_screenheight() # height of the screen
+
+        x = (ws/2) - (w/2)
+        y = (hs/2) - (h/2)
+
+        self.root.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
         s = ttk.Style()
         s.theme_use('clam')
@@ -375,20 +445,23 @@ class GUIClient(AsyncApp):
         s.configure('Even.TButton', width=8, padding=3)
 
         connect = ClientConnection(self, self, self.client)
-        connect.grid(column=0, row=0, sticky='we', pady=Style.grid_padding, columnspan=2)
+        connect.grid(column=0, row=0, sticky='we', pady=Style.grid_padding, columnspan=3)
 
         scrollable_objects = ScrollableFrame(self)
         self._objects = ObjectList(self, scrollable_objects.content)
         self._objects.pack(fill='both', expand=True)
-        scrollable_objects.grid(column=0, row=2, sticky='nsew', columnspan=2)
+        scrollable_objects.grid(column=0, row=2, sticky='nsew', columnspan=3)
         self.connect(self._objects.changed, scrollable_objects.bind_scroll)
         self.connect(self._objects.filtered, scrollable_objects.updated_content)
 
         filter = FilterEntry(self, self._objects)
-        filter.grid(column=0, row=1, sticky='we', padx=(0, Style.grid_padding), pady=Style.grid_padding)
+        filter.grid(column=0, row=1, sticky='nswe', padx=(0, Style.grid_padding), pady=Style.grid_padding)
+
+        self._default_poll = Entry(self, text='1', hint='poll (s)', width=7, justify='right')
+        self._default_poll.grid(row=1, column=1, sticky='nswe', padx=Style.grid_padding, pady=Style.grid_padding)
 
         refresh_all = ttk.Button(self, text='Refresh all', command=self._refresh_all)
-        refresh_all.grid(row=1, column=1, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+        refresh_all.grid(row=1, column=2, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
 
         self._scrollable_polled = ScrollableFrame(self)
         self._polled_objects = ObjectList(self, self._scrollable_polled.content, filter=lambda o: o.polling.value is not None)
@@ -396,8 +469,12 @@ class GUIClient(AsyncApp):
         self.connect(self._polled_objects.changed, self._scrollable_polled.bind_scroll)
         self.connect(self._polled_objects.filtered, self._scrollable_polled.updated_content)
 
+        self._manual = ManualCommand(self, self, self.client)
+        self._manual.grid(column=0, row=4, sticky='nsew', columnspan=3, pady=(Style.grid_padding, 0))
+
         self.columnconfigure(0, weight=1)
-        self.rowconfigure(2, weight=1)
+        self.rowconfigure(2, weight=2)
+        self.rowconfigure(4, weight=0)
 
         self.bind("<Configure>", self._resize_polled_objects)
         self.connect(self._polled_objects.filtered, self._resize_polled_objects)
@@ -443,13 +520,6 @@ class GUIClient(AsyncApp):
         await self.client.close()
 
     @AsyncApp.worker_func
-    async def _wait_connected(self) -> tuple[str, str]:
-        if not self.client.is_connected:
-            await self.client.connected.wait()
-
-        return (await self.client.identification(), await self.client.version())
-
-    @AsyncApp.worker_func
     async def _refresh_all(self):
         await asyncio.gather(*(o.read(acquire_alias=False) for o in self.client.objects))
 
@@ -466,7 +536,7 @@ class GUIClient(AsyncApp):
                 height += o.winfo_reqheight()
 
         if height > 0:
-            self._scrollable_polled.grid(column=0, row=3, sticky='nsew', columnspan=2, pady=(Style.grid_padding * 10, 0))
+            self._scrollable_polled.grid(column=0, row=3, sticky='nsew', columnspan=3, pady=(Style.separator_padding, 0))
             self._scrollable_polled.update_idletasks()
             total_height = self.winfo_height()
             if total_height > 0:
@@ -477,6 +547,19 @@ class GUIClient(AsyncApp):
             self._scrollable_polled.canvas.config(height=height)
         else:
             self._scrollable_polled.grid_forget()
+
+    @AsyncApp.tk_func
+    def default_poll(self) -> float:
+        try:
+            v = locale.atof(self._default_poll.get())
+            if v <= 0:
+                v = 1.0
+        except ValueError:
+            v = 1.0
+
+        self._default_poll.delete(0, 'end')
+        self._default_poll.insert(0, locale.format_string('%g', v, grouping=True))
+        return v
 
 
 
@@ -499,8 +582,8 @@ def main():
     else:
         logging.basicConfig(level=logging.DEBUG)
 
-    with ZmqClient(host=args.server, port=args.port, multi=args.multi) as client:
-        GUIClient.run(worker=client.worker, client=client)
+    client = ZmqClient(host=args.server, port=args.port, multi=args.multi)
+    GUIClient.run(worker=client.worker, client=client)
 
 if __name__ == '__main__':
     main()
