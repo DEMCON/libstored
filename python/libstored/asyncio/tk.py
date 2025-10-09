@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
+from __future__ import annotations
+
 import asyncio
 import concurrent.futures
 import enum
@@ -15,9 +17,9 @@ import tkinter.ttk as ttk
 import queue
 import typing
 
-from .event import Event
-from .worker import AsyncioWorker, Work, default_worker
-from .zmq_client import Object
+from . import event as laio_event
+from . import worker as laio_worker
+from . import zmq_client as laio_zmq
 
 class AsyncTk:
     '''
@@ -239,32 +241,113 @@ class AsyncTk:
                 self.logger.debug('Exception in async call', exc_info=True)
                 future.set_exception(e)
 
-class AsyncApp(ttk.Frame):
+
+
+class Work:
+    '''
+    Mixin class for all async Tk modules.
+    '''
+    def __init__(self, atk : AsyncTk, logger : logging.Logger | None=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.logger = logger if logger is not None else logging.getLogger(self.__class__.__name__)
+
+        self._atk : AsyncTk = atk
+        self._connections : dict[typing.Hashable, laio_event.Event] = {}
+        self._connections_key = 0
+
+        self.atk.root.bind("<Destroy>", self._on_destroy, add=True)
+
+    @property
+    def atk(self) -> AsyncTk:
+        return self._atk
+
+    @staticmethod
+    def tk_func(f) -> typing.Callable[..., typing.Any | asyncio.Future | concurrent.futures.Future]:
+        '''
+        Decorator to mark a function to be executed in the tk context.
+
+        The decorated function must be a regular function.
+        A future is returned when called from another thread.
+        Otherwise, the call is blocking, and the result is returned.
+        '''
+
+        @functools.wraps(f)
+        def wrapper(self : Work, *args, **kwargs):
+            self.logger.debug(f'Scheduling {f} in tk')
+
+            if threading.current_thread() == self.atk.thread:
+                # Direct call in the same tk context.
+                return f(self, *args, **kwargs)
+            elif asyncio.get_running_loop() is not None:
+                # Schedule the function in the tk thread, and return an asyncio future.
+                future = self.atk.execute(f, self, *args, **kwargs)
+                return asyncio.wrap_future(future)
+            else:
+                # Schedule the function in the tk thread, and return a concurrent future.
+                return self.atk.execute(f, self, *args, **kwargs)
+        return wrapper
+
+    @tk_func
+    def connect(self, event : laio_event.Event, callback : typing.Callable) -> typing.Hashable:
+        k = (self, self._connections_key)
+        self._connections_key += 1
+        k = event.register(callback, k)
+        assert k not in self._connections
+        self._connections[k] = event
+        return k
+
+    @tk_func
+    def disconnect(self, id : typing.Hashable):
+        if id in self._connections:
+            event = self._connections[id]
+            del self._connections[id]
+            event.unregister(id)
+
+    @tk_func
+    def disconnect_all(self):
+        c = self._connections
+        self._connections = {}
+        for k, v in c.items():
+            v.unregister(k)
+
+    @tk_func
+    def cleanup(self):
+        self.disconnect_all()
+
+    def _on_destroy(self, event):
+        assert threading.current_thread() == self._atk.thread
+        if event.widget is self:
+            self.cleanup()
+
+    def __del__(self):
+        # Tk is not thread-safe. Ignore this check.
+        #assert threading.current_thread() == self._atk.thread
+
+        self.cleanup()
+
+
+
+class AsyncApp(Work, ttk.Frame):
     '''
     A ttk application, running Tk in a separate thread, and an asyncio worker in another thread.
     Calling between contexts is thread-safe, as long functions are decorated with @tk_func or @worker_func.
     '''
 
-    def __init__(self, atk : AsyncTk, worker : AsyncioWorker, logger=None, *args, **kwargs):
+    def __init__(self, atk : AsyncTk, worker : laio_worker.AsyncioWorker, *args, **kwargs):
         '''
         Initialize the application.
         Do not call directly. Use create() instead.
         '''
 
-        super().__init__(atk.root, *args, **kwargs)
-        self.logger = logger if logger is not None else logging.getLogger(__class__.__name__)
-        self._atk = atk
+        super().__init__(atk=atk, master=atk.root, *args, **kwargs)
         self._worker = worker
-        self._connections : dict[typing.Hashable, Event] = {}
-        self._connections_key = 0
-        self.bind("<Destroy>", self._on_destroy)
 
         self.grid(sticky='nsew')
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
 
     class Context:
-        def __init__(self, cls : typing.Type, worker : AsyncioWorker | Work | None=None, *args, **kwargs):
+        def __init__(self, cls : typing.Type, worker : laio_worker.AsyncioWorker | laio_worker.Work | None=None, *args, **kwargs):
             global default_worker
 
             self.cls = cls
@@ -272,14 +355,14 @@ class AsyncApp(ttk.Frame):
             self.kwargs = kwargs
             self.logger = logging.getLogger(cls.__name__)
 
-            if isinstance(worker, AsyncioWorker):
+            if isinstance(worker, laio_worker.AsyncioWorker):
                 self.worker = worker
-            elif isinstance(worker, Work):
+            elif isinstance(worker, laio_worker.Work):
                 self.worker = worker.worker
-            elif default_worker is not None:
-                self.worker = default_worker
+            elif laio_worker.default_worker is not None:
+                self.worker = laio_worker.default_worker
             else:
-                self.worker = AsyncioWorker()
+                self.worker = laio_worker.AsyncioWorker()
 
             self.atk = AsyncTk(cb_init=self._init)
 
@@ -332,11 +415,7 @@ class AsyncApp(ttk.Frame):
             return res.result() if res is not None else None
 
     @property
-    def atk(self) -> AsyncTk:
-        return self._atk
-
-    @property
-    def worker(self) -> AsyncioWorker:
+    def worker(self) -> laio_worker.AsyncioWorker:
         return self._worker
 
     @property
@@ -354,7 +433,9 @@ class AsyncApp(ttk.Frame):
         '''
 
         @functools.wraps(f)
-        def wrapper(self, *args, **kwargs):
+        def wrapper(self : AsyncApp, *args, **kwargs):
+            self.logger.debug(f'Scheduling {f} in worker')
+
             if asyncio.iscoroutinefunction(f):
                 if threading.current_thread() == self.worker.thread:
                     # Directly create coro in the same worker context and return future.
@@ -371,74 +452,19 @@ class AsyncApp(ttk.Frame):
                     return self.worker.execute(f, self, *args, **kwargs).result()
         return wrapper
 
-    @staticmethod
-    def tk_func(f) -> typing.Callable[..., typing.Any | asyncio.Future | concurrent.futures.Future]:
-        '''
-        Decorator to mark a function to be executed in the tk context.
-
-        The decorated function must be a regular function.
-        A future is returned when called from another thread.
-        Otherwise, the call is blocking, and the result is returned.
-        '''
-
-        @functools.wraps(f)
-        def wrapper(self, *args, **kwargs):
-            if threading.current_thread() == self.atk.thread:
-                # Direct call in the same tk context.
-                return f(self, *args, **kwargs)
-            elif threading.current_thread() == self.worker.thread:
-                # Schedule the function in the tk thread, and return an asyncio future.
-                future = self.atk.execute(f, self, *args, **kwargs)
-                return asyncio.wrap_future(future, loop=self.worker.loop)
-            else:
-                # Schedule the function in the tk thread, and return a concurrent future.
-                return self.atk.execute(f, self, *args, **kwargs)
-        return wrapper
-
-    def _on_destroy(self, event):
-        self.logger.debug("Window destroyed")
-        assert threading.current_thread() == self._atk.thread
-        # Make sure to clean up all worker tasks, as they keep a reference to
-        # Tk, which is going to be destroyed.
-        self.cleanup()
-
-    @tk_func
+    @Work.tk_func
     def cleanup(self):
-        self.disconnect_all()
+        super().cleanup()
 
         self.logger.debug('Cleanup worker')
         try:
             self.worker.stop(5)
         except TimeoutError:
+            self.logger.debug('Cleanup worker - forcing')
             self.worker.cancel()
 
     def __del__(self):
         assert not self.worker.is_running()
-
-        # Tk is not thread-safe. Ignore this check.
-        #assert threading.current_thread() == self._atk.thread
-
-    @tk_func
-    def connect(self, event : Event, callback : typing.Callable) -> typing.Hashable:
-        k = (self, self._connections_key)
-        self._connections_key += 1
-        k = event.register(callback, k)
-        assert k not in self._connections
-        self._connections[k] = event
-        return k
-
-    @tk_func
-    def disconnect(self, id : typing.Hashable):
-        if id in self._connections:
-            event = self._connections[id]
-            event.unregister(id)
-            del self._connections[id]
-
-    @tk_func
-    def disconnect_all(self):
-        for k, v in self._connections.items():
-            v.unregister(k)
-        self._connections.clear()
 
 
 
@@ -457,7 +483,7 @@ class AsyncWidget:
         return self._app
 
     @property
-    def worker(self) -> AsyncioWorker:
+    def worker(self) -> laio_worker.AsyncioWorker:
         return self._app.worker
 
     @property
@@ -476,7 +502,7 @@ class AsyncWidget:
     def tk_func(f) -> typing.Callable[..., typing.Any | asyncio.Future | concurrent.futures.Future]:
         return AsyncApp.tk_func(f)
 
-    def connect(self, event : Event, callback : typing.Callable) -> typing.Hashable:
+    def connect(self, event : laio_event.Event, callback : typing.Callable) -> typing.Hashable:
         return self.app.connect(event, callback)
 
     def disconnect(self, id : typing.Hashable):
@@ -504,7 +530,7 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
         FOCUSED = enum.auto()
         EDITING = enum.auto()
 
-    def __init__(self, app : AsyncApp, parent : tk.Widget, obj : Object, *args, **kwargs):
+    def __init__(self, app : AsyncApp, parent : tk.Widget, obj : laio_zmq.Object, *args, **kwargs):
         super().__init__(app=app, master=parent, *args, **kwargs)
         self._obj = obj
         self._updated : float = 0
@@ -553,7 +579,7 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
         return self.alive and self._state >= ZmqObjectEntry.State.VALID
 
     @property
-    def obj(self) -> Object:
+    def obj(self) -> laio_zmq.Object:
         return self._obj
 
     @property

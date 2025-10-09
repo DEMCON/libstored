@@ -40,9 +40,12 @@ class Event:
             return id
 
     def unregister(self, id : typing.Hashable):
+        c = []
         with self._lock:
             if id in self._callbacks:
+                c.append(self._callbacks[id])
                 del self._callbacks[id]
+        del c
 
     def pause(self):
         with self._lock:

@@ -946,7 +946,7 @@ class ZmqClient(Work):
         try:
             s.close(0)
         except asyncio.CancelledError:
-            raise
+            pass
         except:
             pass
 
