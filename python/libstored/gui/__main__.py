@@ -206,9 +206,9 @@ class Plotter(laio_tk.Work):
         if value is not None:
             self._data[o].append(value, o.t.value)
 
+        data.line = self._ax.plot([], [], label=o.name)[0]
         data.connection = self.connect(o.t, lambda: self._update(o, o.value, o.t.value))
 
-        data.line = self._ax.plot([], [], label=o.name)[0]
         self._update_legend()
 
         self.show()
@@ -360,9 +360,10 @@ class Plotter(laio_tk.Work):
 #
 
 class ClientConnection(laio_tk.AsyncWidget, ttk.Frame):
-    def __init__(self, app : laio_tk.AsyncApp, parent : ttk.Widget, client : laio.ZmqClient, *args, **kwargs):
+    def __init__(self, app : laio_tk.AsyncApp, parent : ttk.Widget, client : laio.ZmqClient, clear_state : bool=False, *args, **kwargs):
         super().__init__(app=app, master=parent, *args, **kwargs)
         self._client = client
+        self._clear_state = clear_state
 
         self.columnconfigure(1, weight=1)
 
@@ -445,7 +446,7 @@ class ClientConnection(laio_tk.AsyncWidget, ttk.Frame):
             await self.client.disconnect()
         else:
             try:
-                await self.client.connect(host, port, multi)
+                await self.client.connect(host, port, multi, default_state=self._clear_state)
                 self._after_connection(await self.client.identification(), await self.client.version())
             except asyncio.CancelledError:
                 raise
@@ -832,7 +833,7 @@ class ManualCommand(laio_tk.AsyncWidget, ttk.Frame):
 #
 
 class GUIClient(laio_tk.AsyncApp):
-    def __init__(self, client : laio.ZmqClient, *args, **kwargs):
+    def __init__(self, client : laio.ZmqClient, clear_state : bool=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._client = client
         self._client_connections = set()
@@ -871,7 +872,7 @@ class GUIClient(laio_tk.AsyncApp):
         s.map("Even.TCheckbutton", background=[("active", even_bg)])
         s.configure('Even.TButton', width=8, padding=3)
 
-        connect = ClientConnection(self, self, self.client)
+        connect = ClientConnection(self, self, self.client, clear_state)
         connect.grid(column=0, row=0, sticky='we', pady=Style.grid_padding)
 
         scrollable_objects = ScrollableFrame(self)
@@ -994,6 +995,7 @@ def main():
     parser.add_argument('-m', dest='multi', default=False,
         help='Enable multi-mode; allow multiple simultaneous connections to the same target, ' +
             'but it is less efficient.', action='store_true')
+    parser.add_argument('-c', dest='clear_state', default=False, help='Clear previously saved state', action='store_true')
 
     args = parser.parse_args()
 
@@ -1004,8 +1006,8 @@ def main():
     else:
         logging.basicConfig(level=logging.DEBUG)
 
-    client = laio.ZmqClient(host=args.server, port=args.port, multi=args.multi)
-    GUIClient.run(worker=client.worker, client=client)
+    client = laio.ZmqClient(host=args.server, port=args.port, multi=args.multi, use_state='gui')
+    GUIClient.run(worker=client.worker, client=client, clear_state=args.clear_state)
 
 if __name__ == '__main__':
     main()

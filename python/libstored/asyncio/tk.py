@@ -20,6 +20,7 @@ import typing
 from . import event as laio_event
 from . import worker as laio_worker
 from . import zmq_client as laio_zmq
+from .. import exceptions as lexc
 
 class AsyncTk:
     '''
@@ -56,7 +57,7 @@ class AsyncTk:
         '''
 
         if self._started:
-            raise RuntimeError("Mainloop already started")
+            raise lexc.InvalidState("Mainloop already started")
 
         self.logger.debug("Starting mainloop")
         self._thread = threading.Thread(target=self._run, daemon=False, name='AsyncTk')
@@ -75,7 +76,7 @@ class AsyncTk:
         '''
 
         if threading.current_thread() != self.thread:
-            raise RuntimeError("Accessing tk from wrong thread")
+            raise lexc.InvalidState("Accessing tk from wrong thread")
 
         assert self._root is not None
         return self._root
@@ -88,9 +89,9 @@ class AsyncTk:
         '''
 
         if threading.current_thread() != threading.main_thread():
-            raise RuntimeError("run() must be called from the main thread")
+            raise lexc.InvalidState("run() must be called from the main thread")
         if self.is_running():
-            raise RuntimeError("Mainloop already started")
+            raise lexc.InvalidState("Mainloop already started")
 
         self._run_from_main = True
         try:
@@ -222,7 +223,7 @@ class AsyncTk:
         '''
 
         if not self.is_running():
-            raise RuntimeError("Mainloop is not running")
+            raise lexc.InvalidState("Mainloop is not running")
 
         self.logger.debug("Queueing async call")
         future = concurrent.futures.Future()
@@ -288,10 +289,10 @@ class Work:
         return wrapper
 
     @tk_func
-    def connect(self, event : laio_event.Event, callback : typing.Callable) -> typing.Hashable:
+    def connect(self, event : laio_event.Event, callback : typing.Callable, *args, **kwargs) -> typing.Hashable:
         k = (self, self._connections_key)
         self._connections_key += 1
-        k = event.register(callback, k)
+        k = event.register(callback, k, *args, **kwargs)
         assert k not in self._connections
         self._connections[k] = event
         return k

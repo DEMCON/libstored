@@ -5,10 +5,15 @@
 from __future__ import annotations
 
 import asyncio
+import datetime
+import filelock
 import functools
+import json
 import keyword
 import locale
 import math
+import os
+import platformdirs
 import re
 import struct
 import time
@@ -17,10 +22,12 @@ import zmq
 import zmq.asyncio
 import zmq.utils.monitor
 
+from .. import libstored_version
 from .event import Event, Value, ValueWrapper
 from ..zmq_server import ZmqServer
 from .worker import Work, run_sync, run_async
 from ..heatshrink import HeatshrinkDecoder
+from .. import exceptions as lexc
 
 class ZmqClientWork(Work):
     def __init__(self, client : ZmqClient, *args, **kwargs):
@@ -42,7 +49,7 @@ class ZmqClientWork(Work):
     def client(self) -> ZmqClient:
         '''The ZmqClient this object belongs to.'''
         if not self.alive():
-            raise RuntimeError('Object destroyed, client connection closed')
+            raise lexc.Disconnected('Object destroyed, client connection closed')
         assert self._client is not None
         return self._client
 
@@ -88,7 +95,7 @@ class Object(ZmqClientWork, Value):
         self.format.value = 'default'
 
     @property
-    def name(self):
+    def name(self) -> str:
         '''The full name of this object.'''
         return self._name
 
@@ -332,7 +339,7 @@ class Object(ZmqClientWork, Value):
         req = b'w' + data + name.encode()
         rep = await self.client.req(req)
         if rep != b'!':
-            raise RuntimeError('Write failed')
+            raise lexc.OperationFailed('Write failed')
 
     def _encode_hex(self, data, zerostrip = False) -> bytes:
         s = b''.join([b'%02x' % b for b in data])
@@ -513,7 +520,7 @@ class Object(ZmqClientWork, Value):
         '''Set the value of this object from a string representation.'''
 
         if s == '':
-            self.set(None)
+            self.set(self.type())
         else:
             try:
                 self.set(self.interpret(s))
@@ -535,7 +542,7 @@ class Object(ZmqClientWork, Value):
         '''
 
         if not self.alive():
-            raise RuntimeError('Object destroyed, client connection closed')
+            raise lexc.InvalidState('Object destroyed, client connection closed')
 
         if not interval_s is None and interval_s < 0:
             raise ValueError('interval_s must be None or >= 0')
@@ -555,6 +562,50 @@ class Object(ZmqClientWork, Value):
     def poll_interval(self) -> float | None:
         '''Get the current polling interval, or None if not polling.'''
         return self._poll_interval_s
+
+
+
+    ###############################################
+    # State
+
+    def state(self) -> dict[str, dict[str, typing.Any]]:
+        '''Get the state of this object as a JSON-serializable dictionary.'''
+
+        default = True
+
+        s : dict[str, typing.Any] = {}
+
+        if self.format.value != 'default':
+            s['format'] = self.format.value
+            default = False
+
+        p = self.poll_interval
+        if not p is None:
+            s['poll_interval'] = p
+            default = False
+
+        return {} if default else { self.name: s }
+
+    @run_async
+    async def restore_state(self, state : dict):
+        '''Restore the state of this object from a dictionary as returned by state().'''
+
+        if not self.name in state:
+            return
+
+        s = state[self.name]
+
+        try:
+            if 'format' in s:
+                self.format.value = s['format']
+        except ValueError:
+            pass
+
+        try:
+            if 'poll_interval' in s:
+                await self.poll(float(s['poll_interval']))
+        except ValueError:
+            pass
 
 
 
@@ -587,7 +638,7 @@ class Stream(ZmqClientWork):
 
         cap = await self.client.capabilities()
         if not 's' in cap:
-            raise ValueError('Stream capability missing')
+            raise lexc.NotSupported('Stream capability missing')
 
         self._compressed = 'f' in cap
         self._initialized = True
@@ -738,7 +789,7 @@ class Macro(ZmqClientWork):
         cb = [x[1] for x in self._cmds.values()]
         values = rep.split(self._repsep)
         if len(cb) != len(values) + skip:
-            raise RuntimeError('Unexpected number of responses')
+            raise lexc.InvalidResponse('Unexpected number of responses')
 
         for i in range(0, len(values)):
             f = cb[i + skip]
@@ -761,7 +812,7 @@ class ZmqClient(Work):
 
     def __init__(self, host : str='localhost', port : int=ZmqServer.default_port,
                 multi : bool=False, timeout : float | None=None, context : None | zmq.asyncio.Context=None,
-                t : str | None = None,
+                t : str | None = None, use_state : str | None=None,
                 *args, **kwargs):
 
         super().__init__(*args, **kwargs)
@@ -776,6 +827,7 @@ class ZmqClient(Work):
         self._t : str | Object | None | bool = t
         self._t0 : float = 0
         self._timestamp_to_time = lambda t: t
+        self._use_state = use_state
 
         self._reset()
 
@@ -888,7 +940,8 @@ class ZmqClient(Work):
         self._req_task = None
 
     @run_sync
-    async def connect(self, host : str | None=None, port : int | None=None, multi : bool | None=None):
+    async def connect(self, host : str | None=None, port : int | None=None, \
+                      multi : bool | None=None, default_state : bool=False):
         '''Connect to the ZMQ server.'''
 
         await self._connect(host, port, multi)
@@ -899,10 +952,13 @@ class ZmqClient(Work):
 
         self.connected.trigger()
 
+        if not default_state:
+            await self.restore_state()
+
     @locked
     async def _connect(self, host : str | None=None, port : int | None=None, multi : bool | None=None):
         if self.is_connected():
-            raise RuntimeError('Already connected')
+            raise lexc.InvalidState('Already connected')
 
         if host is not None:
             self._host = host
@@ -943,6 +999,8 @@ class ZmqClient(Work):
         if s is None:
             # Not connected
             return
+
+        await self.save_state()
 
         self.logger.debug('disconnect')
         try:
@@ -1012,7 +1070,10 @@ class ZmqClient(Work):
                 elif self._req_task.cancelled():
                     # The exception is not due to us being cancelled.  Someone
                     # just aborted the req.  Raise another exception instead.
-                    raise RuntimeError('Request aborted')
+                    if not self.is_connected():
+                        raise lexc.Disconnected('Request aborted')
+                    else:
+                        raise lexc.OperationFailed('Request aborted')
 
             raise
         finally:
@@ -1020,7 +1081,7 @@ class ZmqClient(Work):
 
     async def _req(self, msg : bytes) -> bytes:
         if not self.is_connected():
-            raise RuntimeError('Not connected')
+            raise lexc.InvalidState('Not connected')
 
         assert self._socket is not None
         self.logger.debug('req %s', msg)
@@ -1050,7 +1111,7 @@ class ZmqClient(Work):
     async def echo(self, msg : str) -> str:
         '''Echo a message via the ZMQ server.'''
         if 'e' not in await self.capabilities():
-            raise RuntimeError('Echo command not supported')
+            raise lexc.NotSupported('Echo command not supported')
 
         return (await self.req(b'e' + msg.encode())).decode()
 
@@ -1092,16 +1153,16 @@ class ZmqClient(Work):
         '''Read memory from the connected device.'''
 
         if 'R' not in await self.capabilities():
-            raise RuntimeError('ReadMem command not supported')
+            raise lexc.NotSupported('ReadMem command not supported')
 
         rep = await self.req(f'R{pointer:x} {size}')
 
         if rep == '?':
-            raise RuntimeError('ReadMem command failed')
+            raise lexc.OperationFailed('ReadMem command failed')
 
         if len(rep) & 1:
             # Odd number of bytes.
-            raise ValueError('Invalid ReadMem response')
+            raise lexc.OperationFailed('Invalid ReadMem response')
 
         res = bytearray()
         for i in range(0, len(rep), 2):
@@ -1112,14 +1173,14 @@ class ZmqClient(Work):
     async def write_mem(self, pointer : int, data : bytearray):
         '''Write memory to the connected device.'''
         if 'W' not in await self.capabilities():
-            raise RuntimeError('WriteMem command not supported')
+            raise lexc.NotSupported('WriteMem command not supported')
 
         req = f'W{pointer:x} '
         for i in range(0, len(data)):
             req += f'{data[i]:02x}'
         rep = await self.req(req)
         if rep != '!':
-            raise RuntimeError('WriteMem command failed')
+            raise lexc.OperationFailed('WriteMem command failed')
 
 
 
@@ -1141,7 +1202,7 @@ class ZmqClient(Work):
             return self.objects
 
         if 'l' not in await self.capabilities():
-            raise RuntimeError('List command not supported')
+            raise lexc.NotSupported('List command not supported')
 
         res = []
         for o in (await self.req('l')).split('\n'):
@@ -1149,7 +1210,7 @@ class ZmqClient(Work):
                 continue
             obj = Object.create(o, self)
             if obj is None:
-                raise ValueError(f'Invalid List response: "{o}"')
+                raise lexc.InvalidResponse(f'Invalid List response: "{o}"')
 
             res.append(obj)
             pyname = self._pyname(obj.name)
@@ -1741,6 +1802,9 @@ class ZmqClient(Work):
                         await asyncio.sleep(interval_s - dt)
         except asyncio.CancelledError:
             pass
+        except lexc.Disconnected as e:
+            self.logger.debug('periodic task stopped; %s', e)
+            pass
         except Exception as e:
             self.logger.exception('Exception in periodic task: %s', e)
         finally:
@@ -1783,3 +1847,109 @@ class ZmqClient(Work):
 
     ##############################################
     # State
+
+    def state(self) -> dict:
+        '''Get the current state of the client.'''
+
+        if not self.is_connected:
+            return {}
+
+        id = self._identification
+        if not id:
+            return {}
+
+        objs = {}
+        for o in self.objects:
+            objs.update(o.state())
+
+        s = {
+            'identification': id,
+            'version': self._version,
+            'last': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'objects': objs
+        }
+
+        return {id: s}
+
+    @run_sync
+    async def save_state(self, state_name : str | None=None):
+        '''Save the current state to a file.'''
+
+        filename = self.state_file(state_name)
+        if filename is None:
+            return
+
+        s = self.state()
+
+        async with filelock.AsyncFileLock(f'{filename}.lock'):
+            state = {}
+            try:
+                with open(filename, 'r') as f:
+                    state = json.load(f)
+            except FileNotFoundError:
+                pass
+            except json.JSONDecodeError:
+                pass
+
+            if not s:
+                # Nothing to save, remove entry
+                if self._identification in state:
+                    del state[self._identification]
+            else:
+                state.update(s)
+
+            state['_version'] = libstored_version
+
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
+            with open(filename, 'w') as f:
+                json.dump(state, f, indent=4, sort_keys=True)
+
+        self.logger.debug('saved state to %s', filename)
+
+    @run_sync
+    async def restore_state(self, state_name : str | None=None):
+        '''Restore the state from a file.'''
+
+        filename = self.state_file(state_name)
+        if not filename:
+            return
+
+        id = await self.identification()
+        if not id:
+            return
+
+        obj = await self.list()
+        if not obj:
+            return
+
+        async with filelock.AsyncFileLock(f'{filename}.lock'):
+            try:
+                with open(filename, 'r') as f:
+                    state = json.load(f)
+            except FileNotFoundError:
+                self.logger.debug('cannot restore state from %s; not found', filename)
+                return
+            except json.JSONDecodeError as e:
+                self.logger.warning('cannot restore state from %s; invalid JSON: %s', filename, e)
+                return
+
+            if not id in state:
+                return
+
+            s = state[id]
+            if not 'objects' in s:
+                return
+
+            for o in obj:
+                await o.restore_state(s['objects'])
+
+        self.logger.debug('restored state from %s', filename)
+
+    def state_file(self, state_name : str | None=None) -> str | None:
+        if not state_name:
+            state_name = self._use_state
+
+        if not state_name:
+            return None
+
+        return os.path.join(platformdirs.user_config_dir('libstored'), state_name + '.json')
