@@ -11,6 +11,8 @@ import time
 import logging
 import typing
 
+from .. import exceptions as lexc
+
 default_worker = None
 
 class AsyncioWorker:
@@ -52,10 +54,19 @@ class AsyncioWorker:
 
         try:
             self._loop.run_forever()
-            tasks = asyncio.all_tasks(self._loop)
-            for t in [t for t in tasks if not (t.done() or t.cancelled())]:
-                # give canceled tasks the last chance to run
-                self._loop.run_until_complete(t)
+            while True:
+                tasks = asyncio.all_tasks(self._loop)
+                if not tasks:
+                    break
+
+                for t in [t for t in tasks if not (t.done() or t.cancelled())]:
+                    # give canceled tasks the last chance to run
+                    try:
+                        self._loop.run_until_complete(t)
+                    except asyncio.CancelledError:
+                        pass
+                    except:
+                        self.logger.debug('Exception in %s during shutdown', t, exc_info=True)
         finally:
             self._loop.close()
             self._loop = None
@@ -76,7 +87,7 @@ class AsyncioWorker:
         '''
 
         if not self.is_running():
-            raise RuntimeError("Event loop is not running")
+            raise lexc.InvalidState("Event loop is not running")
 
         global default_worker
         default_worker = self
@@ -153,7 +164,7 @@ class AsyncioWorker:
         '''
 
         if not self.is_running():
-            raise RuntimeError("Event loop is not running")
+            raise lexc.InvalidState("Event loop is not running")
 
         if asyncio.coroutines.iscoroutine(f):
             if len(args) > 0 or len(kwargs) > 0:
@@ -183,6 +194,8 @@ class AsyncioWorker:
         except asyncio.CancelledError:
             raise
         except KeyboardInterrupt:
+            raise
+        except lexc.Disconnected:
             raise
         except Exception as e:
             self.logger.debug('Exception in %s', asyncio.current_task(self._loop), exc_info=True)

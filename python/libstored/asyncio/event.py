@@ -26,7 +26,7 @@ class Event:
     def __str__(self) -> str:
         return self._event_name if self._event_name is not None else super().__str__()
 
-    def register(self, callback : typing.Callable, id : typing.Hashable | None=None):
+    def register(self, callback : typing.Callable, id : typing.Hashable | None=None) -> typing.Hashable:
         with self._lock:
             if id is not None and id in self._callbacks:
                 raise KeyError(f"Callback with id {id} already registered")
@@ -63,7 +63,7 @@ class Event:
             self.trigger(*trigger[0], **trigger[1])
 
     @property
-    def paused(self):
+    def paused(self) -> bool:
         return self._paused
 
     def trigger(self, *args, **kwargs):
@@ -141,6 +141,12 @@ class ValueWrapper(Event):
         if value is not None and not isinstance(value, self.type):
             raise TypeError(f"expected {self.type}, got {type(value)}")
         super().trigger(value if value is not None else self.value)
+
+    def register(self, *args, trigger=True, **kwargs) -> typing.Hashable:
+        id = super().register(*args, *kwargs)
+        if trigger:
+            self.trigger()
+        return id
 
     @property
     def type(self) -> typing.Type:
