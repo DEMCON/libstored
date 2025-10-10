@@ -1298,7 +1298,8 @@ public:
 		if(Type::isFunction(type())) {
 			len = callback(false, dst, len);
 		} else {
-			entryRO(len);
+			size_t buf_len = len;
+			entryRO(buf_len);
 			if(unlikely(type() == Type::String)) {
 				char* dst_ = static_cast<char*>(dst);
 				char const* buffer_ = static_cast<char const*>(m_buffer);
@@ -1312,7 +1313,7 @@ public:
 				else
 					memcpy(dst, m_buffer, len);
 			}
-			exitRO(len);
+			exitRO(buf_len);
 		}
 		return len;
 	}
