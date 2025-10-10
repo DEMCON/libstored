@@ -469,14 +469,13 @@ class AsyncApp(Work, ttk.Frame):
 
 
 
-class AsyncWidget:
+class AsyncWidget(Work):
     '''
     Mixin class for all async widgets.
     '''
 
-    def __init__(self, app : AsyncApp, logger : logging.Logger | None= None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.logger = logger if logger is not None else logging.getLogger(self.__class__.__name__)
+    def __init__(self, app : AsyncApp, *args, **kwargs):
+        super().__init__(atk=app.atk, *args, **kwargs)
         self._app = app
 
     @property
@@ -488,32 +487,12 @@ class AsyncWidget:
         return self._app.worker
 
     @property
-    def atk(self) -> AsyncTk:
-        return self._app.atk
-
-    @property
     def root(self) -> tk.Tk:
         return self._app.root
 
     @staticmethod
     def worker_func(f) -> typing.Callable[..., typing.Any | asyncio.Future | concurrent.futures.Future]:
         return AsyncApp.worker_func(f)
-
-    @staticmethod
-    def tk_func(f) -> typing.Callable[..., typing.Any | asyncio.Future | concurrent.futures.Future]:
-        return AsyncApp.tk_func(f)
-
-    def connect(self, event : laio_event.Event, callback : typing.Callable) -> typing.Hashable:
-        return self.app.connect(event, callback)
-
-    def disconnect(self, id : typing.Hashable):
-        self.app.disconnect(id)
-
-    def __del__(self):
-        pass
-        # Tk is not thread-safe. Ignore this check.
-        #assert threading.current_thread() == self.atk.thread, \
-        #    f'Widget {repr(self)} deleted from wrong thread'
 
 
 
@@ -531,7 +510,8 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
         FOCUSED = enum.auto()
         EDITING = enum.auto()
 
-    def __init__(self, app : AsyncApp, parent : tk.Widget, obj : laio_zmq.Object, *args, **kwargs):
+    def __init__(self, app : AsyncApp, parent : tk.Widget, obj : laio_zmq.Object,
+                 rate_limit_Hz=3, *args, **kwargs):
         super().__init__(app=app, master=parent, *args, **kwargs)
         self._obj = obj
         self._updated : float = 0
@@ -539,7 +519,9 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
 
         self._var = tk.StringVar()
         self['textvariable'] = self._var
-        self.connect(self.obj.value_str, self._refresh)
+        rate_limit = laio_event.AsyncioRateLimit(worker=self.worker, Hz=rate_limit_Hz)
+        self.connect(rate_limit, self._refresh)
+        self.connect(self.obj.value_str, rate_limit)
         self.bind('<Return>', self._write)
         self.bind('<KP_Enter>', self._write)
         self.bind('<FocusIn>', self._focus_in)

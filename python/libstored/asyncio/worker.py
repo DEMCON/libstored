@@ -221,6 +221,14 @@ class Work:
     def worker(self) -> AsyncioWorker:
         return self._worker
 
+    @property
+    def loop(self) -> asyncio.AbstractEventLoop:
+        l = self.worker.loop
+        if l is None:
+            raise lexc.InvalidState("Event loop is not running")
+
+        return l
+
 def run_async(f : typing.Callable) -> typing.Callable:
     '''
     Decorator to start a function asynchronously in the default worker, and

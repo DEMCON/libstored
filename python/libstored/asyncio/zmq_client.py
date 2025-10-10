@@ -547,16 +547,19 @@ class Object(ZmqClientWork, Value):
         if not interval_s is None and interval_s < 0:
             raise ValueError('interval_s must be None or >= 0')
 
+        self._poll_slow_stop()
+        self._poll_interval_s = interval_s
+        await self.client._poll(self, interval_s)
+        self.polling.trigger()
+
+    def _poll_slow_stop(self):
         if self._poller is not None:
             self._poller.cancel()
             self._poller = None
-            self._poll_interval_s = None
 
-        if interval_s is not None:
-            self._poll_interval_s = interval_s
-            self._poller = await self.client.periodic(interval_s, self._read)
-
-        self.polling.trigger()
+    async def _poll_slow(self, interval_s : float):
+        self._poll_slow_stop()
+        self._poller = await self.client.periodic(interval_s, self._read)
 
     @property
     def poll_interval(self) -> float | None:
@@ -801,6 +804,12 @@ class Macro(ZmqClientWork):
     def __len__(self):
         return len(self._cmds)
 
+    def __getitem__(self, key: typing.Hashable):
+        return self._cmds[key]
+
+    def __iter__(self):
+        return iter(self._cmds)
+
 
 
 class ZmqClient(Work):
@@ -889,9 +898,9 @@ class ZmqClient(Work):
         return self.socket is not None
 
     def _reset(self):
-        self._capabilities = None
-        self._identification = None
-        self._version = None
+        self._capabilities : str | None = None
+        self._identification : str | None = None
+        self._version : str | None = None
 
         self._available_aliases : list[str] | None = None
         self._temporary_aliases : dict[str, Object] = {}
@@ -932,12 +941,19 @@ class ZmqClient(Work):
         if hasattr(self, '_monitor'):
             if self._monitor is not None:
                 self._monitor.cancel()
-        self._monitor = None
+        self._monitor : asyncio.Task | None = None
 
         if hasattr(self, '_req_task'):
             if self._req_task is not None:
                 self._req_task.cancel()
-        self._req_task = None
+        self._req_task : asyncio.Task | None = None
+
+        if hasattr(self, '_fast_poll_task'):
+            if self._fast_poll_task is not None:
+                self._fast_poll_task.cancel()
+        self._fast_poll_task = None
+        self._fast_poll_macro : Macro | None = None
+        self._fast_poll_interval_s : float = self.fast_poll_threshold_s
 
     @run_sync
     async def connect(self, host : str | None=None, port : int | None=None, \
@@ -1806,7 +1822,7 @@ class ZmqClient(Work):
             self.logger.debug('periodic task stopped; %s', e)
             pass
         except Exception as e:
-            self.logger.exception('Exception in periodic task: %s', e)
+            self.logger.exception('exception in periodic task: %s', e)
         finally:
             t = asyncio.current_task()
             try:
@@ -1814,6 +1830,73 @@ class ZmqClient(Work):
                     self._periodic_tasks.remove(t)
             except:
                 pass
+
+    fast_poll_threshold_s = 0.9
+    slow_poll_threshold_s = 1.0
+
+    async def _poll(self, o : Object, interval_s : float | None):
+        if o not in self.objects:
+            raise ValueError('Object not managed by this client')
+
+        if interval_s is None:
+            # Stop slow polling, if any.
+            o._poll_slow_stop()
+
+            # Stop fast polling, if any.
+            if self._fast_poll_macro is not None and o in self._fast_poll_macro:
+                await self._fast_poll_macro.remove(o)
+                await self.alias(o, temporary=True, permanentRef=self._fast_poll_macro)
+
+                if len(self._fast_poll_macro) == 0:
+                    await self._poll_fast_stop()
+
+            # All stopped.
+            return
+
+        if interval_s < 0:
+            interval_s = 0
+
+        if interval_s < self.fast_poll_threshold_s:
+            if await self._poll_fast(o, interval_s):
+                # Success.
+                return
+
+        # Fallback to slow polling.
+        await o._poll_slow(max(interval_s, self.slow_poll_threshold_s))
+
+    async def _poll_fast_stop(self):
+        if self._fast_poll_task is not None:
+            t = self._fast_poll_task
+            self._fast_poll_task = None
+            t.cancel()
+
+    async def _poll_fast(self, o : Object, interval_s : float):
+        if self._fast_poll_macro is None:
+            self._fast_poll_macro = await self.macro()
+
+        assert self._fast_poll_macro is not None
+        if o not in self._fast_poll_macro:
+            await self.alias(o, temporary=False, permanentRef=self._fast_poll_macro)
+            a = await o.short_name()
+            if not await self._fast_poll_macro.add(cmd=f'r{a}', cb=o.handle_read, key=o):
+                # Cannot do a fast poll.
+                return False
+
+        if interval_s < self._fast_poll_interval_s:
+            self._fast_poll_interval_s = interval_s
+            await self._poll_fast_stop()
+
+        if self._fast_poll_task is None:
+            self._fast_poll_task = await self.periodic(self._fast_poll_interval_s, self._poll_fast_task)
+
+        return True
+
+    async def _poll_fast_task(self):
+        if self._fast_poll_macro is None:
+            await self._poll_fast_stop()
+            return
+
+        await self._fast_poll_macro.run()
 
 
 
@@ -1946,6 +2029,8 @@ class ZmqClient(Work):
         self.logger.debug('restored state from %s', filename)
 
     def state_file(self, state_name : str | None=None) -> str | None:
+        '''Get the state file name.'''
+
         if not state_name:
             state_name = self._use_state
 

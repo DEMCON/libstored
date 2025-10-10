@@ -8,6 +8,8 @@ import logging
 import threading
 import typing
 
+from . import worker as laio_worker
+
 class Event:
     logger = logging.getLogger(__name__)
 
@@ -46,6 +48,10 @@ class Event:
                 c.append(self._callbacks[id])
                 del self._callbacks[id]
         del c
+
+    def __len__(self) -> int:
+        with self._lock:
+            return len(self._callbacks)
 
     def pause(self):
         with self._lock:
@@ -90,13 +96,22 @@ class Event:
             except Exception as e:
                 self.logger.exception(f'Exception in Event callback: {e}')
 
+    def __call__(self, *args, **kwargs):
+        self.trigger(*args, **kwargs)
+
     async def wait(self):
         loop = asyncio.get_event_loop()
         fut = loop.create_future()
+
         def _callback():
             if not fut.done():
                 fut.set_result(None)
-        key = self.register(_callback)
+
+        def _safe_callback():
+            # Potentially from another thread.
+            loop.call_soon_threadsafe(_callback)
+
+        key = self.register(_safe_callback)
         try:
             await fut
         finally:
@@ -169,3 +184,68 @@ class Value(ValueWrapper):
         if self._value != value:
             self._value = value
             self.trigger()
+
+class AsyncioRateLimit(laio_worker.Work, Event):
+    '''
+    Event that can be triggered, but not more often than a specified minimum interval.
+
+    If triggered more often, only the last trigger arguments are used, and the event
+    will be triggered after the minimum interval has passed.
+
+    The trigger() method is thread-safe.
+    The timer callback is executed in the worker's event loop.
+    '''
+
+    def __init__(self, Hz : float | None=None, min_interval_s : float | None=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if Hz is not None and min_interval_s is not None:
+            raise ValueError("Only one of Hz and min_interval_s can be specified")
+        if Hz is None and min_interval_s is None:
+            raise ValueError("One of Hz and min_interval_s must be specified")
+        if Hz is not None:
+            if Hz <= 0:
+                raise ValueError("Hz must be positive")
+            min_interval_s = 1.0 / Hz
+
+        assert min_interval_s is not None
+        self._min_interval_s = max(0, min_interval_s)
+        self._last_trigger = 0.0
+        self._timer : asyncio.TimerHandle | None = None
+        self._args : tuple[tuple, dict] = ((), {})
+
+    def unregister(self, id : typing.Hashable):
+        super().unregister(id)
+        if len(self) == 0 and self._timer is not None:
+            self._timer.cancel()
+            self._timer = None
+
+    def trigger(self, *args, **kwargs):
+        if self.worker.thread is not threading.current_thread():
+            self.loop.call_soon_threadsafe(self.trigger, *args, **kwargs)
+            return
+
+        now = self.loop.time()
+        if now - self._last_trigger >= self._min_interval_s:
+            if self._timer is not None:
+                self._timer.cancel()
+                self._timer = None
+
+            self._last_trigger = now
+            super().trigger(*args, **kwargs)
+        else:
+            # Only save last arguments for timer callback.
+            self._args = (args, kwargs)
+
+            if self._timer is None:
+                delay = self._min_interval_s - (now - self._last_trigger)
+                self._timer = self.loop.call_later(delay, self._timer_callback)
+
+    def _timer_callback(self):
+        self._timer = None
+        self.trigger(*self._args[0], **self._args[1])
+
+    def __del__(self):
+        if self._timer is not None:
+            self._timer.cancel()
+            self._timer = None
