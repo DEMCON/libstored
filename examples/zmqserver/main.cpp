@@ -39,8 +39,12 @@ protected:
 
 	void __compute__length_of__a_string(bool set, uint32_t& value)
 	{
-		if(!set)
-			value = (uint32_t)strlen(static_cast<char*>(a_string.buffer()));
+		if(!set) {
+			auto v = a_string.variant();
+			v.entryRO();
+			value = (uint32_t)strlen(static_cast<char*>(v.buffer()));
+			v.exitRO();
+		}
 	}
 
 	void __stats__ZMQ_messages(bool set, uint32_t& value)
