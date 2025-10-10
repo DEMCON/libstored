@@ -387,15 +387,17 @@ class Object(ZmqClientWork, Value):
             if isinstance(value, str) or isinstance(value, bytes):
                 value = value[0:self.size]
 
+        self.t.pause()
+        self.t.value = t
+
         if isinstance(value, float) and math.isnan(value) and self.type == float and math.isnan(self.value):
             # Not updated, even though value != self._value would be True
             pass
         elif value != self.value:
-            self.t.pause()
-            self.t.value = t
             self.value = value
             self.value_str.trigger()
-            self.t.resume()
+
+        self.t.resume()
 
 
 

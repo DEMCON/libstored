@@ -29,6 +29,11 @@ from .. import tk as ltk
 
 from ..zmq_server import ZmqServer
 
+
+#####################################################################
+# Style
+#
+
 def darken_color(color, factor=0.9):
     color = color.lstrip('#')
     lv = len(color)
@@ -43,6 +48,11 @@ class Style:
     separator_padding = grid_padding * 10
 
 
+
+#####################################################################
+# Plotter
+#
+
 class PlotData:
     WINDOW_s = 30
 
@@ -52,7 +62,7 @@ class PlotData:
         self.connection : typing.Hashable | None = None
         self.line : plt.Line2D | None = None # type: ignore
 
-    def append(self, value, t=time.time()):
+    def append(self, value : float, t=time.time()):
         self.t.append(t)
         self.values.append(value)
 
@@ -178,7 +188,7 @@ class Plotter(laio_tk.Work):
         if o in self._data:
             return
 
-        if not o.is_fixed:
+        if not o.is_fixed():
             return
 
         self.logger.debug(f'Plot {o.name}')
@@ -196,7 +206,7 @@ class Plotter(laio_tk.Work):
         if value is not None:
             self._data[o].append(value, o.t.value)
 
-        data.connection = self.connect(o, lambda: self._update(o, o.value, o.t.value))
+        data.connection = self.connect(o.t, lambda: self._update(o, o.value, o.t.value))
 
         data.line = self._ax.plot([], [], label=o.name)[0]
         self._update_legend()
@@ -216,7 +226,7 @@ class Plotter(laio_tk.Work):
             return
 
         data = self._data[o]
-        data.append(float(value), t)
+        data.append(value, t)
         self._changed.add(data)
         self._timer_start()
 
@@ -331,7 +341,7 @@ class Plotter(laio_tk.Work):
         self.pause(False)
 
     @laio_tk.Work.tk_func
-    def togglePause(self):
+    def toggle_pause(self):
         self.pause(not self._paused)
 
     def _paused_get(self) -> bool:
@@ -344,6 +354,10 @@ class Plotter(laio_tk.Work):
         return len(self._data) > 0
 
 
+
+#####################################################################
+# GUI elements
+#
 
 class ClientConnection(laio_tk.AsyncWidget, ttk.Frame):
     def __init__(self, app : laio_tk.AsyncApp, parent : ttk.Widget, client : laio.ZmqClient, *args, **kwargs):
@@ -455,7 +469,7 @@ class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
         self._label = ttk.Label(self, text=obj.name)
         self._label.grid(row=0, column=0, sticky='w', padx=(0, Style.grid_padding), pady=Style.grid_padding)
 
-        self._show_plot = show_plot and Plotter.available and plotter
+        self._show_plot = show_plot and Plotter.available and plotter and obj.is_fixed()
         self._plot_var = tk.BooleanVar(value=False)
         self._plot = ttk.Checkbutton(self, variable=self._plot_var, command=self._on_plot_check_change)
 
@@ -683,6 +697,67 @@ class FilterEntry(ltk.Entry):
             self._object_list.filter(f)
 
 
+
+class Tools(laio_tk.Work, ttk.Frame):
+    def __init__(self, app : GUIClient, parent : ttk.Widget, \
+                 filter_objects : ObjectList, refresh_command : typing.Callable[[], typing.Any], *args, **kwargs):
+        super().__init__(atk=app.atk, master=parent, *args, **kwargs)
+        self._app = app
+
+        filter = FilterEntry(self, filter_objects)
+        filter.grid(column=0, row=0, sticky='nswe', padx=(0, Style.grid_padding), pady=Style.grid_padding)
+
+        self._plot = None
+        if plotter is not None:
+            self._plot = ttk.Button(self, text='Show plots', command=self._on_plot, width=12)
+            self._plot.grid(column=1, row=0, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+            self.connect(plotter.plotting, self._on_plotter_update)
+            self.connect(plotter.paused, self._on_plotter_update)
+            self._on_plotter_update()
+
+        self._default_poll = ltk.Entry(self, text='1', hint='poll (s)', width=7, justify='right')
+        self._default_poll.grid(row=0, column=2, sticky='nswe', padx=Style.grid_padding, pady=Style.grid_padding)
+
+        refresh_all = ttk.Button(self, text='Refresh all', command=refresh_command)
+        refresh_all.grid(row=0, column=3, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+
+        self.columnconfigure(0, weight=1)
+
+    def default_poll(self) -> float:
+        try:
+            v = locale.atof(self._default_poll.get())
+            if v <= 0:
+                v = 1.0
+        except ValueError:
+            v = 1.0
+
+        self._default_poll.delete(0, 'end')
+        self._default_poll.insert(0, locale.format_string('%g', v, grouping=True))
+        return v
+
+    def _on_plotter_update(self):
+        assert self._plot is not None
+
+        if not plotter or not plotter.plotting.value:
+            self._plot['state'] = 'disabled'
+            self._plot['text'] = 'No plots'
+        else:
+            self._plot['state'] = 'normal'
+            if plotter.paused.value:
+                self._plot['text'] = 'Resume plot'
+            else:
+                self._plot['text'] = 'Pause plot'
+
+    def _on_plot(self):
+        assert plotter is not None
+
+        if not plotter.plotting.value:
+            return
+
+        plotter.toggle_pause()
+
+
+
 class ManualCommand(laio_tk.AsyncWidget, ttk.Frame):
     def __init__(self, app : GUIClient, parent : ttk.Widget, client : laio.ZmqClient, *args, **kwargs):
         super().__init__(app=app, master=parent, *args, **kwargs)
@@ -752,6 +827,10 @@ class ManualCommand(laio_tk.AsyncWidget, ttk.Frame):
 
 
 
+#####################################################################
+# GUI
+#
+
 class GUIClient(laio_tk.AsyncApp):
     def __init__(self, client : laio.ZmqClient, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -793,23 +872,17 @@ class GUIClient(laio_tk.AsyncApp):
         s.configure('Even.TButton', width=8, padding=3)
 
         connect = ClientConnection(self, self, self.client)
-        connect.grid(column=0, row=0, sticky='we', pady=Style.grid_padding, columnspan=3)
+        connect.grid(column=0, row=0, sticky='we', pady=Style.grid_padding)
 
         scrollable_objects = ScrollableFrame(self)
         self._objects = ObjectList(self, scrollable_objects.content)
         self._objects.pack(fill='both', expand=True)
-        scrollable_objects.grid(column=0, row=2, sticky='nsew', columnspan=3)
+        scrollable_objects.grid(column=0, row=2, sticky='nsew')
         self.connect(self._objects.changed, scrollable_objects.bind_scroll)
         self.connect(self._objects.filtered, scrollable_objects.updated_content)
 
-        filter = FilterEntry(self, self._objects)
-        filter.grid(column=0, row=1, sticky='nswe', padx=(0, Style.grid_padding), pady=Style.grid_padding)
-
-        self._default_poll = ltk.Entry(self, text='1', hint='poll (s)', width=7, justify='right')
-        self._default_poll.grid(row=1, column=1, sticky='nswe', padx=Style.grid_padding, pady=Style.grid_padding)
-
-        refresh_all = ttk.Button(self, text='Refresh all', command=self._refresh_all)
-        refresh_all.grid(row=1, column=2, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+        self._tools = Tools(app=self, parent=self, filter_objects=self._objects, refresh_command=self._refresh_all)
+        self._tools.grid(column=0, row=1, sticky='nswe', pady=Style.grid_padding)
 
         self._scrollable_polled = ScrollableFrame(self)
         self._polled_objects = ObjectList(self, self._scrollable_polled.content, filter=lambda o: o.polling.value is not None, show_plot=True)
@@ -818,7 +891,7 @@ class GUIClient(laio_tk.AsyncApp):
         self.connect(self._polled_objects.filtered, self._scrollable_polled.updated_content)
 
         self._manual = ManualCommand(self, self, self.client)
-        self._manual.grid(column=0, row=4, sticky='nsew', columnspan=3, pady=(Style.grid_padding, 0))
+        self._manual.grid(column=0, row=4, sticky='nsew', pady=(Style.grid_padding, 0))
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(2, weight=2)
@@ -891,32 +964,26 @@ class GUIClient(laio_tk.AsyncApp):
                 height += o.winfo_reqheight()
 
         if height > 0:
-            self._scrollable_polled.grid(column=0, row=3, sticky='nsew', columnspan=3, pady=(Style.separator_padding, 0))
+            self._scrollable_polled.grid(column=0, row=3, sticky='nsew', pady=(Style.separator_padding, 0))
             self._scrollable_polled.update_idletasks()
             total_height = self.winfo_height()
             if total_height > 0:
                 max_height = total_height // 3
                 if height > max_height:
                     height = max_height
-            print(f'Setting polled height to {height}')
             self._scrollable_polled.canvas.config(height=height)
         else:
             self._scrollable_polled.grid_forget()
 
     @laio_tk.AsyncApp.tk_func
     def default_poll(self) -> float:
-        try:
-            v = locale.atof(self._default_poll.get())
-            if v <= 0:
-                v = 1.0
-        except ValueError:
-            v = 1.0
-
-        self._default_poll.delete(0, 'end')
-        self._default_poll.insert(0, locale.format_string('%g', v, grouping=True))
-        return v
+        return self._tools.default_poll()
 
 
+
+#####################################################################
+# CLI
+#
 
 def main():
     parser = argparse.ArgumentParser(prog=sys.modules[__name__].__package__, description='ZMQ GUI client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)

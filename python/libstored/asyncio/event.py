@@ -114,7 +114,14 @@ class ValueWrapper(Event):
 
     @property
     def value(self) -> typing.Any:
-        return None if self._get is None else self._get()
+        if self._get is None:
+            return None
+        x = self._get()
+
+        if x is not None and not isinstance(x, self.type):
+            raise TypeError(f"expected {self.type}, getter returned {type(x)}")
+
+        return x
 
     @value.setter
     def value(self, value : typing.Any):
@@ -130,13 +137,10 @@ class ValueWrapper(Event):
     def set(self, value : typing.Any):
         self.value = value
 
-    def trigger(self):
-        self._trigger(self.value)
-
-    def _trigger(self, value : typing.Any = None):
+    def trigger(self, value : typing.Any = None):
         if value is not None and not isinstance(value, self.type):
             raise TypeError(f"expected {self.type}, got {type(value)}")
-        super().trigger(value)
+        super().trigger(value if value is not None else self.value)
 
     @property
     def type(self) -> typing.Type:
