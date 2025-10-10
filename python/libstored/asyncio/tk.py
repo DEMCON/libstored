@@ -273,7 +273,7 @@ class Work:
 
         @functools.wraps(f)
         def wrapper(self : Work, *args, **kwargs):
-            self.logger.debug(f'Scheduling {f} in tk')
+            # self.logger.debug(f'Scheduling {f} in tk')
 
             if threading.current_thread() == self.atk.thread:
                 # Direct call in the same tk context.
@@ -434,7 +434,7 @@ class AsyncApp(Work, ttk.Frame):
 
         @functools.wraps(f)
         def wrapper(self : AsyncApp, *args, **kwargs):
-            self.logger.debug(f'Scheduling {f} in worker')
+            # self.logger.debug(f'Scheduling {f} in worker')
 
             if asyncio.iscoroutinefunction(f):
                 if threading.current_thread() == self.worker.thread:
@@ -631,11 +631,14 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
             self._set_state(ZmqObjectEntry.State.INVALID)
             return
 
+        if self._var.get() == value:
+            return
+
         if not self.focused:
             self._set_state(ZmqObjectEntry.State.UPDATED)
+            self._updated = time.time() + 1.05
+            self.after(1100, self._updated_end)
 
-        self._updated = time.time() + 1.05
-        self.after(1100, self._updated_end)
         self._var.set(value)
 
     def _updated_end(self):

@@ -166,7 +166,7 @@ class AsyncioWorker:
         else:
             raise TypeError("First argument must be a coroutine function or a callable returning a coroutine")
 
-        self.logger.debug("Scheduling coroutine")
+        # self.logger.debug("Scheduling coroutine")
 
         assert self._loop is not None
 
