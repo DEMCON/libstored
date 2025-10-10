@@ -9,6 +9,7 @@ import threading
 import typing
 
 from . import worker as laio_worker
+from .. import exceptions as lexc
 
 class Event:
     logger = logging.getLogger(__name__)
@@ -20,10 +21,10 @@ class Event:
         self._queued = None
         self._paused = False
         self._event_name = event_name
-        self._lock = threading.RLock()
+        self._lock = lexc.DeadlockChecker(threading.RLock())
 
     def __repr__(self) -> str:
-        return f'Event({self._event_name})' if self._event_name is not None else super().__repr__()
+        return f'{self.__class__.__name__}({self._event_name})' if self._event_name is not None else super().__repr__()
 
     def __str__(self) -> str:
         return self._event_name if self._event_name is not None else super().__str__()
@@ -94,7 +95,7 @@ class Event:
                 else:
                     callback(*bound.args, **bound.kwargs)
             except Exception as e:
-                self.logger.exception(f'Exception in Event callback: {e}')
+                self.logger.exception(f'Exception in {repr(self)} callback: {e}')
 
     def __call__(self, *args, **kwargs):
         self.trigger(*args, **kwargs)
@@ -220,11 +221,8 @@ class AsyncioRateLimit(laio_worker.Work, Event):
             self._timer.cancel()
             self._timer = None
 
+    @laio_worker.Work.thread_safe_async
     def trigger(self, *args, **kwargs):
-        if self.worker.thread is not threading.current_thread():
-            self.loop.call_soon_threadsafe(self.trigger, *args, **kwargs)
-            return
-
         now = self.loop.time()
         if now - self._last_trigger >= self._min_interval_s:
             if self._timer is not None:
@@ -244,6 +242,17 @@ class AsyncioRateLimit(laio_worker.Work, Event):
     def _timer_callback(self):
         self._timer = None
         self.trigger(*self._args[0], **self._args[1])
+
+    @laio_worker.Work.thread_safe_async
+    def flush(self):
+        if self._timer is not None:
+            self._timer.cancel()
+            self._timer = None
+
+        now = self.loop.time()
+        if now - self._last_trigger >= self._min_interval_s:
+            self._last_trigger = now
+            super().trigger(*self._args[0], **self._args[1])
 
     def __del__(self):
         if self._timer is not None:

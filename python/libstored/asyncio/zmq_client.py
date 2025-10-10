@@ -831,8 +831,8 @@ class ZmqClient(Work):
         self._multi = multi
         self._timeout = timeout if timeout is None or timeout > 0 else None
         self._socket = None
-        self._lock = asyncio.Lock()
-        self._alias_lock = asyncio.Lock()
+        self._lock = lexc.DeadlockChecker(asyncio.Lock())
+        self._alias_lock = lexc.DeadlockChecker(asyncio.Lock())
         self._t : str | Object | None | bool = t
         self._t0 : float = 0
         self._timestamp_to_time = lambda t: t
@@ -855,10 +855,10 @@ class ZmqClient(Work):
         '''Decorator to lock a method with the instance's lock.'''
 
         @functools.wraps(f)
-        async def wrapper(self, *args, **kwargs):
+        async def locked(self, *args, **kwargs):
             async with self._lock:
                 return await f(self, *args, **kwargs)
-        return wrapper
+        return locked
 
 
 
@@ -1117,6 +1117,7 @@ class ZmqClient(Work):
 
         if self._capabilities is None:
             self._capabilities = await self.req('?')
+            assert self._capabilities is not None
             if self._multi:
                 # Remove capabilities that are stateful at the embedded side.
                 self._capabilities = re.sub(r'[amstf]', '', self._capabilities)
@@ -1146,8 +1147,8 @@ class ZmqClient(Work):
             self._identification = (await self.req(b'i')).decode()
         except ValueError:
             self._identification = ''
-            pass
 
+        assert self._identification is not None
         return self._identification
 
     @run_sync
@@ -1160,8 +1161,8 @@ class ZmqClient(Work):
             self._version = (await self.req(b'v')).decode()
         except ValueError:
             self._version = ''
-            pass
 
+        assert self._version is not None
         return self._version
 
     @run_sync
@@ -1635,7 +1636,6 @@ class ZmqClient(Work):
         if not self._release_alias(a, permanentRef):
             # Not allowed, still is use as permanent alias.
             self.logger.debug(f'cannot release alias {a}; still in use')
-            pass
         else:
             if a in self._available_aliases:
                 self._available_aliases.remove(a)

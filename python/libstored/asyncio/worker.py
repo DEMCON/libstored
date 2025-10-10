@@ -204,30 +204,7 @@ class AsyncioWorker:
     async def _execute(self, f, *args, **kwargs) -> typing.Any:
         return f(*args, **kwargs)
 
-class Work:
-    def __init__(self, worker : AsyncioWorker | None=None, logger : logging.Logger | None=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.logger = logger or logging.getLogger(self.__class__.__name__)
 
-        if worker is None:
-            global default_worker
-            worker = default_worker
-            if worker is None or not worker.is_running():
-                worker = AsyncioWorker(daemon=True)
-
-        self._worker = worker
-
-    @property
-    def worker(self) -> AsyncioWorker:
-        return self._worker
-
-    @property
-    def loop(self) -> asyncio.AbstractEventLoop:
-        l = self.worker.loop
-        if l is None:
-            raise lexc.InvalidState("Event loop is not running")
-
-        return l
 
 def run_async(f : typing.Callable) -> typing.Callable:
     '''
@@ -236,7 +213,7 @@ def run_async(f : typing.Callable) -> typing.Callable:
     '''
 
     @functools.wraps(f)
-    def wrapper(self, *args, **kwargs):
+    def run_async(self, *args, **kwargs):
         assert asyncio.iscoroutinefunction(f)
 
         loop = None
@@ -266,7 +243,7 @@ def run_async(f : typing.Callable) -> typing.Callable:
 
             return w.execute(f(self, *args, **kwargs))
 
-    return wrapper
+    return run_async
 
 def run_sync(f : typing.Callable) -> typing.Callable:
     '''
@@ -280,11 +257,73 @@ def run_sync(f : typing.Callable) -> typing.Callable:
     run_async_f = run_async(f)
 
     @functools.wraps(f)
-    def wrapper(*args, **kwargs):
+    def run_sync(*args, **kwargs):
         x = run_async_f(*args, **kwargs)
         if asyncio.coroutines.iscoroutine(x):
-            return x
+            return lexc.DeadlockChecker(x)
         else:
-            return x.result()
+            return lexc.DeadlockChecker(x).result()
 
-    return wrapper
+    return run_sync
+
+
+
+class Work:
+    def __init__(self, worker : AsyncioWorker | None=None, logger : logging.Logger | None=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.logger = logger or logging.getLogger(self.__class__.__name__)
+
+        if worker is None:
+            global default_worker
+            worker = default_worker
+            if worker is None or not worker.is_running():
+                worker = AsyncioWorker(daemon=True)
+
+        self._worker = worker
+
+    @property
+    def worker(self) -> AsyncioWorker:
+        return self._worker
+
+    @property
+    def loop(self) -> asyncio.AbstractEventLoop:
+        l = self.worker.loop
+        if l is None:
+            raise lexc.InvalidState("Event loop is not running")
+
+        return l
+
+    @staticmethod
+    def thread_safe_async(f : typing.Callable) -> typing.Any:
+        '''
+        Decorator to make a method thread-safe by executing it in the worker thread, without waiting for completion.
+        '''
+
+        assert not asyncio.iscoroutinefunction(f)
+
+        @functools.wraps(f)
+        def thread_safe_async(self, *args, **kwargs):
+            if threading.current_thread() is self.worker.thread:
+                return f(self, *args, **kwargs)
+            else:
+                return self.worker.execute(f, self, *args, **kwargs)
+
+        return thread_safe_async
+
+    @staticmethod
+    def thread_safe(f : typing.Callable) -> typing.Any:
+        '''
+        Decorator to make a method thread-safe by executing it in the worker thread.
+        '''
+
+        assert not asyncio.iscoroutinefunction(f)
+
+        @functools.wraps(f)
+        def thread_safe(self, *args, **kwargs):
+            x = Work.thread_safe_async(f)(self, *args, **kwargs)
+            if isinstance(x, concurrent.futures.Future):
+                return lexc.DeadlockChecker(x).result()
+            else:
+                return x
+
+        return thread_safe

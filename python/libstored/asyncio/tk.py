@@ -256,7 +256,11 @@ class Work:
         self._connections : dict[typing.Hashable, laio_event.Event] = {}
         self._connections_key = 0
 
-        self.atk.root.bind("<Destroy>", self._on_destroy, add=True)
+        if hasattr(self, 'bind') and callable(getattr(self, 'bind')):
+            # Assume this is a tk widget.
+            typing.cast(tk.Widget, self).bind("<Destroy>", self._on_destroy)
+        else:
+            self.atk.root.bind("<Destroy>", self._on_destroy, add=True)
 
     @property
     def atk(self) -> AsyncTk:
@@ -273,20 +277,24 @@ class Work:
         '''
 
         @functools.wraps(f)
-        def wrapper(self : Work, *args, **kwargs):
+        def tk_func(self : Work, *args, **kwargs):
             # self.logger.debug(f'Scheduling {f} in tk')
 
-            if threading.current_thread() == self.atk.thread:
-                # Direct call in the same tk context.
-                return f(self, *args, **kwargs)
-            elif asyncio.get_running_loop() is not None:
-                # Schedule the function in the tk thread, and return an asyncio future.
-                future = self.atk.execute(f, self, *args, **kwargs)
-                return asyncio.wrap_future(future)
-            else:
-                # Schedule the function in the tk thread, and return a concurrent future.
-                return self.atk.execute(f, self, *args, **kwargs)
-        return wrapper
+            try:
+                if threading.current_thread() == self.atk.thread:
+                    # Direct call in the same tk context.
+                    return f(self, *args, **kwargs)
+                elif asyncio.get_running_loop() is not None:
+                    # Schedule the function in the tk thread, and return an asyncio future.
+                    future = self.atk.execute(f, self, *args, **kwargs)
+                    return asyncio.wrap_future(future)
+                else:
+                    # Schedule the function in the tk thread, and return a concurrent future.
+                    return self.atk.execute(f, self, *args, **kwargs)
+            except Exception as e:
+                self.logger.debug(f'Exception {e} in scheduling tk function {f}')
+                raise
+        return tk_func
 
     @tk_func
     def connect(self, event : laio_event.Event, callback : typing.Callable, *args, **kwargs) -> typing.Hashable:
@@ -434,24 +442,31 @@ class AsyncApp(Work, ttk.Frame):
         '''
 
         @functools.wraps(f)
-        def wrapper(self : AsyncApp, *args, **kwargs):
+        def worker_func(self : AsyncApp, *args, **kwargs):
             # self.logger.debug(f'Scheduling {f} in worker')
 
-            if asyncio.iscoroutinefunction(f):
-                if threading.current_thread() == self.worker.thread:
-                    # Directly create coro in the same worker context and return future.
-                    return f(self, *args, **kwargs)
+            try:
+                if asyncio.iscoroutinefunction(f):
+                    if threading.current_thread() == self.worker.thread:
+                        # Directly create coro in the same worker context and return future.
+                        return f(self, *args, **kwargs)
+                    else:
+                        # Create coro in the worker thread context, and return concurrent future.
+                        return self.worker.execute(f(self, *args, **kwargs))
                 else:
-                    # Create coro in the worker thread context, and return concurrent future.
-                    return self.worker.execute(f(self, *args, **kwargs))
-            else:
-                if threading.current_thread() == self.worker.thread:
-                    # Direct call in the same worker context.
-                    return f(self, *args, **kwargs)
-                else:
-                    # Wait for the worker thread to complete the function.
-                    return self.worker.execute(f, self, *args, **kwargs).result()
-        return wrapper
+                    if threading.current_thread() == self.worker.thread:
+                        # Direct call in the same worker context.
+                        return f(self, *args, **kwargs)
+                    else:
+                        # Wait for the worker thread to complete the function.
+                        return lexc.DeadlockChecker(self.worker.execute(f, self, *args, **kwargs)).result()
+            except asyncio.CancelledError:
+                raise
+            except Exception as e:
+                self.logger.debug(f'Exception {e} in scheduling worker function {f}')
+                raise
+
+        return worker_func
 
     @Work.tk_func
     def cleanup(self):
@@ -459,7 +474,7 @@ class AsyncApp(Work, ttk.Frame):
 
         self.logger.debug('Cleanup worker')
         try:
-            self.worker.stop(5)
+            self.worker.stop(lexc.DeadlockChecker.default_timeout_s + 1)
         except TimeoutError:
             self.logger.debug('Cleanup worker - forcing')
             self.worker.cancel()
@@ -519,9 +534,9 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
 
         self._var = tk.StringVar()
         self['textvariable'] = self._var
-        rate_limit = laio_event.AsyncioRateLimit(worker=self.worker, Hz=rate_limit_Hz)
-        self.connect(rate_limit, self._refresh)
-        self.connect(self.obj.value_str, rate_limit)
+        self._rate_limit = laio_event.AsyncioRateLimit(worker=self.worker, Hz=rate_limit_Hz, event_name=obj.name)
+        self.connect(self._rate_limit, self._refresh)
+        self.connect(self.obj.value_str, self._rate_limit)
         self.bind('<Return>', self._write)
         self.bind('<KP_Enter>', self._write)
         self.bind('<FocusIn>', self._focus_in)
@@ -599,9 +614,10 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
             self['foreground'] = 'red'
 
     @AsyncApp.worker_func
-    async def refresh(self):
+    async def refresh(self, acquire_alias : bool=False):
         if self.alive:
-            await self.obj.read()
+            await self.obj.read(acquire_alias=acquire_alias)
+            self._rate_limit.flush()
 
     @AsyncApp.tk_func
     def _refresh(self, value : str | None = None):
