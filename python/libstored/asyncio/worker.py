@@ -181,7 +181,7 @@ class AsyncioWorker:
 
         assert self._loop is not None
 
-        if threading.current_thread() == self._thread:
+        if threading.current_thread() is self._thread:
             # Directly create coro in the same worker context and return future.
             return asyncio.ensure_future(self._log(coro), loop=self._loop)
         else:
@@ -206,15 +206,22 @@ class AsyncioWorker:
 
 
 
-def run_async(f : typing.Callable) -> typing.Callable:
+def run_sync(f : typing.Callable) -> typing.Callable:
     '''
-    Decorator to start a function asynchronously in the default worker, and
-    return the future.
+    Decorator to run an async function synchronously.
+
+    If called from within an event loop, the coroutine is directly started,
+    returning an awaitable.  If called from outside an event loop, the coroutine
+    is executed in the default worker (creating one if needed).
+
+    When block=False is passed, a future is returned instead.
     '''
 
     @functools.wraps(f)
-    def run_async(self, *args, **kwargs):
+    def run_sync(*args, block=True, **kwargs) -> typing.Any:
         assert asyncio.iscoroutinefunction(f)
+
+        self : typing.Any = args[0]
 
         loop = None
         try:
@@ -224,45 +231,33 @@ def run_async(f : typing.Callable) -> typing.Callable:
 
         if loop is not None:
             # We are in an event loop, just start the coro.
-            return f(self, *args, **kwargs)
+            coro = f(*args, **kwargs)
+            if block:
+                return coro
+            else:
+                return asyncio.ensure_future(coro)
         else:
             # We are not in an event loop, run the coro in the (default) worker.
             w = None
             if isinstance(self, Work):
-                self.logger.debug("Running %s in worker %s", f.__name__, str(self.worker))
+                self.logger.debug("Running %s in worker %s", f.__qualname__, str(self.worker))
                 w = self.worker
             else:
                 if hasattr(self, 'logger'):
-                    self.logger.debug("Running %s in default worker", f.__name__)
+                    self.logger.debug("Running %s in default worker", f.__qualname__)
                 global default_worker
                 w = default_worker
 
             if w is None or not w.is_running():
-                self.logger.debug('No worker running, creating new one')
+                if hasattr(self, 'logger'):
+                    self.logger.debug('No worker running, creating new one')
                 w = AsyncioWorker(daemon=True)
 
-            return w.execute(f(self, *args, **kwargs))
-
-    return run_async
-
-def run_sync(f : typing.Callable) -> typing.Callable:
-    '''
-    Decorator to run an async function synchronously.
-
-    If called from within an event loop, the coroutine is directly started,
-    returning an awaitable.  If called from outside an event loop, the coroutine
-    is executed in the default worker (creating one if needed).
-    '''
-
-    run_async_f = run_async(f)
-
-    @functools.wraps(f)
-    def run_sync(*args, **kwargs):
-        x = run_async_f(*args, **kwargs)
-        if asyncio.coroutines.iscoroutine(x):
-            return lexc.DeadlockChecker(x)
-        else:
-            return lexc.DeadlockChecker(x).result()
+            future = w.execute(f(*args, **kwargs))
+            if block:
+                return lexc.DeadlockChecker(future).result()
+            else:
+                return future
 
     return run_sync
 
@@ -319,10 +314,13 @@ class Work:
         assert not asyncio.iscoroutinefunction(f)
 
         @functools.wraps(f)
-        def thread_safe(self, *args, **kwargs):
+        def thread_safe(self, *args, block=True, **kwargs):
             x = Work.thread_safe_async(f)(self, *args, **kwargs)
             if isinstance(x, concurrent.futures.Future):
-                return lexc.DeadlockChecker(x).result()
+                if block:
+                    return lexc.DeadlockChecker(x).result()
+                else:
+                    return x
             else:
                 return x
 

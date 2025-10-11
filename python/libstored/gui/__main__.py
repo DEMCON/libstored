@@ -8,6 +8,7 @@ import argparse
 import asyncio
 import locale
 import logging
+import os
 import natsort
 import re
 import sys
@@ -26,6 +27,7 @@ from .. import asyncio as laio
 from ..asyncio import event as laio_event
 from ..asyncio import tk as laio_tk
 from .. import tk as ltk
+from .. import exceptions as lexc
 
 from ..zmq_server import ZmqServer
 
@@ -839,6 +841,9 @@ class GUIClient(laio_tk.AsyncApp):
         self._client_connections = set()
 
         self.root.title(f'libstored GUI')
+        icon_path = os.path.join(os.path.dirname(__file__), 'twotone_bug_report_black_48dp.png')
+        icon = tk.PhotoImage(file=icon_path)
+        self.root.iconphoto(False, icon)
 
         global plotter
         if Plotter.available and plotter is None:
@@ -996,15 +1001,24 @@ def main():
         help='Enable multi-mode; allow multiple simultaneous connections to the same target, ' +
             'but it is less efficient.', action='store_true')
     parser.add_argument('-c', dest='clear_state', default=False, help='Clear previously saved state', action='store_true')
+    parser.add_argument('-D', dest='deadlock', default=0, help='Enable deadlock checks after x seconds', type=float)
 
     args = parser.parse_args()
 
+    logging_config : dict[str, typing.Any] = {
+        'format': '[%(asctime)s.%(msecs)03d] %(levelname)s %(name)s (%(threadName)s): %(message)s',
+        'datefmt': '%H:%M:%S',
+    }
+
     if args.verbose == 0:
-        logging.basicConfig(level=logging.WARNING)
+        logging_config['level'] = logging.WARNING
     elif args.verbose == 1:
-        logging.basicConfig(level=logging.INFO)
+        logging_config['level'] = logging.INFO
     else:
-        logging.basicConfig(level=logging.DEBUG)
+        logging_config['level'] = logging.DEBUG
+
+    logging.basicConfig(**logging_config)
+    lexc.DeadlockChecker.default_timeout_s = args.deadlock
 
     client = laio.ZmqClient(host=args.server, port=args.port, multi=args.multi, use_state='gui')
     GUIClient.run(worker=client.worker, client=client, clear_state=args.clear_state)
