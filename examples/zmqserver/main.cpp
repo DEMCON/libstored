@@ -13,7 +13,7 @@
 #include <time.h>
 
 #if STORED_cplusplus >= 201103L
-#	include <chrono>
+#  include <chrono>
 #endif
 
 class ZmqServerStore : public STORE_T(ZmqServerStore, stored::ZmqServerStoreBase) {
@@ -138,11 +138,15 @@ int main()
 				perror("Cannot poll");
 				exit(1);
 			} // else timeout
-		} else if((errno = zmqLayer.recv())) {
-			perror("Cannot recv");
-			exit(1);
 		} else {
-			store.incMessages();
+			usleep(store.response_delay_ms.get() * 1000); // simulate work
+
+			if((errno = zmqLayer.recv())) {
+				perror("Cannot recv");
+				exit(1);
+			} else {
+				store.incMessages();
+			}
 		}
 
 		// As an example, call debugger.trace() roughly once per second.
