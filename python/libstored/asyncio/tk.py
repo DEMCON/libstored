@@ -112,6 +112,12 @@ class AsyncTk:
             self.logger.warning('Running Tk mainloop in a separate thread. This is not recommended, as Tk is not fully thread-safe.')
 
         try:
+            while True:
+                self._queue.get_nowait()
+        except queue.Empty:
+            pass
+
+        try:
             self._root = tk.Tk()
             self._root.report_callback_exception = lambda *args: self.logger.exception('Unhandled exception in Tk', exc_info=args)
             self._root.bind('<<async_call>>', self._on_async_call)
@@ -132,9 +138,6 @@ class AsyncTk:
             self.logger.debug("deleted init")
         finally:
             self._root = None
-
-            while not self._queue.empty():
-                self._queue.get()
 
         gc.collect()
         self.logger.debug("thread exit")
@@ -225,22 +228,31 @@ class AsyncTk:
         if not self.is_running():
             raise lexc.InvalidState("Mainloop is not running")
 
-        self.logger.debug("Queueing async call")
+        self.logger.debug("Queueing async call to %s", f.__qualname__)
         future = concurrent.futures.Future()
-        self._queue.put((f, args, kwargs, future))
+        try:
+            self._queue.put((f, args, kwargs, future), block=True, timeout=lexc.DeadlockChecker.default_timeout_s)
+            self.logger.debug("Queue async call - put")
+        except queue.Full:
+            raise lexc.Deadlock("AsyncTk queue full") from None
         assert self._root is not None
+        self.logger.debug("Queue async call - generate")
         self._root.event_generate('<<async_call>>', when='tail')
+        self.logger.debug("Queued async call")
         return future
 
     def _on_async_call(self, event):
-        while not self._queue.empty():
-            self.logger.debug("Processing async call")
-            func, args, kwargs, future = self._queue.get()
-            try:
-                future.set_result(func(*args, **kwargs))
-            except Exception as e:
-                self.logger.debug('Exception in async call', exc_info=True)
-                future.set_exception(e)
+        try:
+            while True:
+                func, args, kwargs, future = self._queue.get_nowait()
+                self.logger.debug("Processing async call to %s", func.__qualname__)
+                try:
+                    future.set_result(func(*args, **kwargs))
+                except Exception as e:
+                    self.logger.debug('Exception in async call to %s', func.__qualname__, exc_info=True)
+                    future.set_exception(e)
+        except queue.Empty:
+            pass
 
 
 
@@ -274,23 +286,37 @@ class Work:
         The decorated function must be a regular function.
         A future is returned when called from another thread.
         Otherwise, the call is blocking, and the result is returned.
+
+        When block=True is passed, the call is always blocking, and the result is returned.
         '''
 
         @functools.wraps(f)
-        def tk_func(self : Work, *args, **kwargs):
+        def tk_func(self : Work, *args, block : bool=False, **kwargs) -> typing.Any:
             # self.logger.debug(f'Scheduling {f} in tk')
 
             try:
                 if threading.current_thread() == self.atk.thread:
                     # Direct call in the same tk context.
                     return f(self, *args, **kwargs)
-                elif asyncio.get_running_loop() is not None:
-                    # Schedule the function in the tk thread, and return an asyncio future.
-                    future = self.atk.execute(f, self, *args, **kwargs)
-                    return asyncio.wrap_future(future)
                 else:
                     # Schedule the function in the tk thread, and return a concurrent future.
-                    return self.atk.execute(f, self, *args, **kwargs)
+                    future = self.atk.execute(f, self, *args, **kwargs)
+
+                    try:
+                        asyncio.get_running_loop()
+                    except RuntimeError:
+                        # No running loop, safe to block.
+                        if block:
+                            return lexc.DeadlockChecker(future).result()
+                        else:
+                            return future
+
+                    # Wrap in an asyncio future.
+                    future = asyncio.wrap_future(future)
+                    if block:
+                        return lexc.DeadlockChecker(future).result()
+                    else:
+                        return future
             except Exception as e:
                 self.logger.debug(f'Exception {e} in scheduling tk function {f}')
                 raise
@@ -437,29 +463,46 @@ class AsyncApp(Work, ttk.Frame):
         Decorator to mark a function to be executed in the worker context.
 
         The decorated function may be a coroutine function or a regular function.
-        In case of a coroutine, a future is returned.
-        Otherwise, the call is blocking, and the result is returned.
+        By default, a future is returned, unless block=True is passed.
         '''
 
         @functools.wraps(f)
-        def worker_func(self : AsyncApp, *args, **kwargs):
+        def worker_func(self : AsyncApp, *args, block : bool=False, **kwargs) -> typing.Any:
             # self.logger.debug(f'Scheduling {f} in worker')
 
             try:
                 if asyncio.iscoroutinefunction(f):
-                    if threading.current_thread() == self.worker.thread:
+                    loop = None
+                    try:
+                        loop = asyncio.get_running_loop()
+                    except RuntimeError:
+                        pass
+
+                    if loop is not None and loop is self.worker.loop:
                         # Directly create coro in the same worker context and return future.
-                        return f(self, *args, **kwargs)
+                        coro = f(self, *args, **kwargs)
+                        if block:
+                            return coro
+                        else:
+                            return asyncio.ensure_future(coro)
                     else:
                         # Create coro in the worker thread context, and return concurrent future.
-                        return self.worker.execute(f(self, *args, **kwargs))
+                        future = self.worker.execute(f(self, *args, **kwargs))
+                        if block:
+                            return lexc.DeadlockChecker(future).result()
+                        else:
+                            return future
                 else:
-                    if threading.current_thread() == self.worker.thread:
+                    if threading.current_thread() is self.worker.thread:
                         # Direct call in the same worker context.
                         return f(self, *args, **kwargs)
                     else:
                         # Wait for the worker thread to complete the function.
-                        return lexc.DeadlockChecker(self.worker.execute(f, self, *args, **kwargs)).result()
+                        future = self.worker.execute(f, self, *args, **kwargs)
+                        if block:
+                            return lexc.DeadlockChecker(future).result()
+                        else:
+                            return future
             except asyncio.CancelledError:
                 raise
             except Exception as e:
@@ -657,7 +700,7 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
         x = self._var.get()
         self.logger.debug(f'Write {x} to {self.obj.name}')
         self.obj.value_str.value = x
-        self.obj.write()
+        self.obj.write(block=False)
 
     def _focus_in(self, *args):
         if not self.focused:

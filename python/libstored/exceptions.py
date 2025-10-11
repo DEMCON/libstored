@@ -40,7 +40,7 @@ class DeadlockChecker:
             ...
     '''
 
-    default_timeout_s = 10.0
+    default_timeout_s : float | None = None
 
     class Type(enum.Enum):
         THREADING_LOCK = enum.auto()
@@ -49,7 +49,7 @@ class DeadlockChecker:
         ASYNCIO_FUTURE = enum.auto()
         CONCURRENT_FUTURE = enum.auto()
 
-    def __init__(self, lock : typing.Any, timeout_s : float=default_timeout_s):
+    def __init__(self, lock : typing.Any, timeout_s : float | None=default_timeout_s):
         self._lock = lock
         self._timeout_s = timeout_s
         self._acquired = False
@@ -111,7 +111,14 @@ class DeadlockChecker:
             if self._type == self.Type.ASYNCIO_FUTURE:
                 return asyncio.wait_for(self._lock, timeout=self._timeout_s)
             elif self._type == self.Type.CONCURRENT_FUTURE:
-                return self._lock.result(timeout=self._timeout_s)
+                try:
+                    asyncio.get_running_loop()
+                except RuntimeError:
+                    # No running loop, safe to block.
+                    return self._lock.result(timeout=self._timeout_s)
+
+                # We are in an event loop, wrap in asyncio future.
+                return asyncio.wait_for(asyncio.wrap_future(self._lock), timeout=self._timeout_s)
             else:
                 raise RuntimeError('Wrong access method')
         except asyncio.TimeoutError:

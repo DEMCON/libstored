@@ -25,7 +25,7 @@ import zmq.utils.monitor
 from .. import libstored_version
 from .event import Event, Value, ValueWrapper
 from ..zmq_server import ZmqServer
-from .worker import Work, run_sync, run_async
+from .worker import Work, run_sync
 from ..heatshrink import HeatshrinkDecoder
 from .. import exceptions as lexc
 
@@ -90,7 +90,7 @@ class Object(ZmqClientWork, Value):
         self.alias = Value(str, event_name=f'{name}/alias')
         self.t = Value(float, event_name=f'{name}/t')
         self.value_str = ValueWrapper(str, self._value_str_get, self._value_str_set, event_name=f'{name}/value_str')
-        self.polling = ValueWrapper(float, lambda: self.poll_interval, self.poll, event_name=f'{name}/polling')
+        self.polling = ValueWrapper(float, lambda: self.poll_interval, self._poll_set, event_name=f'{name}/polling')
         self.format = ValueWrapper(str, self._format_get, self._format_set, event_name=f'{name}/format')
         self.format.value = 'default'
 
@@ -377,6 +377,7 @@ class Object(ZmqClientWork, Value):
                 value += 1 << 64
             return self._encode_hex(struct.pack('>Q', value)[-self._size:], True)
 
+    @ZmqClientWork.thread_safe
     def set(self, value : typing.Any, t = None):
         '''Set the value of this object, without actually writing it yet to the server.'''
 
@@ -523,7 +524,7 @@ class Object(ZmqClientWork, Value):
             self.set(self.type())
         else:
             try:
-                self.set(self.interpret(s))
+                self.set(self.interpret(s), block=False)
             except:
                 self.value_str.trigger()
 
@@ -532,7 +533,7 @@ class Object(ZmqClientWork, Value):
     ###############################################
     # Polling
 
-    @run_async
+    @run_sync
     async def poll(self, interval_s : float | None=None):
         '''Set up polling of this object.
 
@@ -552,6 +553,9 @@ class Object(ZmqClientWork, Value):
         await self.client._poll(self, interval_s)
         self.polling.trigger()
 
+    def _poll_set(self, interval_s : float | None):
+        self.poll(interval_s, block=False)
+
     def _poll_slow_stop(self):
         if self._poller is not None:
             self._poller.cancel()
@@ -559,7 +563,7 @@ class Object(ZmqClientWork, Value):
 
     async def _poll_slow(self, interval_s : float):
         self._poll_slow_stop()
-        self._poller = await self.client.periodic(interval_s, self._read)
+        self._poller = self.client.periodic(interval_s, self._read, name=f'poll {self.name}')
 
     @property
     def poll_interval(self) -> float | None:
@@ -589,7 +593,7 @@ class Object(ZmqClientWork, Value):
 
         return {} if default else { self.name: s }
 
-    @run_async
+    @run_sync
     async def restore_state(self, state : dict):
         '''Restore the state of this object from a dictionary as returned by state().'''
 
@@ -741,7 +745,7 @@ class Macro(ZmqClientWork):
             return True
 
         try:
-            self.run()
+            await self.run()
             # Success.
             return True
         except RuntimeError:
@@ -997,7 +1001,7 @@ class ZmqClient(Work):
 
             self.logger.debug(f'connect to tcp://{self._host}:{self._port}')
             self._socket.connect(f'tcp://{self._host}:{self._port}')
-            self._monitor = asyncio.create_task(self._monitor_socket())
+            self._monitor = asyncio.create_task(self._monitor_socket(), name='monitor')
         except:
             s = self._socket
             self._socket = None
@@ -1070,10 +1074,10 @@ class ZmqClient(Work):
 
         try:
             if isinstance(msg, str):
-                self._req_task = asyncio.create_task(self._req(msg.encode()))
+                self._req_task = asyncio.create_task(self._req(msg.encode()), name='req')
                 return (await self._req_task).decode()
             else:
-                self._req_task = asyncio.create_task(self._req(msg))
+                self._req_task = asyncio.create_task(self._req(msg), name='req')
                 return await self._req_task
         except asyncio.CancelledError:
             if self._req_task is not None:
@@ -1782,8 +1786,8 @@ class ZmqClient(Work):
     ##############################################
     # Poll
 
-    @run_sync
-    async def periodic(self, interval_s : float, f : typing.Callable, *args, **kwargs) -> asyncio.Task:
+    @Work.thread_safe
+    def periodic(self, interval_s : float, f : typing.Callable, name : str | None=None, *args, **kwargs) -> asyncio.Task:
         '''
         Run a function periodically while the client is alive.
         '''
@@ -1798,7 +1802,7 @@ class ZmqClient(Work):
         else:
             coro = f
 
-        task = asyncio.get_running_loop().create_task(self._periodic(interval_s, coro, *args, **kwargs))
+        task = asyncio.create_task(self._periodic(interval_s, coro, *args, **kwargs), name=name)
         self._periodic_tasks.add(task)
         return task
 
@@ -1806,7 +1810,15 @@ class ZmqClient(Work):
         try:
             while self.is_connected():
                 t_start = time.time()
-                self.logger.debug('periodic task')
+
+                task = asyncio.current_task()
+                assert task is not None
+                name = task.get_name()
+                if name is not None:
+                    self.logger.debug('periodic task: %s', name)
+                else:
+                    self.logger.debug('periodic task')
+
                 await coro(*args, **kwargs)
 
                 if interval_s == 0:
@@ -1887,7 +1899,7 @@ class ZmqClient(Work):
             await self._poll_fast_stop()
 
         if self._fast_poll_task is None:
-            self._fast_poll_task = await self.periodic(self._fast_poll_interval_s, self._poll_fast_task)
+            self._fast_poll_task = self.periodic(self._fast_poll_interval_s, self._poll_fast_task)
 
         return True
 
