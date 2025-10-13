@@ -37,6 +37,7 @@ class AsyncTk:
         self._root = None
         self._started = False
         self._cb_init = cb_init
+        self._do_async = False
 
     @property
     def thread(self) -> threading.Thread | None:
@@ -106,6 +107,7 @@ class AsyncTk:
         Call from the main thread, or via start().
         '''
 
+        self._do_async = True
         self._started = True
 
         if not self._run_from_main:
@@ -120,15 +122,20 @@ class AsyncTk:
         try:
             self._root = tk.Tk()
             self._root.report_callback_exception = lambda *args: self.logger.exception('Unhandled exception in Tk', exc_info=args)
+            self._root.protocol("WM_DELETE_WINDOW", self._on_stop)
             self._root.bind('<<async_call>>', self._on_async_call)
 
             init = None
+            init_unbind = None
             if self._cb_init is not None:
                 init = self._cb_init(self)
+                if isinstance(init, tk.Widget):
+                    init.bind("<Destroy>", self._on_stopping, add=True)
 
             self.logger.debug("Running mainloop")
             self._root.mainloop()
             self.logger.debug("Mainloop exited")
+            self._on_stopping(None)
 
             gc.collect()
             if not self._run_from_main:
@@ -138,9 +145,20 @@ class AsyncTk:
             self.logger.debug("deleted init")
         finally:
             self._root = None
+            self._do_async = False
 
         gc.collect()
         self.logger.debug("thread exit")
+
+    def _on_stop(self, event = None):
+        self._on_stopping()
+        if self._root is not None:
+            self._root.destroy()
+
+    def _on_stopping(self, event = None):
+        if self._do_async:
+            self.logger.debug("Prevent further async calls")
+            self._do_async = False
 
     def _dump_referrers(self, obj, depth : int=3, indent : str=''):
         if depth < 0 or obj is None:
@@ -232,9 +250,14 @@ class AsyncTk:
         future = concurrent.futures.Future()
         try:
             self._queue.put((f, args, kwargs, future), block=True, timeout=lexc.DeadlockChecker.default_timeout_s)
-            self.logger.debug("Queue async call - put")
         except queue.Full:
             raise lexc.Deadlock("AsyncTk queue full") from None
+
+        if not self._do_async:
+            self.logger.debug("Dropped async call")
+            future.set_exception(lexc.InvalidState("AsyncTk not ready anymore for async calls"))
+            return future
+
         assert self._root is not None
         self.logger.debug("Queue async call - generate")
         self._root.event_generate('<<async_call>>', when='tail')
