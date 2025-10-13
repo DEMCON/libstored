@@ -65,6 +65,10 @@ class AsyncioWorker:
                         self._loop.run_until_complete(t)
                     except asyncio.CancelledError:
                         pass
+                    except lexc.Disconnected:
+                        pass
+                    except lexc.InvalidState:
+                        pass
                     except:
                         self.logger.debug('Exception in %s during shutdown', t, exc_info=True)
         finally:
@@ -215,10 +219,11 @@ def run_sync(f : typing.Callable) -> typing.Callable:
     is executed in the default worker (creating one if needed).
 
     When block=False is passed, a future is returned instead.
+    When sync is passed, it checks consistency with the detected (a)sync context.
     '''
 
     @functools.wraps(f)
-    def run_sync(*args, block=True, **kwargs) -> typing.Any:
+    def run_sync(*args, block : bool=True, sync : bool | None=None, **kwargs) -> typing.Any:
         assert asyncio.iscoroutinefunction(f)
 
         self : typing.Any = args[0]
@@ -228,6 +233,8 @@ def run_sync(f : typing.Callable) -> typing.Callable:
             loop = asyncio.get_running_loop()
         except RuntimeError:
             pass
+
+        assert sync is None or (loop is None) == sync, 'sync argument contradicts current context'
 
         if loop is not None:
             # We are in an event loop, just start the coro.
@@ -264,6 +271,10 @@ def run_sync(f : typing.Callable) -> typing.Callable:
 
 
 class Work:
+    '''
+    Mixin class for objects that have work to run by an AsyncioWorker.
+    '''
+
     def __init__(self, worker : AsyncioWorker | None=None, logger : logging.Logger | None=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.logger = logger or logging.getLogger(self.__class__.__name__)
@@ -291,13 +302,19 @@ class Work:
     @staticmethod
     def thread_safe_async(f : typing.Callable) -> typing.Any:
         '''
-        Decorator to make a method thread-safe by executing it in the worker thread, without waiting for completion.
+        Decorator to make a method thread-safe by executing it in the worker
+        thread, without waiting for completion.
+
+        In case the method is called from within the worker thread, it is
+        directly executed.  The actual result is returned.
+
+        Otherwise, a concurrent.futures.Future is returned.
         '''
 
         assert not asyncio.iscoroutinefunction(f)
 
         @functools.wraps(f)
-        def thread_safe_async(self, *args, **kwargs):
+        def thread_safe_async(self, *args, **kwargs) -> typing.Any | concurrent.futures.Future:
             if threading.current_thread() is self.worker.thread:
                 return f(self, *args, **kwargs)
             else:
@@ -308,13 +325,18 @@ class Work:
     @staticmethod
     def thread_safe(f : typing.Callable) -> typing.Any:
         '''
-        Decorator to make a method thread-safe by executing it in the worker thread.
+        Decorator to make a method thread-safe by executing it in the worker
+        thread.
+
+        By default, the call blocks until the method has completed and the
+        actual result is returned.  If block=False is passed, a
+        concurrent.futures.Future *may* be returned.
         '''
 
         assert not asyncio.iscoroutinefunction(f)
 
         @functools.wraps(f)
-        def thread_safe(self, *args, block=True, **kwargs):
+        def thread_safe(self, *args, block=True, **kwargs) -> typing.Any | concurrent.futures.Future:
             x = Work.thread_safe_async(f)(self, *args, **kwargs)
             if isinstance(x, concurrent.futures.Future):
                 if block:
