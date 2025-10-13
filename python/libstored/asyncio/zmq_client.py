@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import asyncio
+import concurrent.futures
 import datetime
 import filelock
 import functools
@@ -18,6 +19,7 @@ import re
 import struct
 import time
 import typing
+from typing import overload
 import zmq
 import zmq.asyncio
 import zmq.utils.monitor
@@ -227,9 +229,31 @@ class Object(ZmqClientWork, Value):
     ###############################################
     # Read
 
+    @overload
+    async def short_name(self, acquire : bool=True) -> str: ...
+    @overload
+    def short_name(self, acquire : bool=True, *, block : typing.Literal[False]) -> asyncio.Future[str]: ...
+    @overload
+    def short_name(self, acquire : bool=True, *, sync : typing.Literal[True]) -> str: ...
+    @overload
+    def short_name(self, acquire : bool=True, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str]: ...
+
     @run_sync
-    async def short_name(self, acquire = True) -> str:
-        '''Get the alias of this object, or its full name if no alias is set.'''
+    async def short_name(self, acquire : bool=True) -> str:
+        '''
+        Get the alias of this object, or its full name if no alias is set.
+
+        **Arguments**
+        * `acquire : bool = True`: try to acquire the alias if it is not set
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `str`: the alias of the object, or its full name if no alias is set, when `block = True`
+        * otherwise a future with this `str`
+
+        **Raises**
+        * `OperationFailed`: when the Alias command failed
+        '''
 
         if not self.alias.value is None:
             return self.alias.value
@@ -245,9 +269,31 @@ class Object(ZmqClientWork, Value):
         # Still no alias, return name instead.
         return self.name
 
+    @overload
+    async def read(self, acquire_alias : bool=True) -> typing.Any: ...
+    @overload
+    def read(self, acquire_alias : bool=True, *, block : typing.Literal[False]) -> asyncio.Future[typing.Any]: ...
+    @overload
+    def read(self, acquire_alias : bool=True, *, sync : typing.Literal[True]) -> typing.Any: ...
+    @overload
+    def read(self, acquire_alias : bool=True, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[typing.Any]: ...
+
     @run_sync
     async def read(self, acquire_alias : bool=True) -> typing.Any:
-        '''Read the value of this object from the server.'''
+        '''
+        Read the value of this object from the server.
+
+        **Arguments**
+        * `acquire_alias : bool = True`: try to acquire the alias if it is not set
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `Any`: the value of this object when `block = True`
+        * otherwise a future with this `Any`
+
+        **Raises**
+        * `OperationFailed`: when the read operation failed
+        '''
         return await self._read(acquire_alias)
 
     async def _read(self, acquire_alias : bool=True) -> typing.Any:
@@ -322,9 +368,32 @@ class Object(ZmqClientWork, Value):
     ###############################################
     # Write
 
+    @overload
+    async def write(self, value : typing.Any=None) -> None: ...
+    @overload
+    def write(self, value : typing.Any=None, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def write(self, value : typing.Any=None, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def write(self, value : typing.Any=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
     @run_sync
-    async def write(self, value : typing.Any = None):
-        '''Write a value to this object on the server.'''
+    async def write(self, value : typing.Any=None) -> None:
+        '''
+        Write a value to this object on the server.
+
+        **Arguments**
+        * `value : typing.Any = None`: the value to write
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `None`: when `block = True`
+        * otherwise a future
+
+        **Raises**
+        * `OperationFailed`: when the write operation failed
+        * `ValueError`: when the value cannot be encoded
+        '''
 
         if value is not None:
             self.set(value)
@@ -369,7 +438,7 @@ class Object(ZmqClientWork, Value):
         elif dtype == self.Double:
             return self._encode_hex(struct.pack('>d', value))
         elif not self.is_int():
-            raise ValueError()
+            raise TypeError('Invalid type for encoding')
         elif self.is_signed():
             return self._encode_hex(struct.pack('>q', value)[-self._size:], True)
         else:
@@ -377,9 +446,25 @@ class Object(ZmqClientWork, Value):
                 value += 1 << 64
             return self._encode_hex(struct.pack('>Q', value)[-self._size:], True)
 
+    @overload
+    def set(self, value : typing.Any, t : float | None=None) -> None: ...
+    @overload
+    def set(self, value : typing.Any, t : float | None=None, *, block : typing.Literal[False]) -> concurrent.futures.Future[None] | None: ...
+
     @ZmqClientWork.thread_safe
-    def set(self, value : typing.Any, t = None):
-        '''Set the value of this object, without actually writing it yet to the server.'''
+    def set(self, value : typing.Any, t : float | None=None) -> None:
+        '''
+        Set the value of this object, without actually writing it yet to the server.
+
+        **Arguments**
+        * `value : typing.Any`: the value to set
+        * `t : float | None = None`: the timestamp to set, or None to use the current time
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `None`: when `block = True`
+        * otherwise a future
+        '''
 
         if type(value) != self.value_type:
             raise TypeError(f'Expected value of type {self.value_type}, got {type(value)}')
@@ -533,6 +618,15 @@ class Object(ZmqClientWork, Value):
     ###############################################
     # Polling
 
+    @overload
+    async def poll(self, interval_s : float | None=None) -> None: ...
+    @overload
+    def poll(self, interval_s : float | None=None, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def poll(self, interval_s : float | None=None, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def poll(self, interval_s : float | None=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
     @run_sync
     async def poll(self, interval_s : float | None=None):
         '''Set up polling of this object.
@@ -540,6 +634,14 @@ class Object(ZmqClientWork, Value):
         If interval_s is None (the default), stop polling.
         If interval_s is 0, poll as fast as possible.
         If interval_s > 0, poll at that interval in seconds.
+
+        **Arguments**
+        * `interval_s : float | None`: the polling interval in seconds, or None to stop polling
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `None`: when `block = True`
+        * otherwise a future
         '''
 
         if not self.alive():
@@ -593,12 +695,34 @@ class Object(ZmqClientWork, Value):
 
         return {} if default else { self.name: s }
 
+    @overload
+    async def restore_state(self, state : dict[str, dict[str, typing.Any]]) -> None: ...
+    @overload
+    def restore_state(self, state : dict[str, dict[str, typing.Any]], *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def restore_state(self, state : dict[str, dict[str, typing.Any]], *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def restore_state(self, state : dict[str, dict[str, typing.Any]], *, block : typing.Literal[True]) -> asyncio.Future[None]: ...
+
     @run_sync
     async def restore_state(self, state : dict):
-        '''Restore the state of this object from a dictionary as returned by state().'''
+        '''
+        Restore the state of this object from a dictionary as returned by state().
+
+        **Arguments**
+        * `state : dict`: the state dictionary to restore from
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `None`: when `block = True`
+        * otherwise a future
+        '''
 
         if not self.name in state:
             return
+
+        if not self.alive():
+            raise lexc.InvalidState('Object not connected')
 
         s = state[self.name]
 
@@ -649,10 +773,30 @@ class Stream(ZmqClientWork):
 
         self._compressed = 'f' in cap
         self._initialized = True
-        self.reset()
+        await self.reset()
+
+    @overload
+    async def poll(self, suffix : str='') -> str | bytes | bytearray: ...
+    @overload
+    def poll(self, suffix : str='', *, block : typing.Literal[False]) -> asyncio.Future[str | bytes | bytearray]: ...
+    @overload
+    def poll(self, suffix : str='', *, sync : typing.Literal[True]) -> str | bytes | bytearray: ...
+    @overload
+    def poll(self, suffix : str='', *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str | bytes | bytearray]: ...
 
     @run_sync
-    async def poll(self, suffix : str=''):
+    async def poll(self, suffix : str='') -> str | bytes | bytearray:
+        '''
+        Poll the stream for new data.
+
+        **Arguments**
+        * `suffix : str = ''`: optional suffix to add to the stream name
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `str | bytes | bytearray`: the new data when `block = True`
+        * otherwise a future with this `str | bytes | bytearray`
+        '''
         await self._init()
         req = b's' + (self.name + suffix).encode()
         return self._decode(await self.client.req(req))
@@ -669,16 +813,54 @@ class Stream(ZmqClientWork):
         else:
             return x.decode(errors='backslashreplace')
 
+    @overload
+    async def flush(self) -> None: ...
+    @overload
+    def flush(self, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def flush(self, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def flush(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
     @run_sync
-    async def flush(self):
+    async def flush(self) -> None:
+        '''
+        Flush the stream, to finalize the compression, if any.
+
+        **Arguments**
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `None`: when `block = True`
+        * otherwise a future
+        '''
         if self._compressed and not self._flushing and not self._finishing:
             self._flushing = True
             await self.client.req(b'f' + self.name.encode())
             self._flushing = False
             self._finishing = True
 
+    @overload
+    async def reset(self) -> None: ...
+    @overload
+    def reset(self, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def reset(self, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def reset(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
     @run_sync
-    async def reset(self):
+    async def reset(self) -> None:
+        '''
+        Reset the compressed stream, when compression is enabled.
+
+        **Arguments**
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `None`: when `block = True`
+        * otherwise a future
+        '''
         if self._compressed:
             await self.client.req(b'f' + self.name.encode())
             # Drop old data, as we missed the start of the stream.
@@ -717,7 +899,7 @@ class Macro(ZmqClientWork):
 
     def __del__(self):
         if self.alive():
-            self.client.release_macro(self)
+            self.client.release_macro(self, sync=True)
 
         super().__del__()
 
@@ -725,9 +907,30 @@ class Macro(ZmqClientWork):
     def macro(self) -> bytes | None:
         return self._macro
 
+    @overload
+    async def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None) -> bool: ...
+    @overload
+    def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None, *, block : typing.Literal[False]) -> asyncio.Future[bool]: ...
+    @overload
+    def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None, *, sync : typing.Literal[True]) -> bool: ...
+    @overload
+    def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[bool]: ...
+
     @run_sync
     async def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None) -> bool:
-        '''Add a command to this macro.'''
+        '''
+        Add a command to this macro.
+
+        **Arguments**
+        * `cmd : str`: the command to add
+        * `cb : Callable[[bytes, float | None], None] | None = None`: optional callback to handle the response
+        * `key : Hashable | None = None`: optional key to identify this command, otherwise an integer key is assigned
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `bool`: True if the command was added successfully, False otherwise, when `block = True`
+        * otherwise a future with this `bool`
+        '''
 
         if key is None:
             key = self._key
@@ -755,8 +958,28 @@ class Macro(ZmqClientWork):
         await self.remove(key)
         return False
 
+    @overload
+    async def remove(self, key : typing.Hashable) -> bool: ...
+    @overload
+    def remove(self, key : typing.Hashable, *, block : typing.Literal[False]) -> asyncio.Future[bool]: ...
+    @overload
+    def remove(self, key : typing.Hashable, *, sync : typing.Literal[True]) -> bool: ...
+    @overload
+    def remove(self, key : typing.Hashable, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[bool]: ...
+
     @run_sync
     async def remove(self, key : typing.Hashable) -> bool:
+        '''
+        Remove a command from this macro.
+
+        **Arguments**
+        * `key : Hashable`: the key of the command to remove
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `bool`: True if the command was removed successfully, when `block = True`
+        * otherwise a future with this `bool`
+        '''
         if key in self._cmds:
             del self._cmds[key]
             await self._update()
@@ -780,8 +1003,27 @@ class Macro(ZmqClientWork):
         definition = self._reqsep.join(cmds)
         return await self.client.req(definition) == b'!'
 
+    @overload
+    async def run(self) -> None: ...
+    @overload
+    def run(self, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def run(self, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def run(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
     @run_sync
     async def run(self):
+        '''
+        Run this macro.
+
+        **Arguments**
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `None`: when `block = True`
+        * otherwise a future with this `bool`
+        '''
         m = self.macro
         if m is not None:
             self.decode(await self.client.req(m))
@@ -959,10 +1201,36 @@ class ZmqClient(Work):
         self._fast_poll_macro : Macro | None = None
         self._fast_poll_interval_s : float = self.fast_poll_threshold_s
 
+    @overload
+    async def connect(self, host : str | None=None, port : int | None=None, \
+                      multi : bool | None=None, default_state : bool=False) -> None: ...
+    @overload
+    def connect(self, host : str | None=None, port : int | None=None, \
+                multi : bool | None=None, default_state : bool=False, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def connect(self, host : str | None=None, port : int | None=None, \
+                multi : bool | None=None, default_state : bool=False, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def connect(self, host : str | None=None, port : int | None=None, \
+                multi : bool | None=None, default_state : bool=False, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
     @run_sync
     async def connect(self, host : str | None=None, port : int | None=None, \
                       multi : bool | None=None, default_state : bool=False):
-        '''Connect to the ZMQ server.'''
+        '''
+        Connect to the ZMQ server.
+
+        **Arguments**
+        * `host : str | None = None`: the host to connect to, or None to use the configured host
+        * `port : int | None = None`: the port to connect to, or None to use the configured port
+        * `multi : bool | None = None`: whether to use multi-client safe commands, or None to use the configured value
+        * `default_state : bool = False`: if True, do not restore the state from the state file
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `None`: when `block = True`
+        * otherwise a future
+        '''
 
         await self._connect(host, port, multi)
 
@@ -1009,18 +1277,36 @@ class ZmqClient(Work):
                 s.close(0)
             raise
 
+    @overload
+    async def disconnect(self) -> None: ...
+    @overload
+    def disconnect(self, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def disconnect(self, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def disconnect(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
     @run_sync
     async def disconnect(self):
-        '''Disconnect from the ZMQ server.'''
+        '''
+        Disconnect from the ZMQ server.
+
+        **Arguments**
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `None`: when `block = True`
+        * otherwise a future
+        '''
 
         s = self._socket
-        self._socket = None
 
         if s is None:
             # Not connected
             return
 
         await self.save_state()
+        self._socket = None
 
         self.logger.debug('disconnect')
         try:
@@ -1035,6 +1321,15 @@ class ZmqClient(Work):
 
         self.disconnected.trigger()
 
+    @overload
+    async def close(self) -> None: ...
+    @overload
+    def close(self, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def close(self, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def close(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
     @run_sync
     async def close(self):
         '''Alias for disconnect().'''
@@ -1042,15 +1337,16 @@ class ZmqClient(Work):
 
     def __del__(self):
         if self.is_connected():
-            self.disconnect()
+            self.disconnect(sync=True)
 
     def __enter__(self):
-        self.connect()
-        return self
+        s = SyncZmqClient(self)
+        s.connect()
+        return s
 
     def __exit__(self, *args):
         if self.is_connected():
-            self.disconnect()
+            self.disconnect(sync=True)
 
     async def __aenter__(self):
         await self.connect()
@@ -1064,10 +1360,43 @@ class ZmqClient(Work):
     ##############################################
     # Low-level req
 
+    @overload
+    async def req(self, msg : bytes) -> bytes: ...
+    @overload
+    async def req(self, msg : str) -> str: ...
+    @overload
+    def req(self, msg : bytes, *, block : typing.Literal[False]) -> asyncio.Future[bytes]: ...
+    @overload
+    def req(self, msg : str, *, block : typing.Literal[False]) -> asyncio.Future[str]: ...
+    @overload
+    def req(self, msg : bytes, *, sync : typing.Literal[True]) -> bytes: ...
+    @overload
+    def req(self, msg : str, *, sync : typing.Literal[True]) -> str: ...
+    @overload
+    def req(self, msg : bytes, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[bytes]: ...
+    @overload
+    def req(self, msg : str, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str]: ...
+
     @run_sync
     @locked
     async def req(self, msg : bytes | str) -> bytes | str:
-        '''Send a request to the ZMQ server and wait for a reply.'''
+        '''
+        Send a request to the ZMQ server and wait for a reply.
+
+        **Arguments**
+        * `msg : bytes | str`: the request message to send
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `bytes`: the reply message when the type of `msg` is `bytes` and `block = True`
+        * `str`: the reply message when the type of `msg` is `str` and `block = True`
+        * otherwise a future with this `bytes | str`
+
+        **Raises**
+        * `InvalidState`: when not connected
+        * `Disconnected`: when the connection was lost during the request
+        * `OperationFailed`: when the request failed or interrupted
+        '''
 
         if len(msg) == 0:
             raise ValueError('Empty request')
@@ -1115,9 +1444,27 @@ class ZmqClient(Work):
     ##############################################
     # Simple commands
 
+    @overload
+    async def capabilities(self) -> str: ...
+    @overload
+    def capabilities(self, *, block : typing.Literal[False]) -> asyncio.Future[str]: ...
+    @overload
+    def capabilities(self, *, sync : typing.Literal[True]) -> str: ...
+    @overload
+    def capabilities(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str]: ...
+
     @run_sync
     async def capabilities(self) -> str:
-        '''Get the capabilities of the connected ZMQ server.'''
+        '''
+        Get the capabilities of the connected ZMQ server.
+
+        **Arguments**
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `str` with the capabilities when `block = True`
+        * otherwise a future
+        '''
 
         if self._capabilities is None:
             self._capabilities = await self.req('?')
@@ -1128,17 +1475,57 @@ class ZmqClient(Work):
 
         return self._capabilities
 
+    @overload
+    async def echo(self, msg : str) -> str: ...
+    @overload
+    def echo(self, msg : str, *, block : typing.Literal[False]) -> asyncio.Future[str]: ...
+    @overload
+    def echo(self, msg : str, *, sync : typing.Literal[True]) -> str: ...
+    @overload
+    def echo(self, msg : str, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str]: ...
+
     @run_sync
     async def echo(self, msg : str) -> str:
-        '''Echo a message via the ZMQ server.'''
+        '''
+        Echo a message via the ZMQ server.
+
+        **Arguments**
+        * `msg : str`: the message to echo
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `str`: the echoed message when `block = True`
+        * otherwise a future with this `str`
+
+        **Raises**
+        * `NotSupported`: when the echo command is not supported by the server
+        '''
         if 'e' not in await self.capabilities():
             raise lexc.NotSupported('Echo command not supported')
 
         return (await self.req(b'e' + msg.encode())).decode()
 
+    @overload
+    async def identification(self) -> str: ...
+    @overload
+    def identification(self, *, block : typing.Literal[False]) -> asyncio.Future[str]: ...
+    @overload
+    def identification(self, *, sync : typing.Literal[True]) -> str: ...
+    @overload
+    def identification(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str]: ...
+
     @run_sync
     async def identification(self) -> str:
-        '''Get the identification string.'''
+        '''
+        Get the identification string.
+
+        **Arguments**
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `str`: the identification string, which is empty when not supported, when `block = True`
+        * otherwise a future with this `str`
+        '''
 
         if self._identification is not None:
             return self._identification
@@ -1155,9 +1542,27 @@ class ZmqClient(Work):
         assert self._identification is not None
         return self._identification
 
+    @overload
+    async def version(self) -> str: ...
+    @overload
+    def version(self, *, block : typing.Literal[False]) -> asyncio.Future[str]: ...
+    @overload
+    def version(self, *, sync : typing.Literal[True]) -> str: ...
+    @overload
+    def version(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str]: ...
+
     @run_sync
     async def version(self) -> str:
-        '''Get the version string.'''
+        '''
+        Get the version string.
+
+        **Arguments**
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `str`: the version string, which is empty when not supported, when `block = True`
+        * otherwise a future with this `str`
+        '''
         if self._version is not None:
             return self._version
 
@@ -1169,9 +1574,33 @@ class ZmqClient(Work):
         assert self._version is not None
         return self._version
 
+    @overload
+    async def read_mem(self, pointer : int, size : int) -> bytearray: ...
+    @overload
+    def read_mem(self, pointer : int, size : int, *, block : typing.Literal[False]) -> asyncio.Future[bytearray]: ...
+    @overload
+    def read_mem(self, pointer : int, size : int, *, sync : typing.Literal[True]) -> bytearray: ...
+    @overload
+    def read_mem(self, pointer : int, size : int, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[bytearray]: ...
+
     @run_sync
-    async def read_mem(self, pointer : int, size : int) -> bytearray | None:
-        '''Read memory from the connected device.'''
+    async def read_mem(self, pointer : int, size : int) -> bytearray:
+        '''
+        Read memory from the connected device.
+
+        **Arguments**
+        * `pointer : int`: the memory address to read from
+        * `size : int`: the number of bytes to read
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `bytearray`: the read data when `block = True`
+        * otherwise a future with this `bytearray`
+
+        **Raises**
+        * `NotSupported`: when the ReadMem command is not supported by the server
+        * `OperationFailed`: when the ReadMem command failed
+        '''
 
         if 'R' not in await self.capabilities():
             raise lexc.NotSupported('ReadMem command not supported')
@@ -1190,9 +1619,33 @@ class ZmqClient(Work):
             res.append(int(rep[i:i+2], 16))
         return res
 
+    @overload
+    async def write_mem(self, pointer : int, data : bytearray) -> None: ...
+    @overload
+    def write_mem(self, pointer : int, data : bytearray, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def write_mem(self, pointer : int, data : bytearray, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def write_mem(self, pointer : int, data : bytearray, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
     @run_sync
     async def write_mem(self, pointer : int, data : bytearray):
-        '''Write memory to the connected device.'''
+        '''
+        Write memory to the connected device.
+
+        **Arguments**
+        * `pointer : int`: the memory address to write to
+        * `data : bytearray`: the data to write
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `None`: when `block = True`
+        * otherwise a future
+
+        **Raises**
+        * `NotSupported`: when the WriteMem command is not supported by the server
+        * `OperationFailed`: when the WriteMem command failed
+        '''
         if 'W' not in await self.capabilities():
             raise lexc.NotSupported('WriteMem command not supported')
 
@@ -1215,9 +1668,31 @@ class ZmqClient(Work):
         else:
             return list(self._objects)
 
+    @overload
+    async def list(self) -> typing.List[Object]: ...
+    @overload
+    def list(self, *, block : typing.Literal[False]) -> asyncio.Future[typing.List[Object]]: ...
+    @overload
+    def list(self, *, sync : typing.Literal[True]) -> typing.List[Object]: ...
+    @overload
+    def list(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[typing.List[Object]]: ...
+
     @run_sync
     async def list(self) -> typing.List[Object]:
-        '''List the objects available.'''
+        '''
+        List the objects available.
+
+        **Arguments**
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `List[Object]`: the list of objects when `block = True`
+        * otherwise a future with this `List[Object]`
+
+        **Raises**
+        * `NotSupported`: when the List command is not supported by the server
+        * `InvalidResponse`: when the List command returned an invalid response
+        '''
 
         if not self._objects is None:
             return self.objects
@@ -1387,8 +1862,28 @@ class ZmqClient(Work):
             # Not initialized yet, or could not find.
             return None
 
+    @overload
+    async def find_time(self) -> Object | None: ...
+    @overload
+    def find_time(self, *, block : typing.Literal[False]) -> asyncio.Future[Object | None]: ...
+    @overload
+    def find_time(self, *, sync : typing.Literal[True]) -> Object | None: ...
+    @overload
+    def find_time(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[Object | None]: ...
+
     @run_sync
     async def find_time(self) -> Object | None:
+        '''
+        Find the time object.
+        It should start with `/t`, and have a unit between parentheses, like `/t (s)`.
+
+        **Arguments**
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `Object | None`: the time object when found, or None when not found, when `block = True`
+        * otherwise a future with this `Object | None`
+        '''
         if isinstance(self._t, str):
             # Take the given time variable
             t = self.find(self._t)
@@ -1462,9 +1957,27 @@ class ZmqClient(Work):
     ##############################################
     # Streams
 
+    @overload
+    async def streams(self) -> typing.List[str]: ...
+    @overload
+    def streams(self, *, block : typing.Literal[False]) -> asyncio.Future[typing.List[str]]: ...
+    @overload
+    def streams(self, *, sync : typing.Literal[True]) -> typing.List[str]: ...
+    @overload
+    def streams(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[typing.List[str]]: ...
+
     @run_sync
     async def streams(self) -> typing.List[str]:
-        '''Get the list of available streams.'''
+        '''
+        Get the list of available streams.
+
+        **Arguments**
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `List[str]`: the list of stream names when `block = True`
+        * otherwise a future with this `List[str]`
+        '''
 
         if 's' not in await self.capabilities():
             return []
@@ -1497,11 +2010,36 @@ class ZmqClient(Work):
     ##############################################
     # Alias
 
+    @overload
+    async def alias(self, obj : str | Object, prefer : str | None=None,
+                    temporary : bool=True, permanentRef : typing.Any=None) -> str | None: ...
+    @overload
+    def alias(self, obj : str | Object, prefer : str | None=None,
+              temporary : bool=True, permanentRef : typing.Any=None, *, block : typing.Literal[False]) -> asyncio.Future[str | None]: ...
+    @overload
+    def alias(self, obj : str | Object, prefer : str | None=None,
+              temporary : bool=True, permanentRef : typing.Any=None, *, sync : typing.Literal[True]) -> str | None: ...
+    @overload
+    def alias(self, obj : str | Object, prefer : str | None=None,
+              temporary : bool=True, permanentRef : typing.Any=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str | None]: ...
+
     @run_sync
     async def alias(self, obj : str | Object, prefer : str | None=None,
                     temporary : bool=True, permanentRef : typing.Any=None) -> str | None:
 
-        '''Assign an alias to an object.'''
+        '''
+        Assign an alias to an object.
+
+        **Arguments**
+        * `obj : str | Object`: the object to assign an alias to, or its name
+        * `prefer : str | None = None`: the preferred alias, or None to get any available one
+        * `temporary : bool = True`: if True, assign a temporary alias, otherwise a permanent one
+        * `permanentRef : Any = None`: when assigning a permanent alias, a reference to the user of this alias.
+
+        **Result**
+        * `str | None`: the assigned alias, or None when no alias could be assigned, when `block = True`
+        * otherwise a future with this `str | None`
+        '''
 
         if isinstance(obj, str):
             obj = self.obj(obj)
@@ -1692,9 +2230,28 @@ class ZmqClient(Work):
         self._release_alias(a)
         return a
 
+    @overload
+    async def release_alias(self, alias : str, permanentRef=None) -> None: ...
+    @overload
+    def release_alias(self, alias : str, permanentRef=None, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def release_alias(self, alias : str, permanentRef=None, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def release_alias(self, alias : str, permanentRef=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
     @run_sync
     async def release_alias(self, alias : str, permanentRef=None):
-        '''Release an alias.'''
+        '''
+        Release an alias.
+
+        **Arguments**
+        * `alias : str`: the alias to release
+        * `permanentRef : Any = None`: when releasing a permanent alias, a reference to the user of this alias.
+
+        **Result**
+        * `None`: when `block = True`
+        * otherwise a future
+        '''
         if self._release_alias(alias, permanentRef):
             await self.req(b'a' + alias.encode())
 
@@ -1723,9 +2280,31 @@ class ZmqClient(Work):
     ##############################################
     # Macro
 
+    @overload
+    async def acquire_macro(self) -> str | None: ...
+    @overload
+    def acquire_macro(self, *, block : typing.Literal[False]) -> asyncio.Future[str | None]: ...
+    @overload
+    def acquire_macro(self, *, sync : typing.Literal[True]) -> str | None: ...
+    @overload
+    def acquire_macro(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str | None]: ...
+
     @run_sync
-    async def macro(self, *args, **kwargs) -> Macro:
-        '''Get a free macro, and optionally assign commands to it.'''
+    async def acquire_macro(self) -> str | None:
+        '''
+        Get a free macro name.
+
+        In case there is no available macro name, `None` is returned.  This can
+        still be used to create a Macro object, although it is not that
+        efficient.
+
+        **Arguments**
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `str | None`: the macro name when `block = True`
+        * otherwise a future with this `str | None`
+        '''
 
         if self._available_macros is None:
             # Not initialized yet.
@@ -1739,18 +2318,43 @@ class ZmqClient(Work):
                     self._available_macros.remove(c)
 
         if self._available_macros == []:
-            mo = Macro(self, None, *args, **kwargs)
+            return None
         else:
             m = self._available_macros.pop()
             self._used_macros.append(m)
-            mo = Macro(self, m, *args, **kwargs)
+            return m
 
+    def macro(self, name : str | None, *args, **kwargs) -> Macro:
+        '''
+        Create a macro object for the given macro name.
+        '''
+
+        mo = Macro(self, name, *args, **kwargs)
         self._macros.append(mo)
         return mo
 
+    @overload
+    async def release_macro(self, m : str | bytes | Macro) -> None: ...
+    @overload
+    def release_macro(self, m : str | bytes | Macro, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def release_macro(self, m : str | bytes | Macro, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def release_macro(self, m : str | bytes | Macro, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
     @run_sync
     async def release_macro(self, m : str | bytes | Macro):
-        '''Release a macro.'''
+        '''
+        Release a macro.
+
+        **Arguments**
+        * `m : str | bytes | Macro`: the macro to release, or its name
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `None`: when `block = True`
+        * otherwise a future
+        '''
 
         macro = None
         mo = None
@@ -1786,23 +2390,40 @@ class ZmqClient(Work):
     ##############################################
     # Poll
 
+    @overload
+    def periodic(self, interval_s : float, f : typing.Callable, *args, name : str | None=None) -> asyncio.Task: ...
+    @overload
+    def periodic(self, interval_s : float, f : typing.Callable, *args, name : str | None=None, block : typing.Literal[False]) -> concurrent.futures.Future[asyncio.Task] | asyncio.Task: ...
+
     @Work.thread_safe
-    def periodic(self, interval_s : float, f : typing.Callable, name : str | None=None, *args, **kwargs) -> asyncio.Task:
+    def periodic(self, interval_s : float, f : typing.Callable, *args, name : str | None=None) -> asyncio.Task:
         '''
         Run a function periodically while the client is alive.
+
+        **Arguments**
+        * `interval_s : float`: the interval in seconds between calls; if 0, run as often as possible
+        * `f : Callable`: the function to call periodically; can be a coroutine or a normal function
+        * `name : str | None = None`: the name of the periodic task
+        * `*args`: arguments to pass to `f`
+        * `**kwargs`: keyword arguments to pass to `f`
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `asyncio.Task`: the created periodic task when `block = True`
+        * otherwise a future with this `asyncio.Task`
         '''
 
         if not interval_s >= 0:
             raise ValueError('interval_s must be non-negative')
 
         if not asyncio.iscoroutinefunction(f):
-            async def _f(*args, **kwargs):
-                f(*args, **kwargs)
+            async def _f(*args):
+                f(*args)
             coro = _f
         else:
             coro = f
 
-        task = asyncio.create_task(self._periodic(interval_s, coro, *args, **kwargs), name=name)
+        task = asyncio.create_task(self._periodic(interval_s, coro, *args), name=name)
         self._periodic_tasks.add(task)
         return task
 
@@ -1833,6 +2454,9 @@ class ZmqClient(Work):
         except lexc.Disconnected as e:
             self.logger.debug('periodic task stopped; %s', e)
             pass
+        except lexc.InvalidState as e:
+            if self.is_connected():
+                self.logger.exception('exception in periodic task: %s', e)
         except Exception as e:
             self.logger.exception('exception in periodic task: %s', e)
         finally:
@@ -1884,7 +2508,7 @@ class ZmqClient(Work):
 
     async def _poll_fast(self, o : Object, interval_s : float):
         if self._fast_poll_macro is None:
-            self._fast_poll_macro = await self.macro()
+            self._fast_poll_macro = self.macro(await self.acquire_macro())
 
         assert self._fast_poll_macro is not None
         if o not in self._fast_poll_macro:
@@ -1966,9 +2590,30 @@ class ZmqClient(Work):
 
         return {id: s}
 
+    @overload
+    async def save_state(self, state_name : str | None=None) -> None: ...
+    @overload
+    def save_state(self, state_name : str | None=None, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def save_state(self, state_name : str | None=None, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def save_state(self, state_name : str | None=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
     @run_sync
-    async def save_state(self, state_name : str | None=None):
-        '''Save the current state to a file.'''
+    async def save_state(self, state_name : str | None=None) -> None:
+        '''
+        Save the current state to a file.
+
+        **Arguments**
+        * `state_name : str | None`: the name of the state file to save to
+
+        **Result**
+        * `None`: when `block = True`
+        * otherwise a future
+        '''
+
+        if not self.is_connected():
+            raise lexc.InvalidState('Not connected')
 
         filename = self.state_file(state_name)
         if filename is None:
@@ -2001,9 +2646,30 @@ class ZmqClient(Work):
 
         self.logger.debug('saved state to %s', filename)
 
+    @overload
+    async def restore_state(self, state_name : str | None=None) -> None: ...
+    @overload
+    def restore_state(self, state_name : str | None=None, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def restore_state(self, state_name : str | None=None, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def restore_state(self, state_name : str | None=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
     @run_sync
     async def restore_state(self, state_name : str | None=None):
-        '''Restore the state from a file.'''
+        '''
+        Restore the state from a file.
+
+        **Arguments**
+        * `state_name : str | None`: the name of the state file to restore from
+
+        **Result**
+        * `None`: when `block = True`
+        * otherwise a future
+        '''
+
+        if not self.is_connected():
+            raise lexc.InvalidState('Not connected')
 
         filename = self.state_file(state_name)
         if not filename:
@@ -2050,3 +2716,54 @@ class ZmqClient(Work):
             return None
 
         return os.path.join(platformdirs.user_config_dir('libstored'), state_name + '.json')
+
+
+
+class SyncObject:
+    '''
+    A synchronous ZeroMQ client object.
+
+    This class wraps the AsyncZmqClientObject to provide a synchronous interface.
+    '''
+
+    def __init__(self, obj : Object):
+        self._obj = obj
+
+    def __getattr__(self, name):
+        return getattr(self._obj, name)
+
+    def read(self, acquire_alias : bool=True) -> typing.Any:
+        '''Read the value of the object.'''
+        return self._obj.read(acquire_alias, sync=True)
+
+    def write(self, value : typing.Any = None) -> None:
+        '''Write a value to the object.'''
+        return self._obj.write(value, sync=True)
+
+
+
+class SyncZmqClient:
+    '''
+    A synchronous ZeroMQ client.
+
+    This class wraps the ZmqClient to provide a synchronous interface that is
+    understood by static code analyzers.
+    '''
+
+    def __init__(self, client : ZmqClient):
+        self._client = client
+
+    def __getattr__(self, name):
+        return getattr(self._client, name)
+
+    def __getitem__(self, x : str) -> SyncObject:
+        return SyncObject(self.obj(x))
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        # Don't disconnect.  This object only exists, as it has been created
+        # using ZmqClient.__enter__().  Its corresponding __exit__() will
+        # disconnect the client.
+        pass
