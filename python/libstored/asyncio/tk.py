@@ -259,9 +259,7 @@ class AsyncTk:
             return future
 
         assert self._root is not None
-        self.logger.debug("Queue async call - generate")
         self._root.event_generate('<<async_call>>', when='tail')
-        self.logger.debug("Queued async call")
         return future
 
     def _on_async_call(self, event):
