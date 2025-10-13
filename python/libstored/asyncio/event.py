@@ -245,9 +245,11 @@ class AsyncioRateLimit(laio_worker.Work, Event):
 
     @laio_worker.Work.thread_safe_async
     def flush(self):
-        if self._timer is not None:
-            self._timer.cancel()
-            self._timer = None
+        if self._timer is None:
+            return
+
+        self._timer.cancel()
+        self._timer = None
 
         now = self.loop.time()
         if now - self._last_trigger >= self._min_interval_s:
