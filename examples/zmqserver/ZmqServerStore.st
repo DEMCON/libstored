@@ -30,6 +30,7 @@ string:15 a string
 } stats
 
 uint32 response delay (ms)
+(string:15) stream
 (double) rand
 (uint64) t (us)
 

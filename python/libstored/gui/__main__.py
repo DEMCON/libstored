@@ -9,6 +9,7 @@ import asyncio
 import locale
 import logging
 import os
+from urllib import response
 import natsort
 import re
 import sys
@@ -761,6 +762,162 @@ class Tools(laio_tk.Work, ttk.Frame):
 
 
 
+class Stream(laio_tk.AsyncWidget, tk.Toplevel):
+    def __init__(self, app : GUIClient, parent : ttk.Widget, name : str, *args, **kwargs):
+        super().__init__(app=app, master=parent, *args, **kwargs)
+        self._name = name
+        self._stream = app.client.stream(name)
+        self._task : asyncio.Task | None = None
+        self.title(f'libstored GUI - stream {name}')
+
+        self._out = tk.Text(self)
+        self._out.configure(state='disabled')
+        self._out.grid(column=0, row=0, sticky='nsew')
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
+
+        self._out.bind('<Control-a>', self._select_all)
+        self._out.bind('<Control-A>', self._select_all)
+
+        self._start()
+
+    @property
+    def client(self) -> laio.ZmqClient:
+        return typing.cast(GUIClient, self.app).client
+
+    def _select_all(self, event):
+        event.widget.tag_add('sel', '1.0', 'end')
+        event.widget.mark_set('insert', 'end')
+        return 'break'
+
+    @laio_tk.AsyncApp.worker_func
+    async def _start(self):
+        if self._task is None:
+            self._task = self.client.periodic(1.0, self._poll, name=f'stream {self._name}')
+
+    @laio_tk.AsyncApp.worker_func
+    async def _stop(self):
+        if self._task:
+            self._task.cancel()
+            self._task = None
+
+    @laio_tk.AsyncApp.worker_func
+    async def _poll(self):
+        await self._stream.flush()
+        x = await self._stream.poll()
+        if len(x) > 0:
+            self._append(x)
+
+    @laio_tk.AsyncApp.tk_func
+    def _append(self, x : str):
+        self._out.configure(state='normal')
+        self._out.insert(tk.END, x)
+        if self.focus_get() != self._out:
+            self._out.see(tk.END)
+        self._out.configure(state='disabled')
+
+    @laio_tk.AsyncApp.tk_func
+    def cleanup(self):
+        if self.client.is_connected():
+            self._stop()
+        super().cleanup()
+
+
+
+class Streams(laio_tk.AsyncWidget, ttk.Frame):
+    def __init__(self, app : GUIClient, parent : ttk.Widget, client : laio.ZmqClient, *args, **kwargs):
+        super().__init__(app=app, master=parent, *args, **kwargs)
+        self._client = client
+        self._streams : dict[str, dict] = {}
+        self._refresh = ttk.Button(self, text='Refresh streams', command=self._on_refresh)
+
+        self.connect(self._client.connected, self._on_connect)
+        self.connect(self._client.disconnected, self._on_disconnect)
+
+    @laio_tk.AsyncApp.worker_func
+    async def _on_connect(self):
+        if self._client.is_connected() and 's' in await self._client.capabilities():
+            self._on_connected()
+        else:
+            self._on_disconnect()
+
+    @laio_tk.AsyncApp.tk_func
+    def _on_connected(self):
+        if self._client.is_connected():
+            self._refresh.grid(column=256, row=0, sticky='nswe', padx=(Style.grid_padding, 0), pady=0)
+            self._on_refresh()
+        else:
+            self._on_disconnect()
+
+    @laio_tk.AsyncApp.tk_func
+    def _on_disconnect(self):
+        self._refresh.grid_forget()
+        self._on_streams([])
+        self.configure(width=1)
+        self.update_idletasks()
+
+    @laio_tk.AsyncApp.worker_func
+    async def _on_refresh(self):
+        if not self._client.is_connected():
+            self._on_streams([])
+        else:
+            self._on_streams(await self._client.other_streams())
+
+    @laio_tk.AsyncApp.tk_func
+    def _on_streams(self, streams : list[str]):
+        for s, sconf in list(self._streams.items()):
+            if s not in streams:
+                if 'window' in sconf:
+                    sconf['window'].destroy()
+                sconf['check'].destroy()
+                del self._streams[s]
+
+        for s in streams:
+            if s not in self._streams:
+                var = tk.BooleanVar(value=False)
+                check = ttk.Checkbutton(self, text=s, command=lambda s=s: self._show_stream(s), variable=var)
+                check.grid(row=0, column=len(self._streams), sticky='nswe', padx=Style.grid_padding, pady=0)
+                self._streams[s] = {'check': check, 'var': var}
+
+    @laio_tk.AsyncApp.tk_func
+    def _show_stream(self, stream : str):
+        if stream not in self._streams:
+            return
+
+        if not self._client.is_connected():
+            self._hide_stream(stream)
+            return
+
+        sconf = self._streams[stream]
+        if 'check' not in sconf:
+            self._hide_stream(stream)
+            return
+
+        if not sconf['check'].instate(['selected']):
+            self._hide_stream(stream)
+            return
+
+        if 'window' not in sconf:
+            w = Stream(typing.cast(GUIClient, self.app), self, stream)
+            sconf['window'] = w
+            w.protocol("WM_DELETE_WINDOW", lambda: self._hide_stream(stream))
+
+    @laio_tk.AsyncApp.tk_func
+    def _hide_stream(self, stream : str):
+        if stream not in self._streams:
+            return
+
+        sconf = self._streams[stream]
+        if 'window' in sconf:
+            w = sconf['window']
+            del sconf['window']
+            w.destroy()
+
+        if 'check' in sconf and sconf['check'].instate(['selected']):
+            sconf['check'].state(['!selected'])
+
+
+
 class ManualCommand(laio_tk.AsyncWidget, ttk.Frame):
     def __init__(self, app : GUIClient, parent : ttk.Widget, client : laio.ZmqClient, *args, **kwargs):
         super().__init__(app=app, master=parent, *args, **kwargs)
@@ -768,10 +925,11 @@ class ManualCommand(laio_tk.AsyncWidget, ttk.Frame):
         self._empty = True
 
         self._req = ltk.Entry(self, hint='enter command')
-        self._req.grid(column=0, row=0, sticky='we')
+        self._req.grid(column=0, row=0, sticky='nswe', padx=0, pady=Style.grid_padding)
         self.columnconfigure(0, weight=1)
 
         self._req.bind('<Return>', self._on_enter)
+        self._req.bind('<KP_Enter>', self._on_enter)
 
         def select_all(event):
             if isinstance(event.widget, ttk.Entry):
@@ -791,8 +949,12 @@ class ManualCommand(laio_tk.AsyncWidget, ttk.Frame):
         self._rep.bind('<Control-a>', select_all)
         self._rep.bind('<Control-A>', select_all)
 
-        self.bind('<FocusIn>', self._focus_in)
+        self._req.bind('<FocusIn>', self._focus_in, add=True)
         self.bind('<FocusOut>', self._focus_out)
+
+        streams = Streams(app, self, client)
+        streams.grid(column=1, row=0, sticky='nswe', padx=0, pady=Style.grid_padding)
+        self.columnconfigure(1, weight=0)
 
         self._focus_out()
 
@@ -821,7 +983,7 @@ class ManualCommand(laio_tk.AsyncWidget, ttk.Frame):
         self._rep.configure(state='disabled')
 
     def _focus_in(self, *args):
-        self._rep.grid(column=0, row=1, sticky='nsew', pady=(Style.grid_padding, 0))
+        self._rep.grid(column=0, row=1, sticky='nsew', pady=(Style.grid_padding, 0), columnspan=2)
         self.rowconfigure(1, weight=1)
 
     def _focus_out(self, *args):
