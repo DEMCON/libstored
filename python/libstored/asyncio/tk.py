@@ -538,7 +538,8 @@ class AsyncApp(Work, ttk.Frame):
 
         self.logger.debug('Cleanup worker')
         try:
-            self.worker.stop(lexc.DeadlockChecker.default_timeout_s + 1)
+            self.worker.stop(lexc.DeadlockChecker.default_timeout_s + 1 \
+                             if lexc.DeadlockChecker.default_timeout_s is not None else None)
         except TimeoutError:
             self.logger.debug('Cleanup worker - forcing')
             self.worker.cancel()

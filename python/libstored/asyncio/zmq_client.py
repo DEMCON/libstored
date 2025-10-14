@@ -606,7 +606,7 @@ class Object(ZmqClientWork, Value):
         '''Set the value of this object from a string representation.'''
 
         if s == '':
-            self.set(self.type())
+            self.set(self.type(), block=False)
         else:
             try:
                 self.set(self.interpret(s), block=False)
@@ -790,7 +790,7 @@ class Stream(ZmqClientWork):
         Poll the stream for new data.
 
         **Arguments**
-        * `suffix : str = ''`: optional suffix to add to the stream name
+        * `suffix : str = ''`: optional suffix to the stream data
         * `block : bool = True`: perform a blocking call
 
         **Result**
@@ -1989,9 +1989,9 @@ class ZmqClient(Work):
             return list(map(lambda b: chr(b), rep))
 
     @run_sync
-    async def otherStreams(self):
+    async def other_streams(self):
         # TODO
-        pass
+        return await self.streams()
 
     def stream(self, s : str, raw : bool=False) -> Stream:
         '''Get a Stream object for the given stream name.'''

@@ -16,6 +16,8 @@
 #  include <chrono>
 #endif
 
+static stored::Stream<>* stream;
+
 class ZmqServerStore : public STORE_T(ZmqServerStore, stored::ZmqServerStoreBase) {
 	STORE_CLASS(ZmqServerStore, stored::ZmqServerStoreBase)
 public:
@@ -59,6 +61,18 @@ protected:
 	{
 		if(!set)
 			value = m_writes;
+	}
+
+	size_t __stream(bool set, char* buf, size_t len)
+	{
+		if(!set)
+			return 0;
+
+		if(::stream) {
+			::stream->encode(buf, strlen(buf));
+			::stream->encode("\n", 1);
+		}
+		return len;
 	}
 
 	void __rand(bool set, double& value)
@@ -112,6 +126,7 @@ int main()
 	ZmqServerStore store;
 	stored::Debugger debugger("zmqserver");
 	debugger.map(store);
+	::stream = debugger.stream('x', true);
 
 	stored::DebugZmqLayer zmqLayer;
 	zmqLayer.wrap(debugger);
