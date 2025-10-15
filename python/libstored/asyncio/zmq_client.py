@@ -863,9 +863,10 @@ class Stream(ZmqClientWork):
         '''
         if self._compressed:
             await self.client.req(b'f' + self.name.encode())
-            # Drop old data, as we missed the start of the stream.
-            await self.client.req(b's' + self.name.encode())
-            self._reset()
+
+        # Drop old data, as we missed the start of the stream.
+        await self.client.req(b's' + self.name.encode())
+        self._reset()
 
     def _reset(self):
         if self._compressed:
@@ -898,6 +899,9 @@ class Macro(ZmqClientWork):
         self._repsep = repsep
 
     def __del__(self):
+        if self._cmds:
+            self.clear(sync=True)
+
         if self.alive():
             self.client.release_macro(self, sync=True)
 
@@ -908,16 +912,17 @@ class Macro(ZmqClientWork):
         return self._macro
 
     @overload
-    async def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None) -> bool: ...
+    async def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None) -> None: ...
     @overload
-    def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None, *, block : typing.Literal[False]) -> asyncio.Future[bool]: ...
+    def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
     @overload
-    def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None, *, sync : typing.Literal[True]) -> bool: ...
+    def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None, *, sync : typing.Literal[True]) -> None: ...
     @overload
-    def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[bool]: ...
+    def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
     @run_sync
-    async def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None) -> bool:
+    @ZmqClientWork.locked
+    async def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None):
         '''
         Add a command to this macro.
 
@@ -937,26 +942,25 @@ class Macro(ZmqClientWork):
             self._key += 1
 
         self._cmds[key] = (cmd.encode(), cb)
-        if not await self._update():
+        try:
+            await self._update()
+        except lexc.OperationFailed:
             # Update failed, remove command again.
             del self._cmds[key]
-            return False
+            raise
 
         # Check if it still works...
         if cb is None:
             # No response expected
-            return True
+            return
 
         try:
-            await self.run()
+            await self._run()
             # Success.
-            return True
         except RuntimeError:
-            pass
-
-        # Rollback.
-        await self.remove(key)
-        return False
+            # Rollback.
+            await self._remove(key)
+            raise lexc.OperationFailed('Cannot add to macro')
 
     @overload
     async def remove(self, key : typing.Hashable) -> bool: ...
@@ -968,6 +972,7 @@ class Macro(ZmqClientWork):
     def remove(self, key : typing.Hashable, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[bool]: ...
 
     @run_sync
+    @ZmqClientWork.locked
     async def remove(self, key : typing.Hashable) -> bool:
         '''
         Remove a command from this macro.
@@ -980,12 +985,44 @@ class Macro(ZmqClientWork):
         * `bool`: True if the command was removed successfully, when `block = True`
         * otherwise a future with this `bool`
         '''
+        return await self._remove(key)
+
+    async def _remove(self, key : typing.Hashable) -> bool:
         if key in self._cmds:
             del self._cmds[key]
             await self._update()
             return True
         else:
             return False
+
+    @overload
+    async def clear(self) -> None: ...
+    @overload
+    def clear(self, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def clear(self, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def clear(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
+    @run_sync
+    @ZmqClientWork.locked
+    async def clear(self) -> None:
+        '''
+        Clear all commands from this macro.
+
+        **Arguments**
+        * `block : bool = True`: perform a blocking call
+
+        **Result**
+        * `None`: when `block = True`
+        * otherwise a future
+        '''
+        await self._clear()
+
+    async def _clear(self):
+        self._cmds.clear()
+        if self.client.is_connected():
+            await self._update()
 
     async def _update(self):
         m = self.macro
@@ -1001,7 +1038,8 @@ class Macro(ZmqClientWork):
             first = False
 
         definition = self._reqsep.join(cmds)
-        return await self.client.req(definition) == b'!'
+        if await self.client.req(definition) != b'!':
+            raise lexc.OperationFailed('Macro definition failed')
 
     @overload
     async def run(self) -> None: ...
@@ -1013,6 +1051,7 @@ class Macro(ZmqClientWork):
     def run(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
     @run_sync
+    @ZmqClientWork.locked
     async def run(self):
         '''
         Run this macro.
@@ -1024,6 +1063,9 @@ class Macro(ZmqClientWork):
         * `None`: when `block = True`
         * otherwise a future with this `bool`
         '''
+        await self._run()
+
+    async def _run(self):
         m = self.macro
         if m is not None:
             self.decode(await self.client.req(m))
@@ -1058,6 +1100,198 @@ class Macro(ZmqClientWork):
 
 
 
+class Tracing(Macro):
+    """Tracing command handling"""
+
+    def __init__(self, client : ZmqClient, stream : str='t', poll_interval_s : float=0, *args, **kwargs):
+        super().__init__(client=client, reqsep=b'\r', repsep=b';', *args, **kwargs)
+
+        self._poll_interval_s : float = poll_interval_s
+        self._stream : Stream | str = stream
+        self._enabled : bool | None = None
+        self._decimate : int = 1
+        self._partial : bytearray = bytearray()
+        self._task : asyncio.Task | None = None
+
+    async def _init(self):
+        if self._enabled is not None:
+            return
+
+        self._enabled = False
+
+        if not self.client.is_connected():
+            raise lexc.InvalidState('Client not connected')
+
+        try:
+            cap = await self.client.capabilities()
+            if 't' not in cap:
+                raise lexc.NotSupported('Tracing capability missing')
+            if 'm' not in cap:
+                raise lexc.NotSupported('Macro capability missing')
+            if 'e' not in cap:
+                raise lexc.NotSupported('Echo capability missing')
+            if 's' not in cap:
+                raise lexc.NotSupported('Stream capability missing')
+
+            if isinstance(self._stream, str):
+                self._stream = self.client.stream(self._stream, raw=True)
+
+            assert isinstance(self._stream, Stream)
+
+            # Start with sample separator.
+            try:
+                await self.add('e\n', None, 'e')
+            except lexc.OperationFailed:
+                raise lexc.NotSupported('Cannot add echo command for tracing')
+
+            # We must have a macro, not a simulated Macro instance.
+            if self.macro is None:
+                raise lexc.NotSupported('Cannot get macro for tracing')
+
+            t = self.client.time()
+            if t is None:
+                raise lexc.NotSupported('Cannot determine time stamp variable')
+
+            try:
+                await self.add(f'r{await t.short_name()}', None, 't')
+            except lexc.OperationFailed:
+                raise lexc.NotSupported('Cannot add time stamp command for tracing')
+
+            await self._update_tracing(True)
+        except:
+            self._enabled = False
+            raise
+
+    def __del__(self):
+        try:
+            self._enabled = False
+            if self.client.is_connected():
+                self.client.req(b't', sync=True, block=False)
+        except:
+            pass
+
+    async def _update(self):
+        await super()._update()
+
+        # Remove existing samples from buffer, as the layout is changing.
+        if self._enabled:
+            assert isinstance(self._stream, Stream)
+            await self._stream.reset()
+
+        await self._update_tracing()
+
+    async def _update_tracing(self, force=False):
+        await self._init()
+
+        enable = len(self) > 0
+
+        if (force or self._enabled) and not enable:
+            self._enabled = False
+            await self.client.req(b't')
+            if self._task is not None:
+                self._task.cancel()
+                self._task = None
+        elif (force or not self._enabled) and enable:
+            macro = self.macro
+            assert macro is not None
+            assert isinstance(self._stream, Stream)
+
+            rep = await self.client.req(b't' + macro + self._stream.name.encode() + ('%x' % self.decimate).encode())
+            if rep != b'!':
+                raise lexc.NotSupported('Cannot configure tracing')
+
+            await self._stream.reset()
+            self._partial = bytearray()
+
+            if self._task is not None:
+                self._task.cancel()
+                self._task = None
+
+            self._task = self.client.periodic(self._poll_interval_s, self._process, name='tracing')
+
+            self._enabled = True
+
+    async def _clear(self):
+        await super()._clear()
+        await self._update_tracing()
+
+    @property
+    def enabled(self) -> bool:
+        return self._enabled is True
+
+    @property
+    def decimate(self) -> int:
+        return self._decimate
+
+    @run_sync
+    @Macro.locked
+    async def set_decimate(self, decimate: int):
+        if decimate < 1:
+            decimate = 1
+        elif decimate > 0x7fffffff:
+            # Limit it somewhat to stay within 32 bit
+            decimate = 0x7fffffff
+
+        self._decimate = decimate
+        await self._update_tracing(True)
+
+    @property
+    def stream(self) -> Stream | None:
+        return self._stream if isinstance(self._stream, Stream) else None
+
+    @overload
+    async def process(self) -> None: ...
+    @overload
+    def process(self, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def process(self, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def process(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
+    @run_sync
+    @Macro.locked
+    async def process(self):
+        '''Process new samples from the stream.
+
+        This function is called automatically when polling is enabled.
+        It can also be called manually to process samples immediately.
+        '''
+        await self._process()
+
+    @Macro.locked
+    async def _process(self):
+        if not self.enabled:
+            return
+        assert isinstance(self._stream, Stream)
+        x = await self._stream.poll()
+        assert not isinstance(x, str)
+        self._process_data(x)
+
+    def _process_data(self, s : bytes | bytearray):
+        samples = (self._partial + s).split(b'\n;')
+        self._partial = samples[-1]
+        time = self.client.time()
+        assert time is not None
+
+        for sample in samples[0:-1]:
+            # The first value is the time stamp.
+            t_data = sample.split(b';', 1)
+            if len(t_data) < 2:
+                # Empty sample.
+                continue
+            t = time._decode(t_data[0])
+            if t is None:
+                continue
+            ts = self.client.timestamp_to_time(t)
+            time.set(t, ts)
+            super().decode(t_data[1], ts, skip=2)
+
+    def __len__(self):
+        # Don't count sample separator and time stamp.
+        return max(0, super().__len__() - 2)
+
+
+
 class ZmqClient(Work):
     '''
     Asynchronous ZMQ client.
@@ -1077,7 +1311,6 @@ class ZmqClient(Work):
         self._multi = multi
         self._timeout = timeout if timeout is None or timeout > 0 else None
         self._socket = None
-        self._lock = lexc.DeadlockChecker(asyncio.Lock())
         self._alias_lock = lexc.DeadlockChecker(asyncio.Lock())
         self._t : str | Object | None | bool = t
         self._t0 : float = 0
@@ -1090,21 +1323,6 @@ class ZmqClient(Work):
         self.connecting = Event('connecting')
         self.connected = Event('connected')
         self.disconnected = Event('disconnected')
-
-
-
-    ##############################################
-    # asyncio support
-
-    @staticmethod
-    def locked(f : typing.Callable) -> typing.Callable:
-        '''Decorator to lock a method with the instance's lock.'''
-
-        @functools.wraps(f)
-        async def locked(self, *args, **kwargs):
-            async with self._lock:
-                return await f(self, *args, **kwargs)
-        return locked
 
 
 
@@ -1197,9 +1415,11 @@ class ZmqClient(Work):
         if hasattr(self, '_fast_poll_task'):
             if self._fast_poll_task is not None:
                 self._fast_poll_task.cancel()
-        self._fast_poll_task = None
+        self._fast_poll_task : asyncio.Task | None = None
         self._fast_poll_macro : Macro | None = None
         self._fast_poll_interval_s : float = self.fast_poll_threshold_s
+
+        self._tracing : Tracing | bool | None = None
 
     @overload
     async def connect(self, host : str | None=None, port : int | None=None, \
@@ -1243,7 +1463,7 @@ class ZmqClient(Work):
         if not default_state:
             await self.restore_state()
 
-    @locked
+    @Work.locked
     async def _connect(self, host : str | None=None, port : int | None=None, multi : bool | None=None):
         if self.is_connected():
             raise lexc.InvalidState('Already connected')
@@ -1316,7 +1536,7 @@ class ZmqClient(Work):
         except:
             pass
 
-        async with self._lock:
+        async with self.lock:
             self._reset()
 
         self.disconnected.trigger()
@@ -1378,7 +1598,7 @@ class ZmqClient(Work):
     def req(self, msg : str, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str]: ...
 
     @run_sync
-    @locked
+    @Work.locked
     async def req(self, msg : bytes | str) -> bytes | str:
         '''
         Send a request to the ZMQ server and wait for a reply.
@@ -1904,7 +2124,12 @@ class ZmqClient(Work):
                 elif chunks[2].startswith('t ('):
                     # Got some
                     t = o
-                    break
+                else:
+                    continue
+
+                if not o.is_fixed():
+                    # Not a compatible type for time.
+                    continue
             if t is None:
                 # Still not found. Give up.
                 return None
@@ -1944,7 +2169,7 @@ class ZmqClient(Work):
         self.logger.info('time object: %s', t.name)
         return self._t
 
-    def timestamp_to_time(self, t = None):
+    def timestamp_to_time(self, t = None) -> float | int:
         if not isinstance(self._t, Object):
             # No time object found.
             return time.time()
@@ -2467,6 +2692,8 @@ class ZmqClient(Work):
             except:
                 pass
 
+    trace_threshold_s = 0.1
+    trace_poll_interval_s = 0.5
     fast_poll_threshold_s = 0.9
     slow_poll_threshold_s = 1.0
 
@@ -2486,11 +2713,21 @@ class ZmqClient(Work):
                 if len(self._fast_poll_macro) == 0:
                     await self._poll_fast_stop()
 
+            # Stop trace, if any
+            if isinstance(self._tracing, Tracing) and o in self._tracing:
+                await self._tracing.remove(o)
+                await self.alias(o, temporary=True, permanentRef=self._tracing)
+
             # All stopped.
             return
 
         if interval_s < 0:
             interval_s = 0
+
+        if interval_s <= self.trace_threshold_s:
+            if await self._trace(o, interval_s):
+                # Success.
+                return
 
         if interval_s < self.fast_poll_threshold_s:
             if await self._poll_fast(o, interval_s):
@@ -2514,7 +2751,9 @@ class ZmqClient(Work):
         if o not in self._fast_poll_macro:
             await self.alias(o, temporary=False, permanentRef=self._fast_poll_macro)
             a = await o.short_name()
-            if not await self._fast_poll_macro.add(cmd=f'r{a}', cb=o.handle_read, key=o):
+            try:
+                await self._fast_poll_macro.add(cmd=f'r{a}', cb=o.handle_read, key=o)
+            except lexc.NotSupported:
                 # Cannot do a fast poll.
                 return False
 
@@ -2522,8 +2761,8 @@ class ZmqClient(Work):
             self._fast_poll_interval_s = interval_s
             await self._poll_fast_stop()
 
-        if self._fast_poll_task is None:
-            self._fast_poll_task = self.periodic(self._fast_poll_interval_s, self._poll_fast_task)
+        if self._fast_poll_task is None or self._fast_poll_task.done():
+            self._fast_poll_task = self.periodic(self._fast_poll_interval_s, self._poll_fast_task, name='poll fast')
 
         return True
 
@@ -2533,6 +2772,39 @@ class ZmqClient(Work):
             return
 
         await self._fast_poll_macro.run()
+
+    async def _trace(self, o : Object, interval_s : float):
+        if self._tracing is False:
+            # Not supported
+            return False
+
+        if self._tracing is None:
+            m = await self.acquire_macro()
+            if m is None:
+                # No macro available.
+                # This might be a temporary issue.
+                return False
+
+            self._tracing = Tracing(self, poll_interval_s=self.trace_poll_interval_s, macro=m)
+            try:
+                await self._tracing._init()
+            except Exception as e:
+                self.logger.info('cannot initialize tracing; %s', e)
+                self._tracing = False
+                await self.release_macro(m)
+                return False
+
+        assert isinstance(self._tracing, Tracing)
+        if o not in self._tracing:
+            await self.alias(o, temporary=False, permanentRef=self._tracing)
+            a = await o.short_name()
+            try:
+                await self._tracing.add(cmd=f'r{a}', cb=o.handle_read, key=o)
+            except lexc.NotSupported:
+                # Cannot do a trace.
+                return False
+
+        return True
 
 
 
@@ -2621,7 +2893,7 @@ class ZmqClient(Work):
 
         s = self.state()
 
-        async with filelock.AsyncFileLock(f'{filename}.lock'):
+        async with lexc.DeadlockChecker(filelock.AsyncFileLock(f'{filename}.lock')):
             state = {}
             try:
                 with open(filename, 'r') as f:
@@ -2683,7 +2955,7 @@ class ZmqClient(Work):
         if not obj:
             return
 
-        async with filelock.AsyncFileLock(f'{filename}.lock'):
+        async with lexc.DeadlockChecker(filelock.AsyncFileLock(f'{filename}.lock')):
             try:
                 with open(filename, 'r') as f:
                     state = json.load(f)

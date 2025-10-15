@@ -8,6 +8,7 @@ import asyncio
 import concurrent
 import concurrent.futures
 import enum
+import filelock
 import typing
 import logging
 
@@ -45,19 +46,23 @@ class DeadlockChecker:
     class Type(enum.Enum):
         THREADING_LOCK = enum.auto()
         ASYNCIO_LOCK = enum.auto()
+        ASYNCIO_FILELOCK = enum.auto()
         COROUTINE = enum.auto()
         ASYNCIO_FUTURE = enum.auto()
         CONCURRENT_FUTURE = enum.auto()
 
-    def __init__(self, lock : typing.Any, timeout_s : float | None=default_timeout_s):
+    def __init__(self, lock : typing.Any, timeout_s : float | None=None):
         self._lock = lock
-        self._timeout_s = timeout_s
+        self._timeout_s = timeout_s if timeout_s is not None else self.default_timeout_s
         self._acquired = False
         self.logger = logging.getLogger(__class__.__name__)
 
         if isinstance(lock, asyncio.Lock):
             # asyncio.Lock
             self._type = self.Type.ASYNCIO_LOCK
+        elif isinstance(lock, filelock.AsyncFileLock):
+            # filelock.AsyncFileLock
+            self._type = self.Type.ASYNCIO_FILELOCK
         elif asyncio.futures.isfuture(lock):
             # asyncio.Future
             self._type = self.Type.ASYNCIO_FUTURE
@@ -92,18 +97,25 @@ class DeadlockChecker:
             self._acquired = False
 
     async def __aenter__(self):
-        if self._type != self.Type.ASYNCIO_LOCK:
-            raise RuntimeError('Wrong access method')
-
         try:
-            self._acquired = await asyncio.wait_for(self._lock.acquire(), timeout=self._timeout_s)
+            if self._type == self.Type.ASYNCIO_LOCK:
+                await asyncio.wait_for(self._lock.acquire(), timeout=self._timeout_s)
+            elif self._type == self.Type.ASYNCIO_FILELOCK:
+                await self._lock.acquire(timeout=self._timeout_s)
+            else:
+                raise RuntimeError('Wrong access method')
+            self._acquired = True
         except asyncio.TimeoutError:
             self._deadlock('acquire lock')
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         if self._acquired:
-            self._lock.release()
+            if self._type == self.Type.ASYNCIO_LOCK:
+                self._lock.release()
+            elif self._type == self.Type.ASYNCIO_FILELOCK:
+                await self._lock.release()
+
             self._acquired = False
 
     def result(self):
