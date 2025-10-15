@@ -347,3 +347,19 @@ class Work:
                 return x
 
         return thread_safe
+
+    @staticmethod
+    def locked(f : typing.Callable) -> typing.Callable:
+        '''Decorator to lock a method with the instance's lock.'''
+
+        @functools.wraps(f)
+        async def locked(self, *args, **kwargs):
+            async with self.lock:
+                return await f(self, *args, **kwargs)
+        return locked
+
+    @property
+    def lock(self) -> lexc.DeadlockChecker:
+        if not hasattr(self, '_lock'):
+            self._lock = lexc.DeadlockChecker(asyncio.Lock())
+        return self._lock
