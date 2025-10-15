@@ -714,7 +714,7 @@ class Tools(laio_tk.Work, ttk.Frame):
         self._plot = None
         if plotter is not None:
             self._plot = ttk.Button(self, text='Show plots', command=self._on_plot, width=12)
-            self._plot.grid(column=1, row=0, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+            self._plot.grid(column=1, row=0, sticky='nswe', padx=Style.grid_padding, pady=Style.grid_padding)
             self.connect(plotter.plotting, self._on_plotter_update)
             self.connect(plotter.paused, self._on_plotter_update)
             self._on_plotter_update()
@@ -844,7 +844,7 @@ class Streams(laio_tk.AsyncWidget, ttk.Frame):
     @laio_tk.AsyncApp.tk_func
     def _on_connected(self):
         if self._client.is_connected():
-            self._refresh.grid(column=256, row=0, sticky='nswe', padx=(Style.grid_padding, 0), pady=0)
+            self._refresh.grid(column=256, row=0, sticky='nswe', padx=(Style.grid_padding * 2, 0), pady=0)
             self._on_refresh()
         else:
             self._on_disconnect()
@@ -876,7 +876,7 @@ class Streams(laio_tk.AsyncWidget, ttk.Frame):
             if s not in self._streams:
                 var = tk.BooleanVar(value=False)
                 check = ttk.Checkbutton(self, text=s, command=lambda s=s: self._show_stream(s), variable=var)
-                check.grid(row=0, column=len(self._streams), sticky='nswe', padx=Style.grid_padding, pady=0)
+                check.grid(row=0, column=len(self._streams), sticky='nswe', padx=(Style.grid_padding * 2, 0), pady=0)
                 self._streams[s] = {'check': check, 'var': var}
 
     @laio_tk.AsyncApp.tk_func

@@ -1177,6 +1177,7 @@ class Tracing(Macro):
         if self._enabled:
             assert isinstance(self._stream, Stream)
             await self._stream.reset()
+            self._partial = bytearray()
 
         await self._update_tracing()
 
@@ -1202,14 +1203,14 @@ class Tracing(Macro):
 
             await self._stream.reset()
             self._partial = bytearray()
+            self._enabled = True
 
+        if self._enabled and (self._task is None or self._task.done()):
             if self._task is not None:
                 self._task.cancel()
                 self._task = None
 
             self._task = self.client.periodic(self._poll_interval_s, self._process, name='tracing')
-
-            self._enabled = True
 
     async def _clear(self):
         await super()._clear()
@@ -2215,8 +2216,16 @@ class ZmqClient(Work):
 
     @run_sync
     async def other_streams(self):
-        # TODO
-        return await self.streams()
+        streams = await self.streams()
+        if isinstance(self._tracing, Tracing):
+            s = self._tracing.stream
+            if s:
+                try:
+                    streams.remove(s.name)
+                except ValueError:
+                    pass
+
+        return streams
 
     def stream(self, s : str, raw : bool=False) -> Stream:
         '''Get a Stream object for the given stream name.'''
@@ -2396,9 +2405,6 @@ class ZmqClient(Work):
         assert a in self._temporary_aliases or a in self._permanent_aliases
         assert not self._is_alias_available(a)
         assert self._available_aliases is not None
-
-        if not await self._set_alias(a, obj.name):
-            return None
 
         if not self._release_alias(a, permanentRef):
             # Not allowed, still is use as permanent alias.
@@ -2630,7 +2636,6 @@ class ZmqClient(Work):
         * `f : Callable`: the function to call periodically; can be a coroutine or a normal function
         * `name : str | None = None`: the name of the periodic task
         * `*args`: arguments to pass to `f`
-        * `**kwargs`: keyword arguments to pass to `f`
         * `block : bool = True`: perform a blocking call
 
         **Result**
@@ -2653,18 +2658,18 @@ class ZmqClient(Work):
         return task
 
     async def _periodic(self, interval_s : float, coro : typing.Callable, *args, **kwargs):
+        name = ''
         try:
+            task = asyncio.current_task()
+            assert task is not None
+            name = task.get_name()
+            if name != '':
+                name = ' ' + name
+
             while self.is_connected():
                 t_start = time.time()
 
-                task = asyncio.current_task()
-                assert task is not None
-                name = task.get_name()
-                if name is not None:
-                    self.logger.debug('periodic task: %s', name)
-                else:
-                    self.logger.debug('periodic task')
-
+                self.logger.debug('periodic task%s', name)
                 await coro(*args, **kwargs)
 
                 if interval_s == 0:
@@ -2677,13 +2682,13 @@ class ZmqClient(Work):
         except asyncio.CancelledError:
             pass
         except lexc.Disconnected as e:
-            self.logger.debug('periodic task stopped; %s', e)
+            self.logger.debug('periodic task%s stopped; %s', name, e)
             pass
         except lexc.InvalidState as e:
             if self.is_connected():
-                self.logger.exception('exception in periodic task: %s', e)
+                self.logger.exception('exception in periodic task%s: %s', name, e)
         except Exception as e:
-            self.logger.exception('exception in periodic task: %s', e)
+            self.logger.exception('exception in periodic task%s: %s', name, e)
         finally:
             t = asyncio.current_task()
             try:
