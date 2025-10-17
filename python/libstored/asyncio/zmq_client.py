@@ -38,7 +38,7 @@ class ZmqClientWork(Work):
 
     def alive(self) -> bool:
         '''Check if this object is still alive, i.e. the client connection is still active.'''
-        return not self._client is None
+        return self._client is not None
 
     def destroy(self):
         '''Destroy this object, as the client connection is closed.'''
@@ -483,7 +483,7 @@ class Object(ZmqClientWork, Value):
         self.t.pause()
         self.t.value = t
 
-        if isinstance(value, float) and math.isnan(value) and self.type == float and math.isnan(self.value):
+        if isinstance(value, float) and math.isnan(value) and self.type == float and self.value is not None and math.isnan(self.value):
             # Not updated, even though value != self._value would be True
             pass
         elif value != self.value:
