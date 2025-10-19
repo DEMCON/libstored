@@ -49,6 +49,7 @@ set(package_data_
     doc/store.rtf.tmpl
     doc/store.json.tmpl
     doc/store.json.tmpl.license
+    doc/store.yml.tmpl
     fpga/rtl/pkg.vhd
     fpga/rtl/protocol.vhd
     fpga/rtl/store.vhd.tmpl

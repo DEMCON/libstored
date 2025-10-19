@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: 2025 Guus Kuiper
+#
+# SPDX-License-Identifier: MIT
+
+name: {{store.name | yamlstring}}
+hash: {{store.hash | yamlstring}}
+littleEndian: {{store.littleEndian | yamlstring}}
+variables:
+{% for o in store.objects | sort(attribute='offset') if o is variable %}
+  - name: {{o.name | yamlstring}}
+    cname: {{o.cname | yamlstring}}
+    type: {{o.type | yamlstring}}
+    size: {{o.size | yamlstring}}
+    offset: {{o.offset | yamlstring}}
+    init: {{o | pyinit | yamlstring}}
+{% endfor %}
+functions:
+{% for o in store.objects | sort(attribute='offset,f') if o is function %}
+  - name: {{o.name | yamlstring}}
+    cname: {{o.cname | yamlstring}}
+    type: {{o.type | yamlstring}}
+    size: {{o.size | yamlstring}}
+    function: {{o.f | yamlstring}}
+{% endfor %}

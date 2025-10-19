@@ -10,6 +10,7 @@ import hashlib
 import jinja2
 import json
 import logging
+import math
 import re
 import shutil
 import struct
@@ -236,9 +237,63 @@ def pyliteral(x):
         return f'int({x})'
     else:
         return repr(x)
+    
+def pyinit(o):
+    if o.init is None:
+        return None
+
+    v = o.init
+    type_map = {
+        'bool': lambda: bool(v),
+        'int8': lambda: int(v),
+        'uint8': lambda: int(v),
+        'int16': lambda: int(v),
+        'uint16': lambda: int(v),
+        'int32': lambda: int(v),
+        'uint32': lambda: int(v),
+        'int64': lambda: int(v),
+        'uint64': lambda: int(v),
+        'float': lambda: float(v),
+        'double': lambda: float(v),
+        'ptr32': lambda: int(v),
+        'ptr64': lambda: int(v),
+        'blob': lambda: None,
+        'string': lambda: str(v),
+    }
+    return type_map[o.type]()
 
 def jsonstring(s):
     return json.dumps(s)
+
+def yamlstring(s):
+    """Return a YAML-safe scalar representation.
+
+    Rules:
+    - Strings: quote with double quotes, escape existing quotes and backslashes.
+    - Integers/Floats: plain.
+    - Booleans: 'true'/'false'.
+    - None: 'null'.
+    - For other types, fall back to jsonstring to ensure safe serialization.
+    """
+    if s is None:
+        return 'null'
+    
+    if isinstance(s, str):
+        # Escape backslashes and quotes inside the string
+        esc = s.replace('\\', '\\\\').replace('"', '\\"')
+        return '"' + esc + '"'
+    elif isinstance(s, bool):
+        return 'true' if s else 'false'
+    elif isinstance(s, (int, float)):
+        # Special float cases per YAML core schema conventions
+        if isinstance(s, float):
+            if math.isnan(s):
+                return '.nan'
+            if math.isinf(s):
+                return '.inf' if s > 0 else '-.inf'
+        return str(s)
+    # Fallback: JSON is valid YAML for these cases
+    return jsonstring(s)
 
 def tab_indent(s, num):
     return ('\t' * num).join(s.splitlines(True))
@@ -362,7 +417,9 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.filters['csvstring'] = csvstring
     jenv.filters['pystring'] = pystring
     jenv.filters['pyliteral'] = pyliteral
+    jenv.filters['pyinit'] = pyinit
     jenv.filters['jsonstring'] = jsonstring
+    jenv.filters['yamlstring'] = yamlstring
     jenv.filters['tab_indent'] = tab_indent
     jenv.tests['variable'] = is_variable
     jenv.tests['function'] = is_function
@@ -379,6 +436,7 @@ def generate_store(model_file, output_dir, littleEndian=True):
     store_vhd_tmpl = jenv.get_template('store.vhd.tmpl')
     store_pkg_vhd_tmpl = jenv.get_template('store_pkg.vhd.tmpl')
     store_json_tmpl = jenv.get_template('store.json.tmpl')
+    store_yml_tmpl = jenv.get_template('store.yml.tmpl')
 
     with open(os.path.join(output_dir, 'include', mname + '.h'), 'w') as f:
         f.write(store_h_tmpl.render())
@@ -406,6 +464,9 @@ def generate_store(model_file, output_dir, littleEndian=True):
 
     with open(os.path.join(output_dir, 'doc', mname + '.json.license'), 'w') as f:
         f.write(spdx('CC0-1.0', copyright='2025 Guus Kuiper'))
+
+    with open(os.path.join(output_dir, 'doc', mname + '.yml'), 'w') as f:
+        f.write(store_yml_tmpl.render())
 
     with open(os.path.join(output_dir, 'rtl', mname + '.vhd'), 'w') as f:
         f.write(store_vhd_tmpl.render())
