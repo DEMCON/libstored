@@ -584,6 +584,7 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
     class State(enum.IntEnum):
         INIT = enum.auto()
         DEFAULT = enum.auto()
+        DISCONNECTED = enum.auto()
         INVALID = enum.auto()
         VALID = enum.auto()
         UPDATED = enum.auto()
@@ -602,6 +603,7 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
         self._rate_limit = laio_event.AsyncioRateLimit(worker=self.worker, Hz=rate_limit_Hz, event_name=obj.name)
         self.connect(self._rate_limit, self._refresh)
         self.connect(self.obj.value_str, self._rate_limit)
+        self.connect(self.obj.client.disconnected, self._refresh)
         self.bind('<Return>', self._write)
         self.bind('<KP_Enter>', self._write)
         self.bind('<FocusIn>', self._focus_in)
@@ -627,7 +629,10 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
 
     @property
     def alive(self):
-        return self.obj.alive
+        try:
+            return self.obj.alive and self.obj.client.is_connected()
+        except lexc.Disconnected:
+            return False
 
     @property
     def focused(self) -> bool:
@@ -650,10 +655,11 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
         return self._state == ZmqObjectEntry.State.UPDATED
 
     def _set_state(self, state : State):
+        if not self.alive:
+            state = ZmqObjectEntry.State.DISCONNECTED
+
         if state <= ZmqObjectEntry.State.DEFAULT:
-            if not self.alive:
-                state = ZmqObjectEntry.State.INVALID
-            elif self.obj.value_str.value is None or self.obj.value is None:
+            if self.obj.value_str.value is None or self.obj.value is None:
                 state = ZmqObjectEntry.State.INVALID
             else:
                 state = ZmqObjectEntry.State.VALID
@@ -661,12 +667,23 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
         if state == self._state:
             return
 
-        if self._state == ZmqObjectEntry.State.INVALID:
+        if self._state == ZmqObjectEntry.State.INVALID and state != ZmqObjectEntry.State.DISCONNECTED:
             self._var.set('')
 
         self._state = state
 
-        if self._state == ZmqObjectEntry.State.INVALID:
+        if not self.winfo_exists():
+            return
+
+        if self._state == ZmqObjectEntry.State.DISCONNECTED:
+            # Freeze field.
+            self['state'] = 'disabled'
+        elif self['state'] == 'disabled':
+            self['state'] = 'normal'
+
+        if self._state == ZmqObjectEntry.State.DISCONNECTED:
+            self['foreground'] = 'gray'
+        elif self._state == ZmqObjectEntry.State.INVALID:
             self['foreground'] = 'gray'
             self._var.set('?')
         elif self._state == ZmqObjectEntry.State.VALID:
@@ -689,7 +706,10 @@ class ZmqObjectEntry(AsyncWidget, ttk.Entry):
         if value is None:
             value = self.obj.value_str.value
 
-        if self.focused:
+        if not self.alive:
+            self._set_state(ZmqObjectEntry.State.DISCONNECTED)
+            return
+        elif self.focused:
             return
         elif value is None or self.obj.value is None:
             self._set_state(ZmqObjectEntry.State.INVALID)
