@@ -502,6 +502,8 @@ class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
         if style is not None:
             self.style(style)
 
+        self.connect(self.obj.client.disconnected, self._on_disconnect)
+
     @property
     def obj(self):
         return self._obj
@@ -547,6 +549,18 @@ class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
             plotter.add(self._obj)
         else:
             plotter.remove(self._obj)
+
+    @laio_tk.AsyncApp.tk_func
+    def _on_disconnect(self):
+        if not self.winfo_exists():
+            return
+
+        self._plot_var.set(False)
+        self._plot['state'] = 'disabled'
+        self._format['state'] = 'disabled'
+        self._poll_var.set(False)
+        self._poll['state'] = 'disabled'
+        self._refresh['state'] = 'disabled'
 
 
 
@@ -1069,6 +1083,7 @@ class GUIClient(laio_tk.AsyncApp):
         self.connect(self._polled_objects.filtered, self._resize_polled_objects)
         self._resize_polled_objects()
 
+        self.connect(self.client.connecting, self._on_connecting)
         self.connect(self.client.connected, self._on_connected)
         self.connect(self.client.disconnected, self._on_disconnected)
         if self.client.is_connected():
@@ -1079,6 +1094,10 @@ class GUIClient(laio_tk.AsyncApp):
     @property
     def client(self):
         return self._client
+
+    @laio_tk.AsyncApp.tk_func
+    def _on_connecting(self, *args, **kwargs):
+        self._objects.set_objects([])
 
     @laio_tk.AsyncApp.tk_func
     def _on_connected(self, *args, **kwargs):
@@ -1094,7 +1113,6 @@ class GUIClient(laio_tk.AsyncApp):
             self.disconnect(c)
         self._client_connections.clear()
         self._polled_objects.set_objects([])
-        self._objects.set_objects([])
 
     @laio_tk.AsyncApp.tk_func
     def cleanup(self):
