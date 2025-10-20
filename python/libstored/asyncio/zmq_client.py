@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import aiofiles
 import asyncio
 import concurrent.futures
 import datetime
@@ -27,7 +28,7 @@ import zmq.utils.monitor
 from .. import libstored_version
 from .event import Event, Value, ValueWrapper
 from ..zmq_server import ZmqServer
-from .worker import Work, run_sync
+from .worker import Work
 from ..heatshrink import HeatshrinkDecoder
 from .. import exceptions as lexc
 
@@ -238,7 +239,7 @@ class Object(ZmqClientWork, Value):
     @overload
     def short_name(self, acquire : bool=True, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str]: ...
 
-    @run_sync
+    @ZmqClientWork.run_sync
     async def short_name(self, acquire : bool=True) -> str:
         '''
         Get the alias of this object, or its full name if no alias is set.
@@ -278,7 +279,7 @@ class Object(ZmqClientWork, Value):
     @overload
     def read(self, acquire_alias : bool=True, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[typing.Any]: ...
 
-    @run_sync
+    @ZmqClientWork.run_sync
     async def read(self, acquire_alias : bool=True) -> typing.Any:
         '''
         Read the value of this object from the server.
@@ -377,7 +378,7 @@ class Object(ZmqClientWork, Value):
     @overload
     def write(self, value : typing.Any=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @ZmqClientWork.run_sync
     async def write(self, value : typing.Any=None) -> None:
         '''
         Write a value to this object on the server.
@@ -627,7 +628,7 @@ class Object(ZmqClientWork, Value):
     @overload
     def poll(self, interval_s : float | None=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @ZmqClientWork.run_sync
     async def poll(self, interval_s : float | None=None):
         '''Set up polling of this object.
 
@@ -647,8 +648,16 @@ class Object(ZmqClientWork, Value):
         if not self.alive():
             raise lexc.InvalidState('Object destroyed, client connection closed')
 
-        if not interval_s is None and interval_s < 0:
+        if interval_s is not None and interval_s < 0:
             raise ValueError('interval_s must be None or >= 0')
+
+        if interval_s is None:
+            pass
+        elif isinstance(interval_s, int):
+            # Good enough.
+            interval_s = float(interval_s)
+        elif not isinstance(interval_s, float):
+            raise ValueError('interval_s must be None or a float')
 
         self._poll_slow_stop()
         self._poll_interval_s = interval_s
@@ -704,7 +713,7 @@ class Object(ZmqClientWork, Value):
     @overload
     def restore_state(self, state : dict[str, dict[str, typing.Any]], *, block : typing.Literal[True]) -> asyncio.Future[None]: ...
 
-    @run_sync
+    @ZmqClientWork.run_sync
     async def restore_state(self, state : dict):
         '''
         Restore the state of this object from a dictionary as returned by state().
@@ -784,7 +793,7 @@ class Stream(ZmqClientWork):
     @overload
     def poll(self, suffix : str='', *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str | bytes | bytearray]: ...
 
-    @run_sync
+    @ZmqClientWork.run_sync
     async def poll(self, suffix : str='') -> str | bytes | bytearray:
         '''
         Poll the stream for new data.
@@ -822,7 +831,7 @@ class Stream(ZmqClientWork):
     @overload
     def flush(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @ZmqClientWork.run_sync
     async def flush(self) -> None:
         '''
         Flush the stream, to finalize the compression, if any.
@@ -849,7 +858,7 @@ class Stream(ZmqClientWork):
     @overload
     def reset(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @ZmqClientWork.run_sync
     async def reset(self) -> None:
         '''
         Reset the compressed stream, when compression is enabled.
@@ -920,7 +929,7 @@ class Macro(ZmqClientWork):
     @overload
     def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @ZmqClientWork.run_sync
     @ZmqClientWork.locked
     async def add(self, cmd : str, cb : typing.Callable[[bytes, float | None], None] | None=None, key : typing.Hashable | None=None):
         '''
@@ -971,7 +980,7 @@ class Macro(ZmqClientWork):
     @overload
     def remove(self, key : typing.Hashable, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[bool]: ...
 
-    @run_sync
+    @ZmqClientWork.run_sync
     @ZmqClientWork.locked
     async def remove(self, key : typing.Hashable) -> bool:
         '''
@@ -1004,7 +1013,7 @@ class Macro(ZmqClientWork):
     @overload
     def clear(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @ZmqClientWork.run_sync
     @ZmqClientWork.locked
     async def clear(self) -> None:
         '''
@@ -1050,7 +1059,7 @@ class Macro(ZmqClientWork):
     @overload
     def run(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @ZmqClientWork.run_sync
     @ZmqClientWork.locked
     async def run(self):
         '''
@@ -1224,7 +1233,7 @@ class Tracing(Macro):
     def decimate(self) -> int:
         return self._decimate
 
-    @run_sync
+    @Macro.run_sync
     @Macro.locked
     async def set_decimate(self, decimate: int):
         if decimate < 1:
@@ -1249,7 +1258,7 @@ class Tracing(Macro):
     @overload
     def process(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @Macro.run_sync
     @Macro.locked
     async def process(self):
         '''Process new samples from the stream.
@@ -1323,6 +1332,7 @@ class ZmqClient(Work):
         # Events
         self.connecting = Event('connecting')
         self.connected = Event('connected')
+        self.disconnecting = Event('disconnecting')
         self.disconnected = Event('disconnected')
 
 
@@ -1435,7 +1445,7 @@ class ZmqClient(Work):
     def connect(self, host : str | None=None, port : int | None=None, \
                 multi : bool | None=None, default_state : bool=False, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @Work.run_sync
     async def connect(self, host : str | None=None, port : int | None=None, \
                       multi : bool | None=None, default_state : bool=False):
         '''
@@ -1507,7 +1517,7 @@ class ZmqClient(Work):
     @overload
     def disconnect(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @Work.run_sync
     async def disconnect(self):
         '''
         Disconnect from the ZMQ server.
@@ -1526,10 +1536,11 @@ class ZmqClient(Work):
             # Not connected
             return
 
+        self.logger.debug('disconnect')
+        self.disconnecting.trigger()
+
         await self.save_state()
         self._socket = None
-
-        self.logger.debug('disconnect')
         try:
             s.close(0)
         except asyncio.CancelledError:
@@ -1551,7 +1562,7 @@ class ZmqClient(Work):
     @overload
     def close(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @Work.run_sync
     async def close(self):
         '''Alias for disconnect().'''
         await self.disconnect()
@@ -1598,7 +1609,7 @@ class ZmqClient(Work):
     @overload
     def req(self, msg : str, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str]: ...
 
-    @run_sync
+    @Work.run_sync
     @Work.locked
     async def req(self, msg : bytes | str) -> bytes | str:
         '''
@@ -1674,7 +1685,7 @@ class ZmqClient(Work):
     @overload
     def capabilities(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str]: ...
 
-    @run_sync
+    @Work.run_sync
     async def capabilities(self) -> str:
         '''
         Get the capabilities of the connected ZMQ server.
@@ -1705,7 +1716,7 @@ class ZmqClient(Work):
     @overload
     def echo(self, msg : str, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str]: ...
 
-    @run_sync
+    @Work.run_sync
     async def echo(self, msg : str) -> str:
         '''
         Echo a message via the ZMQ server.
@@ -1735,7 +1746,7 @@ class ZmqClient(Work):
     @overload
     def identification(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str]: ...
 
-    @run_sync
+    @Work.run_sync
     async def identification(self) -> str:
         '''
         Get the identification string.
@@ -1772,7 +1783,7 @@ class ZmqClient(Work):
     @overload
     def version(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str]: ...
 
-    @run_sync
+    @Work.run_sync
     async def version(self) -> str:
         '''
         Get the version string.
@@ -1804,7 +1815,7 @@ class ZmqClient(Work):
     @overload
     def read_mem(self, pointer : int, size : int, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[bytearray]: ...
 
-    @run_sync
+    @Work.run_sync
     async def read_mem(self, pointer : int, size : int) -> bytearray:
         '''
         Read memory from the connected device.
@@ -1849,7 +1860,7 @@ class ZmqClient(Work):
     @overload
     def write_mem(self, pointer : int, data : bytearray, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @Work.run_sync
     async def write_mem(self, pointer : int, data : bytearray):
         '''
         Write memory to the connected device.
@@ -1898,7 +1909,7 @@ class ZmqClient(Work):
     @overload
     def list(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[typing.List[Object]]: ...
 
-    @run_sync
+    @Work.run_sync
     async def list(self) -> typing.List[Object]:
         '''
         List the objects available.
@@ -2092,7 +2103,7 @@ class ZmqClient(Work):
     @overload
     def find_time(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[Object | None]: ...
 
-    @run_sync
+    @Work.run_sync
     async def find_time(self) -> Object | None:
         '''
         Find the time object.
@@ -2192,7 +2203,7 @@ class ZmqClient(Work):
     @overload
     def streams(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[typing.List[str]]: ...
 
-    @run_sync
+    @Work.run_sync
     async def streams(self) -> typing.List[str]:
         '''
         Get the list of available streams.
@@ -2214,7 +2225,7 @@ class ZmqClient(Work):
         else:
             return list(map(lambda b: chr(b), rep))
 
-    @run_sync
+    @Work.run_sync
     async def other_streams(self):
         streams = await self.streams()
         if isinstance(self._tracing, Tracing):
@@ -2257,7 +2268,7 @@ class ZmqClient(Work):
     def alias(self, obj : str | Object, prefer : str | None=None,
               temporary : bool=True, permanentRef : typing.Any=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str | None]: ...
 
-    @run_sync
+    @Work.run_sync
     async def alias(self, obj : str | Object, prefer : str | None=None,
                     temporary : bool=True, permanentRef : typing.Any=None) -> str | None:
 
@@ -2470,7 +2481,7 @@ class ZmqClient(Work):
     @overload
     def release_alias(self, alias : str, permanentRef=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @Work.run_sync
     async def release_alias(self, alias : str, permanentRef=None):
         '''
         Release an alias.
@@ -2486,7 +2497,7 @@ class ZmqClient(Work):
         if self._release_alias(alias, permanentRef):
             await self.req(b'a' + alias.encode())
 
-    @run_sync
+    @Work.run_sync
     async def _print_alias_map(self):
         '''Print the current alias map.'''
 
@@ -2520,7 +2531,7 @@ class ZmqClient(Work):
     @overload
     def acquire_macro(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[str | None]: ...
 
-    @run_sync
+    @Work.run_sync
     async def acquire_macro(self) -> str | None:
         '''
         Get a free macro name.
@@ -2573,7 +2584,7 @@ class ZmqClient(Work):
     @overload
     def release_macro(self, m : str | bytes | Macro, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @Work.run_sync
     async def release_macro(self, m : str | bytes | Macro):
         '''
         Release a macro.
@@ -2734,7 +2745,7 @@ class ZmqClient(Work):
                 # Success.
                 return
 
-        if interval_s < self.fast_poll_threshold_s:
+        if interval_s <= self.fast_poll_threshold_s:
             if await self._poll_fast(o, interval_s):
                 # Success.
                 return
@@ -2876,7 +2887,7 @@ class ZmqClient(Work):
     @overload
     def save_state(self, state_name : str | None=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @Work.run_sync
     async def save_state(self, state_name : str | None=None) -> None:
         '''
         Save the current state to a file.
@@ -2901,8 +2912,8 @@ class ZmqClient(Work):
         async with lexc.DeadlockChecker(filelock.AsyncFileLock(f'{filename}.lock')):
             state = {}
             try:
-                with open(filename, 'r') as f:
-                    state = json.load(f)
+                async with aiofiles.open(filename, 'r') as f:
+                    state = json.loads(await f.read())
             except FileNotFoundError:
                 pass
             except json.JSONDecodeError:
@@ -2918,8 +2929,8 @@ class ZmqClient(Work):
             state['_version'] = libstored_version
 
             os.makedirs(os.path.dirname(filename), exist_ok=True)
-            with open(filename, 'w') as f:
-                json.dump(state, f, indent=4, sort_keys=True)
+            async with aiofiles.open(filename, 'w') as f:
+                await f.write(json.dumps(state, indent=4, sort_keys=True))
 
         self.logger.debug('saved state to %s', filename)
 
@@ -2932,7 +2943,7 @@ class ZmqClient(Work):
     @overload
     def restore_state(self, state_name : str | None=None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
 
-    @run_sync
+    @Work.run_sync
     async def restore_state(self, state_name : str | None=None):
         '''
         Restore the state from a file.
@@ -2962,8 +2973,8 @@ class ZmqClient(Work):
 
         async with lexc.DeadlockChecker(filelock.AsyncFileLock(f'{filename}.lock')):
             try:
-                with open(filename, 'r') as f:
-                    state = json.load(f)
+                async with aiofiles.open(filename, 'r') as f:
+                    state = json.loads(await f.read())
             except FileNotFoundError:
                 self.logger.debug('cannot restore state from %s; not found', filename)
                 return

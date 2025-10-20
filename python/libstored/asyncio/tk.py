@@ -126,7 +126,6 @@ class AsyncTk:
             self._root.bind('<<async_call>>', self._on_async_call)
 
             init = None
-            init_unbind = None
             if self._cb_init is not None:
                 init = self._cb_init(self)
                 if isinstance(init, tk.Widget):
