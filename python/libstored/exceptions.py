@@ -144,3 +144,6 @@ class DeadlockChecker:
             return asyncio.wait_for(self._lock, timeout=self._timeout_s).__await__()
         except asyncio.TimeoutError:
             self._deadlock('complete coroutine')
+
+    def has_lock(self):
+        return self._acquired

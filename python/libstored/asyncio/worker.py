@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
+from __future__ import annotations
+
 import asyncio
 import concurrent.futures
 import functools
@@ -15,17 +17,33 @@ from .. import exceptions as lexc
 
 default_worker = None
 
+workers : set[AsyncioWorker] = set()
+
+# Do a graceful shutdown when the main thread exits.
+def monitor_workers():
+    threading.main_thread().join()
+    for w in list(workers):
+        try:
+            w.cancel(0)
+        except TimeoutError:
+            pass
+
+monitor = threading.Thread(target=monitor_workers, daemon=False, name='AsyncioWorkerMonitor')
+monitor.start()
+
+
+
 class AsyncioWorker:
     '''
     A worker thread running an asyncio event loop.
     '''
 
-    def __init__(self, daemon : bool=False, *args, **kwargs):
+    def __init__(self, daemon : None | bool=False, name='AsyncioWorker', *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.logger = logging.getLogger(__class__.__name__)
-        self._loop = None
-        self._started = False
-        self._thread = threading.Thread(target=self._run, daemon=daemon, name='AsyncioWorker')
+        self._loop : asyncio.AbstractEventLoop | None = None
+        self._started : bool = False
+        self._thread : threading.Thread | None = threading.Thread(target=self._run, daemon=daemon, name=name)
         self._thread.start()
         self.logger.debug("Waiting for event loop to start")
         while not self._started:
@@ -51,6 +69,8 @@ class AsyncioWorker:
         global default_worker
         if default_worker is None:
             default_worker = self
+
+        workers.add(self)
 
         try:
             self._loop.run_forever()
@@ -78,6 +98,8 @@ class AsyncioWorker:
             if default_worker == self:
                 default_worker = None
 
+            workers.remove(self)
+
         self.logger.debug("Event loop stopped")
 
     async def _flag_started(self):
@@ -96,7 +118,7 @@ class AsyncioWorker:
         global default_worker
         default_worker = self
 
-    def cancel(self):
+    def cancel(self, timeout_s : float | None=None):
         '''
         Cancel all tasks and stop the event loop and wait for the thread to exit.
 
@@ -110,7 +132,7 @@ class AsyncioWorker:
         self.logger.debug("Cancelling event loop")
         loop.call_soon_threadsafe(self._cancel)
         del loop
-        self.stop()
+        self.stop(timeout_s)
 
     def _cancel(self):
         assert self._loop is not None
@@ -131,6 +153,15 @@ class AsyncioWorker:
         self.logger.debug("Stopping event loop")
         loop.call_soon_threadsafe(loop.stop)
         del loop
+
+        self.wait(timeout_s)
+
+    def wait(self, timeout_s : float | None=None):
+        '''
+        Wait for the event loop to complete all tasks.
+
+        Thread-safe.
+        '''
 
         assert self._thread is not None
         self._thread.join(timeout_s)
@@ -157,8 +188,7 @@ class AsyncioWorker:
         return self
 
     def __exit__(self, *args):
-        self.logger.debug("exit")
-        self.stop()
+        self.wait()
 
     def execute(self, f : typing.Callable | typing.Coroutine, *args, **kwargs) -> concurrent.futures.Future | asyncio.Future:
         '''
@@ -258,7 +288,7 @@ def run_sync(f : typing.Callable) -> typing.Callable:
             if w is None or not w.is_running():
                 if hasattr(self, 'logger'):
                     self.logger.debug('No worker running, creating new one')
-                w = AsyncioWorker(daemon=True)
+                w = AsyncioWorker()
 
             future = w.execute(f(*args, **kwargs))
             if block:
@@ -283,7 +313,7 @@ class Work:
             global default_worker
             worker = default_worker
             if worker is None or not worker.is_running():
-                worker = AsyncioWorker(daemon=True)
+                worker = AsyncioWorker()
 
         self._worker = worker
 
@@ -300,7 +330,13 @@ class Work:
         return l
 
     @staticmethod
-    def thread_safe_async(f : typing.Callable) -> typing.Any:
+    @functools.wraps(run_sync)
+    def run_sync(f : typing.Callable) -> typing.Callable:
+        # This is just an alias of the global function.
+        return run_sync(f)
+
+    @staticmethod
+    def thread_safe_async(f : typing.Callable) -> typing.Callable:
         '''
         Decorator to make a method thread-safe by executing it in the worker
         thread, without waiting for completion.
@@ -323,7 +359,7 @@ class Work:
         return thread_safe_async
 
     @staticmethod
-    def thread_safe(f : typing.Callable) -> typing.Any:
+    def thread_safe(f : typing.Callable) -> typing.Callable:
         '''
         Decorator to make a method thread-safe by executing it in the worker
         thread.

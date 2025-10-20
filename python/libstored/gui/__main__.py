@@ -24,7 +24,7 @@ except ImportError:
     plt = None
 
 from .. import __version__
-from .. import asyncio as laio
+from ..asyncio import zmq_client as laio_zmq
 from ..asyncio import event as laio_event
 from ..asyncio import tk as laio_tk
 from .. import tk as ltk
@@ -115,7 +115,7 @@ class Plotter(laio_tk.Work):
         assert self.available, "Matplotlib is not available"
 
         super().__init__(*args, **kwargs)
-        self._data : dict[laio.Object, PlotData] = {}
+        self._data : dict[laio_zmq.Object, PlotData] = {}
         self._fig : plt.Figure | None = None # type: ignore
         self._ax : plt.Axes | None = None # type: ignore
         self._ready = False
@@ -183,7 +183,7 @@ class Plotter(laio_tk.Work):
             plotter = None
 
     @laio_tk.Work.tk_func
-    def add(self, o : laio.Object):
+    def add(self, o : laio_zmq.Object):
         '''
         Add a libstored.asyncio.Object to the plotter.
         '''
@@ -222,7 +222,7 @@ class Plotter(laio_tk.Work):
             self.plotting.trigger()
 
     @laio_tk.Work.tk_func
-    def _update(self, o : laio.Object, value : typing.Any, t : float=time.time()):
+    def _update(self, o : laio_zmq.Object, value : typing.Any, t : float=time.time()):
         if o not in self._data:
             return
         if value is None:
@@ -258,7 +258,7 @@ class Plotter(laio_tk.Work):
         assert self._timer is not None
 
     @laio_tk.Work.tk_func
-    def remove(self, o : laio.Object):
+    def remove(self, o : laio_zmq.Object):
         '''
         Remove a libstored.asyncio.Object from the plotter.
         '''
@@ -363,7 +363,7 @@ class Plotter(laio_tk.Work):
 #
 
 class ClientConnection(laio_tk.AsyncWidget, ttk.Frame):
-    def __init__(self, app : laio_tk.AsyncApp, parent : ttk.Widget, client : laio.ZmqClient, clear_state : bool=False, *args, **kwargs):
+    def __init__(self, app : laio_tk.AsyncApp, parent : ttk.Widget, client : laio_zmq.ZmqClient, clear_state : bool=False, *args, **kwargs):
         super().__init__(app=app, master=parent, *args, **kwargs)
         self._client = client
         self._clear_state = clear_state
@@ -400,7 +400,7 @@ class ClientConnection(laio_tk.AsyncWidget, ttk.Frame):
             self._on_connect_button()
 
     @property
-    def client(self) -> laio.ZmqClient:
+    def client(self) -> laio_zmq.ZmqClient:
         return self._client
 
     @property
@@ -464,7 +464,7 @@ class ClientConnection(laio_tk.AsyncWidget, ttk.Frame):
 
 
 class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
-    def __init__(self, app : GUIClient, parent : ttk.Widget, obj : laio.Object, style : str | None=None, show_plot : bool=False, *args, **kwargs):
+    def __init__(self, app : GUIClient, parent : ttk.Widget, obj : laio_zmq.Object, style : str | None=None, show_plot : bool=False, *args, **kwargs):
         super().__init__(app=app, master=parent, *args, **kwargs)
         self._obj = obj
 
@@ -565,8 +565,8 @@ class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
 
 
 class ObjectList(ttk.Frame):
-    def __init__(self, app : GUIClient, parent : ttk.Widget, objects : list[laio.Object]=[], \
-                 filter : typing.Callable[[laio.Object], bool] | None=None, show_plot : bool=False, *args, **kwargs):
+    def __init__(self, app : GUIClient, parent : ttk.Widget, objects : list[laio_zmq.Object]=[], \
+                 filter : typing.Callable[[laio_zmq.Object], bool] | None=None, show_plot : bool=False, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self._app = app
         self._objects : list[ObjectRow] = []
@@ -581,7 +581,7 @@ class ObjectList(ttk.Frame):
     def objects(self) -> list[ObjectRow]:
         return self._objects
 
-    def set_objects(self, objects : list[laio.Object]):
+    def set_objects(self, objects : list[laio_zmq.Object]):
         for o in self._objects:
             o.destroy()
         self._objects = []
@@ -593,7 +593,7 @@ class ObjectList(ttk.Frame):
         self.changed.trigger()
         self.filter()
 
-    def filter(self, f : typing.Callable[[laio.Object], bool] | None | bool=True):
+    def filter(self, f : typing.Callable[[laio_zmq.Object], bool] | None | bool=True):
         if f is False:
             return
         elif f is True:
@@ -709,7 +709,7 @@ class FilterEntry(ltk.Entry):
                 self['foreground'] = 'red'
                 return
 
-            def f(o : laio.Object) -> bool:
+            def f(o : laio_zmq.Object) -> bool:
                 return regex.search(o.name) is not None
 
             self._object_list.filter(f)
@@ -796,7 +796,7 @@ class Stream(laio_tk.AsyncWidget, tk.Toplevel):
         self._start()
 
     @property
-    def client(self) -> laio.ZmqClient:
+    def client(self) -> laio_zmq.ZmqClient:
         return typing.cast(GUIClient, self.app).client
 
     def _select_all(self, event):
@@ -839,7 +839,7 @@ class Stream(laio_tk.AsyncWidget, tk.Toplevel):
 
 
 class Streams(laio_tk.AsyncWidget, ttk.Frame):
-    def __init__(self, app : GUIClient, parent : ttk.Widget, client : laio.ZmqClient, *args, **kwargs):
+    def __init__(self, app : GUIClient, parent : ttk.Widget, client : laio_zmq.ZmqClient, *args, **kwargs):
         super().__init__(app=app, master=parent, *args, **kwargs)
         self._client = client
         self._streams : dict[str, dict] = {}
@@ -933,7 +933,7 @@ class Streams(laio_tk.AsyncWidget, ttk.Frame):
 
 
 class ManualCommand(laio_tk.AsyncWidget, ttk.Frame):
-    def __init__(self, app : GUIClient, parent : ttk.Widget, client : laio.ZmqClient, *args, **kwargs):
+    def __init__(self, app : GUIClient, parent : ttk.Widget, client : laio_zmq.ZmqClient, *args, **kwargs):
         super().__init__(app=app, master=parent, *args, **kwargs)
         self._client = client
         self._empty = True
@@ -1011,7 +1011,7 @@ class ManualCommand(laio_tk.AsyncWidget, ttk.Frame):
 #
 
 class GUIClient(laio_tk.AsyncApp):
-    def __init__(self, client : laio.ZmqClient, clear_state : bool=False, *args, **kwargs):
+    def __init__(self, client : laio_zmq.ZmqClient, clear_state : bool=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._client = client
         self._client_connections = set()
@@ -1200,7 +1200,7 @@ def main():
     logging.basicConfig(**logging_config)
     lexc.DeadlockChecker.default_timeout_s = args.deadlock
 
-    client = laio.ZmqClient(host=args.server, port=args.port, multi=args.multi, use_state='gui')
+    client = laio_zmq.ZmqClient(host=args.server, port=args.port, multi=args.multi, use_state='gui')
     GUIClient.run(worker=client.worker, client=client, clear_state=args.clear_state)
 
 if __name__ == '__main__':
