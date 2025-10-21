@@ -230,7 +230,7 @@ def platform_win32():
 def spdx(license='MPL-2.0', prefix=''):
     # REUSE-IgnoreStart
     return \
-        f'{prefix}SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers\n' + \
+        f'{prefix}SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers\n' + \
         f'{prefix}\n' + \
         f'{prefix}SPDX-License-Identifier: {license}\n'
     # REUSE-IgnoreEnd
