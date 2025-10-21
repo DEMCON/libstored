@@ -908,11 +908,8 @@ class Macro(ZmqClientWork):
         self._repsep = repsep
 
     def __del__(self):
-        if self._cmds:
-            self.clear(sync=True)
-
-        if self.alive():
-            self.client.release_macro(self, sync=True)
+        if self.alive() and self._macro is not None:
+            self.client.release_macro(self._macro, sync=True, block=False)
 
         super().__del__()
 
@@ -1324,7 +1321,7 @@ class ZmqClient(Work):
         self._alias_lock = lexc.DeadlockChecker(asyncio.Lock())
         self._t : str | Object | None | bool = t
         self._t0 : float = 0
-        self._timestamp_to_time = lambda t: t
+        self._timestamp_to_time = lambda t: float(t)
         self._use_state = use_state
 
         self._reset()
@@ -1468,6 +1465,13 @@ class ZmqClient(Work):
         if 'l' in await self.capabilities():
             await self.list()
             await self.find_time()
+
+        if 'm' in await self.capabilities():
+            # Clear all existing macros.
+            macros = await self.req('m')
+            if macros != '?':
+                for m in macros:
+                    await self.req(f'm{m}')
 
         self.connected.trigger()
 
@@ -2171,7 +2175,7 @@ class ZmqClient(Work):
             self._timestamp_to_time = lambda t: float(t - t0) / 1e9 + self._t0
         else:
             # Don't know a conversion, just use the raw value.
-            self._timestamp_to_time = lambda t: t - t0
+            self._timestamp_to_time = lambda t: float(t - t0)
 
         # Make alias permanent.
         await self.alias(t, t.alias.value, False)
@@ -2181,13 +2185,13 @@ class ZmqClient(Work):
         self.logger.info('time object: %s', t.name)
         return self._t
 
-    def timestamp_to_time(self, t = None) -> float | int:
+    def timestamp_to_time(self, t : float | None=None) -> float:
         if not isinstance(self._t, Object):
             # No time object found.
             return time.time()
         else:
             # Override to implement arbitrary conversion.
-            return self._timestamp_to_time(t)
+            return self._timestamp_to_time(t if t is not None else self._t.value)
 
 
 
@@ -2677,19 +2681,22 @@ class ZmqClient(Work):
             if name != '':
                 name = ' ' + name
 
+            t = time.time()
             while self.is_connected():
-                t_start = time.time()
-
                 self.logger.debug('periodic task%s', name)
                 await coro(*args, **kwargs)
 
                 if interval_s == 0:
                     await asyncio.sleep(0)
                 else:
-                    t_end = time.time()
-                    dt = t_end - t_start
-                    if dt < interval_s:
-                        await asyncio.sleep(interval_s - dt)
+                    t += interval_s
+                    now = time.time()
+                    rem = t - now
+                    if rem <= 0:
+                        t = now
+                        await asyncio.sleep(0)
+                    else:
+                        await asyncio.sleep(rem)
         except asyncio.CancelledError:
             pass
         except lexc.Disconnected as e:
@@ -2760,15 +2767,22 @@ class ZmqClient(Work):
             t.cancel()
 
     async def _poll_fast(self, o : Object, interval_s : float):
+        t = self.time()
+        if t is None:
+            # Cannot do fast polling without time object.
+            return False
+
         if self._fast_poll_macro is None:
             self._fast_poll_macro = self.macro(await self.acquire_macro())
+            await self._fast_poll_macro.add(cmd=f'r{await t.short_name()}', cb=t.handle_read, key=self)
 
         assert self._fast_poll_macro is not None
         if o not in self._fast_poll_macro:
             await self.alias(o, temporary=False, permanentRef=self._fast_poll_macro)
             a = await o.short_name()
             try:
-                await self._fast_poll_macro.add(cmd=f'r{a}', cb=o.handle_read, key=o)
+                await self._fast_poll_macro.add(cmd=f'r{a}',
+                    cb=lambda x, _, t=t: o.handle_read(x, self.timestamp_to_time(t.value)), key=o)
             except lexc.NotSupported:
                 # Cannot do a fast poll.
                 return False
