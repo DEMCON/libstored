@@ -15,7 +15,7 @@ import typing
 
 from .. import exceptions as lexc
 
-default_worker = None
+default_worker : AsyncioWorker | None = None
 
 workers : set[AsyncioWorker] = set()
 
@@ -68,6 +68,7 @@ class AsyncioWorker:
 
         global default_worker
         if default_worker is None:
+            self.logger.debug("Making self the default worker")
             default_worker = self
 
         workers.add(self)
@@ -95,7 +96,7 @@ class AsyncioWorker:
             self._loop.close()
             self._loop = None
 
-            if default_worker == self:
+            if default_worker is self:
                 default_worker = None
 
             workers.remove(self)
@@ -163,14 +164,16 @@ class AsyncioWorker:
         Thread-safe.
         '''
 
-        assert self._thread is not None
+        if self._thread is None:
+            return
+
         self._thread.join(timeout_s)
         if self._thread.is_alive():
             raise TimeoutError()
 
         self._thread = None
 
-        assert default_worker is not self
+        assert timeout_s is not None or default_worker is not self
 
     def __del__(self):
         self.stop()
@@ -200,6 +203,8 @@ class AsyncioWorker:
         if not self.is_running():
             raise lexc.InvalidState("Event loop is not running")
 
+        name = f.__qualname__
+
         if asyncio.coroutines.iscoroutine(f):
             if len(args) > 0 or len(kwargs) > 0:
                 raise TypeError("When passing a coroutine function, no additional arguments are supported")
@@ -217,13 +222,18 @@ class AsyncioWorker:
 
         if threading.current_thread() is self._thread:
             # Directly create coro in the same worker context and return future.
-            return asyncio.ensure_future(self._log(coro), loop=self._loop)
+            return asyncio.ensure_future(self._log(coro, name), loop=self._loop)
         else:
             # Create coro in the worker thread context, and return async future.
-            return asyncio.run_coroutine_threadsafe(self._log(coro), self._loop)
+            return asyncio.run_coroutine_threadsafe(self._log(coro, name), self._loop)
 
-    async def _log(self, coro : typing.Coroutine) -> typing.Any:
+    async def _log(self, coro : typing.Coroutine, name : str | None=None) -> typing.Any:
         try:
+            if name:
+                t = asyncio.current_task(self._loop)
+                assert t is not None
+                t.set_name(name)
+
             return await coro
         except asyncio.CancelledError:
             raise
