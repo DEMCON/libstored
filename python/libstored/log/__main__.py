@@ -56,8 +56,6 @@ async def async_main(args : argparse.Namespace) -> int:
         for o in objs:
             logger.info('Poll %s', o.name)
             await o.poll(args.interval)
-            # Make sure to have initial data.
-            await o.read()
 
         async with CsvExport(filename) as csv:
             for obj in objs:

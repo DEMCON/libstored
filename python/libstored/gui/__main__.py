@@ -9,7 +9,6 @@ import asyncio
 import locale
 import logging
 import os
-from urllib import response
 import natsort
 import re
 import sys
@@ -27,6 +26,7 @@ from .. import __version__
 from ..asyncio import zmq_client as laio_zmq
 from ..asyncio import event as laio_event
 from ..asyncio import tk as laio_tk
+from ..asyncio import csv as laio_csv
 from .. import tk as ltk
 from .. import exceptions as lexc
 
@@ -491,8 +491,12 @@ class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
 
         self._poll_var = tk.BooleanVar(value=obj.polling.value is not None)
         app.connect(obj.polling, self._on_poll_obj_change)
+        app.connect(obj.polling, self._on_poll_obj_change_csv)
         self._poll = ttk.Checkbutton(self, variable=self._poll_var, command=self._on_poll_check_change)
         self._poll.grid(row=0, column=5, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+        if obj.polling.value is not None:
+            self._on_poll_obj_change_csv(obj.polling.value)
+
         if plotter:
             app.connect(plotter.closed, lambda: self._plot_var.set(False))
 
@@ -533,6 +537,18 @@ class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
             self._plot_var.set(False)
             if plotter is not None:
                 plotter.remove(self._obj)
+
+    @laio_tk.AsyncApp.worker_func
+    async def _on_poll_obj_change_csv(self, x):
+        app = typing.cast(GUIClient, self.app)
+        csv = app.csv
+        if csv is None:
+            return
+
+        if x is not None:
+            await csv.add(self._obj)
+        else:
+            await csv.remove(self._obj)
 
     def _on_poll_check_change(self):
         if self._poll_var.get():
@@ -1011,10 +1027,11 @@ class ManualCommand(laio_tk.AsyncWidget, ttk.Frame):
 #
 
 class GUIClient(laio_tk.AsyncApp):
-    def __init__(self, client : laio_zmq.ZmqClient, clear_state : bool=False, *args, **kwargs):
+    def __init__(self, client : laio_zmq.ZmqClient, clear_state : bool=False, csv : laio_csv.CsvExport | None=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._client = client
         self._client_connections = set()
+        self._csv = csv
 
         self.root.title(f'libstored GUI')
         icon_path = os.path.join(os.path.dirname(__file__), 'twotone_bug_report_black_48dp.png')
@@ -1085,19 +1102,28 @@ class GUIClient(laio_tk.AsyncApp):
 
         self.connect(self.client.connecting, self._on_connecting)
         self.connect(self.client.connected, self._on_connected)
+        self.connect(self.client.disconnecting, self._on_disconnected_csv)
         self.connect(self.client.disconnected, self._on_disconnected)
         if self.client.is_connected():
+            self._on_connecting()
             self._on_connected()
         else:
             self._on_disconnected()
 
     @property
-    def client(self):
+    def client(self) -> laio_zmq.ZmqClient:
         return self._client
+
+    @property
+    def csv(self) -> laio_csv.CsvExport | None:
+        return self._csv
 
     @laio_tk.AsyncApp.tk_func
     def _on_connecting(self, *args, **kwargs):
         self._objects.set_objects([])
+
+        if self._csv is not None:
+            self._csv.open(sync=True, block=False)
 
     @laio_tk.AsyncApp.tk_func
     def _on_connected(self, *args, **kwargs):
@@ -1113,6 +1139,12 @@ class GUIClient(laio_tk.AsyncApp):
             self.disconnect(c)
         self._client_connections.clear()
         self._polled_objects.set_objects([])
+
+    @laio_tk.AsyncApp.worker_func
+    async def _on_disconnected_csv(self):
+        if self._csv is not None:
+            await self._csv.close()
+            await self._csv.clear()
 
     @laio_tk.AsyncApp.tk_func
     def cleanup(self):
@@ -1132,6 +1164,8 @@ class GUIClient(laio_tk.AsyncApp):
     async def _close_async(self):
         self.logger.debug('Closing client')
         await self.client.close()
+        if self._csv is not None:
+            await self._csv.close()
 
     @laio_tk.AsyncApp.worker_func
     async def _refresh_all(self):
@@ -1182,6 +1216,8 @@ def main():
             'but it is less efficient.', action='store_true')
     parser.add_argument('-c', dest='clear_state', default=False, help='Clear previously saved state', action='store_true')
     parser.add_argument('-D', dest='deadlock', default=0, help='Enable deadlock checks after x seconds', type=float)
+    parser.add_argument('-f', dest='csv', default=None,
+        help='CSV file to log to. The file name may include strftime() format codes.')
 
     args = parser.parse_args()
 
@@ -1198,10 +1234,15 @@ def main():
         logging_config['level'] = logging.DEBUG
 
     logging.basicConfig(**logging_config)
-    lexc.DeadlockChecker.default_timeout_s = args.deadlock
+    lexc.DeadlockChecker.default_timeout_s = args.deadlock if args.deadlock > 0 else None
+
+    csv = None
+    if args.csv:
+        assert isinstance(args.csv, str)
+        csv = laio_csv.CsvExport(laio_csv.generate_filename(args.csv))
 
     client = laio_zmq.ZmqClient(host=args.server, port=args.port, multi=args.multi, use_state='gui')
-    GUIClient.run(worker=client.worker, client=client, clear_state=args.clear_state)
+    GUIClient.run(worker=client.worker, client=client, clear_state=args.clear_state, csv=csv)
 
 if __name__ == '__main__':
     main()
