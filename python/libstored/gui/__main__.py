@@ -1215,9 +1215,11 @@ def main():
         help='Enable multi-mode; allow multiple simultaneous connections to the same target, ' +
             'but it is less efficient.', action='store_true')
     parser.add_argument('-c', dest='clear_state', default=False, help='Clear previously saved state', action='store_true')
-    parser.add_argument('-D', dest='deadlock', default=0, help='Enable deadlock checks after x seconds', type=float)
-    parser.add_argument('-f', dest='csv', default=None,
-        help='CSV file to log to. The file name may include strftime() format codes.')
+    parser.add_argument('-D', dest='deadlock', default=0, nargs='?', help='Enable deadlock checks after x seconds', type=float, const=10.0)
+    parser.add_argument('-f', dest='csv', default=None, nargs='?',
+        help='Log auto-refreshed data to csv file. ' +
+            'The file is truncated upon startup and when the set of auto-refreshed objects change. ' +
+            'The file name may include strftime() format codes.', const='log.csv')
 
     args = parser.parse_args()
 
@@ -1234,7 +1236,9 @@ def main():
         logging_config['level'] = logging.DEBUG
 
     logging.basicConfig(**logging_config)
-    lexc.DeadlockChecker.default_timeout_s = args.deadlock if args.deadlock > 0 else None
+    if args.deadlock > 0:
+        logging.getLogger().info(f'Enable deadlock checks after {args.deadlock} seconds')
+        lexc.DeadlockChecker.default_timeout_s = args.deadlock
 
     csv = None
     if args.csv:

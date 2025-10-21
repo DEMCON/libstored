@@ -1,8 +1,0 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
-#
-# SPDX-License-Identifier: CC0-1.0
-
-module Libstored.Components
-Input 1.0 Input.qml
-Measurement 1.0 Measurement.qml
-StoreObject 1.0 StoreObject.qml
