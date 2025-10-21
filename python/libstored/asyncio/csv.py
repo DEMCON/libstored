@@ -280,7 +280,8 @@ class CsvExport(laio_worker.Work):
         header = ['t (s)']
         for obj in self._objs.keys():
             header.append(obj.name)
-        self._writer.writerow(header)
+        if len(header) > 1:
+            self._writer.writerow(header)
 
         self._queue = []
         self._need_restart = False
@@ -367,6 +368,7 @@ class CsvExport(laio_worker.Work):
             self.logger.debug('flush')
             await self.file.write(data)
             await self.file.flush()
+            self.logger.debug('flushed')
 
     @overload
     async def add(self, obj : laio_zmq.Object) -> None: ...
@@ -381,7 +383,7 @@ class CsvExport(laio_worker.Work):
     @laio_worker.Work.locked
     async def add(self, obj : laio_zmq.Object) -> None:
         if obj not in self._objs:
-            self._objs[obj] = obj.value
+            self._objs[obj] = await obj.read()
             obj.register(lambda v, o=obj: self._on_object_update(o, v), self)
             self._need_restart = True
 
@@ -402,14 +404,42 @@ class CsvExport(laio_worker.Work):
             del self._objs[obj]
             self._need_restart = True
 
+    @overload
+    async def clear(self) -> None: ...
+    @overload
+    def clear(self, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def clear(self, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def clear(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
+    @laio_worker.Work.run_sync
+    @laio_worker.Work.locked
+    async def clear(self) -> None:
+        for o in self._objs.keys():
+            o.unregister(self)
+
+        self._objs.clear()
+        self._need_restart = True
+
     def _on_object_update(self, obj : laio_zmq.Object, value : typing.Any) -> None:
         if obj in self._objs:
             self._objs[obj] = value
             obj_t = obj.t.value
             self._t_update = max(self._t_update, obj_t if obj_t is not None else 0.0)
-            if self._write_on_change:
+            if self._write_on_change and self.opened:
                 self._collect()
 
+    @overload
+    def auto_write(self, interval_s : float | None) -> None: ...
+    @overload
+    def auto_write(self, interval_s : float | None, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def auto_write(self, interval_s : float | None, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def auto_write(self, interval_s : float | None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
+    @laio_worker.Work.thread_safe_async
     def auto_write(self, interval_s : float | None) -> None:
         '''
         Enable/disable automatic writing every interval_s seconds.
@@ -441,8 +471,18 @@ class CsvExport(laio_worker.Work):
                     self.logger.exception(f'Auto write task error')
                     raise
 
-            self._auto_write_task = asyncio.create_task(auto_write_task())
+            self._auto_write_task = asyncio.create_task(auto_write_task(), name='auto_write_task')
 
+    @overload
+    def write_on_change(self, enable : bool) -> None: ...
+    @overload
+    def write_on_change(self, enable : bool, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def write_on_change(self, enable : bool, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def write_on_change(self, enable : bool, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
+    @laio_worker.Work.thread_safe_async
     def write_on_change(self, enable : bool) -> None:
         '''
         Enable/disable writing on object value change.
@@ -457,8 +497,6 @@ class CsvExport(laio_worker.Work):
         if self._write_on_change_task is not None:
             self._write_on_change_task.cancel()
             self._write_on_change_task = None
-
-        self._write_on_change = enable
 
         if enable:
             if not self.opened:
@@ -475,8 +513,18 @@ class CsvExport(laio_worker.Work):
                     self.logger.exception(f'Write on change task error')
                     raise
 
-            self._write_on_change_task = asyncio.create_task(write_on_change_task())
+            self._write_on_change_task = asyncio.create_task(write_on_change_task(), name='write_on_change_task')
 
+    @overload
+    def auto_flush(self, interval_s : float | None) -> None: ...
+    @overload
+    def auto_flush(self, interval_s : float | None, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    @overload
+    def auto_flush(self, interval_s : float | None, *, sync : typing.Literal[True]) -> None: ...
+    @overload
+    def auto_flush(self, interval_s : float | None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+
+    @laio_worker.Work.thread_safe_async
     def auto_flush(self, interval_s : float | None) -> None:
         '''
         Enable/disable automatic flushing every interval_s seconds.
@@ -507,4 +555,4 @@ class CsvExport(laio_worker.Work):
                     self.logger.exception(f'Auto flush task error')
                     raise
 
-            self._auto_flush_task = asyncio.create_task(auto_flush_task())
+            self._auto_flush_task = asyncio.create_task(auto_flush_task(), name='auto_flush_task')
