@@ -204,6 +204,7 @@ class CsvExport(laio_worker.Work):
         self._t_update = 0
         self._need_restart = True
         self._coalesced : tuple[float, list[typing.Any]] = (0.0, [])
+        self._queue = []
 
         self._update_auto_write(self._auto_write)
         self._update_write_on_change(self._write_on_change)
@@ -235,22 +236,32 @@ class CsvExport(laio_worker.Work):
 
         assert self._file is not None
 
-        self._update_auto_write(None)
-        self._update_write_on_change(False)
-        self._update_auto_flush(None)
+        try:
+            self._update_auto_write(None)
+            self._update_write_on_change(False)
+            self._update_auto_flush(None)
+        except Exception as e:
+            self.logger.debug('ignore exception: %s', e)
 
-        data = self._out.getvalue()
-        self._out.truncate(0)
-        self._out.seek(0)
+        try:
+            data = self._out.getvalue()
+            self._out.truncate(0)
+            self._out.seek(0)
 
-        if data:
-            await self._file.write(data)
+            if data:
+                await self._file.write(data)
+        except Exception as e:
+            self.logger.debug('ignore exception: %s', e)
 
         self._file = None
 
         if self._file_context is not None:
-            await self._file_context.__aexit__(None, None, None)
-            self._file_context = None
+            try:
+                await self._file_context.__aexit__(None, None, None)
+            except Exception as e:
+                self.logger.debug('ignore exception: %s', e)
+            finally:
+                self._file_context = None
             self.logger.debug('closed %s', self._filename)
 
     async def __aexit__(self, exc_type, exc_value, traceback):
@@ -271,6 +282,7 @@ class CsvExport(laio_worker.Work):
             header.append(obj.name)
         self._writer.writerow(header)
 
+        self._queue = []
         self._need_restart = False
 
     @overload
@@ -284,17 +296,13 @@ class CsvExport(laio_worker.Work):
 
     @laio_worker.Work.run_sync
     async def write(self, t : float | None=None, *, flush : bool=False) -> None:
-        await self._write(t)
+        self._collect(t)
+        await self._write()
 
         if flush:
             await self._flush()
 
-    async def _write(self, t : float | None=None) -> None:
-        assert not self.lock.has_lock()
-
-        if not self.opened:
-            raise RuntimeError('File not opened')
-
+    def _collect(self, t : float | None=None) -> None:
         if t is None:
             t = self._t_update
 
@@ -302,18 +310,34 @@ class CsvExport(laio_worker.Work):
         for obj, val in self._objs.items():
             row.append(val)
 
+        t_, row_ = self._coalesced
+        if t_ < t and row_:
+            self._queue.append(self._coalesced)
+            try:
+                self._write_sem.release()
+            except ValueError:
+                pass
+
+        self._coalesced = (t, row)
+
+    async def _write(self) -> None:
+        assert not self.lock.has_lock()
+
+        if not self.opened:
+            raise RuntimeError('File not opened')
+
         if self._need_restart:
             await self._restart()
 
-        t_, row_ = self._coalesced
-        if t_ < t and row_:
-            async with self.lock:
-                if t_ > self._t_last:
-                    self.logger.debug('write t=%.6f', t_)
-                    self._t_last = t_
-                    self._writer.writerow(row_)
+        async with self.lock:
+            queue = self._queue
+            self._queue = []
 
-        self._coalesced = (t, row)
+            for t, row in queue:
+                if t > self._t_last:
+                    self.logger.debug('write t=%.6f', t)
+                    self._t_last = t
+                    self._writer.writerow(row)
 
     @overload
     async def flush(self) -> None: ...
@@ -342,6 +366,7 @@ class CsvExport(laio_worker.Work):
         if data:
             self.logger.debug('flush')
             await self.file.write(data)
+            await self.file.flush()
 
     @overload
     async def add(self, obj : laio_zmq.Object) -> None: ...
@@ -383,10 +408,7 @@ class CsvExport(laio_worker.Work):
             obj_t = obj.t.value
             self._t_update = max(self._t_update, obj_t if obj_t is not None else 0.0)
             if self._write_on_change:
-                try:
-                    self._write_sem.release()
-                except ValueError:
-                    pass
+                self._collect()
 
     def auto_write(self, interval_s : float | None) -> None:
         '''
@@ -411,7 +433,8 @@ class CsvExport(laio_worker.Work):
                 try:
                     while True:
                         await asyncio.sleep(interval_s)
-                        await self._write(self._t_update)
+                        self._collect()
+                        await self._write()
                 except asyncio.CancelledError:
                     pass
                 except:
@@ -445,7 +468,7 @@ class CsvExport(laio_worker.Work):
                 try:
                     while True:
                         await self._write_sem.acquire()
-                        await self._write(self._t_update)
+                        await self._write()
                 except asyncio.CancelledError:
                     pass
                 except:

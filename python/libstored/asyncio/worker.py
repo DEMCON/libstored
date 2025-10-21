@@ -238,7 +238,22 @@ class AsyncioWorker:
     async def _execute(self, f, *args, **kwargs) -> typing.Any:
         return f(*args, **kwargs)
 
+def silence_future(future : concurrent.futures.Future | asyncio.Future, logger : logging.Logger | None=None) -> concurrent.futures.Future | asyncio.Future:
+    '''
+    Silences exceptions in a future by adding a done callback that
+    retrieves the result.
 
+    This prevents "unhandled exception in future" warnings.
+    '''
+    def _callback(fut: concurrent.futures.Future | asyncio.Future):
+        try:
+            fut.result()
+        except Exception as e:
+            if logger is not None:
+                logger.debug('Silenced exception in %s: %s', fut, e)
+
+    future.add_done_callback(_callback)
+    return future
 
 def run_sync(f : typing.Callable) -> typing.Callable:
     '''
@@ -264,9 +279,9 @@ def run_sync(f : typing.Callable) -> typing.Callable:
         except RuntimeError:
             pass
 
-        assert sync is None or (loop is None) == sync, 'sync argument contradicts current context'
+        assert sync is None or (loop is None) == sync or not block, 'sync argument contradicts current context'
 
-        if loop is not None:
+        if loop is not None and not sync:
             # We are in an event loop, just start the coro.
             coro = f(*args, **kwargs)
             if block:
@@ -276,23 +291,30 @@ def run_sync(f : typing.Callable) -> typing.Callable:
         else:
             # We are not in an event loop, run the coro in the (default) worker.
             w = None
+            logger = None
             if isinstance(self, Work):
-                self.logger.debug("Running %s in worker %s", f.__qualname__, str(self.worker))
+                logger = self.logger
+                logger.debug("Running %s in worker %s", f.__qualname__, str(self.worker))
                 w = self.worker
             else:
                 if hasattr(self, 'logger'):
-                    self.logger.debug("Running %s in default worker", f.__qualname__)
+                    logger = self.logger
+                    logger.debug("Running %s in default worker", f.__qualname__)
                 global default_worker
                 w = default_worker
 
             if w is None or not w.is_running():
                 if hasattr(self, 'logger'):
-                    self.logger.debug('No worker running, creating new one')
+                    logger = self.logger
+                    logger.debug('No worker running, creating new one')
                 w = AsyncioWorker()
 
             future = w.execute(f(*args, **kwargs))
             if block:
                 return lexc.DeadlockChecker(future).result()
+            elif sync:
+                # Non-blocking sync calls are probably not really interested in the result.
+                return silence_future(future, logger)
             else:
                 return future
 
