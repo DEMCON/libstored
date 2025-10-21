@@ -9,43 +9,59 @@ import logging
 import sys
 
 from ..asyncio.zmq_client import ZmqClient
-from ..asyncio.worker import AsyncioWorker, run_sync
+from ..asyncio.worker import run_sync
 from ..zmq_server import ZmqServer
 from ..asyncio.csv import generate_filename, CsvExport
 from ..version import __version__
 
 @run_sync
-async def async_main(args : argparse.Namespace):
+async def async_main(args : argparse.Namespace) -> int:
     global logger
 
     filename : str = args.csv
     if filename != '-':
         filename = generate_filename(filename, add_timestamp=args.timestamp, unique=args.unique)
 
-    async with CsvExport(filename) as csv:
-        async with ZmqClient(args.server, args.port, multi=args.multi) as client:
-            objs = 0
+    async with ZmqClient(args.server, args.port, multi=args.multi) as client:
+        objs = []
 
-            for o in args.objects:
+        for o in args.objects:
+            try:
                 obj = client[o]
-                logger.info('Poll %s', obj.name)
-                await obj.poll(args.interval)
+            except ValueError:
+                logger.fatal('Unknown object: %s', o)
+                return 1
+
+            if obj not in objs:
+                objs.append(obj)
+
+        if args.objectfile is not None:
+            for of in args.objectfile:
+                async with aiofiles.open(of) as f:
+                    async for o in f:
+                        o = o.strip()
+                        try:
+                            obj = client[o]
+                        except ValueError:
+                            logger.fatal('Unknown object: %s', o)
+                            return 1
+
+                        if obj not in objs:
+                            objs.append(obj)
+
+        if not objs:
+            logger.error('No objects specified')
+            return 1
+
+        for o in objs:
+            logger.info('Poll %s', o.name)
+            await o.poll(args.interval)
+            # Make sure to have initial data.
+            await o.read()
+
+        async with CsvExport(filename) as csv:
+            for obj in objs:
                 await csv.add(obj)
-                objs += 1
-
-            if args.objectfile is not None:
-                for of in args.objectfile:
-                    async with aiofiles.open(of) as f:
-                        async for o in f:
-                            obj = client[o.strip()]
-                            logger.info('Poll %s', obj.name)
-                            await obj.poll(float(args.interval))
-                            await csv.add(obj)
-                            objs += 1
-
-            if objs == 0:
-                logger.error('No objects specified')
-                return
 
             if args.duration is not None:
                 logger.info('Start logging for %g s', args.duration)
@@ -53,6 +69,8 @@ async def async_main(args : argparse.Namespace):
             else:
                 logger.info('Start logging')
                 await asyncio.Event().wait()
+
+    return 0
 
 def main():
     global logger
@@ -62,6 +80,7 @@ def main():
     parser = argparse.ArgumentParser(prog=sys.modules[__name__].__package__,
             description='ZMQ command line logging client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
+    parser.add_argument('-V', action='version', version=__version__)
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
     parser.add_argument('-p', dest='port', type=int, default=ZmqServer.default_port, help='port')
     parser.add_argument('-v', dest='verbose', default=0, help='Enable verbose output', action='count')
@@ -87,10 +106,13 @@ def main():
     else:
         logging.basicConfig(level=logging.DEBUG)
 
+    res = 1
     try:
-        async_main(args)
+        res = async_main(args)
     except KeyboardInterrupt:
         logger.info('Interrupted, exiting')
+
+    sys.exit(res)
 
 if __name__ == '__main__':
     main()
