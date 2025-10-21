@@ -424,8 +424,7 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 		if(len == 0)
 			goto error;
 
-		size_t valuelen =
-			(size_t)(p - static_cast<char const*>(value));
+		size_t valuelen = (size_t)(p - static_cast<char const*>(value));
 		DebugVariant variant = find(p, len);
 		if(!variant.valid())
 			goto error;
@@ -514,14 +513,24 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 	}
 	case CmdMacro: {
 		// define a macro
-		// Request: 'm' <char> ( <sep> <any command> ) *
-		// Response: '!' | '?'
+		// Request: 'm' ( <char> ( <sep> <any command> ) * ) ?
+		// Response: '!' | '?' | <chars>
 
 		if(Config::DebuggerMacro <= 0)
 			goto error;
 
-		if(len < 2)
-			goto error;
+		if(len == 1) {
+			// Return all defined macros.
+			if(macros().empty())
+				goto error;
+
+			response.setPurgeableResponse();
+			for(MacroMap::const_iterator it = macros().begin(); it != macros().end();
+			    ++it)
+				response.encode(&it->first, 1, false);
+			response.encode();
+			return;
+		}
 
 		char m = p[1];
 		if(len == 2) {
@@ -544,6 +553,11 @@ void Debugger::process(void const* frame, size_t len, ProtocolLayer& response)
 
 		p += 2;
 		len -= 2;
+
+		if(m == '?') {
+			// Invalid macro name.
+			goto error;
+		}
 
 		MacroMap::iterator it = macros().find(m);
 		if(it == macros().end()) {
