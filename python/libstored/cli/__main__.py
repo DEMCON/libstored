@@ -11,8 +11,8 @@ import os
 
 from ..asyncio.zmq_client import ZmqClient
 from ..asyncio.worker import run_sync, AsyncioWorker
-from ..zmq_server import ZmqServer
 from ..version import __version__
+from .. import protocol as lprot
 
 @run_sync
 async def async_main(args : argparse.Namespace):
@@ -31,7 +31,7 @@ def main():
     parser = argparse.ArgumentParser(description='ZMQ command line client')
     parser.add_argument('-V', action='version', version=__version__)
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
-    parser.add_argument('-p', dest='port', type=int, default=ZmqServer.default_port, help='port')
+    parser.add_argument('-p', dest='port', type=int, default=lprot.default_port, help='port')
     parser.add_argument('-v', dest='verbose', default=0, help='Enable verbose output', action='count')
 
     args = parser.parse_args()
