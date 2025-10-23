@@ -1,0 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+
+SPDX-License-Identifier: MPL-2.0
+-->
+
+<!DOCTYPE RCC>
+<RCC version="1.0">
+<qresource>
+<file alias="main.qml">/home/jrt/dev/libstored/libstored/python/libstored/visu/example/main.qml</file>
+</qresource>
+</RCC>

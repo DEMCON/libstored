@@ -23,6 +23,7 @@ from textx.export import metamodel_export, model_export
 
 from .dsl import types
 from ..version import libstored_version
+from ..version import __version__
 
 generator_dir = os.path.dirname(__file__)
 
@@ -446,6 +447,7 @@ def generate_cmake(libprefix, model_files, output_dir):
 
 def main():
     parser = argparse.ArgumentParser(description='Store generator')
+    parser.add_argument('-V', action='version', version=__version__)
     parser.add_argument('-p', type=str, help='libstored prefix for cmake library target')
     parser.add_argument('store_file', type=str, nargs='+', help='store description to parse')
     parser.add_argument('output_dir', type=str, help='output directory for generated files')

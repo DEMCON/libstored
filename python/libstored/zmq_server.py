@@ -8,9 +8,10 @@ import io
 import logging
 import serial
 
-from . import protocol
+from . import protocol as lprot
+from .protocol import protocol as lprot_protocol
 
-class ZmqServer(protocol.ProtocolLayer):
+class ZmqServer(lprot_protocol.ProtocolLayer):
     """A ZMQ Server
 
     This can be used to create a bridge from an arbitrary interface to ZMQ, which
@@ -19,7 +20,7 @@ class ZmqServer(protocol.ProtocolLayer):
     Instantiate as libstored.ZmqServer().
     """
 
-    default_port = 19026
+    default_port = lprot.default_port
     name = 'zmq'
 
     def __init__(self, bind=None, listen='*', port=default_port, context=None):

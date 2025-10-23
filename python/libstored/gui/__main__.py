@@ -29,8 +29,8 @@ from ..asyncio import tk as laio_tk
 from ..asyncio import csv as laio_csv
 from .. import tk as ltk
 from .. import exceptions as lexc
+from .. import protocol as lprot
 
-from ..zmq_server import ZmqServer
 
 
 #####################################################################
@@ -379,7 +379,7 @@ class ClientConnection(laio_tk.AsyncWidget, ttk.Frame):
         self._port_label = ttk.Label(self, text='Port:')
         self._port_label.grid(row=0, column=2, sticky='e', padx=Style.grid_padding, pady=Style.grid_padding)
 
-        self._port = ltk.Entry(self, text=str(self.port), hint=f'default: {ZmqServer.default_port}', validation=r'^[0-9]{0,5}$')
+        self._port = ltk.Entry(self, text=str(self.port), hint=f'default: {lprot.default_port}', validation=r'^[0-9]{0,5}$')
         self._port.grid(row=0, column=3, sticky='we', padx=Style.grid_padding, pady=Style.grid_padding)
 
         self._multi_var = tk.BooleanVar(value=client.multi)
@@ -1209,7 +1209,7 @@ def main():
     parser = argparse.ArgumentParser(prog=sys.modules[__name__].__package__, description='ZMQ GUI client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-V', action='version', version=__version__)
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
-    parser.add_argument('-p', dest='port', type=int, default=ZmqServer.default_port, help='port')
+    parser.add_argument('-p', dest='port', type=int, default=lprot.default_port, help='port')
     parser.add_argument('-v', dest='verbose', default=0, help='Enable verbose output', action='count')
     parser.add_argument('-m', dest='multi', default=False,
         help='Enable multi-mode; allow multiple simultaneous connections to the same target, ' +

@@ -31,8 +31,6 @@ set(pylibstored_src
     libstored/wrapper/stdio/__main__.py
     libstored/zmq_client.py
     libstored/zmq_server.py
-    libstored/visu/__init__.py
-    libstored/visu/__main__.py
 )
 
 set(package_data_
@@ -121,19 +119,6 @@ file(
 	CONTENT ""
 )
 
-if(LIBSTORED_EXAMPLES)
-	list(APPEND pylibstored_src libstored/visu/example/example.qrc
-	     libstored/visu/example/main.qml
-	)
-
-	libstored_visu(
-		visu-example ${CMAKE_CURRENT_SOURCE_DIR}/libstored/visu/visu_example.py
-		libstored/visu/example/main.qml
-	)
-endif()
-
-add_subdirectory(libstored/gui-qt)
-
 add_launch_json_pymod(libstored.gui libstored.gui -v -v)
 
 macro(find_latest file pattern)
@@ -162,10 +147,6 @@ set(_wheel_deps
     setup.cfg
     version.txt
 )
-
-if(LIBSTORED_EXAMPLES)
-	set(_wheel_deps ${_wheel_deps} visu-example)
-endif()
 
 if("${pylibstored_wheel_ALL}${pylibstored_tar_ALL}" STREQUAL "")
 	set(cmake_rm echo "No old whl files found")

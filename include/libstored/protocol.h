@@ -864,6 +864,38 @@ private:
 };
 
 /*!
+ * \brief A layer that adds a CRC-32 to messages.
+ *
+ * Like #stored::Crc8Layer, but using a reversed 0x04c11db7 as polynomial.
+ */
+class Crc32Layer : public ProtocolLayer {
+	STORED_CLASS_NOCOPY(Crc32Layer)
+public:
+	typedef ProtocolLayer base;
+
+	enum { polynomial = 0x04c11db7, init = 0xffffffff, final_xor = 0xffffffff };
+
+	explicit Crc32Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+	/*! \brief Dtor. */
+	virtual ~Crc32Layer() override is_default
+
+	virtual void decode(void* buffer, size_t len) override;
+	virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#  ifndef DOXYGEN
+	using base::encode;
+#  endif
+
+	virtual size_t mtu() const override;
+	virtual void reset() override;
+
+protected:
+	static uint32_t compute(uint8_t input, uint32_t crc = init);
+
+private:
+	uint32_t m_crc;
+};
+
+/*!
  * \brief Buffer partial encoding frames.
  *
  * By default, layers pass encoded data immediately to lower layers.

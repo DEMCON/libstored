@@ -27,7 +27,7 @@ import zmq.utils.monitor
 
 from .. import libstored_version
 from .event import Event, Value, ValueWrapper
-from ..zmq_server import ZmqServer
+from .. import protocol as lprot
 from .worker import Work
 from ..heatshrink import HeatshrinkDecoder
 from .. import exceptions as lexc
@@ -1306,7 +1306,7 @@ class ZmqClient(Work):
     This client can connect to both the libstored.zmq_server.ZmqServer and stored::DebugZmqLayer.
     '''
 
-    def __init__(self, host : str='localhost', port : int=ZmqServer.default_port,
+    def __init__(self, host : str='localhost', port : int=lprot.default_port,
                 multi : bool=False, timeout : float | None=None, context : None | zmq.asyncio.Context=None,
                 t : str | None = None, use_state : str | None=None,
                 *args, **kwargs):

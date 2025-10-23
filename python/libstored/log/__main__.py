@@ -13,6 +13,7 @@ from ..asyncio.worker import run_sync
 from ..zmq_server import ZmqServer
 from ..asyncio.csv import generate_filename, CsvExport
 from ..version import __version__
+from .. import protocol as lprot
 
 @run_sync
 async def async_main(args : argparse.Namespace) -> int:
@@ -80,7 +81,7 @@ def main():
 
     parser.add_argument('-V', action='version', version=__version__)
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
-    parser.add_argument('-p', dest='port', type=int, default=ZmqServer.default_port, help='port')
+    parser.add_argument('-p', dest='port', type=int, default=lprot.default_port, help='port')
     parser.add_argument('-v', dest='verbose', default=0, help='Enable verbose output', action='count')
     parser.add_argument('-f', dest='csv', default='-',
         help='File to log to. The file name may include strftime() format codes.')
