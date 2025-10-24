@@ -4,13 +4,16 @@
 
 from __future__ import annotations
 
+import asyncio
 import crcmod
+import inspect
 import logging
 import struct
 import sys
 import time
 import typing
 import zmq
+import zmq.asyncio
 
 from .. import protocol as lprot
 
@@ -27,16 +30,17 @@ class ProtocolLayer:
 
     name = 'layer'
     Packet : typing.TypeAlias = bytes | bytearray | memoryview | str
-    Callback : typing.TypeAlias = typing.Callable[[Packet], None]
+    Callback : typing.TypeAlias = typing.Callable[[Packet], typing.Any]
+    AsyncCallback : typing.TypeAlias = typing.Callable[[Packet], typing.Coroutine[typing.Any, typing.Any, None]]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._down : ProtocolLayer | None = None
         self._up : ProtocolLayer | None = None
-        self._down_callback : ProtocolLayer.Callback | None = None
-        self._up_callback : ProtocolLayer.Callback | None = None
+        self._down_callback : ProtocolLayer.AsyncCallback = self._callback_factory(None)
+        self._up_callback : ProtocolLayer.AsyncCallback = self._callback_factory(None)
         self._activity : float = 0
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(self.__class__.__name__)
 
     def wrap(self, layer : ProtocolLayer) -> None:
         '''
@@ -54,7 +58,7 @@ class ProtocolLayer:
         '''
         Set a callback to be called when data is received from the lower layer.
         '''
-        self._up_callback = cb
+        self._up_callback = self._callback_factory(cb)
 
     @property
     def down(self) -> ProtocolLayer | None:
@@ -65,29 +69,42 @@ class ProtocolLayer:
         '''
         Set a callback to be called when data is received from the upper layer.
         '''
-        self._down_callback = cb
+        self._down_callback = self._callback_factory(cb)
 
-    def encode(self, data : ProtocolLayer.Packet) -> None:
+    @staticmethod
+    def _callback_factory(f : ProtocolLayer.Callback | None) -> ProtocolLayer.AsyncCallback:
+        if f is None:
+            async def no_callback(data : ProtocolLayer.Packet) -> None:
+                pass
+            return no_callback
+        elif inspect.iscoroutinefunction(f):
+            return f
+        else:
+            async def callback(data : ProtocolLayer.Packet) -> None:
+                f(data)
+            return callback
+
+    async def encode(self, data : ProtocolLayer.Packet) -> None:
         '''
         Encode data for transmission.
         '''
         self.activity()
 
-        if self._down_callback is not None:
-            self._down_callback(data)
-        if self.down is not None:
-            self.down.encode(data)
+        await self._down_callback(data)
 
-    def decode(self, data : ProtocolLayer.Packet) -> None:
+        if self.down is not None:
+            await self.down.encode(data)
+
+    async def decode(self, data : ProtocolLayer.Packet) -> None:
         '''
         Decode data received from the lower layer.
         '''
         self.activity()
 
-        if self._up_callback is not None:
-            self._up_callback(data)
+        await self._up_callback(data)
+
         if self.up is not None:
-            self.up.decode(data)
+            await self.up.decode(data)
 
     @property
     def mtu(self) -> int | None:
@@ -99,14 +116,6 @@ class ProtocolLayer:
             return self.down.mtu
         else:
             return None
-
-    def timeout(self) -> None:
-        '''
-        Trigger maintenance actions when a timeout occurs.  The layer does not
-        determine whether a timeout occurs; this is decided externally.
-        '''
-        if self.down is not None:
-            self.down.timeout()
 
     def activity(self) -> None:
         '''
@@ -124,14 +133,17 @@ class ProtocolLayer:
 
         return max(a, self._activity)
 
-    def __del__(self):
-        self.close()
-
-    def close(self) -> None:
+    async def close(self) -> None:
         '''
         Close the layer and release resources.
         '''
         pass
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.close()
 
 
 
@@ -145,7 +157,7 @@ class AsciiEscapeLayer(ProtocolLayer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def decode(self, data : ProtocolLayer.Packet) -> None:
+    async def decode(self, data : ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
         elif isinstance(data, memoryview):
@@ -165,9 +177,9 @@ class AsciiEscapeLayer(ProtocolLayer):
             else:
                 res.append(b)
 
-        super().decode(res)
+        await super().decode(res)
 
-    def encode(self, data : ProtocolLayer.Packet) -> None:
+    async def encode(self, data : ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
         elif isinstance(data, memoryview):
@@ -183,7 +195,7 @@ class AsciiEscapeLayer(ProtocolLayer):
             else:
                 res.append(b)
 
-        super().encode(res)
+        await super().encode(res)
 
     @property
     def mtu(self) -> int | None:
@@ -215,11 +227,21 @@ class TerminalLayer(ProtocolLayer):
         if isinstance(fdout, int):
             if fdout == 1:
                 def fdout_stdout(x):
-                    sys.stdout.write(x.decode(errors="replace"))
+                    if isinstance(x, (bytes, bytearray)):
+                        x = x.decode(errors='replace')
+                    elif isinstance(x, memoryview):
+                        x = x.tobytes().decode(errors='replace')
+                    sys.stdout.write(x)
+                    sys.stdout.flush()
                 self.fdout = fdout_stdout
             else:
                 def fdout_stderr(x):
-                    sys.stderr.write(x.decode(errors="replace"))
+                    if isinstance(x, (bytes, bytearray)):
+                        x = x.decode(errors='replace')
+                    elif isinstance(x, memoryview):
+                        x = x.tobytes().decode(errors='replace')
+                    sys.stderr.write(x)
+                    sys.stderr.flush()
                 self.fdout = fdout_stderr
         else:
             self.fdout = fdout
@@ -228,31 +250,32 @@ class TerminalLayer(ProtocolLayer):
         self._inMsg : bool = False
         self._ignoreEscape : bool = ignoreEscapesTillFirstEncode
 
-    def non_debug_data(self, data : ProtocolLayer.Packet) -> None:
+    async def non_debug_data(self, data : ProtocolLayer.Packet) -> None:
         if len(data) > 0:
             if self.fdout is not None:
                 self.fdout(data)
 
-    def encode(self, data : ProtocolLayer.Packet) -> None:
+    async def encode(self, data : ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
 
         self._ignoreEscape = False
-        super().encode(self.start + bytes(data) + self.end)
-        self.activity()
+        await super().encode(self.start + bytes(data) + self.end)
 
-    # Encode non-debug message
-    def inject(self, data : ProtocolLayer.Packet) -> None:
+    async def inject(self, data : ProtocolLayer.Packet) -> None:
+        '''
+        Inject non-debug data down the stack.
+        '''
         if isinstance(data, str):
             data = data.encode()
 
-        super().encode(data)
+        await super().encode(data)
 
-    def decode(self, data : ProtocolLayer.Packet) -> None:
+    async def decode(self, data : ProtocolLayer.Packet) -> None:
         if data == b'':
             return
         if self._ignoreEscape and not self._inMsg:
-            self.non_debug_data(data)
+            await self.non_debug_data(data)
             return
         if isinstance(data, str):
             data = data.encode()
@@ -268,7 +291,7 @@ class TerminalLayer(ProtocolLayer):
                 c = self._data.split(self.start, 1)
                 if c[0] != b'':
                     self.logger.debug('non-debug %s', bytes(c[0]))
-                    self.non_debug_data(c[0])
+                    await self.non_debug_data(c[0])
 
                 if len(c) == 1:
                     # No start of message in here.
@@ -291,7 +314,7 @@ class TerminalLayer(ProtocolLayer):
                     self.logger.debug('extracted %s', bytes(msg))
                     self._data = c[1]
                     self._inMsg = False
-                    super().decode(msg)
+                    await super().decode(msg)
 
     @property
     def mtu(self) -> int | None:
@@ -310,35 +333,32 @@ class PubTerminalLayer(TerminalLayer):
     name = 'pubterm'
     default_port = lprot.default_port + 1
 
-    def __init__(self, bind : str=f'*:{default_port}', *args, context : zmq.Context | None=None, **kwargs):
+    def __init__(self, bind : str=f'*:{default_port}', *args, context : zmq.asyncio.Context | None=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self._context : zmq.Context = context or zmq.Context()
-        self._socket : zmq.Socket | None = self.context.socket(zmq.PUB)
+        self._context : zmq.asyncio.Context = context or zmq.asyncio.Context.instance()
+        self._socket : zmq.asyncio.Socket | None = self.context.socket(zmq.PUB)
         assert self._socket is not None
         self._socket.bind(f'tcp://{bind}')
 
-    def __del__(self):
-        self.close()
-
     @property
-    def context(self) -> zmq.Context:
+    def context(self) -> zmq.asyncio.Context:
         return self._context
 
     @property
-    def socket(self) -> zmq.Socket | None:
+    def socket(self) -> zmq.asyncio.Socket | None:
         return self._socket
 
-    def close(self) -> None:
+    async def close(self) -> None:
         if self._socket is not None:
             self._socket.close()
             self._socket = None
 
-        super().close()
+        await super().close()
 
-    def non_debug_data(self, data : ProtocolLayer.Packet) -> None:
-        super().non_debug_data(data)
+    async def non_debug_data(self, data : ProtocolLayer.Packet) -> None:
+        await super().non_debug_data(data)
         if len(data) > 0 and self._socket is not None:
-            self._socket.send(data)
+            await self._socket.send(data)
 
 
 
@@ -359,7 +379,7 @@ class SegmentationLayer(ProtocolLayer):
         self._mtu = mtu if mtu is not None and mtu > 0 else None
         self._buffer = bytearray()
 
-    def decode(self, data : ProtocolLayer.Packet) -> None:
+    async def decode(self, data : ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
         elif isinstance(data, memoryview):
@@ -368,10 +388,10 @@ class SegmentationLayer(ProtocolLayer):
         self._buffer += data[:-1]
         if data[-1:] == self.end:
             self.logger.debug('reassembled %s', bytes(self._buffer))
-            super().decode(self._buffer)
+            await super().decode(self._buffer)
             self._buffer = bytearray()
 
-    def encode(self, data : ProtocolLayer.Packet) -> None:
+    async def encode(self, data : ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
         elif isinstance(data, memoryview):
@@ -381,19 +401,14 @@ class SegmentationLayer(ProtocolLayer):
         if self._mtu is None:
             mtu = super().mtu
         if mtu is None:
-            super().encode(data + self.end)
+            await super().encode(data + self.end)
         else:
             mtu = max(1, mtu - 1)
             for i in range(0, len(data), mtu):
                 if i + mtu >= len(data):
-                    super().encode(data[i:i+mtu] + self.end)
+                    await super().encode(data[i:i+mtu] + self.end)
                 else:
-                    super().encode(data[i:i+mtu] + self.cont)
-
-    def timeout(self) -> None:
-        # A retransmit is pending. Clear partial data.
-        self._buffer = bytearray()
-        super().timeout()
+                    await super().encode(data[i:i+mtu] + self.cont)
 
     @property
     def mtu(self) -> int | None:
@@ -409,7 +424,7 @@ class DebugArqLayer(ProtocolLayer):
     name = 'arq'
     reset_flag = 0x80
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, timeout_s : float = 1, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._req : bool = False
         self._request : list[bytes] = []
@@ -418,8 +433,46 @@ class DebugArqLayer(ProtocolLayer):
         self._decode_seq : int = 1
         self._decode_seq_start : int = self._decode_seq
         self._suppress_auto_retransmit : bool = False
+        self._timeout_s : float = timeout_s
+        self._retransmit_time : float = 0
+        self._retransmitter : asyncio.Task | None = asyncio.create_task(self._retransmitter_task())
+        self._encode_lock : asyncio.Lock = asyncio.Lock()
 
-    def decode(self, data : ProtocolLayer.Packet) -> None:
+    @property
+    def timeout_s(self) -> float:
+        return self._timeout_s
+
+    @timeout_s.setter
+    def timeout_s(self, value : float) -> None:
+        if self._retransmit_time > 0:
+            self._retransmit_time = time.time() + value
+        self._timeout_s = value
+
+    async def _retransmitter_task(self) -> None:
+        try:
+            while True:
+                await asyncio.sleep(self._timeout_s)
+                if self._retransmit_time > 0 and time.time() >= self._retransmit_time:
+                    self._retransmit_time = 0
+                    await self.retransmit()
+        except asyncio.CancelledError:
+            pass
+        except Exception as e:
+            self.logger.exception(f'Retransmitter task error: {e}')
+            raise
+
+    async def close(self) -> None:
+        if self._retransmitter is not None:
+            self._retransmitter.cancel()
+            try:
+                await self._retransmitter
+            except asyncio.CancelledError:
+                pass
+            self._retransmitter = None
+
+        await super().close()
+
+    async def decode(self, data : ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
         elif isinstance(data, memoryview):
@@ -441,14 +494,14 @@ class DebugArqLayer(ProtocolLayer):
         if seq == self._decode_seq:
             self._decode_seq = self.next_seq(self._decode_seq)
             if len(msg) > 0:
-                super().decode(msg)
+                await super().decode(msg)
         else:
             self.logger.debug(f'unexpected seq {seq} instead of {self._decode_seq}; dropped')
 
         if self._syncing and data[0] == self.reset_flag:
             self._syncing = False
             for r in self._request:
-                super().encode(r)
+                await self._encode(r)
 
     @staticmethod
     def decode_seq(data : bytes | bytearray | memoryview) -> tuple[int, memoryview[int]]:
@@ -502,7 +555,7 @@ class DebugArqLayer(ProtocolLayer):
                 seq & 0x7f])
         return DebugArqLayer.encode_seq(seq % 0x8000000)
 
-    def encode(self, data : ProtocolLayer.Packet) -> None:
+    async def encode(self, data : ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
         elif isinstance(data, memoryview):
@@ -510,7 +563,7 @@ class DebugArqLayer(ProtocolLayer):
 
         if self._reset:
             self._reset = False
-            self._sync()
+            await self._sync()
 
         if not self._req:
             self._request = []
@@ -526,32 +579,34 @@ class DebugArqLayer(ProtocolLayer):
         request = self.encode_seq(self._encode_seq) + data
         self._request.append(request)
         if not self._syncing:
-            super().encode(request)
+            await self._encode(request)
 
-    def _sync(self) -> None:
+    async def _encode(self, data : ProtocolLayer.Packet) -> None:
+        async with self._encode_lock:
+            self._retransmit_time = time.time() + self._timeout_s
+            await super().encode(data)
+
+    async def _sync(self) -> None:
         if self._syncing:
             return
         self._syncing = True
         self._encode_seq = 0
-        super().encode(bytes([self.reset_flag]))
-
-    def timeout(self) -> None:
-        super().timeout()
-        if not self._req:
-            self._decode_seq = self._decode_seq_start
-        self.retransmit()
+        await self._encode(bytes([self.reset_flag]))
 
     def reset(self) -> None:
         self._reset = True
         self._request = []
 
-    def retransmit(self) -> None:
+    async def retransmit(self) -> None:
         self.logger.debug('retransmit')
+        if not self._req:
+            self._decode_seq = self._decode_seq_start
+
         if self._syncing:
-            super().encode(bytes([self.reset_flag]))
+            await self._encode(bytes([self.reset_flag]))
         else:
             for r in self._request:
-                super().encode(r)
+                await self._encode(r)
 
     @staticmethod
     def next_seq(seq : int) -> int:
@@ -578,13 +633,13 @@ class Crc8Layer(ProtocolLayer):
         super().__init__(*args, **kwargs)
         self._crc = crcmod.mkCrcFun(0x1a6, 0xff, False, 0)
 
-    def encode(self, data : ProtocolLayer.Packet) -> None:
+    async def encode(self, data : ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
 
-        super().encode(bytearray(data) + bytes([self.crc(data)]))
+        await super().encode(bytearray(data) + bytes([self.crc(data)]))
 
-    def decode(self, data : ProtocolLayer.Packet) -> None:
+    async def decode(self, data : ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
         elif isinstance(data, memoryview):
@@ -598,7 +653,7 @@ class Crc8Layer(ProtocolLayer):
             return
 
         self.logger.debug('valid CRC %s', bytes(data))
-        super().decode(data[0:-1])
+        await super().decode(data[0:-1])
 
     def crc(self, data : ProtocolLayer.Packet) -> int:
         return self._crc(data)
@@ -624,13 +679,13 @@ class Crc16Layer(ProtocolLayer):
         super().__init__(*args, **kwargs)
         self._crc = crcmod.mkCrcFun(0x1baad, 0xffff, False, 0)
 
-    def encode(self, data: ProtocolLayer.Packet) -> None:
+    async def encode(self, data: ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
 
-        super().encode(bytearray(data) + struct.pack('>H', self.crc(data)))
+        await super().encode(bytearray(data) + struct.pack('>H', self.crc(data)))
 
-    def decode(self, data: ProtocolLayer.Packet) -> None:
+    async def decode(self, data: ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
         elif isinstance(data, memoryview):
@@ -644,7 +699,7 @@ class Crc16Layer(ProtocolLayer):
             return
 
         self.logger.debug('valid CRC %s', bytes(data))
-        super().decode(data[0:-2])
+        await super().decode(data[0:-2])
 
     def crc(self, data : ProtocolLayer.Packet) -> int:
         return self._crc(data)
@@ -669,13 +724,13 @@ class Crc32Layer(ProtocolLayer):
         super().__init__(*args, **kwargs)
         self._crc = crcmod.mkCrcFun(0x104c11db7, 0xffffffff, True, 0xffffffff)
 
-    def encode(self, data: ProtocolLayer.Packet) -> None:
+    async def encode(self, data: ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
 
-        super().encode(bytearray(data) + struct.pack('>I', self.crc(data)))
+        await super().encode(bytearray(data) + struct.pack('>I', self.crc(data)))
 
-    def decode(self, data: ProtocolLayer.Packet) -> None:
+    async def decode(self, data: ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
         elif isinstance(data, memoryview):
@@ -689,7 +744,7 @@ class Crc32Layer(ProtocolLayer):
             return
 
         self.logger.debug('valid CRC %s', bytes(data))
-        super().decode(data[0:-4])
+        await super().decode(data[0:-4])
 
     def crc(self, data : ProtocolLayer.Packet) -> int:
         return self._crc(data)
@@ -721,22 +776,19 @@ class ProtocolStack(ProtocolLayer):
         self._layers[-1].down = super().encode
         self._layers[0].up = super().decode
 
-    def encode(self, data : ProtocolLayer.Packet) -> None:
-        self._layers[0].encode(data)
+    async def encode(self, data : ProtocolLayer.Packet) -> None:
+        await self._layers[0].encode(data)
 
-    def decode(self, data : ProtocolLayer.Packet) -> None:
-        self._layers[-1].decode(data)
-
-    def timeout(self) -> None:
-        self._layers[0].timeout()
+    async def decode(self, data : ProtocolLayer.Packet) -> None:
+        await self._layers[-1].decode(data)
 
     def last_activity(self) -> float:
         return max(super().last_activity(), self._layers[0].last_activity())
 
-    def close(self) -> None:
+    async def close(self) -> None:
         for layer in self._layers:
-            layer.close()
-        super().close()
+            await layer.close()
+        await super().close()
 
     @property
     def mtu(self) -> int | None:
@@ -781,9 +833,9 @@ class LoopbackLayer(ProtocolLayer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def encode(self, data : ProtocolLayer.Packet) -> None:
-        self.decode(data)
-        super().encode(data)
+    async def encode(self, data : ProtocolLayer.Packet) -> None:
+        await self.decode(data)
+        await super().encode(data)
 
 
 
@@ -796,19 +848,19 @@ class RawLayer(ProtocolLayer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def encode(self, data : ProtocolLayer.Packet) -> None:
+    async def encode(self, data : ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
-        super().encode(data)
+        await super().encode(data)
 
-    def decode(self, data : ProtocolLayer.Packet) -> None:
+    async def decode(self, data : ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
-        super().decode(data)
+        await super().decode(data)
 
 
 
-layer_types = [
+layer_types : list[typing.Type[ProtocolLayer]] = [
     AsciiEscapeLayer,
     TerminalLayer,
     PubTerminalLayer,
@@ -821,7 +873,7 @@ layer_types = [
     RawLayer,
 ]
 
-def register_layer_type(layer_type : ProtocolLayer) -> None:
+def register_layer_type(layer_type : typing.Type[ProtocolLayer]) -> None:
     '''
     Register a new protocol layer type.
     The layer type must be a subclass of ProtocolLayer with a unique name.
@@ -832,7 +884,7 @@ def register_layer_type(layer_type : ProtocolLayer) -> None:
 
     layer_types.append(layer_type)
 
-def unregister_layer_type(layer_type : ProtocolLayer) -> None:
+def unregister_layer_type(layer_type : typing.Type[ProtocolLayer]) -> None:
     '''
     Unregister a protocol layer type.
     '''
