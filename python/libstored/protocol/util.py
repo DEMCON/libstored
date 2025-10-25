@@ -146,18 +146,16 @@ class Reader(typing.Generic[T]):
     def running(self) -> bool:
         return self._running
 
-    async def stop(self) -> None:
-        if not self._running:
-            return
-
+    async def stop(self, join : bool=True) -> None:
         self._running = False
 
-        if self._thread is not None:
-            if self._thread.is_alive:
-                assert self._loop is asyncio.get_event_loop()
-                await self._event.wait()
+        if self._thread is not None and self._thread is not threading.current_thread():
+            if join:
+                if self._thread.is_alive():
+                    assert self._loop is asyncio.get_event_loop()
+                    await self._event.wait()
 
-            self._thread.join()
+                self._thread.join()
             self._thread = None
 
     async def __aenter__(self) -> Reader[T]:
@@ -260,9 +258,13 @@ class Writer(typing.Generic[T]):
         self._running = False
         if self._thread is not None:
             self._queue.put(None)
-            if self._thread.is_alive:
+            if self._thread is threading.current_thread():
+                return
+
+            if self._thread.is_alive():
                 assert self._loop is asyncio.get_event_loop()
                 await self._event.wait()
+
             self._thread.join()
             self._thread = None
 
@@ -292,9 +294,8 @@ class Writer(typing.Generic[T]):
                     self._write(x)
                 self._queue.task_done()
         except Exception as e:
-            logging.getLogger(self.__class__.__qualname__).exception(f'Writer thread error: {e}')
+            logging.getLogger(self.__class__.__qualname__).error(f'Writer thread error: {e}')
             self._running = False
-            raise
         finally:
             self._wakeup()
 

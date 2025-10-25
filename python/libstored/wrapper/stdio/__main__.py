@@ -38,11 +38,6 @@ def main():
     ret = 0
     with AsyncioWorker() as w:
         try:
-            def at_term(code):
-                nonlocal ret
-                ret = code
-                w.cancel()
-
             @run_sync
             async def async_main(args : argparse.Namespace):
                 stack = lprot.build_stack(
@@ -54,6 +49,13 @@ def main():
 
                 stdio = lprot.StdioLayer(cmd=[args.command] + args.args)
                 stdio.wrap(stack)
+
+                async def at_term(code):
+                    nonlocal ret
+                    ret = code
+                    await stack.close()
+                    w.cancel()
+
                 stdio.set_terminate_callback(at_term)
 
             async_main(args)
