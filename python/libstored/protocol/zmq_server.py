@@ -31,6 +31,7 @@ class ZmqServer(lprot.ProtocolLayer):
         self._context : zmq.asyncio.Context = context or zmq.asyncio.Context.instance()
         self._socket : zmq.asyncio.Socket = self._context.socket(zmq.REP)
         self._poller : asyncio.Task | None = asyncio.create_task(self._poller_task())
+        self._req : bool = False
 
         if bind is not None:
             s = bind.split(':', 1)
@@ -56,6 +57,8 @@ class ZmqServer(lprot.ProtocolLayer):
             while True:
                 req = b''.join(await self._socket.recv_multipart())
                 self.logger.debug('req %s', req)
+                assert not self._req, 'ZmqServer received request while previous request not yet handled'
+                self._req = True
                 await self._encode(req)
         except asyncio.CancelledError:
             pass
@@ -71,7 +74,11 @@ class ZmqServer(lprot.ProtocolLayer):
         pass
 
     async def decode(self, data : lprot.ProtocolLayer.Packet) -> None:
+        if not self._req:
+            self.logger.debug('Ignoring unexpected rep %s', data)
+            return
         self.logger.debug('rep %s', data)
+        self._req = False
         await self._socket.send(data)
         # Don't decode further.
 

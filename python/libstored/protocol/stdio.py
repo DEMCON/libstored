@@ -45,11 +45,11 @@ class StdinLayer(lprot.ProtocolLayer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._stdin_reader = lprot_util.Reader(self._from_stdin)
+        self._stdin_reader = lprot_util.Reader(self._from_stdin, thread_name=self.__class__.__name__)
         self._reader_task : asyncio.Task | None = asyncio.create_task(self._reader_run())
 
     def _from_stdin(self) -> str:
-        return sys.stdin.read()
+        return sys.stdin.read(1)
 
     async def _reader_run(self) -> None:
         try:
@@ -94,8 +94,8 @@ class StdioLayer(lprot.ProtocolLayer):
             shell=not os.path.exists(cmd[0] if isinstance(cmd, list) else cmd),
             **kwargs)
 
-        self._reader : lprot_util.Reader[bytes] = lprot_util.Reader(self._from_process)
-        self._writer : lprot_util.Writer[bytes] = lprot_util.Writer(self._to_process)
+        self._reader : lprot_util.Reader[bytes] = lprot_util.Reader(self._from_process, thread_name=f'{self.__class__.__name__}-reader')
+        self._writer : lprot_util.Writer[bytes] = lprot_util.Writer(self._to_process, thread_name=f'{self.__class__.__name__}-writer')
         self._reader_task : asyncio.Task | None = asyncio.create_task(self._reader_run())
         self._writer_task : asyncio.Task | None = asyncio.create_task(self._writer.start())
         self._check_task : asyncio.Task | None = None
@@ -201,6 +201,6 @@ lprot.register_layer_type(StdioLayer)
 
 
 __all__ = [
-    'ConsoleLayer',
+    'StdinLayer',
     'StdioLayer',
 ]

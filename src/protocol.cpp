@@ -1519,9 +1519,8 @@ void Crc32Layer::decode(void* buffer, size_t len)
 	for(size_t i = 0; i < len - 4; i++)
 		crc = compute(buffer_[i], crc);
 
-	if(crc
-	   ^ final_xor
-		     != ((uint32_t)((uint32_t)(buffer_[len - 4] << 24U) | (uint32_t)(buffer_[len - 3] << 16U) | (uint32_t)(buffer_[len - 2] << 8U) | buffer_[len - 1])))
+	if((crc ^ final_xor)
+	   != ((uint32_t)((uint32_t)(buffer_[len - 4] << 24U) | (uint32_t)(buffer_[len - 3] << 16U) | (uint32_t)(buffer_[len - 2] << 8U) | buffer_[len - 1])))
 		// Invalid.
 		return;
 
