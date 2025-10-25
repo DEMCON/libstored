@@ -727,11 +727,11 @@ private:
  * should accept this new sequence number and discard all previously
  * collected response messages.
  *
- * Within one request or response, the same sequence number should be used
- * twice; even if the request or response is very long. Worst-case,
- * when there is only one payload byte per message, this limits the
- * request and response to 128 MB.  As the payload is allowed to be
- * of any size, this should not be a real limitation in practice.
+ * Within one request or response, the same sequence number should not be used
+ * twice; even if the request or response is very long. Worst-case, when there
+ * is only one payload byte per message, this limits the request and response to
+ * 128 MB.  As the payload is allowed to be of any size, this should not be a
+ * real limitation in practice.
  *
  * This protocol is verified by the Promela model in tests/DebugArqLayer.pml.
  */

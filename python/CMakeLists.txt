@@ -120,6 +120,17 @@ file(
 )
 
 add_launch_json_pymod(libstored.gui libstored.gui -v -v)
+add_launch_json_pymod(libstored.log libstored.log -v -v /rand)
+add_launch_json_pymod(libstored.cli libstored.cli -v -v)
+add_launch_json_pymod(
+	libstored.wrapper.stdio
+	libstored.wrapper.stdio
+	-v
+	-v
+	-S
+	segment,arq,crc16,ascii,pubterm,stdin
+	$<TARGET_FILE:7_protocol>
+)
 
 macro(find_latest file pattern)
 	file(GLOB ${file}_ALL CONFIGURE_DEPENDS ${pattern})

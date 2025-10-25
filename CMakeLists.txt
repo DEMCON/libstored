@@ -351,7 +351,7 @@ function(add_launch_json_pymod NAME MODULE)
 			\"module\": \"${MODULE}\",
 			\"args\": [${_args}],
 			\"python\": \"$<SHELL_PATH:${PYTHON_EXECUTABLE}>\",
-			\"cwd\": \"$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/python>\"
+			\"cwd\": \"$<SHELL_PATH:${PROJECT_SOURCE_DIR}/python>\"
 		},"
 	)
 endfunction()

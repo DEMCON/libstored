@@ -35,7 +35,7 @@ class InfiniteStdoutBuffer:
         self._queue : queue.Queue[str] | None = queue.Queue()
         self._closed : bool = False
         self._cleanup : typing.Callable[[], None] | None = cleanup
-        self._thread : threading.Thread | None = threading.Thread(target=self._worker, daemon=True)
+        self._thread : threading.Thread | None = threading.Thread(target=self._worker, daemon=True, name='InfiniteStdoutBufferWorker')
         atexit.register(self.close)
         self._thread.start()
 
@@ -118,7 +118,7 @@ class Reader(typing.Generic[T]):
     Asyncio single-reader from a blocking source.
     '''
 
-    def __init__(self, f : typing.Callable[[], T], *args, **kwargs):
+    def __init__(self, f : typing.Callable[[], T], thread_name : str | None=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._f : typing.Callable[[], T] = f
         self._thread : threading.Thread | None = None
@@ -127,6 +127,7 @@ class Reader(typing.Generic[T]):
         self._event : asyncio.Event = asyncio.Event()
         self._loop : asyncio.AbstractEventLoop = asyncio.get_event_loop()
         self._running : bool = False
+        self._thread_name : str = thread_name if thread_name else self.__class__.__name__
 
     async def start(self) -> None:
         if self._thread is not None:
@@ -136,7 +137,8 @@ class Reader(typing.Generic[T]):
         self._event.clear()
         self._loop = asyncio.get_event_loop()
 
-        self._thread = threading.Thread(target=self._thread_func, daemon=True)
+        self._thread = threading.Thread(target=self._thread_func, daemon=True,
+                                        name=self._thread_name)
         self._thread.start()
         await self._event.wait()
 
@@ -228,7 +230,7 @@ class Writer(typing.Generic[T]):
     Asyncio single-writer to a blocking sink.
     '''
 
-    def __init__(self, f : typing.Callable[[T], None], *args, **kwargs):
+    def __init__(self, f : typing.Callable[[T], None], thread_name : str | None=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._f : typing.Callable[[T], None] = f
         self._thread : threading.Thread | None = None
@@ -236,13 +238,15 @@ class Writer(typing.Generic[T]):
         self._event : asyncio.Event = asyncio.Event()
         self._loop : asyncio.AbstractEventLoop = asyncio.get_event_loop()
         self._running : bool = False
+        self._thread_name : str = thread_name if thread_name else self.__class__.__name__
 
     async def start(self) -> None:
         if self._thread is not None:
             return
         self._event.clear()
         self._loop = asyncio.get_event_loop()
-        self._thread = threading.Thread(target=self._thread_func, daemon=True)
+        self._thread = threading.Thread(target=self._thread_func, daemon=True,
+                                        name=self._thread_name)
         self._running = True
         self._thread.start()
         await self._event.wait()
