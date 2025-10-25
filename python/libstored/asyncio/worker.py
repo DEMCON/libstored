@@ -166,6 +166,8 @@ class AsyncioWorker:
 
         if self._thread is None:
             return
+        if self._thread is threading.current_thread():
+            return
 
         self._thread.join(timeout_s)
         if self._thread.is_alive():

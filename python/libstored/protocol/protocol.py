@@ -144,7 +144,8 @@ class ProtocolLayer:
         '''
         Close the layer and release resources.
         '''
-        pass
+        if self.down is not None:
+            await self.down.close()
 
     async def __aenter__(self):
         return self
@@ -846,8 +847,7 @@ class ProtocolStack(ProtocolLayer):
         return max(super().last_activity(), self._layers[0].last_activity())
 
     async def close(self) -> None:
-        for layer in self._layers:
-            await layer.close()
+        await self._layers[0].close()
         await super().close()
 
     @property

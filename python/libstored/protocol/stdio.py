@@ -64,7 +64,7 @@ class StdinLayer(lprot.ProtocolLayer):
             self.logger.exception(f'ConsoleLayer stdin reader error: {e}')
             raise
         finally:
-            await self._stdin_reader.stop()
+            await self._stdin_reader.stop(False)
 
     async def close(self) -> None:
         if self._reader_task is not None:
@@ -117,7 +117,11 @@ class StdioLayer(lprot.ProtocolLayer):
             self._process.stdin.flush()
         except Exception as e:
             self.logger.info(f'Cannot write to stdin; shutdown: {e}')
-            self._process.stdin.close()
+            try:
+                self._process.stdin.close()
+            except BrokenPipeError:
+                pass
+            raise
 
     async def _reader_run(self) -> None:
         try:
@@ -129,12 +133,12 @@ class StdioLayer(lprot.ProtocolLayer):
         except asyncio.CancelledError:
             pass
         except Exception as e:
-            self.logger.exception(f'StdioLayer process reader error: {e}')
-            raise
+            self.logger.error(f'StdioLayer process reader error: {e}')
+            await self.close()
         finally:
             await self._reader.stop()
 
-    def set_terminate_callback(self, f : typing.Callable[[int], None]) -> None:
+    def set_terminate_callback(self, f : typing.Callable[[int], None | typing.Coroutine[None, None, None]]) -> None:
         '''
         Set a callback function that is called when the process terminates.
         The function is called with the exit code as argument.
@@ -145,8 +149,11 @@ class StdioLayer(lprot.ProtocolLayer):
                     await asyncio.sleep(1)
                     ret = self._process.poll()
                     if ret is not None:
-                        self.logger.info(f'Process terminated with exit code {ret}')
-                        f(ret)
+                        self.logger.error(f'Process terminated with exit code {ret}')
+                        if asyncio.iscoroutinefunction(f):
+                            await f(ret)
+                        else:
+                            f(ret)
                         return
             except asyncio.CancelledError:
                 pass
@@ -168,10 +175,13 @@ class StdioLayer(lprot.ProtocolLayer):
         await self._writer.write(data)
         await super().encode(data)
 
-    async def close(self):
+    async def close(self) -> None:
         self.logger.debug('Closing; terminate process')
         if os.name == 'posix':
-            os.killpg(os.getpgid(self._process.pid), signal.SIGTERM)
+            try:
+                os.killpg(os.getpgid(self._process.pid), signal.SIGTERM)
+            except ProcessLookupError:
+                pass
         self._process.terminate()
 
         if self._reader_task is not None:
