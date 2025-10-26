@@ -446,7 +446,7 @@ def generate_cmake(libprefix, model_files, output_dir):
             ))
 
 def main():
-    parser = argparse.ArgumentParser(description='Store generator')
+    parser = argparse.ArgumentParser(description='Store generator', prog=__package__)
     parser.add_argument('-V', action='version', version=__version__)
     parser.add_argument('-p', type=str, help='libstored prefix for cmake library target')
     parser.add_argument('store_file', type=str, nargs='+', help='store description to parse')

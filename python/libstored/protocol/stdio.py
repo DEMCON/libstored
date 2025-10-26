@@ -106,13 +106,16 @@ class StdioLayer(lprot.ProtocolLayer):
         if self._process.stdout is None or self._process.stdout.closed:
             raise RuntimeError('Process has no stdout anymore')
 
-        return self._process.stdout.read1(4096) # type: ignore
+        x = self._process.stdout.read1(4096) # type: ignore
+        self.logger.debug('received %s', x)
+        return x
 
     def _to_process(self, data : bytes) -> None:
         if self._process.stdin is None or self._process.stdin.closed:
             raise RuntimeError('Process has no stdin anymore')
 
         try:
+            self.logger.debug('send %s', data)
             self._process.stdin.write(data) # type: ignore
             self._process.stdin.flush()
         except Exception as e:

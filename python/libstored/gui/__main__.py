@@ -11,7 +11,6 @@ import logging
 import os
 import natsort
 import re
-import sys
 import time
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -1206,7 +1205,7 @@ class GUIClient(laio_tk.AsyncApp):
 #
 
 def main():
-    parser = argparse.ArgumentParser(prog=sys.modules[__name__].__package__, description='ZMQ GUI client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(prog=__package__, description='ZMQ GUI client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-V', action='version', version=__version__)
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
     parser.add_argument('-p', dest='port', type=int, default=lprot.default_port, help='port')

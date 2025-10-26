@@ -197,7 +197,11 @@ class Reader(typing.Generic[T]):
             self._wakeup()
 
     def _wakeup(self) -> None:
-        asyncio.run_coroutine_threadsafe(self._wakeup_coro(), self._loop)
+        try:
+            if not self._loop.is_closed():
+                asyncio.run_coroutine_threadsafe(self._wakeup_coro(), self._loop)
+        except Exception as e:
+            logging.getLogger(self.__class__.__qualname__).error(f'Error waking up reader: {e}')
 
     async def _wakeup_coro(self) -> None:
         self._event.set()

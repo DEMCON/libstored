@@ -28,7 +28,7 @@ async def async_main(args : argparse.Namespace):
             await aiofiles.stdout.flush()
 
 def main():
-    parser = argparse.ArgumentParser(description='ZMQ command line client')
+    parser = argparse.ArgumentParser(description='ZMQ command line client', prog=__package__)
     parser.add_argument('-V', action='version', version=__version__)
     parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
     parser.add_argument('-p', dest='port', type=int, default=lprot.default_port, help='port')

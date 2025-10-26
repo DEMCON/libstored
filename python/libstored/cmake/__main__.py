@@ -48,7 +48,7 @@ def generate_cmake(filename, defines):
             ))
 
 def main():
-    parser = argparse.ArgumentParser(prog=sys.modules[__name__].__package__,
+    parser = argparse.ArgumentParser(prog=__package__,
             description='Generator for find_package(Libstored) in CMake',
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
