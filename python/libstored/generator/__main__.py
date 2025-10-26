@@ -204,10 +204,6 @@ def carray(a):
             line = 0
     return s
 
-def hexstringarray(a):
-    barray = bytes(a)
-    return barray.hex()
-
 def escapebs(s):
     return re.sub(r'\\', r'\\\\', s)
 
@@ -409,7 +405,6 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.filters['vhdlkey'] = vhdlkey
     jenv.filters['cname'] = types.cname
     jenv.filters['carray'] = carray
-    jenv.filters['hexstringarray'] = hexstringarray
     jenv.filters['vhdlname'] = types.vhdlname
     jenv.filters['len'] = len
     jenv.filters['hasfunction'] = has_function
@@ -435,7 +430,6 @@ def generate_store(model_file, output_dir, littleEndian=True):
     store_py_tmpl = jenv.get_template('store.py.tmpl')
     store_vhd_tmpl = jenv.get_template('store.vhd.tmpl')
     store_pkg_vhd_tmpl = jenv.get_template('store_pkg.vhd.tmpl')
-    store_json_tmpl = jenv.get_template('store.json.tmpl')
     store_yml_tmpl = jenv.get_template('store.yml.tmpl')
 
     with open(os.path.join(output_dir, 'include', mname + '.h'), 'w') as f:
@@ -458,12 +452,6 @@ def generate_store(model_file, output_dir, littleEndian=True):
 
     with open(os.path.join(output_dir, 'doc', mname + 'Meta.py'), 'w') as f:
         f.write(store_py_tmpl.render())
-
-    with open(os.path.join(output_dir, 'doc', mname + '.json'), 'w') as f:
-        f.write(store_json_tmpl.render())
-
-    with open(os.path.join(output_dir, 'doc', mname + '.json.license'), 'w') as f:
-        f.write(spdx('CC0-1.0', copyright='2025 Guus Kuiper'))
 
     with open(os.path.join(output_dir, 'doc', mname + '.yml'), 'w') as f:
         f.write(store_yml_tmpl.render())

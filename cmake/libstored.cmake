@@ -758,7 +758,6 @@ function(libstored_generate target)
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.rtf.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.csv.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.py.tmpl
-		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.json.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/doc/store.yml.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store.vhd.tmpl
 		DEPENDS ${LIBSTORED_SOURCE_DIR}/fpga/rtl/store_pkg.vhd.tmpl
