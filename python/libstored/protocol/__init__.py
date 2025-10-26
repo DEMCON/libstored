@@ -8,3 +8,4 @@ from .protocol import *
 from .zmq_server import *
 from .util import *
 from .stdio import *
+from .serial import *

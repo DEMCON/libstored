@@ -40,6 +40,7 @@ class ProtocolLayer:
         self._down_callback : ProtocolLayer.AsyncCallback = self._callback_factory(None)
         self._up_callback : ProtocolLayer.AsyncCallback = self._callback_factory(None)
         self._activity : float = 0
+        self._closed : bool = False
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def wrap(self, layer : ProtocolLayer) -> None:
@@ -144,6 +145,7 @@ class ProtocolLayer:
         '''
         Close the layer and release resources.
         '''
+        self._closed = True
         if self.down is not None:
             await self.down.close()
 
@@ -152,6 +154,9 @@ class ProtocolLayer:
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.close()
+
+    def __del__(self):
+        assert self._closed, f'ProtocolLayer {self.__class__.__name__} was not close()d upon deletion'
 
 
 
@@ -920,6 +925,127 @@ class RawLayer(ProtocolLayer):
 
 
 
+class MuxLayer(ProtocolLayer):
+    '''
+    A ProtocolLayer that multiplexes data to different upper layers based on an channel identifier.
+    '''
+
+    name = 'mux'
+    esc = 0x10     # DLE
+    repeat = 0x15  # NAK
+
+    def __init__(self, default : int | str=0, repeat_interval : float=1, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._layers : dict[int, ProtocolLayer] = {}
+        self._default = int(default, 0) if isinstance(default, str) else default
+        self._repeat_interval = repeat_interval
+        self._prev : int | None = None
+        self._t_prev : float = 0
+        self._decoding : int | None = None
+        self._decoding_esc : bool = False
+        self.set(self._default, self)
+
+    def set(self, chan : int, layer : ProtocolLayer) -> None:
+        '''
+        Register an upper layer with a given channel identifier.
+        '''
+        if chan < 0 or chan > 255:
+            raise ValueError('chan must be a single byte')
+        if chan in self._layers:
+            raise ValueError(f'channel {chan} already registered')
+        if chan == self.esc or chan == self.repeat:
+            raise ValueError(f'channel {chan} is reserved')
+
+        self._layers[chan] = layer
+        if layer is not self:
+            layer.down = lambda data: self._encode(chan, data)
+
+    def reset(self, chan : int) -> None:
+        '''
+        Unregister an upper layer from a given channel identifier.
+        '''
+        if chan not in self._layers:
+            return
+
+        l = self._layers[chan]
+        if l is not self:
+            l.down = None
+        del self._layers[chan]
+
+    async def encode(self, data : ProtocolLayer.Packet) -> None:
+        await self._encode(self._default, data)
+
+    async def _encode(self, chan : int, data : ProtocolLayer.Packet) -> None:
+        if isinstance(data, str):
+            data = data.encode()
+        elif isinstance(data, memoryview):
+            data = data.tobytes()
+
+        if len(data) == 0:
+            return
+
+        now = time.time()
+        prefix = b''
+        if self._decoding is None:
+            prefix = bytes([self.esc, self.repeat])
+        if self._prev is None or chan != self._prev or (now - self._t_prev) >= self._repeat_interval:
+            prefix = bytes([self.esc, chan])
+
+        self._t_prev = now
+        self._prev = chan
+        await super().encode(prefix + data.replace(bytes([self.esc]), bytes([self.esc, self.esc])))
+
+    async def decode(self, data : ProtocolLayer.Packet) -> None:
+        if isinstance(data, str):
+            data = data.encode()
+        if not isinstance(data, memoryview):
+            data = memoryview(data)
+        data = data.cast('B')
+
+        start = 0
+        for i in range(len(data)):
+            if self._decoding_esc:
+                self._decoding_esc = False
+                start = i + 1
+
+                if data[i] == self.esc:
+                    # esc was in the data
+                    await self._dispatch(bytes([self.esc]))
+                elif data[i] == self.repeat:
+                    # Repeat last channel request
+                    self._prev = None
+                else:
+                    # Switched channel
+                    self._decoding = data[i]
+            elif data[i] == self.esc:
+                if i > start:
+                    await self._dispatch(data[start:i])
+                self._decoding_esc = True
+
+        if not self._decoding_esc and start < len(data):
+            await self._dispatch(data[start:])
+
+    async def _dispatch(self, data : bytes | memoryview) -> None:
+        chan = self._decoding
+        if chan is None:
+            self.logger.debug('Current decoding channel unknown, dropped %s', bytes(data))
+            return
+        if chan not in self._layers:
+            self.logger.debug('No protocol stack for channel %d, dropped %s', chan, bytes(data))
+            return
+
+        layer = self._layers[chan]
+        if layer is self:
+            await super().decode(data)
+        else:
+            await layer.decode(data)
+
+    async def timeout(self) -> None:
+        self._prev = None
+        await super().timeout()
+
+
+
 layer_types : list[typing.Type[ProtocolLayer]] = [
     AsciiEscapeLayer,
     TerminalLayer,
@@ -932,6 +1058,7 @@ layer_types : list[typing.Type[ProtocolLayer]] = [
     Crc32Layer,
     LoopbackLayer,
     RawLayer,
+    MuxLayer,
 ]
 
 def register_layer_type(layer_type : typing.Type[ProtocolLayer]) -> None:

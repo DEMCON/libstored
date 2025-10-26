@@ -15,7 +15,7 @@ from ...asyncio.worker import AsyncioWorker, run_sync
 
 def main():
     parser = argparse.ArgumentParser(description='stdin/stdout wrapper to ZMQ server',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter, prog=__package__)
     parser.add_argument('-V', action='version', version=__version__)
     parser.add_argument('-l', dest='listen', type=str, default='*', help='listen address')
     parser.add_argument('-p', dest='port', type=int, default=lprot.default_port, help='port')

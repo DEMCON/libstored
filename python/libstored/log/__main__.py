@@ -10,7 +10,6 @@ import sys
 
 from ..asyncio.zmq_client import ZmqClient
 from ..asyncio.worker import run_sync
-from ..zmq_server import ZmqServer
 from ..asyncio.csv import generate_filename, CsvExport
 from ..version import __version__
 from .. import protocol as lprot
@@ -76,7 +75,7 @@ def main():
 
     logger = logging.getLogger('log')
 
-    parser = argparse.ArgumentParser(prog=sys.modules[__name__].__package__,
+    parser = argparse.ArgumentParser(prog=__package__,
             description='ZMQ command line logging client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('-V', action='version', version=__version__)

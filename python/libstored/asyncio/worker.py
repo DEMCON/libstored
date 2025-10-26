@@ -92,6 +92,9 @@ class AsyncioWorker:
                         pass
                     except:
                         self.logger.debug('Exception in %s during shutdown', t, exc_info=True)
+        except Exception as e:
+            self.logger.exception("Exception in event loop: %s", e, exc_info=True)
+            raise
         finally:
             self._loop.close()
             self._loop = None
@@ -101,7 +104,7 @@ class AsyncioWorker:
 
             workers.remove(self)
 
-        self.logger.debug("Event loop stopped")
+            self.logger.debug("Event loop stopped")
 
     async def _flag_started(self):
         self._started = True
@@ -164,18 +167,26 @@ class AsyncioWorker:
         Thread-safe.
         '''
 
+        global default_worker
+
         if self._thread is None:
             return
         if self._thread is threading.current_thread():
             return
 
-        self._thread.join(timeout_s)
+        try:
+            self._thread.join(timeout_s)
+        except:
+            if default_worker is self:
+                default_worker = None
+            raise
+
         if self._thread.is_alive():
             raise TimeoutError()
 
         self._thread = None
 
-        assert timeout_s is not None or default_worker is not self
+        assert default_worker is not self
 
     def __del__(self):
         self.stop()
@@ -193,7 +204,10 @@ class AsyncioWorker:
         return self
 
     def __exit__(self, *args):
-        self.wait()
+        try:
+            self.wait()
+        except KeyboardInterrupt:
+            self.cancel()
 
     def execute(self, f : typing.Callable | typing.Coroutine, *args, **kwargs) -> concurrent.futures.Future | asyncio.Future:
         '''
