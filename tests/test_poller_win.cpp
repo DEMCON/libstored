@@ -1,15 +1,13 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
-
-#define STORED_NO_DEPRECATED
 
 #include "libstored/poller.h"
 #include "TestStore.h"
 #include "gtest/gtest.h"
 
 #ifdef STORED_HAVE_ZMQ
-#	include <zmq.h>
+#  include <zmq.h>
 #endif
 
 namespace {
@@ -26,7 +24,8 @@ TEST(Poller, Win)
 	stored::Poller poller;
 
 	// Test HANDLE
-	EXPECT_EQ(poller.addh(e, (void*)1, stored::Poller::PollIn), 0);
+	stored::PollableHandle h(e, stored::Pollable::PollIn, (void*)1);
+	EXPECT_EQ(poller.add(h), 0);
 
 	auto const* res = &poller.poll(0);
 	EXPECT_NE(errno, 0);
@@ -35,16 +34,18 @@ TEST(Poller, Win)
 	EXPECT_EQ(SetEvent(e), TRUE);
 	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
-	EXPECT_EQ(res->at(0).user_data, (void*)1);
+	EXPECT_EQ(res->at(0)->user_data, (void*)1);
 
 	// Test fd (non-socket)
-	EXPECT_EQ(poller.add(fileno(stdin), (void*)2, stored::Poller::PollIn), 0);
-	EXPECT_EQ(poller.add(fileno(stdout), (void*)2, stored::Poller::PollOut), 0);
+	stored::PollableFd pstdin(fileno(stdin), stored::Pollable::PollIn, (void*)2);
+	stored::PollableFd pstdout(fileno(stdout), stored::Pollable::PollOut, (void*)2);
+	EXPECT_EQ(poller.add(pstdin), 0);
+	EXPECT_EQ(poller.add(pstdout), 0);
 	res = &poller.poll(0);
 	EXPECT_GE(res->size(), 2); // stdin may or may not be readable. stdout is always writable.
 
-	EXPECT_EQ(poller.remove(fileno(stdin)), 0);
-	EXPECT_EQ(poller.remove(fileno(stdout)), 0);
+	EXPECT_EQ(poller.remove(pstdin), 0);
+	EXPECT_EQ(poller.remove(pstdout), 0);
 
 	EXPECT_EQ(ResetEvent(e), TRUE);
 	res = &poller.poll(0);
@@ -65,19 +66,23 @@ TEST(Poller, Zmq)
 	ASSERT_EQ(zmq_connect(req, "inproc://poller"), 0);
 
 	stored::Poller poller;
-	EXPECT_EQ(poller.add(rep, (void*)1, stored::Poller::PollOut | stored::Poller::PollIn), 0);
-	EXPECT_EQ(poller.add(req, (void*)2, stored::Poller::PollOut | stored::Poller::PollIn), 0);
+	stored::PollableZmqSocket prep(
+		rep, stored::Pollable::PollOut | stored::Pollable::PollIn, (void*)1);
+	stored::PollableZmqSocket preq(
+		req, stored::Pollable::PollOut | stored::Pollable::PollIn, (void*)2);
+	EXPECT_EQ(poller.add(prep), 0);
+	EXPECT_EQ(poller.add(preq), 0);
 
 	auto const* res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
-	EXPECT_EQ(res->at(0).user_data, (void*)2);
-	EXPECT_EQ(res->at(0).revents, (stored::Poller::events_t)stored::Poller::PollOut);
+	EXPECT_EQ(res->at(0)->user_data, (void*)2);
+	EXPECT_EQ(res->at(0)->revents, stored::Pollable::PollOut + 0);
 
 	zmq_send(req, "Hi", 2, 0);
 
 	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
-	EXPECT_EQ(res->at(0).user_data, (void*)1);
+	EXPECT_EQ(res->at(0)->user_data, (void*)1);
 
 	char buffer[16];
 	zmq_recv(rep, buffer, sizeof(buffer), 0);
