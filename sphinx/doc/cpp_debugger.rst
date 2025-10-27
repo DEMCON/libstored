@@ -163,7 +163,9 @@ every time it is invoked.
 The responses of the commands are merged into one response frame, without
 separators. The Echo command can be used to inject separators in the output.
 
-Request: ``m`` <char> ( <separator> <command> ) *
+When only ``m`` is executed, the response is a list of currently defined macros.
+
+Request: ``m`` ( <char> ( <separator> <command> ) * ) ?
 
 ::
 

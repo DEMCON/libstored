@@ -439,6 +439,7 @@ if(CPPCHECK_CMD)
 			--error-exitcode=1 -j 4 --library=gnu
 			"--template=[{file}:{line}]: ({severity},{id}) {message}" --std=c++17
 			--language=c++ -D__cplusplus=201703L -DCPPCHECK -D__GNUC__
+			--enable=missingInclude
 			# --xml
 			-I include ${CPPCHECK_EXAMPLES} src
 			# --check-config
