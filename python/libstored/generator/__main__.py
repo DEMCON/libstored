@@ -93,7 +93,7 @@ def stype(o):
     }[o.type]
 
     if is_function(o):
-        t += ' | Type::FlagFunction'
+        t = f'(Type::type)({t} | Type::FlagFunction)'
     return t
 
 def vhdltype(o):
