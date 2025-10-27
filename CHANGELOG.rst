@@ -44,6 +44,7 @@ Removed
 
 - Drop Qt support.
 - (Qt-based) visu examples and framework.
+- Deprecated old Poller API.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.8.0...HEAD
 
