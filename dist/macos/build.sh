@@ -23,15 +23,6 @@ fi
 # Default to C++14.
 cmake_opts="-DCMAKE_CXX_STANDARD=14 -DCMAKE_C_STANDARD=11"
 
-ver=`sw_vers -productVersion`
-ver_major=`echo ${ver} | sed -E 's/^([0-9]+)\.([0-9]+).*/\1/'`
-ver_minor=`echo ${ver} | sed -E 's/^([0-9]+)\.([0-9]+).*/\2/'`
-if [[ ${ver_major} < 10 ]] || [[ ${ver_major} -eq 10 ]] && [[ ${ver_minor} < 14 ]]; then
-	# macos 10.14 is required for PySide6. Exclude all components that
-	# depend on PySide6.
-	cmake_opts="${cmake_opts} -DLIBSTORED_PYLIBSTORED=OFF"
-fi
-
 pushd "$( cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P )" > /dev/null
 
 . ../common/build.sh
