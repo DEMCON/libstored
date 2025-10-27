@@ -13,8 +13,11 @@
 #include <time.h>
 
 #if STORED_cplusplus >= 201103L
-#	include <chrono>
+#  include <chrono>
+#  include <thread>
 #endif
+
+static stored::Stream<>* stream;
 
 class ZmqServerStore : public STORE_T(ZmqServerStore, stored::ZmqServerStoreBase) {
 	STORE_CLASS(ZmqServerStore, stored::ZmqServerStoreBase)
@@ -39,8 +42,12 @@ protected:
 
 	void __compute__length_of__a_string(bool set, uint32_t& value)
 	{
-		if(!set)
-			value = (uint32_t)strlen(static_cast<char*>(a_string.buffer()));
+		if(!set) {
+			auto v = a_string.variant();
+			v.entryRO();
+			value = (uint32_t)strlen(static_cast<char*>(v.buffer()));
+			v.exitRO();
+		}
 	}
 
 	void __stats__ZMQ_messages(bool set, uint32_t& value)
@@ -55,6 +62,18 @@ protected:
 	{
 		if(!set)
 			value = m_writes;
+	}
+
+	size_t __stream(bool set, char* buf, size_t len)
+	{
+		if(!set)
+			return 0;
+
+		if(::stream) {
+			::stream->encode(buf, strlen(buf));
+			::stream->encode("\n", 1);
+		}
+		return len;
 	}
 
 	void __rand(bool set, double& value)
@@ -84,7 +103,7 @@ protected:
 		}
 	}
 
-	void __hookSet(stored::Type::type type, void* buffer, size_t len)
+	void __hookChanged(stored::Type::type type, void* buffer, size_t len)
 	{
 		STORED_UNUSED(type)
 		STORED_UNUSED(buffer)
@@ -108,6 +127,7 @@ int main()
 	ZmqServerStore store;
 	stored::Debugger debugger("zmqserver");
 	debugger.map(store);
+	::stream = debugger.stream('x', true);
 
 	stored::DebugZmqLayer zmqLayer;
 	zmqLayer.wrap(debugger);
@@ -134,11 +154,23 @@ int main()
 				perror("Cannot poll");
 				exit(1);
 			} // else timeout
-		} else if((errno = zmqLayer.recv())) {
-			perror("Cannot recv");
-			exit(1);
 		} else {
-			store.incMessages();
+			// Simulate work.
+			uint32_t sleep_ms = store.response_delay_ms.get();
+#if __cplusplus >= 201103L
+			std::this_thread::sleep_for(std::chrono::milliseconds(sleep_ms));
+#elif defined(STORED_OS_WINDOWS)
+			Sleep(sleep_ms);
+#else
+			nanosleep(sleep_ms * 1000000ULL);
+#endif
+
+			if((errno = zmqLayer.recv())) {
+				perror("Cannot recv");
+				exit(1);
+			} else {
+				store.incMessages();
+			}
 		}
 
 		// As an example, call debugger.trace() roughly once per second.

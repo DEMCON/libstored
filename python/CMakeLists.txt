@@ -5,34 +5,44 @@
 set(pylibstored_src
     LICENSE
     README.md
+    README.md.license
     libstored/__init__.py
+    libstored/asyncio/__init__.py
+    libstored/asyncio/csv.py
+    libstored/asyncio/event.py
+    libstored/asyncio/tk.py
+    libstored/asyncio/worker.py
+    libstored/asyncio/zmq.py
     libstored/cli/__init__.py
     libstored/cli/__main__.py
     libstored/cmake/__init__.py
     libstored/cmake/__main__.py
+    libstored/exceptions.py
     libstored/generator/__init__.py
     libstored/generator/__main__.py
-    libstored/generator/dsl/types.py
+    libstored/generator/dsl/__init__.py
     libstored/generator/dsl/grammar.tx
+    libstored/generator/dsl/types.py
     libstored/gui/__init__.py
     libstored/gui/__main__.py
+    libstored/gui/twotone_bug_report_black_48dp.png
+    libstored/gui/twotone_bug_report_black_48dp.png.license
+    libstored/heatshrink.py
     libstored/log/__init__.py
     libstored/log/__main__.py
-    ${CMAKE_CURRENT_SOURCE_DIR}/libstored/gui/gui_qrc.py
-    libstored/csv.py
-    libstored/protocol.py
-    libstored/serial2zmq.py
-    libstored/stdio2zmq.py
-    libstored/stream2zmq.py
+    libstored/protocol/__init__.py
+    libstored/protocol/protocol.py
+    libstored/protocol/serial.py
+    libstored/protocol/stdio.py
+    libstored/protocol/util.py
+    libstored/protocol/zmq.py
+    libstored/tk.py
+    libstored/version.py
     libstored/wrapper/__init__.py
     libstored/wrapper/serial/__init__.py
     libstored/wrapper/serial/__main__.py
     libstored/wrapper/stdio/__init__.py
     libstored/wrapper/stdio/__main__.py
-    libstored/zmq_client.py
-    libstored/zmq_server.py
-    libstored/visu/__init__.py
-    libstored/visu/__main__.py
 )
 
 set(package_data_
@@ -122,18 +132,18 @@ file(
 	CONTENT ""
 )
 
-if(LIBSTORED_EXAMPLES)
-	list(APPEND pylibstored_src libstored/visu/example/example.qrc
-	     libstored/visu/example/main.qml
-	)
-
-	libstored_visu(
-		visu-example ${CMAKE_CURRENT_SOURCE_DIR}/libstored/visu/visu_example.py
-		libstored/visu/example/main.qml
-	)
-endif()
-
-add_subdirectory(libstored/gui)
+add_launch_json_pymod(libstored.gui libstored.gui -v -v)
+add_launch_json_pymod(libstored.log libstored.log -v -v /rand)
+add_launch_json_pymod(libstored.cli libstored.cli -v -v)
+add_launch_json_pymod(
+	libstored.wrapper.stdio
+	libstored.wrapper.stdio
+	-v
+	-v
+	-S
+	segment,arq,crc16,ascii,pubterm,stdin
+	$<TARGET_FILE:7_protocol>
+)
 
 macro(find_latest file pattern)
 	file(GLOB ${file}_ALL CONFIGURE_DEPENDS ${pattern})
@@ -152,19 +162,7 @@ endmacro()
 find_latest(pylibstored_wheel ${CMAKE_CURRENT_BINARY_DIR}/libstored*.whl)
 find_latest(pylibstored_tar ${CMAKE_CURRENT_BINARY_DIR}/libstored*.tar.gz)
 
-set(_wheel_deps
-    ${pylibstored_src}
-    ${package_data}
-    gui-qrc
-    MANIFEST.in
-    pyproject.toml
-    setup.cfg
-    version.txt
-)
-
-if(LIBSTORED_EXAMPLES)
-	set(_wheel_deps ${_wheel_deps} visu-example)
-endif()
+set(_wheel_deps ${pylibstored_src} ${package_data} MANIFEST.in pyproject.toml setup.cfg version.txt)
 
 if("${pylibstored_wheel_ALL}${pylibstored_tar_ALL}" STREQUAL "")
 	set(cmake_rm echo "No old whl files found")

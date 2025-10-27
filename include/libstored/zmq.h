@@ -6,15 +6,15 @@
 
 #ifdef __cplusplus
 
-#	include <libstored/macros.h>
+#  include <libstored/macros.h>
 
-#	ifdef STORED_HAVE_ZMQ
-#		include <libstored/protocol.h>
-#		include <zmq.h>
+#  ifdef STORED_HAVE_ZMQ
+#    include <libstored/protocol.h>
+#    include <zmq.h>
 
-#		if defined(STORED_OS_WINDOWS) && !defined(STORED_COMPILER_MSVC)
-#			include <winsock2.h>
-#		endif
+#    if defined(STORED_OS_WINDOWS) && !defined(STORED_COMPILER_MSVC)
+#      include <winsock2.h>
+#    endif
 
 namespace stored {
 
@@ -42,9 +42,9 @@ public:
 	virtual fd_type fd() const override;
 
 	void encode(void const* buffer, size_t len, bool last = true) final;
-#		ifndef DOXYGEN
+#    ifndef DOXYGEN
 	using base::encode;
-#		endif
+#    endif
 
 protected:
 	int block(fd_type fd, bool forReading, long timeout_us = -1, bool suspend = false) final;
@@ -75,7 +75,8 @@ class DebugZmqLayer : public ZmqLayer {
 public:
 	typedef ZmqLayer base;
 
-	enum { DefaultPort = 19026,
+	enum STORED_ANONYMOUS {
+		DefaultPort = 19026,
 	};
 
 	explicit DebugZmqLayer(
@@ -105,6 +106,6 @@ public:
 
 } // namespace stored
 
-#	endif // STORED_HAVE_ZMQ
-#endif	       // __cplusplus
-#endif	       // LIBSTORED_ZMQ_H
+#  endif // STORED_HAVE_ZMQ
+#endif	 // __cplusplus
+#endif	 // LIBSTORED_ZMQ_H

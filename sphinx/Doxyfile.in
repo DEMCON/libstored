@@ -2073,6 +2073,7 @@ INCLUDE_FILE_PATTERNS  =
 
 PREDEFINED             = DOXYGEN \
 			 __cplusplus=201402L \
+			 STORED_cplusplus=201402L \
 			 __linux__ \
 			 __GNUC__ \
 			 __x86_64__ \
@@ -2080,18 +2081,18 @@ PREDEFINED             = DOXYGEN \
 			 __restrict__= \
 			 EXTERN_C= \
 			 _DEBUG \
-			 STORED_HAVE_QT \
 			 STORED_HAVE_ZMQ \
 			 STORED_HAVE_HEATSHRINK \
 			 STORED_DRAFT_API \
 			 zth_fiber= \
 			 UNUSED(x)= \
+			 STORED_UNUSED(x)= \
+			 STORED_ANONYMOUS=__anon \
 			 is_default==default; \
 			 STORE_CLASS(...)= \
 			 STORED_CLASS_NOCOPY(...)= \
 			 STORED_CLASS_NEW_DELETE(...)= \
 			 STORE_WRAPPER_CLASS(...)= \
-			 Q_PROPERTY(...)= \
 			 "STORE_T_1(a,b)=b<a>" \
 			 "STORE_T_2(a,b,c)=b<c<a>>" \
 			 "STORE_T_3(a,b,c,d)=b<c<d<a>>>" \

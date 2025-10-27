@@ -3,7 +3,7 @@
 {#
 // vim:filetype=cpp
 -#}
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -23,10 +23,6 @@
 #		include <type_traits>
 #	endif
 
-#	ifdef STORED_HAVE_QT
-#		include <QObject>
-#	endif
-
 #	if defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG)
 // The generated store objects may shadow other variables.  So, silence these
 // warnings.
@@ -35,91 +31,6 @@
 #	endif
 
 namespace stored {
-
-#	ifdef STORED_HAVE_QT
-// This definition is at the top of the file, as the code model parser does not
-// like this generated file too much.  Putting it here seems to allow having
-// code completion in QML.
-
-/*!
- * \brief Base class of #stored::Qtified{{store.name}}.
- *
- * This class only exists, because a subclass of QObject with signals/slots
- * cannot be templated. Do not use this class directly, use
- * #stored::Qtified{{store.name}} instead.
- */
-class Qtified{{store.name}}Base : public QObject {
-	Q_OBJECT
-{% for o in store.objects %}
-{%   if o is variable %}
-{%     if o is string or o is qml_compatible %}
-	Q_PROPERTY({{o|qtype}} {{o.cname}} READ q_get{{o.cname}} WRITE q_set{{o.cname}} NOTIFY {{o.cname}}Changed)
-{%     endif %}
-{%   endif %}
-{% endfor %}
-protected:
-	explicit Qtified{{store.name}}Base(QObject* parent = nullptr);
-public:
-	virtual ~Qtified{{store.name}}Base() override;
-
-signals:
-{% for o in store.objects %}
-{%   if o is variable and (o is string or o is qml_compatible) %}
-	void {{o.cname}}Changed();
-{%   endif %}
-{% endfor %}
-
-public slots:
-{% for o in store.objects %}
-{%   if o is function %}
-{%     if o is string %}
-	virtual QString q_{{o.cname}}() const = 0;
-	virtual void q_{{o.cname}}(QString const& value) = 0;
-
-	QString {{o.cname}}() const
-	{
-		return q_{{o.cname}}();
-	}
-
-	void {{o.cname}}(QString const& value)
-	{
-		q_{{o.cname}}(value);
-	}
-
-{%     elif o is qml_compatible %}
-	virtual {{o|qtype}} q_{{o.cname}}() const = 0;
-	virtual void q_{{o.cname}}({{o|qtype}} value) = 0;
-
-	{{o|qtype}} {{o.cname}}() const
-	{
-		return q_{{o.cname}}();
-	}
-
-	void {{o.cname}}({{o|qtype}} value)
-	{
-		q_{{o.cname}}(value);
-	}
-
-{%     endif %}
-{%   endif %}
-{% endfor %}
-
-private:
-	// Stores are templates, but Q_OBJECT does not support templated
-	// classes.  Forward the calls to Qtified{{store.name}}.
-{% for o in store.objects %}
-{%   if o is variable %}
-{%     if o is string %}
-	virtual QString q_get{{o.cname}}() const = 0;
-	virtual void q_set{{o.cname}}(QString const& value) = 0;
-{%     elif o is qml_compatible %}
-	virtual {{o|qtype}} q_get{{o.cname}}() const = 0;
-	virtual void q_set{{o.cname}}({{o|qtype}} value) = 0;
-{%     endif %}
-{%   endif %}
-{% endfor %}
-};
-#	endif // STORED_HAVE_QT
 
 /*!
  * \brief Data storage of {{store.name}}Base.
@@ -329,7 +240,7 @@ public:
 		return "{{store.hash}}";
 	}
 
-	enum {
+	enum STORED_ANONYMOUS {
 		/*! \brief Number of objects in the store. */
 		ObjectCount = {{store.objects|len}},
 		/*! \brief Number of variables in the store. */
@@ -1062,125 +973,6 @@ public:
 	{{store.name}}() is_default
 };
 
-#	ifdef STORED_HAVE_QT
-/*!
- * \brief A wrapper for #stored::{{store.name}}Base to add signals/slots/properties for Qt/QML.
- */
-template <typename Base>
-class Qtified{{store.name}}
-	: public Qtified{{store.name}}Base
-	, public Base {
-
-	STORE_WRAPPER_CLASS(Qtified{{store.name}}, Base)
-protected:
-	template <typename... Arg>
-	explicit Qtified{{store.name}}(QObject* parent = nullptr, Arg&&... arg)
-		: Qtified{{store.name}}Base{parent}
-		, base{std::forward<Arg>(arg)...}
-	{
-		// NOLINTNEXTLINE(hicpp-static-assert,misc-static-assert)
-		stored_assert(Config::EnableHooks);
-	}
-
-public:
-	virtual ~Qtified{{store.name}}() override = default;
-
-public: // slots
-{% for o in store.objects %}
-{%   if o is function %}
-{%     if o is string %}
-	virtual QString q_{{o.cname}}() const final
-	{
-		// flawfinder: ignore
-		char buf[{{o.size + 1}}]{};
-		base::{{o.cname}}.get(buf, {{o.size}});
-		return buf;
-	}
-
-	virtual void q_{{o.cname}}(QString const& value) final
-	{
-		auto buf = value.toUtf8();
-		base::{{o.cname}}.set(buf.data(), (size_t)buf.size());
-	}
-
-	using Base::{{o.cname}};
-
-{%     elif o is qml_compatible %}
-	virtual {{o|qtype}} q_{{o.cname}}() const final
-	{
-		return static_cast<{{o|qtype}}>(base::{{o.cname}}());
-	}
-
-	virtual void q_{{o.cname}}({{o|qtype}} value) final
-	{
-		base::{{o.cname}}(static_cast<{{o|ctype}}>(value));
-	}
-
-	using Base::{{o.cname}};
-
-{%     endif %}
-{%   endif %}
-{% endfor %}
-
-private:
-{% for o in store.objects %}
-{%   if o is variable %}
-{%     if o is string %}
-	virtual QString q_get{{o.cname}}() const final
-	{
-		// flawfinder: ignore
-		char buf[{{o.size + 1}}]{};
-		base::{{o.cname}}.get(buf, {{o.size}});
-		return buf;
-	}
-
-	virtual void q_set{{o.cname}}(QString const& value) final
-	{
-		auto buf = value.toUtf8();
-		base::{{o.cname}}.set(buf.data(), (size_t)buf.size());
-	}
-
-{%     elif o is qml_compatible %}
-	virtual {{o|qtype}} q_get{{o.cname}}() const final
-	{
-		return static_cast<{{o|qtype}}>(base::{{o.cname}}.get());
-	}
-
-	virtual void q_set{{o.cname}}({{o|qtype}} value) final
-	{
-		base::{{o.cname}}.set(static_cast<{{o|ctype}}>(value));
-	}
-
-{%     endif %}
-{%   endif %}
-{% endfor %}
-
-protected:
-{% for o in store.objects|select('variable')|sort(attribute='offset') %}
-{%   if (o is string or o is qml_compatible) %}
-	void __{{o.cname}}__changed() noexcept
-	{
-		{{o.cname}}Changed();
-		base::__{{o.cname}}__changed();
-	}
-
-{%   endif %}
-{% endfor %}
-};
-
-/*!
- * \brief Default Qtified{{store.name}} implementation of {{store.name}}.
- */
-class Q{{store.name}}
-	: public STORE_T_3(Q{{store.name}}, Qtified{{store.name}}, {{store.name}}DefaultFunctions, {{store.name}}Base) {
-
-	STORE_CLASS(Q{{store.name}}, Qtified{{store.name}}, {{store.name}}DefaultFunctions, {{store.name}}Base)
-public:
-	/*! \copydoc stored::Qtified{{store.name}}::Qtified{{store.name}}() */
-	explicit Q{{store.name}}(QObject* parent = nullptr);
-	virtual ~Q{{store.name}}() override;
-};
-#	endif // STORED_HAVE_QT
 } // namespace stored
 
 #	if defined(STORED_COMPILER_GCC) || defined(STORED_COMPILER_CLANG)

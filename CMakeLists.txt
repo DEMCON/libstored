@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -160,45 +160,6 @@ if(LIBSTORED_HAVE_ZTH)
 	find_package(Zth REQUIRED)
 endif()
 
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10")
-	cmake_policy(SET CMP0071 NEW)
-
-	find_package(
-		Qt6
-		COMPONENTS Core
-		QUIET
-	)
-	if(Qt6_FOUND)
-		set(LIBSTORED_FOUND_QT ON)
-	else()
-		# Fallback to Qt5
-		find_package(
-			Qt5
-			COMPONENTS Core
-			QUIET
-		)
-		if(Qt5_FOUND)
-			set(LIBSTORED_FOUND_QT ON)
-		endif()
-	endif()
-
-	option(LIBSTORED_HAVE_QT "Use Qt" ${LIBSTORED_FOUND_QT})
-
-	if(NOT LIBSTORED_FOUND_QT AND LIBSTORED_HAVE_QT)
-		message(FATAL_ERROR "Cannot find Qt")
-	endif()
-
-	if(LIBSTORED_HAVE_QT)
-		if(Qt6_FOUND)
-			message(STATUS "Found Qt6")
-		elseif(Qt5_FOUND)
-			message(STATUS "Found Qt5")
-		else()
-			message(WARNING "Found unknown Qt version")
-		endif()
-	endif()
-endif()
-
 set(LIBSTORED_CLANG_TIDY_DEFAULT OFF)
 
 if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
@@ -296,10 +257,6 @@ option(LIBSTORED_PIP_INSTALL_USER "Run pip install with --user flag when install
        ${LIBSTORED_PIP_INSTALL_USER_DEFAULT}
 )
 
-if(LIBSTORED_PYLIBSTORED)
-	add_subdirectory(python)
-endif()
-
 option(LIBSTORED_REGEN_LAUNCH_JSON "Regenerate launch.json" OFF)
 if((NOT EXISTS ${LIBSTORED_SOURCE_DIR}/.vscode/launch.json AND NOT MSVC)
    OR LIBSTORED_REGEN_LAUNCH_JSON
@@ -353,6 +310,55 @@ function(add_launch_json TARGET)
 		)
 	endif()
 endfunction()
+
+function(add_launch_json_py NAME FILE)
+	get_property(_launch GLOBAL PROPERTY LIBSTORED_LAUNCH_JSON)
+	string(JOIN "\", \"" _args ${ARGN})
+	if(NOT "${_args}" STREQUAL "")
+		set(_args "\"${_args}\"")
+	endif()
+	set_property(
+		GLOBAL
+		PROPERTY
+			LIBSTORED_LAUNCH_JSON
+			"${_launch}
+		{
+			\"type\": \"debugpy\",
+			\"request\": \"launch\",
+			\"name\": \"${NAME}\",
+			\"program\": \"$<SHELL_PATH:${FILE}>\",
+			\"args\": [${_args}],
+			\"python\": \"$<SHELL_PATH:${PYTHON_EXECUTABLE}>\"
+		},"
+	)
+endfunction()
+
+function(add_launch_json_pymod NAME MODULE)
+	get_property(_launch GLOBAL PROPERTY LIBSTORED_LAUNCH_JSON)
+	string(JOIN "\", \"" _args ${ARGN})
+	if(NOT "${_args}" STREQUAL "")
+		set(_args "\"${_args}\"")
+	endif()
+	set_property(
+		GLOBAL
+		PROPERTY
+			LIBSTORED_LAUNCH_JSON
+			"${_launch}
+		{
+			\"type\": \"debugpy\",
+			\"request\": \"launch\",
+			\"name\": \"${NAME}\",
+			\"module\": \"${MODULE}\",
+			\"args\": [${_args}],
+			\"python\": \"$<SHELL_PATH:${PYTHON_EXECUTABLE}>\",
+			\"cwd\": \"$<SHELL_PATH:${PROJECT_SOURCE_DIR}/python>\"
+		},"
+	)
+endfunction()
+
+if(LIBSTORED_PYLIBSTORED)
+	add_subdirectory(python)
+endif()
 
 option(LIBSTORED_EXAMPLES "Build examples" ON)
 add_custom_target(examples)
@@ -421,7 +427,6 @@ if(CPPCHECK_CMD)
 			set(CPPCHECK_DEPENDS ${CPPCHECK_DEPENDS} meta-generate)
 		endif()
 		cppcheck_add(pipes)
-		cppcheck_add(qt)
 		cppcheck_add(terminal)
 		cppcheck_add(zmqserver)
 	endif()
@@ -434,6 +439,7 @@ if(CPPCHECK_CMD)
 			--error-exitcode=1 -j 4 --library=gnu
 			"--template=[{file}:{line}]: ({severity},{id}) {message}" --std=c++17
 			--language=c++ -D__cplusplus=201703L -DCPPCHECK -D__GNUC__
+			--enable=missingInclude
 			# --xml
 			-I include ${CPPCHECK_EXAMPLES} src
 			# --check-config

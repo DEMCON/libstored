@@ -29,6 +29,8 @@ string:15 a string
 	(uint32) object writes
 } stats
 
+uint32 response delay (ms)
+(string:15) stream
 (double) rand
 (uint64) t (us)
 

@@ -1,39 +1,39 @@
 #ifndef LIBSTORED_PIPES_H
 #define LIBSTORED_PIPES_H
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
 #include <libstored/macros.h>
 
-#if defined(__cplusplus) && STORED_cplusplus >= 201402L && defined(STORED_DRAFT_API)
-#	define STORED_HAVE_PIPES
+#if defined(__cplusplus) && STORED_cplusplus >= 201402L
+#  define STORED_HAVE_PIPES
 
-#	include <libstored/signal.h>
-#	include <libstored/types.h>
-#	include <libstored/util.h>
+#  include <libstored/signal.h>
+#  include <libstored/types.h>
+#  include <libstored/util.h>
 
-#	include <algorithm>
-#	include <array>
-#	include <chrono>
-#	include <cmath>
-#	include <cstdio>
-#	include <functional>
-#	include <limits>
-#	include <new>
-#	include <ratio>
-#	include <string>
-#	include <type_traits>
-#	include <utility>
+#  include <algorithm>
+#  include <array>
+#  include <chrono>
+#  include <cmath>
+#  include <cstdio>
+#  include <functional>
+#  include <limits>
+#  include <new>
+#  include <ratio>
+#  include <string>
+#  include <type_traits>
+#  include <utility>
 
-#	include <cassert>
+#  include <cassert>
 
-#	if defined(STORED_COMPILER_CLANG) \
-		&& (__clang_major__ < 9 || (__clang_major__ == 9 && __clang_minor__ < 1))
+#  if defined(STORED_COMPILER_CLANG) \
+	  && (__clang_major__ < 9 || (__clang_major__ == 9 && __clang_minor__ < 1))
 // Somehow, the friend operator>> functions for Exit, Cap, and Ref are not friends by
 // older clang.  Do some workaround in case you have such a clang.
-#		define CLANG_BUG_FRIEND_OPERATOR
-#	endif
+#    define CLANG_BUG_FRIEND_OPERATOR
+#  endif
 
 namespace stored {
 namespace pipes {
@@ -157,28 +157,28 @@ private:
 		using type = int;
 	};
 
-#	define STORED_PIPE_TRAITS_HAS_F(S, name)                                       \
-	protected:                                                                      \
-		template <typename S_, typename has_f<decltype(&S_::name)>::type = 0>   \
-		static constexpr bool has_##name##_(has_f_maybe /*yes*/) noexcept       \
-		{                                                                       \
-			return true;                                                    \
-		}                                                                       \
-                                                                                        \
-		template <typename S_>                                                  \
-		static constexpr bool has_##name##_(has_f_no /*no*/) noexcept           \
-		{                                                                       \
-			return impl::segment_traits_base::template has_##name##_<S_>(); \
-		}                                                                       \
-                                                                                        \
-		template <typename S_>                                                  \
-		static constexpr bool has_##name##_() noexcept                          \
-		{                                                                       \
-			return has_##name##_<S_>(has_f_maybe{});                        \
-		}                                                                       \
-                                                                                        \
-	public:                                                                         \
-		static constexpr bool has_##name = has_##name##_<S>();
+#  define STORED_PIPE_TRAITS_HAS_F(S, name)                               \
+    protected:                                                            \
+    template <typename S_, typename has_f<decltype(&S_::name)>::type = 0> \
+    static constexpr bool has_##name##_(has_f_maybe /*yes*/) noexcept     \
+    {                                                                     \
+      return true;                                                        \
+    }                                                                     \
+                                                                          \
+    template <typename S_>                                                \
+    static constexpr bool has_##name##_(has_f_no /*no*/) noexcept         \
+    {                                                                     \
+      return impl::segment_traits_base::template has_##name##_<S_>();     \
+    }                                                                     \
+                                                                          \
+    template <typename S_>                                                \
+    static constexpr bool has_##name##_() noexcept                        \
+    {                                                                     \
+      return has_##name##_<S_>(has_f_maybe{});                            \
+    }                                                                     \
+                                                                          \
+    public:                                                               \
+    static constexpr bool has_##name = has_##name##_<S>();
 
 	template <typename In, typename Out, typename S_>
 	static In type_in_helper(Out (S_::*)(In));
@@ -192,7 +192,7 @@ private:
 	template <typename In, typename Out, typename S_>
 	static Out type_out_helper(Out (S_::*)(In) const);
 
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 	template <typename In, typename Out, typename S_>
 	static In type_in_helper(Out (S_::*)(In) noexcept);
 
@@ -204,15 +204,20 @@ private:
 
 	template <typename In, typename Out, typename S_>
 	static Out type_out_helper(Out (S_::*)(In) const noexcept);
-#	endif // >= C++17
+#  endif // >= C++17
 
 public:
+	// cppcheck-suppress duplInheritedMember
 	STORED_PIPE_TRAITS_HAS_F(S, inject)
 	static_assert(segment_traits::has_inject, "Needs inject() to be a segment");
 
+	// cppcheck-suppress duplInheritedMember
 	STORED_PIPE_TRAITS_HAS_F(S, extract)
+	// cppcheck-suppress duplInheritedMember
 	STORED_PIPE_TRAITS_HAS_F(S, entry_cast)
+	// cppcheck-suppress duplInheritedMember
 	STORED_PIPE_TRAITS_HAS_F(S, exit_cast)
+	// cppcheck-suppress duplInheritedMember
 	STORED_PIPE_TRAITS_HAS_F(S, trigger)
 
 	using type_in = decltype(type_in_helper(&S::inject));
@@ -225,7 +230,7 @@ public:
 		std::is_default_constructible<std::decay_t<type_out>>::value,
 		"Segment's type out must be default-constructible");
 
-#	undef STORED_PIPE_TRAITS_HAS_F
+#  undef STORED_PIPE_TRAITS_HAS_F
 };
 
 template <>
@@ -318,15 +323,17 @@ public:
 
 private:
 	template <typename S_>
-	decltype(auto) inject_(decltype(
-		impl::declval<std::enable_if_t<traits::template has_inject_<S_>(), type_in>>()) x)
+	decltype(auto)
+	inject_(decltype(impl::declval<
+			 std::enable_if_t<traits::template has_inject_<S_>(), type_in>>()) x)
 	{
 		return S_::inject(x);
 	}
 
 	template <typename S_>
-	decltype(auto) inject_(decltype(
-		impl::declval<std::enable_if_t<!traits::template has_inject_<S_>(), type_in>>()) x)
+	decltype(auto)
+	inject_(decltype(impl::declval<
+			 std::enable_if_t<!traits::template has_inject_<S_>(), type_in>>()) x)
 	{
 		STORED_UNUSED(x)
 		return extract_<S_>();
@@ -347,9 +354,9 @@ private:
 	}
 
 	template <typename S_>
-	decltype(auto) entry_cast_(decltype(
-		impl::declval<std::enable_if_t<traits::template has_entry_cast_<S_>(), type_out>>())
-					   x) const
+	decltype(auto)
+	entry_cast_(decltype(impl::declval<std::enable_if_t<
+				     traits::template has_entry_cast_<S_>(), type_out>>()) x) const
 	{
 		return S_::entry_cast(x);
 	}
@@ -376,9 +383,10 @@ private:
 	}
 
 	template <typename S_>
-	decltype(auto) exit_cast_(decltype(
-		impl::declval<std::enable_if_t<traits::template has_exit_cast_<S_>(), type_in>>())
-					  x) const
+	decltype(auto)
+	exit_cast_(decltype(impl::declval<
+			    std::enable_if_t<traits::template has_exit_cast_<S_>(), type_in>>()) x)
+		const
 	{
 		return S_::exit_cast(x);
 	}
@@ -547,39 +555,49 @@ protected:
 	{}
 
 public:
+	// cppcheck-suppress duplInheritedMember
 	type_out inject(type_in x)
 	{
 		return Last::inject(Init::inject(x));
 	}
 
+	// cppcheck-suppress duplInheritedMember
 	static constexpr bool has_inject = Init::has_inject || Last::has_inject;
 
+	// cppcheck-suppress duplInheritedMember
 	decltype(auto) extract()
 	{
 		return extract_helper<Last>();
 	}
 
+	// cppcheck-suppress duplInheritedMember
 	static constexpr bool has_extract = Init::has_extract || Last::has_extract;
 
+	// cppcheck-suppress duplInheritedMember
 	decltype(auto) exit_cast(type_in x) const
 	{
 		return Last::exit_cast(Init::exit_cast(x));
 	}
 
+	// cppcheck-suppress duplInheritedMember
 	static constexpr bool has_exit_cast = Init::has_exit_cast || Last::has_exit_cast;
 
+	// cppcheck-suppress duplInheritedMember
 	decltype(auto) entry_cast(type_out x) const
 	{
 		return Init::entry_cast(Last::entry_cast(x));
 	}
 
+	// cppcheck-suppress duplInheritedMember
 	static constexpr bool has_entry_cast = Init::has_entry_cast || Last::has_entry_cast;
 
+	// cppcheck-suppress duplInheritedMember
 	decltype(auto) trigger(bool* triggered = nullptr)
 	{
 		return trigger_helper<Init, Last>(triggered);
 	}
 
+	// cppcheck-suppress duplInheritedMember
 	static constexpr bool has_trigger = Init::has_trigger || Last::has_trigger;
 
 	template <
@@ -676,11 +694,11 @@ public:
 	~Segments() = default;
 
 	template <typename S_>
-	constexpr decltype(
-		impl::declval<std::enable_if_t<
-			std::is_convertible<type_out, typename segment_traits<S_>::type_in>::value
-				&& !std::is_lvalue_reference<S_>::value,
-			Segments<S0, std::decay_t<S_>>>>())
+	constexpr decltype(impl::declval<std::enable_if_t<
+				   std::is_convertible<
+					   type_out, typename segment_traits<S_>::type_in>::value
+					   && !std::is_lvalue_reference<S_>::value,
+				   Segments<S0, std::decay_t<S_>>>>())
 	operator>>(S_&& s) &&
 	{
 		return Segments<S0, std::decay_t<S_>>{std::move(*this), std::forward<S_>(s)};
@@ -703,14 +721,14 @@ class Entry {
 public:
 	template <typename S_>
 	constexpr
-#	ifndef DOXYGEN
-		decltype(
-			impl::declval<std::enable_if_t<
-				std::is_convertible<T, typename segment_traits<S_>::type_in>::value,
-				Segments<std::decay_t<S_>>>>())
-#	else
+#  ifndef DOXYGEN
+		decltype(impl::declval<std::enable_if_t<
+				 std::is_convertible<
+					 T, typename segment_traits<S_>::type_in>::value,
+				 Segments<std::decay_t<S_>>>>())
+#  else
 		Segments<std::decay_t<S_>>
-#	endif
+#  endif
 		operator>>(S_&& s) &&
 	{
 		return Segments<std::decay_t<S_>>{std::forward<S_>(s)};
@@ -805,7 +823,7 @@ public:
 	}
 
 	// NOLINTNEXTLINE(hicpp-explicit-conversions)
-	operator type const &() const
+	operator type const&() const
 	{
 		return get();
 	}
@@ -820,15 +838,15 @@ public:
 		return dst;
 	}
 
-#	define EXITVALUE_COMPARE_OP(op)                                         \
-		friend bool operator op(ExitValue<type> const& v, type const& x) \
-		{                                                                \
-			return v.get() op x;                                     \
-		}                                                                \
-		friend bool operator op(type const& x, ExitValue<type> const& v) \
-		{                                                                \
-			return v.get() op x;                                     \
-		}
+#  define EXITVALUE_COMPARE_OP(op)                                   \
+    friend bool operator op(ExitValue<type> const& v, type const& x) \
+    {                                                                \
+      return v.get() op x;                                           \
+    }                                                                \
+    friend bool operator op(type const& x, ExitValue<type> const& v) \
+    {                                                                \
+      return v.get() op x;                                           \
+    }
 
 	EXITVALUE_COMPARE_OP(==)
 	EXITVALUE_COMPARE_OP(!=)
@@ -837,7 +855,7 @@ public:
 	EXITVALUE_COMPARE_OP(>=)
 	EXITVALUE_COMPARE_OP(<=)
 
-#	undef EXITVALUE_COMPARE_OP
+#  undef EXITVALUE_COMPARE_OP
 
 protected:
 	type& value()
@@ -987,6 +1005,7 @@ public:
 
 	virtual type_out_wrapper inject(type_in const& x) = 0;
 
+	// cppcheck-suppress duplInheritedMember
 	type_out_wrapper operator()(type_in const& x)
 	{
 		return inject(x);
@@ -1029,9 +1048,9 @@ public:
 	using type_out_wrapper = ExitValue<type_out>;
 	using Pipe_type = Pipe<type_in, type_out>;
 
-#	ifndef CLANG_BUG_FRIEND_OPERATOR
+#  ifndef CLANG_BUG_FRIEND_OPERATOR
 protected:
-#	endif
+#  endif
 
 	template <
 		typename S_,
@@ -1113,9 +1132,9 @@ public:
 	using type_out_wrapper = typename base::type_out_wrapper;
 	using Pipe_type = typename base::Pipe_type;
 
-#	ifndef CLANG_BUG_FRIEND_OPERATOR
+#  ifndef CLANG_BUG_FRIEND_OPERATOR
 protected:
-#	endif
+#  endif
 
 	template <
 		typename S_,
@@ -1364,10 +1383,10 @@ private:
 	std::array<std::reference_wrapper<PipeEntry<T>>, N> m_p;
 };
 
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 template <typename T, typename... P>
 Tee(PipeEntry<T>&, P&...) -> Tee<T, sizeof...(P) + 1>;
-#	endif // >= C++17
+#  endif // >= C++17
 
 /*!
  * \brief A buffer, which forwards the last injected data to other pipes when triggered.
@@ -1408,6 +1427,7 @@ public:
 		, tee{p0, p...}
 	{}
 
+	// cppcheck-suppress duplInheritedMember
 	type_out inject(type_in const& x)
 	{
 		if(!m_changed && !Compare{}(buffer::extract(), x))
@@ -1416,6 +1436,7 @@ public:
 		return buffer::inject(x);
 	}
 
+	// cppcheck-suppress duplInheritedMember
 	type_out extract()
 	{
 		return buffer::extract();
@@ -1440,7 +1461,7 @@ private:
 	bool m_changed{};
 };
 
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 template <typename T, typename... P>
 Triggered(PipeEntry<T>&, P&...) -> Triggered<T, std::equal_to<std::decay_t<T>>, sizeof...(P) + 1>;
 
@@ -1449,7 +1470,7 @@ template <
 	std::enable_if_t<std::is_constructible<T, T_>::value, int> = 0>
 Triggered(T_&&, PipeEntry<T>&, P&...)
 	-> Triggered<T, std::equal_to<std::decay_t<T>>, sizeof...(P) + 1>;
-#	endif // >= C++17
+#  endif // >= C++17
 
 /*!
  * \brief Invokes a logger function for injected values.
@@ -1615,7 +1636,7 @@ private:
 	std::function<function_type> m_f;
 };
 
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 namespace impl {
 template <typename F>
 struct call_type_in {};
@@ -1641,7 +1662,7 @@ template <typename F_>
 Call(F_&&)
 	-> Call<typename impl::call_type_in<decltype(std::function{std::declval<F_>()})>::type,
 		typename impl::call_f_type<decltype(std::function{std::declval<F_>()})>::type>;
-#	endif // >= C++17
+#  endif // >= C++17
 
 /*!
  * \brief Extract a store object's value upon every extract/inject.
@@ -1743,7 +1764,7 @@ private:
 	std::reference_wrapper<Object> m_o;
 };
 
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 namespace impl {
 template <typename V>
 struct object_data_type {};
@@ -1809,7 +1830,7 @@ template <typename V>
 Get(V&&)
 	-> Get<typename impl::object_data_type<std::decay_t<V>>::type,
 	       typename impl::object_type<std::decay_t<V>>::type>;
-#	endif // C++17
+#  endif // C++17
 
 /*!
  * \brief Write a value that is injected in the pipe to a store object.
@@ -1869,12 +1890,12 @@ private:
 	std::reference_wrapper<Object> m_o;
 };
 
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 template <typename V>
 Set(V&&)
 	-> Set<typename impl::object_data_type<std::decay_t<V>>::type,
 	       typename impl::object_type<std::decay_t<V>>::type>;
-#	endif // C++17
+#  endif // C++17
 
 /*!
  * \brief Multiplex pipes, given the injected index value.
@@ -1969,10 +1990,10 @@ private:
 	std::reference_wrapper<PipeExit<T>> m_p;
 };
 
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 template <typename T, typename... P>
 Mux(PipeExit<T>&, P&...) -> Mux<T, sizeof...(P) + 1>;
-#	endif // >= C++17
+#  endif // >= C++17
 
 namespace impl {
 template <unsigned int base, unsigned int exp>
@@ -2049,7 +2070,7 @@ public:
 		: Changes{p, type{}}
 	{}
 
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 	// These constructors only exist to allow template parameter deduction.
 	template <typename T_>
 	Changes(PipeEntry<type>& p, T_&& init, Compare /*comp*/)
@@ -2059,7 +2080,7 @@ public:
 	explicit Changes(PipeEntry<type>& p, Compare /*comp*/)
 		: Changes{p, type{}}
 	{}
-#	endif // C++17
+#  endif // C++17
 
 	type const& inject(type const& x)
 	{
@@ -2116,7 +2137,7 @@ struct constraints_type<T (C::*)(T) const> {
 	using type = std::decay_t<T>;
 };
 
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 template <typename C, typename T>
 struct constraints_type<T (C::*)(T) noexcept> {
 	using type = std::decay_t<T>;
@@ -2126,7 +2147,7 @@ template <typename C, typename T>
 struct constraints_type<T (C::*)(T) const noexcept> {
 	using type = std::decay_t<T>;
 };
-#	endif // C++17
+#  endif // C++17
 } // namespace impl
 
 /*!
@@ -2173,10 +2194,10 @@ private:
 	Constraints m_constraints;
 };
 
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 template <typename Constraints_>
 Constrained(Constraints_&&) -> Constrained<std::decay_t<Constraints_>>;
-#	endif // C++17
+#  endif // C++17
 
 /*!
  * \brief Converts a values by means of a scale factor.
@@ -2255,10 +2276,10 @@ private:
 	Converter m_converter;
 };
 
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 template <typename Converter_>
 Convert(Converter_&&) -> Convert<std::decay_t<Converter_>>;
-#	endif // C++17
+#  endif // C++17
 
 /*!
  * \brief An index to T map.
@@ -2363,9 +2384,9 @@ public:
 		stored_assert(ordered());
 	}
 
-#	if STORED_cplusplus >= 202002L
+#  if STORED_cplusplus >= 202002L
 	constexpr
-#	endif // C++20
+#  endif // C++20
 		value_type const&
 		find(key_type const& key) const
 	{
@@ -2386,6 +2407,7 @@ public:
 		CompareValue comp{};
 
 		for(auto const& v : m_map)
+			// cppcheck-suppress useStlAlgorithm
 			if(comp(v.second, value))
 				return v.first;
 
@@ -2450,6 +2472,7 @@ public:
 		CompareKey comp{};
 
 		for(auto const& v : m_map)
+			// cppcheck-suppress useStlAlgorithm
 			if(comp(v.first, key))
 				return v.second;
 
@@ -2461,6 +2484,7 @@ public:
 		CompareValue comp{};
 
 		for(auto const& v : m_map)
+			// cppcheck-suppress useStlAlgorithm
 			if(comp(v.second, value))
 				return v.first;
 
@@ -2479,9 +2503,9 @@ private:
 template <
 	typename Key, typename Value, size_t N, typename CompareKey = std::equal_to<Key>,
 	typename CompareValue = std::equal_to<Value>>
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 constexpr
-#	endif
+#  endif
 	auto
 	make_random_map(
 		std::pair<Key, Value> const (&kv)[N], CompareKey compareKey = CompareKey{},
@@ -2555,11 +2579,11 @@ private:
 	MapType m_map;
 };
 
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 template <typename MapType>
 Mapped(MapType)
 	-> Mapped<typename MapType::key_type, typename MapType::value_type, std::decay_t<MapType>>;
-#	endif // C++17
+#  endif // C++17
 
 /*!
  * \brief An associative map.
@@ -2570,9 +2594,9 @@ Mapped(MapType)
  * Example: <tt>Map({1, 2, 3})</tt>
  */
 template <typename T, size_t N, typename CompareValue = std::equal_to<T>>
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 constexpr
-#	endif
+#  endif
 	auto
 	Map(T const (&values)[N], CompareValue compareValue = CompareValue{})
 {
@@ -2615,9 +2639,9 @@ constexpr auto Map(T0&& v0, T1&& v1, T&&... v)
 template <
 	typename Key, typename Value, size_t N, typename CompareKey = std::less<Key>,
 	typename CompareValue = std::equal_to<Value>>
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 constexpr
-#	endif
+#  endif
 	auto
 	Map(std::pair<Key, Value> const (&kv)[N], CompareKey compareKey = CompareKey{},
 	    CompareValue compareValue = CompareValue{})
@@ -2660,7 +2684,7 @@ public:
 		: RateLimit{p, interval, type{}}
 	{}
 
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 	// These constructors only exist to allow template parameter deduction.
 	template <typename T_>
 	RateLimit(PipeEntry<type>& p, T_&& init, duration_type interval, Compare /*comp*/)
@@ -2670,7 +2694,7 @@ public:
 	explicit RateLimit(PipeEntry<type>& p, duration_type interval, Compare /*comp*/)
 		: RateLimit{p, interval, type{}}
 	{}
-#	endif // C++17
+#  endif // C++17
 
 	type const& inject(type const& x)
 	{
@@ -2753,20 +2777,20 @@ private:
 	Key m_key{Signal_type::NoKey};
 };
 
-#	if STORED_cplusplus >= 201703L
+#  if STORED_cplusplus >= 201703L
 template <typename T, typename Key, typename Token>
 Signal(stored::Signal<Key, Token, T>&) -> Signal<T, Key, Token>;
 
 template <typename T, typename Key, typename Token>
 Signal(stored::Signal<Key, Token, T>&, Key) -> Signal<T, Key, Token>;
-#	endif // C++17
+#  endif // C++17
 
 } // namespace pipes
 } // namespace stored
 
-#	if defined(CLANG_BUG_FRIEND_OPERATOR)
-#		undef CLANG_BUG_FRIEND_OPERATOR
-#	endif
+#  if defined(CLANG_BUG_FRIEND_OPERATOR)
+#    undef CLANG_BUG_FRIEND_OPERATOR
+#  endif
 
 #endif // __cplusplus
 #endif // LIBSTORED_PIPES_H

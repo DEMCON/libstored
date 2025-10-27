@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -25,6 +25,7 @@ from textx.export import metamodel_export, model_export
 
 from .dsl import types
 from ..version import libstored_version
+from ..version import __version__
 
 generator_dir = os.path.dirname(__file__)
 
@@ -33,9 +34,6 @@ generator_dir = os.path.dirname(__file__)
 libstored_dir = os.path.normpath(os.path.abspath(os.path.join(generator_dir, '..', 'data')))
 if not os.path.isdir(libstored_dir) or os.path.isfile(os.path.join(libstored_dir, 'ignore')):
     libstored_dir = os.path.normpath(os.path.abspath(os.path.join(generator_dir, '..', '..', '..')))
-
-logging.basicConfig(format='       %(message)s', level=logging.DEBUG)
-logger = logging.getLogger('libstored')
 
 def is_variable(o):
     return isinstance(o, types.Variable)
@@ -77,28 +75,6 @@ def ctype(o):
             'string': 'char'
     }[o.type]
 
-def qtype(o):
-    return {
-            'bool': 'bool',
-            'int8': 'int',
-            'uint8': 'uint',
-            'int16': 'int',
-            'uint16': 'uint',
-            'int32': 'int',
-            'uint32': 'uint',
-            'int64': 'qlonglong',
-            'uint64': 'qulonglong',
-            'float': 'float',
-            'double': 'double',
-            'ptr32': None,
-            'ptr64': None,
-            'blob': None,
-            'string': 'QString'
-    }[o.type]
-
-def is_qml_compatible(o):
-    return qtype(o) is not None
-
 def stype(o):
     t = {
         'bool': 'Type::Bool',
@@ -119,7 +95,7 @@ def stype(o):
     }[o.type]
 
     if is_function(o):
-        t += ' | Type::FlagFunction'
+        t = f'(Type::type)({t} | Type::FlagFunction)'
     return t
 
 def vhdltype(o):
@@ -308,10 +284,10 @@ def model_cname(model_file):
 def platform_win32():
     return sys.platform == 'win32'
 
-def spdx(license='MPL-2.0', prefix='', copyright='2020-2023 Jochem Rutgers'):
+def spdx(license='MPL-2.0', prefix=''):
     # REUSE-IgnoreStart
     return \
-        f'{prefix}SPDX-FileCopyrightText: {copyright}\n' + \
+        f'{prefix}SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers\n' + \
         f'{prefix}\n' + \
         f'{prefix}SPDX-License-Identifier: {license}\n'
     # REUSE-IgnoreEnd
@@ -397,7 +373,6 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.globals['store'] = model
     jenv.globals['win32'] = platform_win32()
     jenv.filters['ctype'] = ctype
-    jenv.filters['qtype'] = qtype
     jenv.filters['stype'] = stype
     jenv.filters['vhdltype'] = vhdltype
     jenv.filters['vhdlinit'] = vhdlinit
@@ -421,7 +396,6 @@ def generate_store(model_file, output_dir, littleEndian=True):
     jenv.tests['blob'] = is_blob
     jenv.tests['string'] = is_string
     jenv.tests['pointer'] = is_pointer
-    jenv.tests['qml_compatible'] = is_qml_compatible
 
     store_h_tmpl = jenv.get_template('store.h.tmpl')
     store_cpp_tmpl = jenv.get_template('store.cpp.tmpl')
@@ -535,13 +509,26 @@ def generate_cmake(libprefix, model_files, output_dir):
             ))
 
 def main():
-    parser = argparse.ArgumentParser(description='Store generator')
+    parser = argparse.ArgumentParser(description='Store generator', prog=__package__)
+    parser.add_argument('-V', action='version', version=__version__)
     parser.add_argument('-p', type=str, help='libstored prefix for cmake library target')
+    parser.add_argument('-b', help='generate for big-endian device (default=little)', action='store_true')
+    parser.add_argument('-v', dest='verbose', default=0, help='Enable verbose output', action='count')
     parser.add_argument('store_file', type=str, nargs='+', help='store description to parse')
     parser.add_argument('output_dir', type=str, help='output directory for generated files')
-    parser.add_argument('-b', help='generate for big-endian device (default=little)', action='store_true')
 
     args = parser.parse_args()
+
+    if args.verbose == 0:
+        logging.basicConfig(level=logging.WARN)
+    elif args.verbose == 1:
+        logging.basicConfig(level=logging.INFO)
+    else:
+        logging.basicConfig(level=logging.DEBUG)
+
+    global logger
+    logger = logging.getLogger('libstored')
+
     for f in args.store_file:
         generate_store(f, args.output_dir, not args.b)
 

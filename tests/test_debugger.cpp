@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -9,7 +9,11 @@
 
 #include "LoggingLayer.h"
 
-#define DECODE(stack, str)	do { char msg_[] = "" str; (stack).decode(msg_, sizeof(msg_) - 1); } while(0)
+#define DECODE(stack, str)                  \
+  do {                                      \
+    char msg_[] = "" str;                   \
+    (stack).decode(msg_, sizeof(msg_) - 1); \
+  } while(0)
 
 namespace {
 
@@ -258,7 +262,7 @@ TEST(Debugger, Macro)
 	EXPECT_EQ(ll.encoded().at(6), "?");
 
 	// Recursive call is not allowed.
-	DECODE(d, "m1|e0|m|e0");
+	DECODE(d, "m1|e0|1|e0");
 	EXPECT_EQ(ll.encoded().at(7), "!");
 	DECODE(d, "1");
 	EXPECT_EQ(ll.encoded().at(8), "0?0");
@@ -425,4 +429,3 @@ TEST(Debugger, Trace)
 
 
 } // namespace
-

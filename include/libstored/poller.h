@@ -85,10 +85,6 @@
 #    include <zmq.h>
 #  endif
 
-#  if !defined(STORED_HAVE_ZTH) && STORED_VERSION_NUM < 20000 && !defined(DOXYGEN)
-#    define STORED_POLL_OLD
-#  endif
-
 namespace stored {
 
 //////////////////////////////////////////////
@@ -231,34 +227,34 @@ public:
  * further with more specific (sub)types.
  */
 #  ifdef STORED_cpp_rtti
-#    define STORED_POLLABLE_TYPE(T)                                           \
-    public:                                                                   \
-	    static ::stored::TypedPollable::Type staticType() noexcept        \
-	    {                                                                 \
-		    return typeid(T);                                         \
-	    }                                                                 \
-	    virtual ::stored::TypedPollable::Type type() const noexcept final \
-	    {                                                                 \
-		    return staticType();                                      \
-	    }                                                                 \
-                                                                              \
-    private:                                                                  \
-	    STORED_CLASS_NEW_DELETE(T)
+#    define STORED_POLLABLE_TYPE(T)                                     \
+      public:                                                           \
+      static ::stored::TypedPollable::Type staticType() noexcept        \
+      {                                                                 \
+	return typeid(T);                                               \
+      }                                                                 \
+      virtual ::stored::TypedPollable::Type type() const noexcept final \
+      {                                                                 \
+	return staticType();                                            \
+      }                                                                 \
+                                                                        \
+      private:                                                          \
+      STORED_CLASS_NEW_DELETE(T)
 #  else // !STORED_cpp_rtti
-#    define STORED_POLLABLE_TYPE(T)                                           \
-    public:                                                                   \
-	    static ::stored::TypedPollable::Type staticType() noexcept        \
-	    {                                                                 \
-		    static char const t = 0;                                  \
-		    return (::stored::TypedPollable::Type) & t;               \
-	    }                                                                 \
-	    virtual ::stored::TypedPollable::Type type() const noexcept final \
-	    {                                                                 \
-		    return staticType();                                      \
-	    }                                                                 \
-                                                                              \
-    private:                                                                  \
-	    STORED_CLASS_NEW_DELETE(T)
+#    define STORED_POLLABLE_TYPE(T)                                     \
+      public:                                                           \
+      static ::stored::TypedPollable::Type staticType() noexcept        \
+      {                                                                 \
+	static char const t = 0;                                        \
+	return (::stored::TypedPollable::Type)&t;                       \
+      }                                                                 \
+      virtual ::stored::TypedPollable::Type type() const noexcept final \
+      {                                                                 \
+	return staticType();                                            \
+      }                                                                 \
+                                                                        \
+      private:                                                          \
+      STORED_CLASS_NEW_DELETE(T)
 #  endif // !STORED_cpp_rtti
 
 class PollableCallbackBase : public TypedPollable {
@@ -778,28 +774,7 @@ protected:
 	using typename PollerImpl::PollItemList;
 
 public:
-#    ifdef STORED_POLL_OLD
-	struct OldResult {
-		Pollable::Events_value events;
-		Pollable::Events_value revents;
-		void* user_data;
-		Pollable* p;
-
-		Pollable* operator->() const
-		{
-			return p;
-		}
-
-		Pollable& operator*() const
-		{
-			return *p;
-		}
-	};
-
-	typedef typename Vector<OldResult>::type Result;
-#    else
 	typedef typename Vector<Pollable*>::type Result;
-#    endif
 
 	/*!
 	 * \brief Dtor.
@@ -991,12 +966,7 @@ protected:
 			return;
 
 		try {
-#    ifdef STORED_POLL_OLD
-			OldResult r = {p->events.to_ulong(), revents.to_ulong(), p->user_data, p};
-			m_result.push_back(r);
-#    else
 			m_result.push_back(p);
-#    endif
 		} catch(...) {
 			// Should not happen.
 			stored_assert(false); // NOLINT
@@ -1047,253 +1017,8 @@ public:
 		throwing(add(l));
 	}
 #    endif // C++11
-
-#    ifdef STORED_POLL_OLD
-	// Provide the old Poller interface, for a while.
-public:
-	using base::add;
-	using base::poll;
-	using base::remove;
-	using base::Result;
-
-	typedef Pollable::Events_value events_t;
-	static Pollable::Events_value const PollIn = Pollable::PollIn;
-	static Pollable::Events_value const PollOut = Pollable::PollOut;
-	static Pollable::Events_value const PollErr = Pollable::PollErr;
-	static Pollable::Events_value const PollPri = Pollable::PollPri;
-	static Pollable::Events_value const PollHup = Pollable::PollHup;
-
-	STORED_DEPRECATED("Use the new Pollables instead")
-	Result const& poll(long timeout_us, bool suspend = false)
-	{
-		STORED_UNUSED(suspend)
-		return base::poll((int)(timeout_us / 1000L));
-	}
-
-	struct compare_fd {
-		bool operator()(PollableFd const& p, int fd) const
-		{
-			return p.fd == fd;
-		}
-	};
-
-	STORED_DEPRECATED("Use the new Pollables instead")
-	int add(int fd, void* user_data, events_t events)
-	{
-		return add<PollableFd>(fd, user_data, events);
-	}
-
-	int modify(int fd, events_t events)
-	{
-		return modify<PollableFd>(fd, events, compare_fd());
-	}
-
-	int remove(int fd)
-	{
-		return remove<PollableFd>(fd, compare_fd());
-	}
-
-	struct compare_FileLayer {
-		bool operator()(PollableFileLayer const& p, PolledFileLayer const& l) const
-		{
-			return p.layer == &l;
-		}
-	};
-
-	STORED_DEPRECATED("Use the new Pollables instead")
-	int add(PolledFileLayer& layer, void* user_data, events_t events)
-	{
-		return add<PollableFileLayer, PolledFileLayer&>(layer, user_data, events);
-	}
-
-	int modify(PolledFileLayer& layer, events_t events)
-	{
-		return modify<PollableFileLayer, PolledFileLayer&>(
-			layer, events, compare_FileLayer());
-	}
-
-	int remove(PolledFileLayer& layer)
-	{
-		return remove<PollableFileLayer, PolledFileLayer&>(layer, compare_FileLayer());
-	}
-
-#      if defined(STORED_OS_WINDOWS)
-	struct compare_SOCKET {
-		bool operator()(PollableSocket const& p, SOCKET s) const
-		{
-			return p.socket == s;
-		}
-	};
-
-	STORED_DEPRECATED("Use the new Pollables instead")
-	int add(SOCKET socket, void* user_data, events_t events)
-	{
-		return add<PollableSocket>(socket, user_data, events);
-	}
-
-	int modify(SOCKET socket, events_t events)
-	{
-		return modify<PollableSocket>(socket, events, compare_SOCKET());
-	}
-
-	int remove(SOCKET socket)
-	{
-		return remove<PollableSocket>(socket, compare_SOCKET());
-	}
-
-	struct compare_HANDLE {
-		bool operator()(PollableHandle const& p, HANDLE handle) const
-		{
-			return p.handle == handle;
-		}
-	};
-
-	STORED_DEPRECATED("Use the new Pollables instead")
-	int addh(HANDLE handle, void* user_data, events_t events)
-	{
-		return add<PollableHandle>(handle, user_data, events);
-	}
-
-	int modifyh(HANDLE handle, events_t events)
-	{
-		return modify<PollableHandle>(handle, events, compare_HANDLE());
-	}
-
-	int removeh(HANDLE handle)
-	{
-		return remove<PollableHandle>(handle, compare_HANDLE());
-	}
-#      endif // STORED_OS_WINDOWS
-
-#      if defined(STORED_HAVE_ZMQ)
-	struct compare_socket {
-		bool operator()(PollableZmqSocket const& p, void* socket) const
-		{
-			// NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
-			return p.socket == (void*)&socket;
-		}
-	};
-
-	STORED_DEPRECATED("Use the new Pollables instead")
-	int add(void* socket, void* user_data, events_t events)
-	{
-		return add<PollableZmqSocket>(socket, user_data, events);
-	}
-
-	int modify(void* socket, events_t events)
-	{
-		return modify<PollableZmqSocket>(socket, events, compare_socket());
-	}
-
-	int remove(void* socket)
-	{
-		return remove<PollableZmqSocket>(socket, compare_socket());
-	}
-
-	struct compare_zmq {
-		bool operator()(PollableZmqLayer const& p, ZmqLayer& layer) const
-		{
-			return p.layer == &layer;
-		}
-	};
-
-	STORED_DEPRECATED("Use the new Pollables instead")
-	int add(ZmqLayer& layer, void* user_data, events_t events)
-	{
-		return add<PollableZmqLayer, ZmqLayer&>(layer, user_data, events);
-	}
-
-	int modify(ZmqLayer& layer, events_t events)
-	{
-		return modify<PollableZmqLayer, ZmqLayer&>(layer, events, compare_zmq());
-	}
-
-	int remove(ZmqLayer& layer)
-	{
-		return remove<PollableZmqLayer, ZmqLayer&>(layer, compare_zmq());
-	}
-#      endif // STORED_HAVE_ZMQ
-
-	virtual void clear() noexcept override
-	{
-		base::clear();
-
-		for(decltype(m_pollables.begin()) it = m_pollables.begin(); it != m_pollables.end();
-		    ++it)
-			delete *it; // NOLINT(cppcoreguidelines-owning-memory)
-
-		m_pollables.clear();
-	}
-
-private:
-	typedef Vector<TypedPollable*>::type Pollables;
-
-	template <typename T, typename A>
-	int add(A a, void* user_data, events_t events)
-	{
-		T* p = new T(a, events, user_data); // NOLINT(cppcoreguidelines-owning-memory)
-		int res = add(*p);
-
-		if(res)
-			delete p; // NOLINT(cppcoreguidelines-owning-memory)
-		else
-			m_pollables.push_back(p);
-
-		return res;
-	}
-
-	template <typename T, typename A, typename C>
-	int modify(A a, events_t events, C const& c)
-	{
-		Pollables::iterator it = find<T, A, C>(a, c);
-		if(it == m_pollables.end())
-			return ESRCH;
-
-		T* p = static_cast<T*>(*it);
-		stored_assert(p);
-		void* user_data = p->user_data;
-		remove(*p);
-		return add<T, A>(a, user_data, events);
-	}
-
-	template <typename T, typename A, typename C>
-	int remove(A a, C const& c)
-	{
-		Pollables::iterator it = find<T, A, C>(a, c);
-		if(it == m_pollables.end())
-			return ESRCH;
-
-		T* p = static_cast<T*>(*it);
-		stored_assert(p);
-
-		int res = remove(*p);
-		delete p; // NOLINT(cppcoreguidelines-owning-memory)
-
-		*it = m_pollables.back();
-		m_pollables.pop_back();
-
-		return res;
-	}
-
-	template <typename T, typename A, typename C>
-	Pollables::iterator find(A a, C const& cmp)
-	{
-		for(decltype(m_pollables.begin()) it = m_pollables.begin(); it != m_pollables.end();
-		    ++it)
-			if((*it)->type() == T::staticType()) {
-				T* p = static_cast<T*>(*it);
-				if(cmp(*p, a))
-					return it;
-			}
-
-		return m_pollables.end();
-	}
-
-private:
-	Pollables m_pollables;
-#    endif
 };
-#  endif // !STORED_HAVE_ZTH
+#  endif   // !STORED_HAVE_ZTH
 
 } // namespace stored
 #endif // __cplusplus

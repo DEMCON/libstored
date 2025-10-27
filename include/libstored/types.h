@@ -1,6 +1,6 @@
 #ifndef LIBSTORED_TYPES_H
 #define LIBSTORED_TYPES_H
-// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -20,10 +20,6 @@
 #    include <cinttypes>
 #  else
 #    include <inttypes.h>
-#  endif
-
-#  ifdef STORED_HAVE_QT
-#    include <QVariant>
 #  endif
 
 namespace stored {
@@ -136,10 +132,12 @@ struct Type {
 	}
 };
 
+#  if STORED_cplusplus >= 201103L
 static constexpr Type::type operator|(Type::type a, Type::type b) noexcept
 {
 	return (Type::type)((uint8_t)a | (uint8_t)b);
 }
+#  endif // C++11
 
 namespace impl {
 /*! \brief Returns the #stored::Type::type of the given \c int type. */
@@ -1302,7 +1300,8 @@ public:
 		if(Type::isFunction(type())) {
 			len = callback(false, dst, len);
 		} else {
-			entryRO(len);
+			size_t buf_len = len;
+			entryRO(buf_len);
 			if(unlikely(type() == Type::String)) {
 				char* dst_ = static_cast<char*>(dst);
 				char const* buffer_ = static_cast<char const*>(m_buffer);
@@ -1316,7 +1315,7 @@ public:
 				else
 					memcpy(dst, m_buffer, len);
 			}
-			exitRO(len);
+			exitRO(buf_len);
 		}
 		return len;
 	}
@@ -1476,111 +1475,6 @@ public:
 		} else
 			return container().callback(set, buffer, len, (unsigned int)m_f);
 	}
-
-#  ifdef STORED_HAVE_QT
-	/*!
-	 * \brief Convert the value to a QVariant.
-	 */
-	QVariant toQVariant() const
-	{
-		switch(type()) {
-		case Type::Int8:
-			return (int)get<int8_t>();
-		case Type::Int16:
-			return (int)get<int16_t>();
-		case Type::Int32:
-			return get<int32_t>();
-		case Type::Int64:
-			return (qlonglong)get<int64_t>();
-		case Type::Uint8:
-			return (unsigned int)get<uint8_t>();
-		case Type::Uint16:
-			return (unsigned int)get<uint16_t>();
-		case Type::Uint32:
-			return get<uint32_t>();
-		case Type::Uint64:
-			return (qulonglong)get<uint64_t>();
-		case Type::Float:
-			return get<float>();
-		case Type::Double:
-			return get<double>();
-		case Type::Bool:
-			return get<bool>();
-		case Type::String: {
-			QByteArray buf{(int)size(), 0};
-			get(buf.data(), (size_t)buf.size());
-			return QString{buf};
-		}
-		default:
-			return QVariant{};
-		}
-	}
-
-	/*!
-	 * \brief Set the value, given a QVariant.
-	 * \return \c true upon success
-	 */
-	bool set(QVariant const& v)
-	{
-		if(!v.isValid())
-			return false;
-
-#    define CASE_TYPE(T)          \
-    case stored::toType<T>::type: \
-      if(!v.canConvert<T>())      \
-	return false;             \
-      set<T>(v.value<T>());       \
-      return true;
-
-		switch(type() & ~Type::FlagFunction) {
-			CASE_TYPE(int8_t)
-			CASE_TYPE(uint8_t)
-			CASE_TYPE(int16_t)
-			CASE_TYPE(uint16_t)
-			CASE_TYPE(int32_t)
-			CASE_TYPE(uint32_t)
-			CASE_TYPE(qlonglong)
-			CASE_TYPE(qulonglong)
-			CASE_TYPE(float)
-			CASE_TYPE(double)
-			CASE_TYPE(bool)
-		case stored::Type::String: {
-			if(!v.canConvert<QString>())
-				return false;
-
-			auto s = v.value<QString>().toUtf8();
-			set(s.data(), (size_t)s.size());
-			return true;
-		}
-		default:
-			return false;
-		}
-#    undef CASE_TYPE
-	}
-
-	/*!
-	 * \brief Convert the value to a QString.
-	 *
-	 * Only works if the #type() is String.
-	 */
-	QString toQString() const
-	{
-		stored_assert((type() & ~Type::FlagFunction) == Type::String);
-		QByteArray buf{(int)size(), 0};
-		get(buf.data(), (size_t)buf.size());
-		return QString{buf};
-	}
-
-	/*!
-	 * \brief Sets a string.
-	 * \details Only works if this variant is a string.
-	 */
-	void set(QString const& value)
-	{
-		auto buf = value.toUtf8();
-		set(buf.constData());
-	}
-#  endif // STORED_HAVE_QT
 
 	/*!
 	 * \brief Invokes \c hookEntryX() on the #container().
@@ -2433,28 +2327,6 @@ public:
 	{
 		return variant().buffer();
 	}
-
-#  ifdef STORED_HAVE_QT
-	QVariant toQVariant() const
-	{
-		return variant().toQVariant();
-	}
-
-	bool set(QVariant const& v)
-	{
-		return variant().set(v);
-	}
-
-	QString toQString() const
-	{
-		return variant().toQString();
-	}
-
-	void set(QString const& value)
-	{
-		variant().set(value);
-	}
-#  endif // STORED_HAVE_QT
 };
 
 /*!
@@ -2527,28 +2399,6 @@ public:
 	{
 		return size_;
 	}
-
-#  ifdef STORED_HAVE_QT
-	QVariant toQVariant() const
-	{
-		return variant().toQVariant();
-	}
-
-	bool set(QVariant const& v)
-	{
-		return variant().set(v);
-	}
-
-	QString toQString() const
-	{
-		return variant().toQString();
-	}
-
-	void set(QString const& value)
-	{
-		variant().set(value);
-	}
-#  endif // STORED_HAVE_QT
 };
 } // namespace impl
 

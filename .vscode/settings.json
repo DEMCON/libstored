@@ -11,4 +11,22 @@
 		"libstored"
 	],
 	"cSpell.diagnosticLevel": "Hint",
+	"python.analysis.extraPaths": [
+		"${workspaceFolder}/python"
+	],
+	"[cpp]": {
+		"editor.defaultFormatter": "xaver.clang-format"
+	},
+	"[c]": {
+		"editor.defaultFormatter": "xaver.clang-format"
+	},
+	"C_Cpp.doxygen.generatedStyle": "/*!",
+	"files.exclude": {
+		"**/.git": true,
+		"**/dist/venv/**": true
+	},
+	"clang-format.executable": "clang-format-15",
+	"cmakeFormat.env": {
+		"PYTHONPATH": "${workspaceFolder}/dist/venv"
+	},
 }

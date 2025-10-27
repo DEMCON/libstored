@@ -24,7 +24,27 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 Added
 `````
 
-...
+- ``stored::Crc32Layer`` and ``libstored.protocol.Crc32Layer``.
+- ``libstored.protocol.MuxLayer`` (Python only)
+- Add returning the currently used macros via the ``m`` debugger command.
+- ``libstored.asyncio.AsyncioWorker`` to runs an asyncio event loop in a
+  separate thread, with support to easily communicate with the tkinter main loop.
+- Python type hints.
+
+Changed
+```````
+
+- Components API is not draft anymore.
+- Reimplemented Python modules to use asyncio instead.
+  This breaks the Python API.
+- Use tkinter for ``libstored.gui``.
+
+Removed
+````````
+
+- Drop Qt support.
+- (Qt-based) visu examples and framework.
+- Deprecated old Poller API.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.8.0...HEAD
 
