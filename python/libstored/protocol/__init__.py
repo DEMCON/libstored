@@ -5,7 +5,7 @@
 default_port : int = 19026
 
 from .protocol import *
-from .zmq_server import *
+from .zmq import *
 from .util import *
 from .stdio import *
 from .serial import *

@@ -12,7 +12,7 @@ set(pylibstored_src
     libstored/asyncio/event.py
     libstored/asyncio/tk.py
     libstored/asyncio/worker.py
-    libstored/asyncio/zmq_client.py
+    libstored/asyncio/zmq.py
     libstored/cli/__init__.py
     libstored/cli/__main__.py
     libstored/cmake/__init__.py
@@ -35,7 +35,7 @@ set(pylibstored_src
     libstored/protocol/serial.py
     libstored/protocol/stdio.py
     libstored/protocol/util.py
-    libstored/protocol/zmq_server.py
+    libstored/protocol/zmq.py
     libstored/tk.py
     libstored/version.py
     libstored/wrapper/__init__.py
