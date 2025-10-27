@@ -14,6 +14,7 @@
 
 #if STORED_cplusplus >= 201103L
 #  include <chrono>
+#  include <thread>
 #endif
 
 static stored::Stream<>* stream;
@@ -154,7 +155,15 @@ int main()
 				exit(1);
 			} // else timeout
 		} else {
-			usleep(store.response_delay_ms.get() * 1000); // simulate work
+			// Simulate work.
+			uint32_t sleep_ms = store.response_delay_ms.get();
+#if __cplusplus >= 201103L
+			std::this_thread::sleep_for(std::chrono::milliseconds(sleep_ms));
+#elif defined(STORED_OS_WINDOWS)
+			Sleep(sleep_ms);
+#else
+			nanosleep(sleep_ms * 1000000ULL);
+#endif
 
 			if((errno = zmqLayer.recv())) {
 				perror("Cannot recv");
