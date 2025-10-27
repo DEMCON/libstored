@@ -33,9 +33,6 @@ libstored_dir = os.path.normpath(os.path.abspath(os.path.join(generator_dir, '..
 if not os.path.isdir(libstored_dir) or os.path.isfile(os.path.join(libstored_dir, 'ignore')):
     libstored_dir = os.path.normpath(os.path.abspath(os.path.join(generator_dir, '..', '..', '..')))
 
-logging.basicConfig(format='       %(message)s', level=logging.DEBUG)
-logger = logging.getLogger('libstored')
-
 def is_variable(o):
     return isinstance(o, types.Variable)
 
@@ -449,11 +446,23 @@ def main():
     parser = argparse.ArgumentParser(description='Store generator', prog=__package__)
     parser.add_argument('-V', action='version', version=__version__)
     parser.add_argument('-p', type=str, help='libstored prefix for cmake library target')
+    parser.add_argument('-b', help='generate for big-endian device (default=little)', action='store_true')
+    parser.add_argument('-v', dest='verbose', default=0, help='Enable verbose output', action='count')
     parser.add_argument('store_file', type=str, nargs='+', help='store description to parse')
     parser.add_argument('output_dir', type=str, help='output directory for generated files')
-    parser.add_argument('-b', help='generate for big-endian device (default=little)', action='store_true')
 
     args = parser.parse_args()
+
+    if args.verbose == 0:
+        logging.basicConfig(level=logging.WARN)
+    elif args.verbose == 1:
+        logging.basicConfig(level=logging.INFO)
+    else:
+        logging.basicConfig(level=logging.DEBUG)
+
+    global logger
+    logger = logging.getLogger('libstored')
+
     for f in args.store_file:
         generate_store(f, args.output_dir, not args.b)
 
