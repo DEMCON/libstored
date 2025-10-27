@@ -241,9 +241,10 @@ Debugger instance. The connect to this C++ bridge.
 Example
 ```````
 
-The host tools to debug your application are written in Python, based on
-PySide6. The ``libstored`` wheel file from the ``python`` directory is by
-default installed in the venv, located in ``dist/venv``.
+The host tools to debug your application are written in Python, with support for
+asyncio, and tkinter-based GUIs. The ``libstored`` wheel file from the
+``python`` directory is by default installed in the venv, located in
+``dist/venv``.
 
 To get a grasp how debugging feels like, try the following.
 

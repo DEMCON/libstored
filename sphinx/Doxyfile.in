@@ -2080,7 +2080,6 @@ PREDEFINED             = DOXYGEN \
 			 __restrict__= \
 			 EXTERN_C= \
 			 _DEBUG \
-			 STORED_HAVE_QT \
 			 STORED_HAVE_ZMQ \
 			 STORED_HAVE_HEATSHRINK \
 			 STORED_DRAFT_API \

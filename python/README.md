@@ -9,7 +9,7 @@ examples.
 This Python package contains:
 
 - The generator itself.
-- The client implementation of the Embedded Debugger protocol (version 2), and
+- The client implementation of the Debugger protocol (version 2), and
   a few helper classes and modules to debug your application.
 
 The synchronization protocol of libstored is not available in python (yet?).
@@ -41,13 +41,3 @@ argument to get some more help:
 - `libstored.log`: command line tool that connects to a debug target and logs
   samples to CSV.  It is equivalent to passing `-f` to `libstored.gui`, but
   this tool allows easier automation of a specific set of samples.
-
-### Interesting classes
-
-The following classes are particularly interesting:
-
-- `libstored.ZmqClient`
-- `libstored.ZmqServer`
-- `libstored.Stdio2Zmq`
-- `libstored.Serial2Zmq`
-

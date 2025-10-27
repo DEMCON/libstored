@@ -3,11 +3,13 @@
 # SPDX-License-Identifier: CC0-1.0
 
 # Only the packages required for the generator.
-jinja2
-textx
-argparse
-pyzmq
-PySide6
-pyserial
-natsort
+aiofiles
 crcmod
+filelock
+jinja2
+matplotlib
+natsort
+platformdirs
+pyserial >= 3.1
+pyzmq
+textx
