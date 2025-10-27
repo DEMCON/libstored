@@ -129,6 +129,12 @@ typedef SSIZE_T ssize_t;
 #  define STORED_FALLTHROUGH
 #endif
 
+#ifndef STORED_ANONYMOUS
+// Doxygen does not like anonymous enums (enum { ... }; ). This is a hook to let
+// Doxygen rename these.
+#  define STORED_ANONYMOUS
+#endif
+
 
 
 //////////////////////////////////////////////////

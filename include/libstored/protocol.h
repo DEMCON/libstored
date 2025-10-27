@@ -360,7 +360,7 @@ public:
 	static char const Esc = '\x1b';	  // ESC
 	static char const EscStart = '_'; // APC
 	static char const EscEnd = '\\';  // ST
-	enum { MaxBuffer = 1024 };
+	enum STORED_ANONYMOUS { MaxBuffer = 1024 };
 
 #  if STORED_cplusplus >= 201103L
 	using NonDebugDecodeCallback = void(void* buf, size_t len);
@@ -512,7 +512,7 @@ public:
 	static uint8_t const AckFlag = 0x80U; //!< \brief Ack flag.
 	static uint8_t const SeqMask = 0x3fU; //!< \brief Mask for sequence number.
 
-	enum {
+	enum STORED_ANONYMOUS {
 		/*! \brief Number of successive retransmits before the event is emitted. */
 		RetransmitCallbackThreshold = 10,
 	};
@@ -809,7 +809,7 @@ class Crc8Layer : public ProtocolLayer {
 public:
 	typedef ProtocolLayer base;
 
-	enum { polynomial = 0xa6, init = 0xff };
+	enum STORED_ANONYMOUS { polynomial = 0xa6, init = 0xff };
 
 	explicit Crc8Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 	/*! \brief Dtor. */
@@ -841,7 +841,7 @@ class Crc16Layer : public ProtocolLayer {
 public:
 	typedef ProtocolLayer base;
 
-	enum { polynomial = 0xbaad, init = 0xffff };
+	enum STORED_ANONYMOUS { polynomial = 0xbaad, init = 0xffff };
 
 	explicit Crc16Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 	/*! \brief Dtor. */
@@ -873,7 +873,11 @@ class Crc32Layer : public ProtocolLayer {
 public:
 	typedef ProtocolLayer base;
 
-	enum { polynomial = 0x04c11db7, init = 0xffffffff, final_xor = 0xffffffff };
+	enum STORED_ANONYMOUS {
+		polynomial = 0x04c11db7,
+		init = 0xffffffff,
+		final_xor = 0xffffffff
+	};
 
 	explicit Crc32Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
 	/*! \brief Dtor. */
@@ -1385,7 +1389,7 @@ public:
 	typedef PolledFileLayer base;
 	using base::fd_type;
 
-	enum { DefaultBufferSize = 128 };
+	enum STORED_ANONYMOUS { DefaultBufferSize = 128 };
 
 protected:
 	explicit FileLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
@@ -1467,7 +1471,7 @@ class NamedPipeLayer : public FileLayer {
 public:
 	typedef FileLayer base;
 
-	enum {
+	enum STORED_ANONYMOUS {
 		BufferSize = 1024,
 		Inbound = PIPE_ACCESS_INBOUND,
 		Outbound = PIPE_ACCESS_OUTBOUND,
@@ -1672,7 +1676,7 @@ public:
 	typedef PolledFileLayer base;
 	using base::fd_type;
 
-	enum { DefaultBufferSize = 128 };
+	enum STORED_ANONYMOUS { DefaultBufferSize = 128 };
 
 	explicit StdioLayer(
 		size_t bufferSize = DefaultBufferSize, ProtocolLayer* up = nullptr,
@@ -1736,7 +1740,7 @@ public:
 class SerialLayer : public FileLayer {
 	STORED_CLASS_NOCOPY(SerialLayer)
 public:
-	enum { BufferSize = 4096 };
+	enum STORED_ANONYMOUS { BufferSize = 4096 };
 
 	typedef FileLayer base;
 	explicit SerialLayer(

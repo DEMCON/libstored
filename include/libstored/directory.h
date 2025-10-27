@@ -173,7 +173,7 @@ find(Container& container, uint8_t const* directory, char const* name,
 }
 
 /*!
- * \brief Function prototype for the callback of #list().
+ * \brief Function prototype for the callback of \c %list().
  *
  * It receives the pointer to its container, the name of the object,
  * the type of the object, the pointer to the buffer, the length of the buffer,

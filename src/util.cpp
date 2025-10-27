@@ -9,15 +9,15 @@
 #include <cstring>
 
 #if STORED_cplusplus < 201103L
-#	include <inttypes.h>
+#  include <inttypes.h>
 #else
-#	include <cinttypes>
+#  include <cinttypes>
 #endif
 
 namespace stored {
 
 /*!
- * \brief Like \c ::strncpy(), but without padding and returning the length of the string.
+ * \brief Like <tt>::%strncpy()</tt>, but without padding and returning the length of the string.
  */
 size_t strncpy(char* __restrict__ dst, char const* __restrict__ src, size_t len) noexcept
 {
@@ -35,7 +35,7 @@ size_t strncpy(char* __restrict__ dst, char const* __restrict__ src, size_t len)
 }
 
 /*!
- * \brief Like \c ::strncmp(), but handles non zero-terminated strings.
+ * \brief Like <tt>::%strncmp()</tt>, but handles non zero-terminated strings.
  */
 int strncmp(
 	char const* __restrict__ str1, size_t len1, char const* __restrict__ str2,

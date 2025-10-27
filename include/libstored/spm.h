@@ -6,10 +6,10 @@
 
 #ifdef __cplusplus
 
-#	include <libstored/macros.h>
-#	include <libstored/util.h>
+#  include <libstored/macros.h>
+#  include <libstored/util.h>
 
-#	include <new>
+#  include <new>
 
 namespace stored {
 
@@ -35,7 +35,7 @@ template <size_t MaxSize = 0xffff>
 class ScratchPad {
 	STORED_CLASS_NOCOPY(ScratchPad)
 public:
-	enum {
+	enum STORED_ANONYMOUS {
 		/*! \brief Maximum total size of allocated memory. */
 		maxSize = MaxSize,
 		/*! \brief Size of the header of a chunk. */
@@ -90,7 +90,7 @@ public:
 			try {
 				reserve(m_max);
 			} catch(...) { // NOLINT(bugprone-empty-catch)
-				// Leave for now.
+				       // Leave for now.
 			}
 		}
 
@@ -185,7 +185,7 @@ public:
 				m_spm->rollback(m_buffer, m_size);
 		}
 
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 		/*!
 		 * \brief Move ctor.
 		 */
@@ -209,7 +209,7 @@ public:
 			s.reset();
 			return *this;
 		}
-#	endif
+#  endif
 		/*!
 		 * \brief Move ctor.
 		 * \details Even though \p s is \c const, it will be reset anyway by this ctor.
@@ -231,17 +231,17 @@ public:
 			m_spm = nullptr;
 		}
 
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	public:
 		Snapshot& operator=(Snapshot const& s) = delete;
-#	else
+#  else
 	private:
 		/*!
 		 * \brief Move-assign.
 		 * \details Even though \p s is \c const, it will be reset anyway by this operator.
 		 */
 		Snapshot& operator=(Snapshot const& s);
-#	endif
+#  endif
 
 	private:
 		/*! \brief The ScratchPad this is a snapshot of. */
@@ -312,12 +312,12 @@ private:
 				m_old.push_back(m_buffer);
 			} catch(...) {
 				deallocate<char>(p, size + chunkHeader);
-#	ifdef STORED_cpp_exceptions
+#  ifdef STORED_cpp_exceptions
 				// cppcheck-suppress rethrowNoCurrentException
 				throw;
-#	else
+#  else
 				std::terminate();
-#	endif
+#  endif
 			}
 		}
 
@@ -530,11 +530,11 @@ public:
 
 		if(unlikely(m_total + alloc_size + padding < m_total)) {
 			// Wrap around -> overflow.
-#	ifdef STORED_cpp_exceptions
+#  ifdef STORED_cpp_exceptions
 			throw std::bad_alloc();
-#	else
+#  else
 			std::terminate();
-#	endif
+#  endif
 		}
 
 		size_t bs = bufferSize();
