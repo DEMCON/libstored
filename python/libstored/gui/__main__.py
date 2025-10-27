@@ -22,7 +22,7 @@ except ImportError:
     plt = None
 
 from .. import __version__
-from ..asyncio import zmq_client as laio_zmq
+from ..asyncio import zmq as laio_zmq
 from ..asyncio import event as laio_event
 from ..asyncio import tk as laio_tk
 from ..asyncio import csv as laio_csv

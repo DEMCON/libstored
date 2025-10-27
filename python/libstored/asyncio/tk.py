@@ -19,7 +19,7 @@ import typing
 
 from . import event as laio_event
 from . import worker as laio_worker
-from . import zmq_client as laio_zmq
+from . import zmq as laio_zmq
 from .. import exceptions as lexc
 
 class AsyncTk:

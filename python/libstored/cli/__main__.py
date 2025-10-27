@@ -9,7 +9,7 @@ import argparse
 import logging
 import os
 
-from ..asyncio.zmq_client import ZmqClient
+from ..asyncio.zmq import ZmqClient
 from ..asyncio.worker import run_sync, AsyncioWorker
 from ..version import __version__
 from .. import protocol as lprot

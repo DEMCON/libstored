@@ -3,4 +3,4 @@
 # SPDX-License-Identifier: MPL-2.0
 
 from .version import __version__, libstored_version
-from .asyncio.zmq_client import ZmqClient
+from .asyncio.zmq import ZmqClient

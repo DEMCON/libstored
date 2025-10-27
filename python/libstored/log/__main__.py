@@ -8,7 +8,7 @@ import argparse
 import logging
 import sys
 
-from ..asyncio.zmq_client import ZmqClient
+from ..asyncio.zmq import ZmqClient
 from ..asyncio.worker import run_sync
 from ..asyncio.csv import generate_filename, CsvExport
 from ..version import __version__

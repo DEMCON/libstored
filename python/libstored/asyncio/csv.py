@@ -14,8 +14,8 @@ import typing
 
 from typing import overload
 
-from ..asyncio import worker as laio_worker
-from ..asyncio import zmq_client as laio_zmq
+from . import worker as laio_worker
+from . import zmq as laio_zmq
 
 @overload
 def generate_filename(filename : str | None=None, *,
