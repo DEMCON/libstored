@@ -1,7 +1,7 @@
 ﻿
 
 ..
-   SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+   SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
    
    SPDX-License-Identifier: CC-BY-4.0
 
@@ -28,6 +28,8 @@ Protocol layers
 
 .. autoclass:: libstored.protocol.PubTerminalLayer
 
+.. autoclass:: libstored.protocol.RepReqCheckLayer
+
 .. autoclass:: libstored.protocol.SegmentationLayer
 
 .. autoclass:: libstored.protocol.DebugArqLayer
@@ -36,9 +38,21 @@ Protocol layers
 
 .. autoclass:: libstored.protocol.Crc16Layer
 
+.. autoclass:: libstored.protocol.Crc32Layer
+
 .. autoclass:: libstored.protocol.LoopbackLayer
 
 .. autoclass:: libstored.protocol.RawLayer
+
+.. autoclass:: libstored.protocol.MuxLayer
+
+.. autoclass:: libstored.protocol.StdinLayer
+
+.. autoclass:: libstored.protocol.StdioLayer
+
+.. autoclass:: libstored.protocol.SerialLayer
+
+.. autoclass:: libstored.protocol.ZmqServer
 
 Protocol stack
 --------------
@@ -47,7 +61,13 @@ Protocol stack
    :members:
    :undoc-members:
 
-.. autofunction:: libstored.protocol.registerLayerType
+.. autofunction:: libstored.protocol.register_layer_type
 
-.. autofunction:: libstored.protocol.buildStack
+.. autofunction:: libstored.protocol.unregister_layer_type
+
+.. autofunction:: libstored.protocol.get_layer_type
+
+.. autofunction:: libstored.protocol.get_layer_types
+
+.. autofunction:: libstored.protocol.build_stack
 

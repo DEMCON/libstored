@@ -377,6 +377,7 @@ class PubTerminalLayer(TerminalLayer):
 class RepReqCheckLayer(ProtocolLayer):
     '''
     A ProtocolLayer that checks that requests and replies are matched.
+    It triggers timeout() when a reply is not received in time.
     '''
 
     name = 'repreqcheck'

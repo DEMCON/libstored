@@ -14,7 +14,7 @@
 #include <unistd.h>
 
 #ifdef STORED_HAVE_ZMQ
-#	include <zmq.h>
+#  include <zmq.h>
 #endif
 
 namespace {
@@ -97,8 +97,8 @@ TEST(Poller, Pipe)
 	EXPECT_EQ(res->at(0).user_data, (void*)2);
 }
 
-#	if defined(STORED_HAVE_ZMQ) && !defined(STORED_POLL_POLL) && !defined(STORED_POLL_LOOP) \
-		&& !defined(STORED_POLL_ZTH_LOOP)
+#  if defined(STORED_HAVE_ZMQ) && !defined(STORED_POLL_POLL) && !defined(STORED_POLL_LOOP) \
+	  && !defined(STORED_POLL_ZTH_LOOP)
 TEST(Poller, Zmq)
 {
 	void* context = zmq_ctx_new();
@@ -134,8 +134,8 @@ TEST(Poller, Zmq)
 	zmq_close(rep);
 	zmq_ctx_destroy(context);
 }
-#	endif // STORED_HAVE_ZMQ
-#endif	       // STORED_POLL_OLD
+#  endif // STORED_HAVE_ZMQ
+#endif	 // STORED_POLL_OLD
 
 TEST(Poller, PollableCallback)
 {
@@ -175,7 +175,7 @@ TEST(Poller, PollableZmqSocket)
 
 	res = &poller.poll(0);
 	ASSERT_EQ(res->size(), 1);
-	EXPECT_EQ(res->at(0).revents, stored::Pollable::PollIn + 0);
+	EXPECT_EQ(res->at(0)->revents, stored::Pollable::PollIn + 0);
 
 	zmq_close(req);
 	zmq_close(rep);
