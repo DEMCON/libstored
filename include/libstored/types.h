@@ -132,10 +132,12 @@ struct Type {
 	}
 };
 
+#  if STORED_cplusplus >= 201103L
 static constexpr Type::type operator|(Type::type a, Type::type b) noexcept
 {
 	return (Type::type)((uint8_t)a | (uint8_t)b);
 }
+#  endif // C++11
 
 namespace impl {
 /*! \brief Returns the #stored::Type::type of the given \c int type. */

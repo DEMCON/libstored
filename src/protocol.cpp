@@ -1499,12 +1499,12 @@ static const uint32_t crc32_table[] = {
  */
 Crc32Layer::Crc32Layer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
-	, m_crc(init)
+	, m_crc((uint32_t)init)
 {}
 
 void Crc32Layer::reset()
 {
-	m_crc = init;
+	m_crc = (uint32_t)init;
 	base::reset();
 }
 
@@ -1515,11 +1515,11 @@ void Crc32Layer::decode(void* buffer, size_t len)
 
 	// cppcheck-suppress[constVariablePointer,unmatchedSuppression]
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
-	uint32_t crc = init;
+	uint32_t crc = (uint32_t)init;
 	for(size_t i = 0; i < len - 4; i++)
 		crc = compute(buffer_[i], crc);
 
-	if((crc ^ final_xor)
+	if((crc ^ (uint32_t)final_xor)
 	   != ((uint32_t)((uint32_t)(buffer_[len - 4] << 24U) | (uint32_t)(buffer_[len - 3] << 16U) | (uint32_t)(buffer_[len - 2] << 8U) | buffer_[len - 1])))
 		// Invalid.
 		return;
@@ -1536,12 +1536,12 @@ void Crc32Layer::encode(void const* buffer, size_t len, bool last)
 	base::encode(buffer, len, false);
 
 	if(last) {
-		uint32_t crc = m_crc ^ final_xor;
+		uint32_t crc = m_crc ^ (uint32_t)final_xor;
 		uint8_t crc_buf[4] = {
 			(uint8_t)(crc >> 24U), (uint8_t)(crc >> 16U), (uint8_t)(crc >> 8U),
 			(uint8_t)crc};
 		base::encode(crc_buf, sizeof(crc_buf), true);
-		m_crc = init;
+		m_crc = (uint32_t)init;
 	}
 }
 

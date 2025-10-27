@@ -297,7 +297,7 @@ def run_sync(f : typing.Callable) -> typing.Callable:
     def run_sync(*args, block : bool=True, sync : bool | None=None, **kwargs) -> typing.Any:
         assert asyncio.iscoroutinefunction(f)
 
-        self : typing.Any = args[0]
+        self : typing.Any = args[0] if len(args) > 0 else None
 
         loop = None
         try:

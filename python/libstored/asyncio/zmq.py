@@ -2853,7 +2853,7 @@ class ZmqClient(Work):
             while self.is_connected():
                 event = await monitor.recv_multipart()
                 evt = zmq.utils.monitor.parse_monitor_message(event)
-                self.logger.debug(f'socket event: {repr(evt['event'])}')
+                self.logger.debug(f'socket event: {repr(evt["event"])}')
                 if evt['event'] == zmq.EVENT_DISCONNECTED:
                     self.logger.info('socket disconnected')
                     await self.disconnect()

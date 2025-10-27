@@ -12,7 +12,8 @@ import sys
 import unittest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../python')))
-import libstored.asyncio
+import libstored.asyncio.zmq
+import libstored.asyncio.worker
 
 class ZmqClientTest(unittest.TestCase):
 
@@ -28,16 +29,30 @@ class ZmqClientTest(unittest.TestCase):
             stdin=subprocess.DEVNULL, stdout=sys.stdout, stderr=sys.stdout)
 
         cls.logger.info(f'Connecting...')
-        cls.c = libstored.asyncio.ZmqClient()
-        cls.c.connect()
+        cls._c = libstored.asyncio.zmq.ZmqClient()
+        @libstored.asyncio.worker.run_sync
+        async def f():
+            await cls._c.connect()
+        f()
 
         cls.logger.info(f'Connected')
 
     @classmethod
     def tearDownClass(cls):
-        cls.c.close()
+        @libstored.asyncio.worker.run_sync
+        async def f():
+            await cls._c.close()
+        f()
         cls.logger.info(f'Stopping {cls.binary}...')
         cls.process.terminate()
+
+    @property
+    def c(self) -> libstored.asyncio.zmq.ZmqClient:
+        return self._c
+
+    @property
+    def cs(self) -> libstored.asyncio.zmq.SyncZmqClient:
+        return libstored.asyncio.zmq.SyncZmqClient(self.c)
 
     def test_dummy(self):
         self.assertTrue(True)
@@ -46,54 +61,57 @@ class ZmqClientTest(unittest.TestCase):
         print(f'Library version {libstored.__version__}')
 
     def test_reconnect(self):
-        self.c.disconnect()
-        self.c.connect()
+        @libstored.asyncio.worker.run_sync
+        async def f():
+            await self.c.disconnect()
+            await self.c.connect()
+        f()
 
     def test_with(self):
-        with libstored.asyncio.ZmqClient(multi=True) as c:
+        with libstored.asyncio.zmq.ZmqClient(multi=True) as c:
             self.assertEqual(c.identification(), 'zmqserver')
 
-        @libstored.asyncio.run_sync
+        @libstored.asyncio.worker.run_sync
         async def f(self):
-            async with libstored.asyncio.ZmqClient(multi=True) as c:
+            async with libstored.asyncio.zmq.ZmqClient(multi=True) as c:
                 self.assertEqual(await c.identification(), 'zmqserver')
         f(self)
 
     def test_identification(self):
         self.assertEqual(self.c.identification(), 'zmqserver')
 
-        @libstored.asyncio.run_sync
-        async def f(self):
+        @libstored.asyncio.worker.run_sync
+        async def f():
             self.assertEqual(await self.c.identification(), 'zmqserver')
-        f(self)
+        f()
 
     def test_version(self):
-        self.assertEqual(self.c.version().split(' ')[0], '2')
+        self.assertEqual(self.cs.version().split(' ')[0], '2')
 
-        @libstored.asyncio.run_sync
-        async def f(self):
+        @libstored.asyncio.worker.run_sync
+        async def f():
             self.assertNotEqual(await self.c.version(), '')
-        f(self)
+        f()
 
     def test_capabilities(self):
-        c = self.c.capabilities()
+        c = self.c.capabilities(sync=True)
         self.assertTrue('?' in c)
         self.assertTrue('r' in c)
         self.assertTrue('w' in c)
         self.assertTrue('l' in c)
 
-        @libstored.asyncio.run_sync
-        async def f(self):
+        @libstored.asyncio.worker.run_sync
+        async def f():
             self.assertTrue('l' in await self.c.capabilities())
-        f(self)
+        f()
 
     def test_echo(self):
         self.assertEqual(self.c.echo('Tales as old as time...'), 'Tales as old as time...')
 
-        @libstored.asyncio.run_sync
-        async def f(self):
+        @libstored.asyncio.worker.run_sync
+        async def f():
             self.assertEqual(await self.c.echo('True as it can be'), 'True as it can be')
-        f(self)
+        f()
 
     def test_list(self):
         self.assertTrue(self.c['/an int8'] is not None)
@@ -103,26 +121,26 @@ class ZmqClientTest(unittest.TestCase):
         self.assertEqual(self.c['/an int8'].type_name, 'int8')
         self.assertEqual(self.c['/an int8'].value_type, int)
 
-        @libstored.asyncio.run_sync
-        async def f(self):
+        @libstored.asyncio.worker.run_sync
+        async def f():
             self.assertNotEqual(self.c['/an int8'], None)
             self.assertNotEqual(self.c['/comp/an'], None)
-        f(self)
+        f()
 
     def test_read_write(self):
-        an_int8 = self.c['/an int8']
+        an_int8 = self.cs['/an int8']
         v = an_int8.read()
         an_int8.write(v + 1)
-        self.assertEqual(self.c.an_int8.read(), v + 1) # type: ignore
+        self.assertEqual(self.cs['/an int8'].read(), v + 1)
         an_int8.write(v)
         self.assertEqual(an_int8.read(), v)
 
-        @libstored.asyncio.run_sync
-        async def f(self):
+        @libstored.asyncio.worker.run_sync
+        async def f():
             an_int8 = self.c['/an int8']
             v = await an_int8.read()
             await an_int8.write(v + 1)
-            self.assertEqual(await self.c.an_int8.read(), v + 1)
+            self.assertEqual(await self.c.an_int8.read(), v + 1) # type: ignore
             await an_int8.write(v)
             self.assertEqual(await an_int8.read(), v)
 
@@ -131,11 +149,11 @@ class ZmqClientTest(unittest.TestCase):
             self.assertEqual(await o.read(), 32)
             self.assertEqual(o.get(), 32)
             self.assertTrue('default' in o.formats())
-            o.format = 'default'
+            o.format.value = 'default'
             self.assertEqual(o.value_str.value, '32')
-            o.format = 'hex'
+            o.format.value = 'hex'
             self.assertEqual(o.value_str.value, '0x20')
-            o.format = 'bin'
+            o.format.value = 'bin'
             self.assertEqual(o.value_str.value, '0b100000')
 
             l = locale.getlocale(locale.LC_NUMERIC)
@@ -176,10 +194,10 @@ class ZmqClientTest(unittest.TestCase):
                 self.logger.warning('Locale nl_NL.utf8 not available, skipping locale-specific tests')
 
             locale.setlocale(locale.LC_NUMERIC, l)
-        f(self)
+        f()
 
     def test_events(self):
-        an_int8 = self.c['/an int8']
+        an_int8 = self.cs['/an int8']
         v = an_int8.read()
 
         events = []
@@ -193,10 +211,10 @@ class ZmqClientTest(unittest.TestCase):
         an_int8.write(v + 3)
         an_int8.write(v)
         an_int8.write(v)
-        self.assertEqual(events, [v + 1, v + 2, v + 3, v])
+        self.assertEqual(events, [v, v + 1, v + 2, v + 3, v])
 
-        @libstored.asyncio.run_sync
-        async def f(self):
+        @libstored.asyncio.worker.run_sync
+        async def f():
             an_int8 = self.c['/an int8']
             events = []
             def callback(v):
@@ -209,8 +227,8 @@ class ZmqClientTest(unittest.TestCase):
             await an_int8.write(v + 3)
             await an_int8.write(v)
             await an_int8.write(v)
-            self.assertEqual(events, [v + 1, v + 2, v + 3, v])
-        f(self)
+            self.assertEqual(events, [v, v + 1, v + 2, v + 3, v])
+        f()
 
 def main():
     if len(sys.argv) == 0 or not 'zmqserver' in sys.argv[-1]:
