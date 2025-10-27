@@ -9,14 +9,14 @@
 #include <libstored/protocol.h>
 
 #ifdef __cplusplus
-#	ifndef STORED_HAVE_HEATSHRINK
+#  ifndef STORED_HAVE_HEATSHRINK
 namespace stored {
 // No compression available, just use a pass-through.
 typedef ProtocolLayer CompressLayer;
 } // namespace stored
-#	else // STORED_HAVE_HEATSHRINK
+#  else // STORED_HAVE_HEATSHRINK
 
-#		include <vector>
+#    include <vector>
 
 namespace stored {
 
@@ -41,7 +41,7 @@ class CompressLayer : public ProtocolLayer {
 public:
 	typedef ProtocolLayer base;
 
-	enum {
+	enum STORED_ANONYMOUS {
 		/*! \brief Window size. See heatshrink documentation. */
 		Window = 8,
 		/*! \brief Lookahead. See heatshrink documentation. */
@@ -60,9 +60,9 @@ public:
 
 	virtual void decode(void* buffer, size_t len) override;
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
-#		ifndef DOXYGEN
+#    ifndef DOXYGEN
 	using base::encode;
-#		endif
+#    endif
 	virtual size_t mtu() const override;
 
 	void setPurgeableResponse(bool purgeable = true) final
@@ -108,6 +108,6 @@ private:
 };
 
 } // namespace stored
-#	endif // STORED_HAVE_HEATSHRINK
-#endif	       // __cplusplus
-#endif	       // LIBSTORED_COMPRESS_H
+#  endif // STORED_HAVE_HEATSHRINK
+#endif	 // __cplusplus
+#endif	 // LIBSTORED_COMPRESS_H

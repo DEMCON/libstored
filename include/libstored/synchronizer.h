@@ -80,7 +80,7 @@ public:
 	 */
 	typedef Key Size;
 
-	enum {
+	enum STORED_ANONYMOUS {
 		/*! \brief Maximum offset of seq() that is a valid short seq. */
 		ShortSeqWindow = 1U << (sizeof(ShortSeq) * 8U),
 		/*! \brief Oldest margin where the short seq of changes should be moved. */
@@ -451,7 +451,7 @@ public:
 #	define MAX2(a, b)	 ((a) > (b) ? (a) : (b))
 #	define MAX3(a, b, c)	 MAX2(MAX2((a), (b)), (c))
 #	define MAX4(a, b, c, d) MAX3(MAX2((a), (b)), (c), (d))
-	enum {
+	enum STORED_ANONYMOUS {
 		/*! \brief Maximum size of any Synchronizer message for this store. */
 		MaxMessageSize = MAX4(
 			// Hello
