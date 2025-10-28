@@ -31,5 +31,5 @@ set +x
 
 echo -e "\nSuggested packages to install manually:\n"
 echo -e "  sudo apt install -y ninja-build spin gdb-multiarch cppcheck flawfinder\\"
-echo -e "                      clang clang-tidy clang-format-11 libzmq3-dev \\"
+echo -e "                      clang clang-tidy clang-format-15 libzmq3-dev \\"
 echo -e "                      afl++ lcov\n"

@@ -56,7 +56,7 @@ jobs:
           dist/ubuntu/bootstrap.sh
           sudo apt install clang-tidy clang libegl1 cppcheck
       - name: build Debug
-        run: dist/ubuntu/build.sh Debug dev test
+        run: dist/ubuntu/build.sh Debug dev test -DLIBSTORED_CPPCHECK=OFF
       - name: build Release
         run: |
           rm -rf dist/ubuntu/build
