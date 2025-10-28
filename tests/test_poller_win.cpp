@@ -52,6 +52,8 @@ TEST(Poller, Win)
 	EXPECT_NE(errno, 0);
 	EXPECT_TRUE(res->empty());
 
+	EXPECT_EQ(poller.remove(h), 0);
+
 	CloseHandle(e);
 }
 
@@ -90,6 +92,9 @@ TEST(Poller, Zmq)
 
 	res = &poller.poll(0);
 	EXPECT_EQ(res->size(), 1);
+
+	EXPECT_EQ(poller.remove(prep), 0);
+	EXPECT_EQ(poller.remove(preq), 0);
 
 	zmq_close(req);
 	zmq_close(rep);
