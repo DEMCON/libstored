@@ -137,6 +137,7 @@ public:
 		impl::StoreVariantV<Base,Implementation,{{o|stype}},{{o.offset}}u,{{o.size}}u> {{o.cname}};
 {%     elif o is function %}
 		/*! \brief {{o}} */
+		// NOLINTNEXTLINE(readability-redundant-casting)
 		impl::StoreVariantF<Base,Implementation,{{o|stype}},{{o.f}}u,{{o.size}}u> {{o.cname}};
 {%     endif %}
 {%   else %}
