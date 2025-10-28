@@ -31,7 +31,7 @@
 				"command": "${workspaceFolder}/dist/ubuntu/build.sh ${input:buildtype} conf test dev nosan clean"
 			},
 			"windows": {
-				"command": "${workspaceFolder}\\dist\\win32\\build.cmd ${input:buildtype} conf test dev clean"
+				"command": "${workspaceFolder}\\dist\\win32\\build.cmd ${input:buildtype} conf test dev clean gcc -DLIBSTORED_REGEN_LAUNCH_JSON=ON"
 			},
 			"problemMatcher": []
 		},
@@ -46,7 +46,7 @@
 				"command": "${workspaceFolder}/dist/ubuntu/build.sh Debug conf test dev san clean"
 			},
 			"windows": {
-				"command": "${workspaceFolder}\\dist\\win32\\build.cmd Debug conf test dev clean"
+				"command": "${workspaceFolder}\\dist\\win32\\build.cmd Debug conf test dev clean gcc -DLIBSTORED_REGEN_LAUNCH_JSON=ON"
 			},
 			"problemMatcher": []
 		},
@@ -61,7 +61,7 @@
 				"command": "${workspaceFolder}/dist/ubuntu/build.sh Release conf test dev clean"
 			},
 			"windows": {
-				"command": "${workspaceFolder}\\dist\\win32\\build.cmd Release conf test dev clean"
+				"command": "${workspaceFolder}\\dist\\win32\\build.cmd Release conf test dev clean gcc -DLIBSTORED_REGEN_LAUNCH_JSON=ON"
 			},
 			"problemMatcher": []
 		},

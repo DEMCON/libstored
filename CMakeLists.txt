@@ -289,10 +289,9 @@ function(add_launch_json TARGET)
 			\"type\": \"cppdbg\",
 			\"request\": \"launch\",
 			\"name\": \"${TARGET}\",
-			\"preLaunchTask\": \"build-examples\",
 			\"stopAtEntry\": true,
-			\"program\": \"$<SHELL_PATH:$<TARGET_FILE:${TARGET}>>\",
-			\"cwd\": \"$<SHELL_PATH:$<TARGET_FILE_DIR:${TARGET}>>\",
+			\"program\": \"$<TARGET_FILE:${TARGET}>\",
+			\"cwd\": \"$<TARGET_FILE_DIR:${TARGET}>\",
 		},"
 		)
 	else()
@@ -305,7 +304,7 @@ function(add_launch_json TARGET)
 			\"type\": \"f5anything\",
 			\"request\": \"launch\",
 			\"name\": \"${TARGET}\",
-			\"command\": \"$<SHELL_PATH:$<TARGET_FILE:${TARGET}>>\",
+			\"command\": \"$<TARGET_FILE:${TARGET}>\",
 		},"
 		)
 	endif()
@@ -317,6 +316,7 @@ function(add_launch_json_py NAME FILE)
 	if(NOT "${_args}" STREQUAL "")
 		set(_args "\"${_args}\"")
 	endif()
+	string(REGEX REPLACE "\\\\" "\\\\\\\\" FILE_ESCAPED "${FILE}")
 	set_property(
 		GLOBAL
 		PROPERTY
@@ -326,9 +326,9 @@ function(add_launch_json_py NAME FILE)
 			\"type\": \"debugpy\",
 			\"request\": \"launch\",
 			\"name\": \"${NAME}\",
-			\"program\": \"$<SHELL_PATH:${FILE}>\",
+			\"program\": \"${FILE_ESCAPED}\",
 			\"args\": [${_args}],
-			\"python\": \"$<SHELL_PATH:${PYTHON_EXECUTABLE}>\"
+			\"python\": \"${PYTHON_EXECUTABLE}\"
 		},"
 	)
 endfunction()
@@ -350,14 +350,18 @@ function(add_launch_json_pymod NAME MODULE)
 			\"name\": \"${NAME}\",
 			\"module\": \"${MODULE}\",
 			\"args\": [${_args}],
-			\"python\": \"$<SHELL_PATH:${PYTHON_EXECUTABLE}>\",
-			\"cwd\": \"$<SHELL_PATH:${PROJECT_SOURCE_DIR}/python>\"
+			\"python\": \"${PYTHON_EXECUTABLE}\",
+			\"cwd\": \"${PROJECT_SOURCE_DIR}/python\"
 		},"
 	)
 endfunction()
 
 if(LIBSTORED_PYLIBSTORED)
 	add_subdirectory(python)
+endif()
+
+if(LIBSTORED_DIST_DIR)
+	add_subdirectory(${LIBSTORED_DIST_DIR})
 endif()
 
 option(LIBSTORED_EXAMPLES "Build examples" ON)
@@ -484,16 +488,8 @@ add_custom_target(
 	VERBATIM
 )
 
-if(TARGET gui-qrc)
-	add_dependencies(libstored-reuse gui-qrc)
-endif()
-
 if(LIBSTORED_DEV)
 	add_custom_target(libstored-reuse-all ALL DEPENDS libstored-reuse)
-endif()
-
-if(LIBSTORED_DIST_DIR)
-	add_subdirectory(${LIBSTORED_DIST_DIR})
 endif()
 
 if(LIBSTORED_GEN_LAUNCH_JSON)

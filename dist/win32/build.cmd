@@ -206,7 +206,7 @@ exit /b 0
 
 
 :show_help
-echo Usage: $0 [^<opt^>...] [--] [^<other cmake arguments^>]
+echo Usage: %0 [^<opt^>...] [--] [^<other cmake arguments^>]
 echo.
 echo where opt is:
 echo   Debug RelWithDebInfo Release
