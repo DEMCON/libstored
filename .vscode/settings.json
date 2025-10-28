@@ -29,4 +29,5 @@
 	"cmakeFormat.env": {
 		"PYTHONPATH": "${workspaceFolder}/dist/venv"
 	},
+	"python.analysis.typeCheckingMode": "standard",
 }

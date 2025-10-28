@@ -9,7 +9,6 @@ import asyncio
 import concurrent.futures
 import datetime
 import filelock
-import functools
 import json
 import keyword
 import locale
