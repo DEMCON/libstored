@@ -614,6 +614,22 @@ function(libstored_copy_dlls target)
 					VERBATIM
 				)
 			endif()
+
+		endif()
+	endif()
+
+	if(WIN32)
+		get_target_property(target_type ${target} TYPE)
+		get_property(LIBSTORED_RUNTIME_LIBS GLOBAL PROPERTY LIBSTORED_RUNTIME_LIBS)
+		if(target_type STREQUAL "EXECUTABLE" AND NOT "${LIBSTORED_RUNTIME_LIBS}" STREQUAL "")
+			add_custom_command(
+				TARGET ${target}
+				PRE_LINK
+				COMMAND
+					${CMAKE_COMMAND} -E copy ${LIBSTORED_RUNTIME_LIBS}
+					$<TARGET_FILE_DIR:${target}>/
+				VERBATIM
+			)
 		endif()
 	endif()
 endfunction()

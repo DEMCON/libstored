@@ -9,6 +9,7 @@
 		"cheshirekow.cmake-format",
 		"streetsidesoftware.code-spell-checker",
 		"discretegames.f5anything",
-		"ms-vscode.cmake-tools"
+		"ms-vscode.cmake-tools",
+		"spadin.memento-inputs"
 	]
 }
