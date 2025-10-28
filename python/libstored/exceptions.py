@@ -86,7 +86,7 @@ class DeadlockChecker:
         if self._type != self.Type.THREADING_LOCK:
             raise RuntimeError('Wrong access method')
 
-        self._acquired = self._lock.acquire(self._timeout_s)
+        self._acquired = self._lock.acquire(timeout=self._timeout_s if self._timeout_s is not None else -1)
         if not self._acquired:
             self._deadlock('acquire lock')
         return self
