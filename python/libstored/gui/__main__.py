@@ -46,6 +46,7 @@ def darken_color(color, factor=0.9):
 class Style:
     root_width = 800
     root_height = 600
+    window_padding = 2
     grid_padding = 2
     separator_padding = grid_padding * 10
 
@@ -373,20 +374,20 @@ class ClientConnection(laio_tk.AsyncWidget, ttk.Frame):
         self._host_label.grid(row=0, column=0, sticky='e', padx=(0, Style.grid_padding), pady=Style.grid_padding)
 
         self._host = ltk.Entry(self, text=self.host)
-        self._host.grid(row=0, column=1, sticky='we', padx=Style.grid_padding, pady=Style.grid_padding)
+        self._host.grid(row=0, column=1, sticky='nswe', padx=Style.grid_padding, pady=Style.grid_padding)
 
         self._port_label = ttk.Label(self, text='Port:')
         self._port_label.grid(row=0, column=2, sticky='e', padx=Style.grid_padding, pady=Style.grid_padding)
 
         self._port = ltk.Entry(self, text=str(self.port), hint=f'default: {lprot.default_port}', validation=r'^[0-9]{0,5}$')
-        self._port.grid(row=0, column=3, sticky='we', padx=Style.grid_padding, pady=Style.grid_padding)
+        self._port.grid(row=0, column=3, sticky='nswe', padx=Style.grid_padding, pady=Style.grid_padding)
 
         self._multi_var = tk.BooleanVar(value=client.multi)
         self._multi = ttk.Checkbutton(self, text='Multi', variable=self._multi_var)
-        self._multi.grid(row=0, column=4, sticky='we', padx=Style.grid_padding, pady=Style.grid_padding)
+        self._multi.grid(row=0, column=4, sticky='nswe', padx=Style.grid_padding, pady=Style.grid_padding)
 
         self._connect = ttk.Button(self, text='Connect')
-        self._connect.grid(row=0, column=5, sticky='we', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
+        self._connect.grid(row=0, column=5, sticky='nswe', padx=(Style.grid_padding, 0), pady=Style.grid_padding)
         self._connect['command'] = self._on_connect_button
 
         self.connect(self.client.connecting, self._on_connected)
@@ -1070,17 +1071,17 @@ class GUIClient(laio_tk.AsyncApp):
         s.configure('Even.TButton', width=8, padding=3)
 
         connect = ClientConnection(self, self, self.client, clear_state)
-        connect.grid(column=0, row=0, sticky='we', pady=Style.grid_padding)
+        connect.grid(column=0, row=0, sticky='we', padx=Style.window_padding, pady=(Style.window_padding, Style.grid_padding))
 
         scrollable_objects = ScrollableFrame(self)
         self._objects = ObjectList(self, scrollable_objects.content)
         self._objects.pack(fill='both', expand=True)
-        scrollable_objects.grid(column=0, row=2, sticky='nsew')
+        scrollable_objects.grid(column=0, row=2, sticky='nsew', padx=Style.window_padding)
         self.connect(self._objects.changed, scrollable_objects.bind_scroll)
         self.connect(self._objects.filtered, scrollable_objects.updated_content)
 
         self._tools = Tools(app=self, parent=self, filter_objects=self._objects, refresh_command=self._refresh_all)
-        self._tools.grid(column=0, row=1, sticky='nswe', pady=Style.grid_padding)
+        self._tools.grid(column=0, row=1, sticky='nswe', padx=Style.window_padding, pady=Style.grid_padding)
 
         self._scrollable_polled = ScrollableFrame(self)
         self._polled_objects = ObjectList(self, self._scrollable_polled.content, filter=lambda o: o.polling.value is not None, show_plot=True)
@@ -1089,7 +1090,7 @@ class GUIClient(laio_tk.AsyncApp):
         self.connect(self._polled_objects.filtered, self._scrollable_polled.updated_content)
 
         self._manual = ManualCommand(self, self, self.client)
-        self._manual.grid(column=0, row=4, sticky='nsew', pady=(Style.grid_padding, 0))
+        self._manual.grid(column=0, row=4, sticky='nsew', padx=Style.window_padding, pady=(Style.grid_padding, Style.window_padding))
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(2, weight=2)
@@ -1183,7 +1184,7 @@ class GUIClient(laio_tk.AsyncApp):
                 height += o.winfo_reqheight()
 
         if height > 0:
-            self._scrollable_polled.grid(column=0, row=3, sticky='nsew', pady=(Style.separator_padding, 0))
+            self._scrollable_polled.grid(column=0, row=3, sticky='nsew', padx=Style.window_padding, pady=(Style.separator_padding, 0))
             self._scrollable_polled.update_idletasks()
             total_height = self.winfo_height()
             if total_height > 0:
