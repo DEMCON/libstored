@@ -11,7 +11,11 @@ import time
 import threading
 import time
 import logging
+import sys
 import typing
+
+if sys.platform == 'win32' and sys.version_info < (3, 16):
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy()) # type: ignore
 
 from .. import exceptions as lexc
 
