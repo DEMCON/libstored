@@ -4,7 +4,6 @@
 
 import asyncio
 import serial
-import time
 
 from . import protocol as lprot
 from . import util as lprot_util
@@ -19,7 +18,6 @@ class SerialLayer(lprot.ProtocolLayer):
         self._serial : serial.Serial | None = None
         self._writer : lprot_util.Writer | None = None
 
-        self._drop = None
         self._encode_buffer = bytearray()
         self._open : bool = True
 
@@ -54,15 +52,27 @@ class SerialLayer(lprot.ProtocolLayer):
             self._serial = await self._serial_open(**serial_args)
             self.logger.debug('Serial port %s opened', serial_args['port'])
 
-            if drop_s is not None:
-                self._drop = time.time() + drop_s
+            if drop_s is not None and drop_s > 0:
+                await asyncio.sleep(drop_s)
+
+            if self._serial.in_waiting > 0:
+                data = self._serial.read(self._serial.in_waiting)
+                self.logger.debug('Flushing initial data: %s', data)
 
             # Only access self._serial read/write in reader/writer threads.
             async with lprot_util.Writer(self._write, thread_name=f'{self.__class__.__name__}-writer') as writer:
                 async with lprot_util.Reader(self._read, thread_name=f'{self.__class__.__name__}-reader') as reader:
-                    self._writer = writer
                     try:
-                        await self._serial_read(reader)
+                        if self._encode_buffer:
+                            self.logger.debug('sending buffered %s', self._encode_buffer)
+                            await self._encode(self._encode_buffer)
+                            self._encode_buffer = bytearray()
+
+                        self._writer = writer
+
+                        while self._open:
+                            data = await reader.read()
+                            await self.decode(data)
                     except:
                         # Make sure reader/writer threads are not blocking before closing.
                         self._open = False
@@ -103,23 +113,6 @@ class SerialLayer(lprot.ProtocolLayer):
                 await asyncio.sleep(1)
         raise last_e
 
-    async def _serial_read(self, reader : lprot_util.Reader[bytes]) -> None:
-        while self._open:
-            data = await reader.read()
-            if self._drop is not None:
-                # First drop_s seconds of data is dropped to get rid of
-                # garbage while reset/boot/connecting the UART.
-                self.logger.debug('dropped %s', data)
-
-                if time.time() > self._drop:
-                    self._drop = None
-                    if self._encode_buffer:
-                        self.logger.debug('sending buffered %s', self._encode_buffer)
-                        await self._encode(self._encode_buffer)
-                        self._encode_buffer = bytearray()
-            else:
-                await self.decode(data)
-
     async def encode(self, data : lprot.ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
@@ -128,7 +121,7 @@ class SerialLayer(lprot.ProtocolLayer):
 
         if not self.open:
             self.logger.debug('Serial port closed; dropping data %s', data)
-        elif self._drop is not None or self._writer is None:
+        elif self._writer is None:
             self.logger.debug('buffering %s', data)
             self._encode_buffer += data
         else:

@@ -20,7 +20,7 @@ fi
 
 sudo apt install -y \
 	build-essential git-core cmake pkg-config \
-	python3 python3-pip python3-setuptools \
+	python3 python3-pip python3-setuptools python3-tk \
 	doxygen plantuml python3-venv python3-dev lsb-release \
 	libgl1 libegl1 libxkbcommon0
 
