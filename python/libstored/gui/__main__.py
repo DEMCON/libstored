@@ -453,7 +453,7 @@ class ClientConnection(laio_tk.AsyncWidget, ttk.Frame):
                 self._after_connection(await self.client.identification(), await self.client.version())
             except asyncio.CancelledError:
                 raise
-            except Exception as e:
+            except BaseException as e:
                 self.logger.warning('Connect failed: %s', e)
 
     @laio_tk.AsyncApp.tk_func
@@ -509,7 +509,7 @@ class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
         self.connect(self.obj.client.disconnected, self._on_disconnect)
 
     @property
-    def obj(self):
+    def obj(self) -> laio_zmq.Object:
         return self._obj
 
     def style(self, style : str):
@@ -586,6 +586,7 @@ class ObjectList(ttk.Frame):
         super().__init__(parent, *args, **kwargs)
         self._app = app
         self._objects : list[ObjectRow] = []
+        self._filtered_objects : list[ObjectRow] = []
         self._filter = filter
         self._show_plot = show_plot
         self.columnconfigure(0, weight=1)
@@ -595,7 +596,7 @@ class ObjectList(ttk.Frame):
 
     @property
     def objects(self) -> list[ObjectRow]:
-        return self._objects
+        return self._filtered_objects
 
     def set_objects(self, objects : list[laio_zmq.Object]):
         for o in self._objects:
@@ -624,11 +625,13 @@ class ObjectList(ttk.Frame):
             f = lambda o: True
 
         row = 0
+        self._filtered_objects = []
         for o in self._objects:
             if f(o.obj):
                 o.grid(column=0, row=row, sticky='nsew')
                 o.style('Even' if row % 2 == 0 else 'Odd')
                 row += 1
+                self._filtered_objects.append(o)
             else:
                 o.grid_forget()
 
@@ -1001,7 +1004,7 @@ class ManualCommand(laio_tk.AsyncWidget, ttk.Frame):
 
         try:
             self._response(await self._client.req(command))
-        except Exception as e:
+        except BaseException as e:
             self.logger.exception(f'Manual command: {e}')
 
     @laio_tk.AsyncApp.tk_func
@@ -1167,9 +1170,13 @@ class GUIClient(laio_tk.AsyncApp):
         if self._csv is not None:
             await self._csv.close()
 
+    @laio_tk.AsyncApp.tk_func
+    def _refresh_all(self):
+        self._refresh_objects([o.obj for o in self._objects.objects])
+
     @laio_tk.AsyncApp.worker_func
-    async def _refresh_all(self):
-        await asyncio.gather(*(o.read(acquire_alias=False) for o in self.client.objects))
+    async def _refresh_objects(self, objs : list[laio_zmq.Object]):
+        await asyncio.gather(*(o.read(acquire_alias=False) for o in objs))
 
     @laio_tk.AsyncApp.tk_func
     def _filter_polled(self, interval_s):
@@ -1180,8 +1187,7 @@ class GUIClient(laio_tk.AsyncApp):
         self._scrollable_polled.update_idletasks()
         height = 0
         for o in self._polled_objects.objects:
-            if o.obj.polling.value is not None:
-                height += o.winfo_reqheight()
+            height += o.winfo_reqheight()
 
         if height > 0:
             self._scrollable_polled.grid(column=0, row=3, sticky='nsew', padx=Style.window_padding, pady=(Style.separator_padding, 0))
