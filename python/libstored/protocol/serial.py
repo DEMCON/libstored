@@ -83,7 +83,7 @@ class SerialLayer(lprot.ProtocolLayer):
             pass
         except Exception as e:
             self.logger.exception(f'Serial error: {e}')
-            raise e
+            raise
         finally:
             self._open = False
 

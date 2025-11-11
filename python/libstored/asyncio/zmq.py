@@ -2817,7 +2817,7 @@ class ZmqClient(Work):
             self._tracing = Tracing(self, poll_interval_s=self.trace_poll_interval_s, macro=m)
             try:
                 await self._tracing._init()
-            except Exception as e:
+            except BaseException as e:
                 self.logger.info('cannot initialize tracing; %s', e)
                 self._tracing = False
                 await self.release_macro(m)
