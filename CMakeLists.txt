@@ -356,6 +356,8 @@ function(add_launch_json_pymod NAME MODULE)
 	)
 endfunction()
 
+option(LIBSTORED_EXAMPLES "Build examples" ON)
+
 if(LIBSTORED_PYLIBSTORED)
 	add_subdirectory(python)
 endif()
@@ -364,7 +366,6 @@ if(LIBSTORED_DIST_DIR)
 	add_subdirectory(${LIBSTORED_DIST_DIR})
 endif()
 
-option(LIBSTORED_EXAMPLES "Build examples" ON)
 add_custom_target(examples)
 if(LIBSTORED_EXAMPLES)
 	add_subdirectory(examples)
