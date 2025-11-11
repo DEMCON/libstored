@@ -268,7 +268,7 @@ class AsyncTk:
                 self.logger.debug("Processing async call to %s", func.__qualname__)
                 try:
                     future.set_result(func(*args, **kwargs))
-                except Exception as e:
+                except BaseException as e:
                     self.logger.debug('Exception in async call to %s', func.__qualname__, exc_info=True)
                     future.set_exception(e)
         except queue.Empty:
@@ -337,7 +337,7 @@ class Work:
                         return lexc.DeadlockChecker(future).result()
                     else:
                         return future
-            except Exception as e:
+            except BaseException as e:
                 self.logger.debug(f'Exception {e} in scheduling tk function {f}')
                 raise
         return tk_func
@@ -525,7 +525,7 @@ class AsyncApp(Work, ttk.Frame):
                             return future
             except asyncio.CancelledError:
                 raise
-            except Exception as e:
+            except BaseException as e:
                 self.logger.debug(f'Exception {e} in scheduling worker function {f}')
                 raise
 

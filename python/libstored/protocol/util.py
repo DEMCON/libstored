@@ -188,10 +188,10 @@ class Reader(typing.Generic[T]):
 
                 if was_empty:
                     self._wakeup()
-        except Exception as e:
+        except BaseException as e:
             logging.getLogger(self.__class__.__qualname__).exception(f'Reader thread error: {e}')
             self._running = False
-            raise e
+            raise
         finally:
             # Signal a blocking read() or stop().
             self._wakeup()
@@ -297,7 +297,7 @@ class Writer(typing.Generic[T]):
                 if x is not None:
                     self._write(x)
                 self._queue.task_done()
-        except Exception as e:
+        except BaseException as e:
             logging.getLogger(self.__class__.__qualname__).error(f'Writer thread error: {e}')
             self._running = False
         finally:

@@ -118,7 +118,7 @@ class StdioLayer(lprot.ProtocolLayer):
             self.logger.debug('send %s', data)
             self._process.stdin.write(data) # type: ignore
             self._process.stdin.flush()
-        except Exception as e:
+        except BaseException as e:
             self.logger.info(f'Cannot write to stdin; shutdown: {e}')
             try:
                 self._process.stdin.close()
@@ -135,7 +135,7 @@ class StdioLayer(lprot.ProtocolLayer):
                 await self.decode(data)
         except asyncio.CancelledError:
             pass
-        except Exception as e:
+        except BaseException as e:
             self.logger.error(f'StdioLayer process reader error: {e}')
             await self.close()
         finally:
