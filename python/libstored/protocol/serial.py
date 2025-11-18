@@ -100,7 +100,12 @@ class SerialLayer(lprot.ProtocolLayer):
         last_e = TimeoutError()
         for i in range(0, timeout_s):
             try:
-                return serial.Serial(**kwargs)
+                s = serial.Serial(**kwargs)
+                try:
+                    s.set_low_latency_mode(True)
+                except:
+                    pass
+                return s
             except serial.SerialException as e:
                 # For unclear reasons, Windows sometimes reports the port as
                 # being in use.  That issue seems to clear automatically after

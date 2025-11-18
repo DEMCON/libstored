@@ -959,7 +959,9 @@ class MuxLayer(ProtocolLayer):
 
         self._layers[chan] = layer
         if layer is not self:
-            layer.down = lambda data: self._encode(chan, data)
+            async def _encode(data):
+                await self._encode(chan, data)
+            layer.down = _encode
 
     def reset(self, chan : int) -> None:
         '''
