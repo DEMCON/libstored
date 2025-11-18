@@ -36,6 +36,7 @@ set(pylibstored_src
     libstored/protocol/stdio.py
     libstored/protocol/util.py
     libstored/protocol/zmq.py
+    libstored/protocol/zmqcat.py
     libstored/tk.py
     libstored/version.py
     libstored/wrapper/__init__.py
