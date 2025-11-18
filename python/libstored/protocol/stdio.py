@@ -61,7 +61,7 @@ class StdinLayer(lprot.ProtocolLayer):
         except asyncio.CancelledError:
             pass
         except Exception as e:
-            self.logger.exception(f'ConsoleLayer stdin reader error: {e}')
+            self.logger.exception(f'stdin reader error: {e}')
             raise
         finally:
             await self._stdin_reader.stop(False)

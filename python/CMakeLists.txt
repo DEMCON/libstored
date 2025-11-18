@@ -39,10 +39,8 @@ set(pylibstored_src
     libstored/tk.py
     libstored/version.py
     libstored/wrapper/__init__.py
-    libstored/wrapper/serial/__init__.py
-    libstored/wrapper/serial/__main__.py
-    libstored/wrapper/stdio/__init__.py
-    libstored/wrapper/stdio/__main__.py
+    libstored/wrapper/serial.py
+    libstored/wrapper/stdio.py
 )
 
 set(package_data_

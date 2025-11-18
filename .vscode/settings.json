@@ -30,4 +30,5 @@
 		"PYTHONPATH": "${workspaceFolder}/dist/venv"
 	},
 	"python.analysis.typeCheckingMode": "standard",
+	"python.defaultInterpreterPath": "${workspaceFolder}/dist/venv/bin/python3"
 }
