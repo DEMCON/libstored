@@ -9,9 +9,9 @@ import logging
 import re
 import sys
 
-from ...version import __version__
-from ... import protocol as lprot
-from ...asyncio.worker import AsyncioWorker, run_sync
+from ..version import __version__
+from .. import protocol as lprot
+from ..asyncio.worker import AsyncioWorker, run_sync
 
 def main():
     parser = argparse.ArgumentParser(description='stdin/stdout wrapper to ZMQ server',
