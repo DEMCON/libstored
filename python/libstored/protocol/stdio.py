@@ -10,6 +10,8 @@ import subprocess
 import sys
 import typing
 
+from collections.abc import Awaitable, Callable, Coroutine
+
 from . import protocol as lprot
 from . import util as lprot_util
 
@@ -141,7 +143,7 @@ class StdioLayer(lprot.ProtocolLayer):
         finally:
             await self._reader.stop()
 
-    def set_terminate_callback(self, f : typing.Callable[[int], None | typing.Coroutine[None, None, None]]) -> None:
+    def set_terminate_callback(self, f : Callable[[int], None | Coroutine[None, None, None]]) -> None:
         '''
         Set a callback function that is called when the process terminates.
         The function is called with the exit code as argument.
@@ -213,7 +215,68 @@ lprot.register_layer_type(StdioLayer)
 
 
 
+class PrintLayer(lprot.ProtocolLayer):
+    '''
+    A protocol layer that prints all data sent and received.
+    '''
+
+    name = 'print'
+
+    def __init__(self, prefix : tuple | str | None=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._print = self.default_print
+
+        self._prefix : tuple[str, str] = ('', '')
+        if isinstance(prefix, tuple):
+            self._prefix = prefix
+        elif isinstance(prefix, str):
+            p = prefix.split(',', 1)
+            self._prefix = (p[0], p[1] if len(p) > 1 else p[0])
+
+    def _format(self, data : lprot.ProtocolLayer.Packet) -> str:
+        if isinstance(data, str):
+            data = data.encode()
+        elif isinstance(data, memoryview):
+            data = data.cast('B')
+
+        s = ''
+        for b in data:
+            if 32 <= b <= 126 or b in (9, 10, 13):
+                s += chr(b)
+            else:
+                s += f'\\x{b:02x}'
+        return s
+
+    async def encode(self, data : lprot.ProtocolLayer.Packet) -> None:
+        await self.print(f'{self._prefix[0]}{self._format(data)}')
+        await super().encode(data)
+
+    async def decode(self, data : lprot.ProtocolLayer.Packet) -> None:
+        await self.print(f'{self._prefix[1]}{self._format(data)}')
+        await super().decode(data)
+
+    async def default_print(self, msg : str) -> None:
+        print(msg, end='')
+
+    async def print(self, msg : str) -> None:
+        await self._print(msg)
+
+    @property
+    def printer(self) -> Callable[[str], Awaitable[None]]:
+        return self._print
+
+    @printer.setter
+    def printer(self, func : Callable[[str], typing.Any]) -> None:
+        if asyncio.iscoroutinefunction(func):
+            self._print = func
+        else:
+            async def wrapper(msg : str) -> None:
+                func(msg)
+            self._print = wrapper
+
+
 __all__ = [
     'StdinLayer',
     'StdioLayer',
+    'PrintLayer',
 ]

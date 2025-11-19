@@ -50,7 +50,13 @@ Protocol layers
 
 .. autoclass:: libstored.protocol.StdioLayer
 
+.. autoclass:: libstored.protocol.PrintLayer
+
 .. autoclass:: libstored.protocol.SerialLayer
+
+.. autoclass:: libstored.protocol.ZmqSocketClient
+
+.. autoclass:: libstored.protocol.ZmqSocketServer
 
 .. autoclass:: libstored.protocol.ZmqServer
 
@@ -70,4 +76,6 @@ Protocol stack
 .. autofunction:: libstored.protocol.get_layer_types
 
 .. autofunction:: libstored.protocol.build_stack
+
+.. autofunction:: libstored.protocol.stack
 
