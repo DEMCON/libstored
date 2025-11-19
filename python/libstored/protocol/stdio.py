@@ -279,4 +279,5 @@ __all__ = [
     'StdinLayer',
     'StdioLayer',
     'PrintLayer',
+    'set_pdeathsig',
 ]

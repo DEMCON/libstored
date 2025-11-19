@@ -1574,10 +1574,13 @@ class ZmqClient(Work):
         if self.is_connected():
             self.disconnect(sync=True)
 
-    def __enter__(self):
+    def sync(self) -> SyncZmqClient:
         s = SyncZmqClient(self)
         s.connect()
         return s
+
+    def __enter__(self):
+        return self.sync()
 
     def __exit__(self, *args):
         if self.is_connected():
