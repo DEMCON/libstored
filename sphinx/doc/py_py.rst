@@ -54,6 +54,8 @@ Protocol layers
 
 .. autoclass:: libstored.protocol.SerialLayer
 
+.. autoclass:: libstored.protocol.FileLayer
+
 .. autoclass:: libstored.protocol.ZmqSocketClient
 
 .. autoclass:: libstored.protocol.ZmqSocketServer

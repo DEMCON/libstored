@@ -9,3 +9,4 @@ from .zmq import *
 from .util import *
 from .stdio import *
 from .serial import *
+from .file import *

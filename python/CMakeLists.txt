@@ -31,6 +31,7 @@ set(pylibstored_src
     libstored/log/__init__.py
     libstored/log/__main__.py
     libstored/protocol/__init__.py
+    libstored/protocol/file.py
     libstored/protocol/protocol.py
     libstored/protocol/serial.py
     libstored/protocol/stdio.py

@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
+import aiofiles
 import asyncio
 import ctypes
 import os
@@ -256,7 +257,8 @@ class PrintLayer(lprot.ProtocolLayer):
         await super().decode(data)
 
     async def default_print(self, msg : str) -> None:
-        print(msg, end='')
+        await aiofiles.stdout.write(msg)
+        await aiofiles.stdout.flush()
 
     async def print(self, msg : str) -> None:
         await self._print(msg)
