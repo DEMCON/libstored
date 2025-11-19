@@ -34,13 +34,14 @@ class ProtocolLayer:
     AsyncCallback : typing.TypeAlias = typing.Callable[[Packet], typing.Coroutine[typing.Any, typing.Any, None]]
 
     def __init__(self, *args, **kwargs):
+        self._closed : bool = False
+
         super().__init__(*args, **kwargs)
         self._down : ProtocolLayer | None = None
         self._up : ProtocolLayer | None = None
         self._down_callback : ProtocolLayer.AsyncCallback = self._callback_factory(None)
         self._up_callback : ProtocolLayer.AsyncCallback = self._callback_factory(None)
         self._activity : float = 0
-        self._closed : bool = False
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def wrap(self, layer : ProtocolLayer) -> None:
@@ -889,6 +890,27 @@ class ProtocolStack(ProtocolLayer):
 
 
 
+@typing.overload
+def stack(layers : list[ProtocolLayer], /) -> ProtocolLayer: ...
+@typing.overload
+def stack(layers : ProtocolLayer, /, *args) -> ProtocolLayer: ...
+
+def stack(layers : list[ProtocolLayer] | ProtocolLayer, /, *args) -> ProtocolLayer:
+    '''
+    Create a ProtocolStack from a list of layers.
+    '''
+
+    if isinstance(layers, ProtocolLayer):
+        layers = [layers] + list(args)
+    elif len(args) > 0:
+        raise ValueError('When layers is a list, no additional arguments are allowed')
+
+    for i in range(len(layers) - 1):
+        layers[i + 1].wrap(layers[i])
+    return ProtocolStack(layers)
+
+
+
 class LoopbackLayer(ProtocolLayer):
     '''
     A ProtocolLayer that loops back all data.
@@ -1119,23 +1141,38 @@ def build_stack(description : str) -> ProtocolLayer:
         # Dummy layer
         return ProtocolLayer()
 
-    stack = []
+    stack : list[ProtocolLayer] = []
 
-    for l in layers:
-        name_arg = l.split('=')
-        if name_arg[0] == '':
-            raise ValueError(f'Missing layer type')
+    try:
+        for l in layers:
+            name_arg = l.split('=')
+            if name_arg[0] == '':
+                raise ValueError(f'Missing layer type')
 
-        layer_type = get_layer_type(name_arg[0])
+            layer_type = get_layer_type(name_arg[0])
 
-        if len(name_arg) == 2:
-            layer = layer_type(name_arg[1])
-        else:
-            layer = layer_type()
+            if len(name_arg) == 2:
+                layer = layer_type(name_arg[1])
+            else:
+                layer = layer_type()
 
-        if stack != []:
-            layer.wrap(stack[-1])
+            if stack != []:
+                layer.wrap(stack[-1])
 
-        stack.append(layer)
+            stack.append(layer)
 
-    return ProtocolStack(stack)
+        return ProtocolStack(stack)
+    except BaseException:
+        loop = None
+        try:
+            loop = asyncio.get_running_loop()
+        except Exception:
+            pass
+
+        if loop is not None:
+            for layer in stack:
+                try:
+                    loop.run_until_complete(layer.close())
+                except Exception:
+                    pass
+        raise
