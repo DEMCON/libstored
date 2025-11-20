@@ -1503,7 +1503,7 @@ class ZmqClient(Work):
 
             self.logger.debug(f'connect to tcp://{self._host}:{self._port}')
             self._socket.connect(f'tcp://{self._host}:{self._port}')
-            self._monitor = asyncio.create_task(self._monitor_socket(), name='monitor')
+            self._monitor = asyncio.create_task(self._monitor_socket(), name=f'{self.__class__.__name__} monitor')
         except:
             s = self._socket
             self._socket = None
@@ -1641,10 +1641,10 @@ class ZmqClient(Work):
 
         try:
             if isinstance(msg, str):
-                self._req_task = asyncio.create_task(self._req(msg.encode()), name='req')
+                self._req_task = asyncio.create_task(self._req(msg.encode()), name=f'{self.__class__.__name__} req')
                 return (await self._req_task).decode()
             else:
-                self._req_task = asyncio.create_task(self._req(msg), name='req')
+                self._req_task = asyncio.create_task(self._req(msg), name=f'{self.__class__.__name__} req')
                 return await self._req_task
         except asyncio.CancelledError:
             if self._req_task is not None:

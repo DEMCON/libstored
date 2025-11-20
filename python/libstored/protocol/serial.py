@@ -82,7 +82,7 @@ class SerialLayer(lprot.ProtocolLayer):
         except asyncio.CancelledError:
             pass
         except Exception as e:
-            self.logger.exception(f'Serial error: {e}')
+            await self.async_except(e)
             raise
         finally:
             self._open = False
@@ -154,7 +154,7 @@ class SerialLayer(lprot.ProtocolLayer):
             self._serial_task.cancel()
             try:
                 await self._serial_task
-            except asyncio.CancelledError:
+            except:
                 pass
             self._serial_task = None
 

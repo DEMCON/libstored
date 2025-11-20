@@ -191,7 +191,6 @@ class Reader(typing.Generic[T]):
         except BaseException as e:
             logging.getLogger(self.__class__.__qualname__).exception(f'Reader thread error: {e}')
             self._running = False
-            raise
         finally:
             # Signal a blocking read() or stop().
             self._wakeup()

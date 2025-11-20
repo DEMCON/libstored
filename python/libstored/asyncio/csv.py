@@ -471,7 +471,7 @@ class CsvExport(laio_worker.Work):
                     self.logger.exception(f'Auto write task error')
                     raise
 
-            self._auto_write_task = asyncio.create_task(auto_write_task(), name='auto_write_task')
+            self._auto_write_task = asyncio.create_task(auto_write_task(), name=f'{self.__class__.__name__} auto write')
 
     @overload
     def write_on_change(self, enable : bool) -> None: ...
@@ -513,7 +513,7 @@ class CsvExport(laio_worker.Work):
                     self.logger.exception(f'Write on change task error')
                     raise
 
-            self._write_on_change_task = asyncio.create_task(write_on_change_task(), name='write_on_change_task')
+            self._write_on_change_task = asyncio.create_task(write_on_change_task(), name=f'{self.__class__.__name__} write on change')
 
     @overload
     def auto_flush(self, interval_s : float | None) -> None: ...
@@ -555,4 +555,4 @@ class CsvExport(laio_worker.Work):
                     self.logger.exception(f'Auto flush task error')
                     raise
 
-            self._auto_flush_task = asyncio.create_task(auto_flush_task(), name='auto_flush_task')
+            self._auto_flush_task = asyncio.create_task(auto_flush_task(), name=f'{self.__class__.__name__} auto flush')

@@ -46,7 +46,7 @@ class ZmqSocketBase(lprot.ProtocolLayer):
         super().__init__(*args, **kwargs)
         self._context : zmq.asyncio.Context = context or zmq.asyncio.Context.instance()
         self._socket : zmq.asyncio.Socket | None = self._context.socket(type)
-        self._recv : asyncio.Task | None = asyncio.create_task(self._recv_task())
+        self._recv : asyncio.Task | None = asyncio.create_task(self._recv_task(), name=f'{self.__class__.__name__} recv')
         self._timeout_s : float | None = self.default_timeout_s
         self._open : bool = False
         self._sent : list[tuple[asyncio.Future, float]] = []
@@ -83,7 +83,7 @@ class ZmqSocketBase(lprot.ProtocolLayer):
         except asyncio.CancelledError:
             pass
         except Exception as e:
-            self.logger.exception(f'recv task error: {e}')
+            await self.async_except(e)
             raise
 
     async def _recv_init(self) -> None:
@@ -97,10 +97,9 @@ class ZmqSocketBase(lprot.ProtocolLayer):
             self._recv.cancel()
             try:
                 await self._recv
-            except asyncio.CancelledError:
+            except:
                 pass
-            finally:
-                self._recv = None
+            self._recv = None
 
         if self._socket is not None:
             self._socket.close()
