@@ -49,7 +49,7 @@ class StdinLayer(lprot.ProtocolLayer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._stdin_reader = lprot_util.Reader(self._from_stdin, thread_name=self.__class__.__name__)
-        self._reader_task : asyncio.Task | None = asyncio.create_task(self._reader_run())
+        self._reader_task : asyncio.Task | None = asyncio.create_task(self._reader_run(), name=self.__class__.__name__)
 
     def _from_stdin(self) -> str:
         return sys.stdin.read(1)
@@ -64,7 +64,7 @@ class StdinLayer(lprot.ProtocolLayer):
         except asyncio.CancelledError:
             pass
         except Exception as e:
-            self.logger.exception(f'stdin reader error: {e}')
+            await self.async_except(e)
             raise
         finally:
             await self._stdin_reader.stop(False)
@@ -74,7 +74,7 @@ class StdinLayer(lprot.ProtocolLayer):
             self._reader_task.cancel()
             try:
                 await self._reader_task
-            except asyncio.CancelledError:
+            except:
                 pass
             self._reader_task = None
 
@@ -99,8 +99,8 @@ class StdioLayer(lprot.ProtocolLayer):
 
         self._reader : lprot_util.Reader[bytes] = lprot_util.Reader(self._from_process, thread_name=f'{self.__class__.__name__}-reader')
         self._writer : lprot_util.Writer[bytes] = lprot_util.Writer(self._to_process, thread_name=f'{self.__class__.__name__}-writer')
-        self._reader_task : asyncio.Task | None = asyncio.create_task(self._reader_run())
-        self._writer_task : asyncio.Task | None = asyncio.create_task(self._writer.start())
+        self._reader_task : asyncio.Task | None = asyncio.create_task(self._reader_run(), name=f'{self.__class__.__name__} reader')
+        self._writer_task : asyncio.Task | None = asyncio.create_task(self._writer.start(), name=f'{self.__class__.__name__} writer')
         self._check_task : asyncio.Task | None = None
 
         self.set_terminate_callback(lambda _: None)
@@ -164,13 +164,13 @@ class StdioLayer(lprot.ProtocolLayer):
             except asyncio.CancelledError:
                 pass
             except Exception as e:
-                self.logger.exception(f'StdioLayer process check error: {e}')
+                await self.async_except(e)
                 raise
 
         if self._check_task is not None:
             self._check_task.cancel()
 
-        self._check_task = asyncio.create_task(check_task())
+        self._check_task = asyncio.create_task(check_task(), name=f'{self.__class__.__name__} check')
 
     async def encode(self, data : lprot.ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
@@ -194,7 +194,7 @@ class StdioLayer(lprot.ProtocolLayer):
             self._reader_task.cancel()
             try:
                 await self._reader_task
-            except asyncio.CancelledError:
+            except:
                 pass
             self._reader_task = None
 
@@ -206,7 +206,7 @@ class StdioLayer(lprot.ProtocolLayer):
             self._check_task.cancel()
             try:
                 await self._check_task
-            except asyncio.CancelledError:
+            except:
                 pass
             self._check_task = None
 

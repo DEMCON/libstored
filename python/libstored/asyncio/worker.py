@@ -37,6 +37,15 @@ monitor.start()
 
 
 
+def current_worker() -> AsyncioWorker | None:
+    t = threading.current_thread()
+    for w in workers:
+        if w.thread == t:
+            return w
+    return None
+
+
+
 class AsyncioWorker:
     '''
     A worker thread running an asyncio event loop.
@@ -68,7 +77,7 @@ class AsyncioWorker:
         assert self._thread == threading.current_thread()
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
-        self._loop.create_task(self._flag_started())
+        self._loop.create_task(self._flag_started(), name=f'{self.__class__.__name__} flag')
 
         global default_worker
         if default_worker is None:

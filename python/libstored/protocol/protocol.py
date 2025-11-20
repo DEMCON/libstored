@@ -16,6 +16,24 @@ import zmq
 import zmq.asyncio
 
 from .. import protocol as lprot
+from ..asyncio import worker as laio_worker
+
+T = typing.TypeVar('T')
+
+def callback_factory(f : typing.Callable[[T], typing.Any] | None) -> \
+    typing.Callable[[T], typing.Coroutine[typing.Any, typing.Any, None]]:
+
+    if f is None:
+        async def no_callback(x : T) -> None:
+            pass
+        return no_callback
+    elif inspect.iscoroutinefunction(f):
+        return f
+    else:
+        async def callback(x : T) -> None:
+            f(x)
+        return callback
+
 
 class ProtocolLayer:
     '''
@@ -37,12 +55,14 @@ class ProtocolLayer:
         self._closed : bool = False
 
         super().__init__(*args, **kwargs)
+        self.logger = logging.getLogger(self.__class__.__name__)
+
         self._down : ProtocolLayer | None = None
         self._up : ProtocolLayer | None = None
-        self._down_callback : ProtocolLayer.AsyncCallback = self._callback_factory(None)
-        self._up_callback : ProtocolLayer.AsyncCallback = self._callback_factory(None)
+        self._down_callback : ProtocolLayer.AsyncCallback = callback_factory(None)
+        self._up_callback : ProtocolLayer.AsyncCallback = callback_factory(None)
         self._activity : float = 0
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self._async_except_hook = callback_factory(self.default_async_except_hook)
 
     def wrap(self, layer : ProtocolLayer) -> None:
         '''
@@ -60,7 +80,7 @@ class ProtocolLayer:
         '''
         Set a callback to be called when data is received from the lower layer.
         '''
-        self._up_callback = self._callback_factory(cb)
+        self._up_callback = callback_factory(cb)
 
     @property
     def down(self) -> ProtocolLayer | None:
@@ -71,20 +91,7 @@ class ProtocolLayer:
         '''
         Set a callback to be called when data is received from the upper layer.
         '''
-        self._down_callback = self._callback_factory(cb)
-
-    @staticmethod
-    def _callback_factory(f : ProtocolLayer.Callback | None) -> ProtocolLayer.AsyncCallback:
-        if f is None:
-            async def no_callback(data : ProtocolLayer.Packet) -> None:
-                pass
-            return no_callback
-        elif inspect.iscoroutinefunction(f):
-            return f
-        else:
-            async def callback(data : ProtocolLayer.Packet) -> None:
-                f(data)
-            return callback
+        self._down_callback = callback_factory(cb)
 
     async def encode(self, data : ProtocolLayer.Packet) -> None:
         '''
@@ -148,7 +155,10 @@ class ProtocolLayer:
         '''
         self._closed = True
         if self.down is not None:
-            await self.down.close()
+            try:
+                await self.down.close()
+            except BaseException as e:
+                self.logger.warning(f'Exception while closing: {e}')
 
     async def __aenter__(self):
         return self
@@ -158,6 +168,26 @@ class ProtocolLayer:
 
     def __del__(self):
         assert self._closed, f'ProtocolLayer {self.__class__.__name__} was not close()d upon deletion'
+
+    @property
+    def async_except_hook(self) -> typing.Callable[[BaseException], typing.Coroutine[typing.Any, typing.Any, None]]:
+        return self._async_except_hook
+
+    @async_except_hook.setter
+    def async_except_hook(self, f : typing.Callable[[BaseException], typing.Any] | None) -> None:
+        self._async_except_hook = callback_factory(f)
+
+    async def default_async_except_hook(self, e : BaseException) -> None:
+        self.logger.exception(f'Async exception {e}', exc_info=(type(e), e, e.__traceback__))
+        w = laio_worker.current_worker()
+        if w is not None:
+            w.cancel()
+        else:
+            asyncio.get_running_loop().stop()
+        raise
+
+    async def async_except(self, e : BaseException) -> None:
+        await self._async_except_hook(e)
 
 
 
@@ -388,7 +418,7 @@ class RepReqCheckLayer(ProtocolLayer):
         self._req : bool = False
         self._timeout_s : float = timeout_s
         self._retransmit_time : float = 0
-        self._retransmitter : asyncio.Task | None = asyncio.create_task(self._retransmitter_task())
+        self._retransmitter : asyncio.Task | None = asyncio.create_task(self._retransmitter_task(), name=self.__class__.__name__)
 
     @property
     def timeout_s(self) -> float:
@@ -423,7 +453,7 @@ class RepReqCheckLayer(ProtocolLayer):
         except asyncio.CancelledError:
             pass
         except Exception as e:
-            self.logger.exception(f'Retransmitter task error: {e}')
+            await self.async_except(e)
             raise
 
     async def timeout(self) -> None:
@@ -854,7 +884,11 @@ class ProtocolStack(ProtocolLayer):
         return max(super().last_activity(), self._layers[0].last_activity())
 
     async def close(self) -> None:
-        await self._layers[0].close()
+        try:
+            await self._layers[0].close()
+        except BaseException as e:
+            self.logger.warning(f'Exception while closing: {e}')
+
         await super().close()
 
     @property
