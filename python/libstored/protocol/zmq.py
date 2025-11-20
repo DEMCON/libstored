@@ -304,7 +304,6 @@ class ZmqServer(ZmqSocketServer):
         self._req : bool = False
 
     async def _handle_recv(self, data : bytes) -> None:
-        self.logger.debug('req %s', data)
         assert not self._req, 'ZmqServer received request while previous request not yet handled'
         self._req = True
         await super()._handle_recv(data)
@@ -313,7 +312,6 @@ class ZmqServer(ZmqSocketServer):
         if not self._req:
             self.logger.debug('Ignoring unexpected rep %s', data)
             return
-        self.logger.debug('rep %s', data)
         self._req = False
         await super().decode(data)
 
