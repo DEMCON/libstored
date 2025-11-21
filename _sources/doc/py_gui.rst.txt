@@ -1,14 +1,14 @@
 ﻿
 
 ..
-   SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+   SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
    
    SPDX-License-Identifier: CC-BY-4.0
 
 GUI
 ===
 
-A Pyside2/QtQuick GUI client.
+A tkinter GUI client.
 
 libstored.gui
 -------------

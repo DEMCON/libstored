@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Debugger &mdash; libstored 1.8.1-alpha documentation</title>
+  <title>Debugger &mdash; libstored 2.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=ef19cc8a"></script>
+      <script src="../_static/documentation_options.js?v=51b770b3"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -238,7 +238,8 @@ may be limited in total definition length. The macro string is reinterpreted
 every time it is invoked.</p>
 <p>The responses of the commands are merged into one response frame, without
 separators. The Echo command can be used to inject separators in the output.</p>
-<p>Request: <code class="docutils literal notranslate"><span class="pre">m</span></code> &lt;char&gt; ( &lt;separator&gt; &lt;command&gt; ) *</p>
+<p>When only <code class="docutils literal notranslate"><span class="pre">m</span></code> is executed, the response is a list of currently defined macros.</p>
+<p>Request: <code class="docutils literal notranslate"><span class="pre">m</span></code> ( &lt;char&gt; ( &lt;separator&gt; &lt;command&gt; ) * ) ?</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mZ r/bla/a e; r/bla/z
 </pre></div>
 </div>
@@ -442,6 +443,18 @@ than the actual tracing speed.</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8Debugger12ListCallbackE">
+<span id="_CPPv3N6stored8Debugger12ListCallbackE"></span><span id="_CPPv2N6stored8Debugger12ListCallbackE"></span><span class="target" id="classstored_1_1_debugger_1a1d40099f79daa811598bc8add4cb1f57"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ListCallback</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored12DebugVariantE" title="stored::DebugVariant"><span class="n"><span class="pre">DebugVariant</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N6stored8Debugger12ListCallbackE" title="Link to this definition"></a><br /></dt>
+<dd><p>Callback function prototype as supplied to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_debugger_1a52c30ab3e1c2bb160c96c65725e6b248"><span class="std std-ref"><span class="pre">list()</span></span></a></code>. </p>
+<p>It receives the name of the object, and the corresponding <a class="reference internal" href="#classstored_1_1_debug_variant"><span class="std std-ref">stored::DebugVariant</span></a> of the object.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_debugger_1a55c61c7d9c075cb84fe56e701d86bcd2"><span class="std std-ref">list&lt;F&gt;(F&amp;&amp;) const</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored8Debugger15ListCallbackArgE">
 <span id="_CPPv3N6stored8Debugger15ListCallbackArgE"></span><span id="_CPPv2N6stored8Debugger15ListCallbackArgE"></span><span id="stored::Debugger::ListCallbackArg"></span><span class="target" id="classstored_1_1_debugger_1ae12fb095444cb839c2ec6b8ddf57f1ac"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBaseE" title="stored::DebugStoreBase"><span class="n"><span class="pre">DebugStoreBase</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6stored14DebugStoreBase15ListCallbackArgE" title="stored::DebugStoreBase::ListCallbackArg"><span class="n"><span class="pre">ListCallbackArg</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ListCallbackArg</span></span></span><a class="headerlink" href="#_CPPv4N6stored8Debugger15ListCallbackArgE" title="Link to this definition"></a><br /></dt>
 <dd><p>Callback function prototype as supplied to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_debugger_1a52c30ab3e1c2bb160c96c65725e6b248"><span class="std std-ref"><span class="pre">list()</span></span></a></code>.   </p>
@@ -540,6 +553,17 @@ than the actual tracing speed.</p>
 <p><a class="reference internal" href="#classstored_1_1_debugger_1a58172b25824dcf4d0347b6f101f333e8"><span class="std std-ref">setIdentification()</span></a></p>
 </div>
 </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK6stored8Debugger4listERR1F">
+<span id="_CPPv3I0ENK6stored8Debugger4listERR1F"></span><span id="_CPPv2I0ENK6stored8Debugger4listERR1F"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_debugger_1a55c61c7d9c075cb84fe56e701d86bcd2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">list</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0ENK6stored8Debugger4listERR1F" title="stored::Debugger::list::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">f</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK6stored8Debugger4listERR1F" title="Link to this definition"></a><br /></dt>
+<dd><p>Iterates over the directory and invoke a callback for every object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>f</strong> – the callback to invoke, which can be any type, but must look like <a class="reference internal" href="#classstored_1_1_debugger_1a1d40099f79daa811598bc8add4cb1f57"><span class="std std-ref">ListCallback</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">

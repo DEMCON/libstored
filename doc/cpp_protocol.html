@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Protocol &mdash; libstored 1.8.1-alpha documentation</title>
+  <title>Protocol &mdash; libstored 2.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=ef19cc8a"></script>
+      <script src="../_static/documentation_options.js?v=51b770b3"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -64,17 +64,24 @@
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6stored11BufferLayerE"><code class="docutils literal notranslate"><span class="pre">stored::BufferLayer</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#stored-callbacklayer">stored::CallbackLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-callbacklayer">stored::CallbackLayer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4I000EN6stored13CallbackLayerE"><code class="docutils literal notranslate"><span class="pre">stored::CallbackLayer</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#stored-compresslayer">stored::CompressLayer</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6stored13CompressLayerE"><code class="docutils literal notranslate"><span class="pre">stored::CompressLayer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-crc8layer">stored::Crc8Layer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6stored9Crc8LayerE"><code class="docutils literal notranslate"><span class="pre">stored::Crc8Layer</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#stored-crc16layer">stored::Crc16Layer</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6stored10Crc16LayerE"><code class="docutils literal notranslate"><span class="pre">stored::Crc16Layer</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#stored-crc8layer">stored::Crc8Layer</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6stored9Crc8LayerE"><code class="docutils literal notranslate"><span class="pre">stored::Crc8Layer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-crc32layer">stored::Crc32Layer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6stored10Crc32LayerE"><code class="docutils literal notranslate"><span class="pre">stored::Crc32Layer</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#stored-debugarqlayer">stored::DebugArqLayer</a><ul>
@@ -89,8 +96,14 @@
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6stored15DoublePipeLayerE"><code class="docutils literal notranslate"><span class="pre">stored::DoublePipeLayer</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#stored-fifoloopback">stored::FifoLoopback</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#stored-fifoloopback1">stored::FifoLoopback1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-fifoloopback">stored::FifoLoopback</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4I_6size_t_6size_tEN6stored12FifoLoopbackE"><code class="docutils literal notranslate"><span class="pre">stored::FifoLoopback</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-fifoloopback1">stored::FifoLoopback1</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4I_6size_t_6size_tEN6stored13FifoLoopback1E"><code class="docutils literal notranslate"><span class="pre">stored::FifoLoopback1</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#stored-filelayer">stored::FileLayer</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6stored9FileLayerE"><code class="docutils literal notranslate"><span class="pre">stored::FileLayer</span></code></a></li>
 </ul>
@@ -215,7 +228,9 @@ Standard layer implementations can be used to construct the following stacks (to
 <li><p>Lossy UART:
 <a class="reference internal" href="cpp_debugger.html#_CPPv4N6stored8DebuggerE" title="stored::Debugger"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Debugger</span></code></a>,
 <a class="reference internal" href="#_CPPv4N6stored13DebugArqLayerE" title="stored::DebugArqLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::DebugArqLayer</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored9Crc8LayerE" title="stored::Crc8Layer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Crc8Layer</span></code></a>,
 <a class="reference internal" href="#_CPPv4N6stored10Crc16LayerE" title="stored::Crc16Layer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Crc16Layer</span></code></a>,
+<a class="reference internal" href="#_CPPv4N6stored10Crc32LayerE" title="stored::Crc32Layer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::Crc32Layer</span></code></a>,
 <a class="reference internal" href="#_CPPv4N6stored16AsciiEscapeLayerE" title="stored::AsciiEscapeLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::AsciiEscapeLayer</span></code></a>,
 <a class="reference internal" href="#_CPPv4N6stored13TerminalLayerE" title="stored::TerminalLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::TerminalLayer</span></code></a>,
 <a class="reference internal" href="#_CPPv4N6stored10StdioLayerE" title="stored::StdioLayer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">stored::StdioLayer</span></code></a></p></li>
@@ -241,14 +256,16 @@ towards the hardware, and <a class="reference internal" href="#_CPPv4N6stored13P
 messages from the hardware up.</p>
 <p>The inheritance of the layers is shown below.</p>
 <p class="plantuml">
-<img src="../_images/plantuml-cc5f41b117e66f843321b6dffed0779cdff41b54.svg" alt="abstract ProtocolLayer
+<img src="../_images/plantuml-1b72ce31d6f8aa0eb0773a53b82a418bf72019f1.svg" alt="abstract ProtocolLayer
 ProtocolLayer &lt;|-- AsciiEscapeLayer
 ProtocolLayer &lt;|-- TerminalLayer
 AsciiEscapeLayer -[hidden]--&gt; TerminalLayer
 ProtocolLayer &lt;|-- SegmentationLayer
 ProtocolLayer &lt;|-- Crc8Layer
 ProtocolLayer &lt;|-- Crc16Layer
+ProtocolLayer &lt;|-- Crc32Layer
 Crc8Layer -[hidden]--&gt; Crc16Layer
+Crc8Layer -[hidden]--&gt; Crc32Layer
 ProtocolLayer &lt;|-- BufferLayer
 ProtocolLayer &lt;|-- PrintLayer
 ProtocolLayer &lt;|-- IdleCheckLayer
@@ -420,10 +437,75 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 </section>
 <section id="stored-callbacklayer">
 <h2>stored::CallbackLayer<a class="headerlink" href="#stored-callbacklayer" title="Link to this heading"></a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenclass: Cannot find class “stored::CallbackLayer” in doxygen xml output for project “doxygen” from directory: /home/runner/work/libstored/libstored/dist/ubuntu/build/sphinx/doxygen/xml/</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN6stored13CallbackLayerE">
+<span id="_CPPv3I000EN6stored13CallbackLayerE"></span><span id="_CPPv2I000EN6stored13CallbackLayerE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Up</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Down</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Connected</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_callback_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CallbackLayer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><a class="headerlink" href="#_CPPv4I000EN6stored13CallbackLayerE" title="Link to this definition"></a><br /></dt>
+<dd><p>Callback class that invokes a callback for every messages through the stack. </p>
+<p>Use as follows:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>auto cb = stored::make_callback(
+              [&amp;](void*, size_t){ ... },
+              [&amp;](void const&amp;, size_t, bool){ ... });
+</pre></div>
 </div>
+<p>The first argument (a lambda in the example above), gets the parameters as passed to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_callback_layer_1a369ef514591d182a7ea2444d03c205c4"><span class="std std-ref"><span class="pre">decode()</span></span></a></code>. The second argument get the parameters as passed to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_protocol_layer_1a66c24cec6a17c44fac68213d358a5aa8"><span class="std std-ref"><span class="pre">encode()</span></span></a></code>.   </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13CallbackLayer4baseE">
+<span id="_CPPv3N6stored13CallbackLayer4baseE"></span><span id="_CPPv2N6stored13CallbackLayer4baseE"></span><span id="stored::CallbackLayer::base"></span><span class="target" id="classstored_1_1_callback_layer_1ae50033b9091084df049bf5a12a90f489"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored13CallbackLayer4baseE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13CallbackLayer13CallbackLayerERR13CallbackLayer">
+<span id="_CPPv3N6stored13CallbackLayer13CallbackLayerERR13CallbackLayer"></span><span id="_CPPv2N6stored13CallbackLayer13CallbackLayerERR13CallbackLayer"></span><span id="stored::CallbackLayer::CallbackLayer__CallbackLayerRR"></span><span class="target" id="classstored_1_1_callback_layer_1a35203872edfb3b80ef1464221ac3223b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CallbackLayer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored13CallbackLayer13CallbackLayerERR13CallbackLayer" title="stored::CallbackLayer::CallbackLayer"><span class="n"><span class="pre">CallbackLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">l</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6stored13CallbackLayer13CallbackLayerERR13CallbackLayer" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13CallbackLayer13CallbackLayerERK13CallbackLayer">
+<span id="_CPPv3N6stored13CallbackLayer13CallbackLayerERK13CallbackLayer"></span><span id="_CPPv2N6stored13CallbackLayer13CallbackLayerERK13CallbackLayer"></span><span id="stored::CallbackLayer::CallbackLayer__CallbackLayerCR"></span><span class="target" id="classstored_1_1_callback_layer_1a00ab94bcc5c97ec661779fbefbe1f636"></span><span class="sig-name descname"><span class="n"><span class="pre">CallbackLayer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored13CallbackLayer13CallbackLayerERK13CallbackLayer" title="stored::CallbackLayer::CallbackLayer"><span class="n"><span class="pre">CallbackLayer</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored13CallbackLayer13CallbackLayerERK13CallbackLayer" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13CallbackLayerD0Ev">
+<span id="_CPPv3N6stored13CallbackLayerD0Ev"></span><span id="_CPPv2N6stored13CallbackLayerD0Ev"></span><span id="stored::CallbackLayer::~CallbackLayer"></span><span class="target" id="classstored_1_1_callback_layer_1a41f52a3eaa78be7eef4bb86f497c8b24"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~CallbackLayer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored13CallbackLayerD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13CallbackLayer9connectedEv">
+<span id="_CPPv3N6stored13CallbackLayer9connectedEv"></span><span id="_CPPv2N6stored13CallbackLayer9connectedEv"></span><span id="stored::CallbackLayer::connected"></span><span class="target" id="classstored_1_1_callback_layer_1a0df829ea69d4dd4d36c61827308bacd9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">connected</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored13CallbackLayer9connectedEv" title="Link to this definition"></a><br /></dt>
+<dd><p>(Re)connected notification (bottom-up). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13CallbackLayer6decodeEPv6size_t">
+<span id="_CPPv3N6stored13CallbackLayer6decodeEPv6size_t"></span><span id="_CPPv2N6stored13CallbackLayer6decodeEPv6size_t"></span><span id="stored::CallbackLayer::decode__voidP.s"></span><span class="target" id="classstored_1_1_callback_layer_1a369ef514591d182a7ea2444d03c205c4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">decode</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored13CallbackLayer6decodeEPv6size_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Decode a frame and forward the decoded frame to the upper layer. </p>
+<p>The given buffer may be decoded in-place. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13CallbackLayer6encodeEPKv6size_tb">
+<span id="_CPPv3N6stored13CallbackLayer6encodeEPKv6size_tb"></span><span id="_CPPv2N6stored13CallbackLayer6encodeEPKv6size_tb"></span><span id="stored::CallbackLayer::encode__voidCP.s.b"></span><span class="target" id="classstored_1_1_callback_layer_1a6f85445caff51143ef50696b8d7febac"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">encode</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">last</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored13CallbackLayer6encodeEPKv6size_tb" title="Link to this definition"></a><br /></dt>
+<dd><p>Encode a (partial) frame and forward it to the lower layer. </p>
+<p>The given buffer will not be modified. A new buffer is allocated when required. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13CallbackLayeraSERR13CallbackLayer">
+<span id="_CPPv3N6stored13CallbackLayeraSERR13CallbackLayer"></span><span id="_CPPv2N6stored13CallbackLayeraSERR13CallbackLayer"></span><span id="stored::CallbackLayer::assign-operator__CallbackLayerRR"></span><span class="target" id="classstored_1_1_callback_layer_1a9fe65efe833ee97769c288d375c0f13e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I000EN6stored13CallbackLayerE" title="stored::CallbackLayer"><span class="n"><span class="pre">CallbackLayer</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored13CallbackLayeraSERR13CallbackLayer" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13CallbackLayeraSERK13CallbackLayer">
+<span id="_CPPv3N6stored13CallbackLayeraSERK13CallbackLayer"></span><span id="_CPPv2N6stored13CallbackLayeraSERK13CallbackLayer"></span><span id="stored::CallbackLayer::assign-operator__CallbackLayerCR"></span><span class="target" id="classstored_1_1_callback_layer_1aab7357c144763d636d54e060009b80ed"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I000EN6stored13CallbackLayerE" title="stored::CallbackLayer"><span class="n"><span class="pre">CallbackLayer</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6stored13CallbackLayeraSERK13CallbackLayer" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
 </section>
 <section id="stored-compresslayer">
 <h2>stored::CompressLayer<a class="headerlink" href="#stored-compresslayer" title="Link to this heading"></a></h2>
@@ -437,36 +519,36 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp">
-<span class="target" id="classstored_1_1_compress_layer_1aacc2f8cd7fd40f83642bd118b44c7ca6"></span><span class="sig-name descname"></span></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13CompressLayer6__anonE">
+<span id="_CPPv3N6stored13CompressLayer6__anonE"></span><span id="_CPPv2N6stored13CompressLayer6__anonE"></span><span class="target" id="classstored_1_1_compress_layer_1a517fb33d06b50c8ff5c85c27ec6f35ea"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__anon</span></span></span><a class="headerlink" href="#_CPPv4N6stored13CompressLayer6__anonE" title="Link to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored13CompressLayer19PhonyNameDueToError6WindowE">
-<span id="_CPPv3N6stored13CompressLayer19PhonyNameDueToError6WindowE"></span><span id="_CPPv2N6stored13CompressLayer19PhonyNameDueToError6WindowE"></span><span class="target" id="classstored_1_1_compress_layer_1aacc2f8cd7fd40f83642bd118b44c7ca6a297dc2fc50f7c1e634c085ddec44eb26"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Window</span></span></span><a class="headerlink" href="#_CPPv4N6stored13CompressLayer19PhonyNameDueToError6WindowE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13CompressLayer6__anon6WindowE">
+<span id="_CPPv3N6stored13CompressLayer6__anon6WindowE"></span><span id="_CPPv2N6stored13CompressLayer6__anon6WindowE"></span><span class="target" id="classstored_1_1_compress_layer_1a517fb33d06b50c8ff5c85c27ec6f35eaa297dc2fc50f7c1e634c085ddec44eb26"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Window</span></span></span><a class="headerlink" href="#_CPPv4N6stored13CompressLayer6__anon6WindowE" title="Link to this definition"></a><br /></dt>
 <dd><p>Window size. See heatshrink documentation. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored13CompressLayer19PhonyNameDueToError9LookaheadE">
-<span id="_CPPv3N6stored13CompressLayer19PhonyNameDueToError9LookaheadE"></span><span id="_CPPv2N6stored13CompressLayer19PhonyNameDueToError9LookaheadE"></span><span class="target" id="classstored_1_1_compress_layer_1aacc2f8cd7fd40f83642bd118b44c7ca6a1e135e134a50ec8e4c7789b1ea3a0efc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Lookahead</span></span></span><a class="headerlink" href="#_CPPv4N6stored13CompressLayer19PhonyNameDueToError9LookaheadE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13CompressLayer6__anon9LookaheadE">
+<span id="_CPPv3N6stored13CompressLayer6__anon9LookaheadE"></span><span id="_CPPv2N6stored13CompressLayer6__anon9LookaheadE"></span><span class="target" id="classstored_1_1_compress_layer_1a517fb33d06b50c8ff5c85c27ec6f35eaa1e135e134a50ec8e4c7789b1ea3a0efc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Lookahead</span></span></span><a class="headerlink" href="#_CPPv4N6stored13CompressLayer6__anon9LookaheadE" title="Link to this definition"></a><br /></dt>
 <dd><p>Lookahead. See heatshrink documentation. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored13CompressLayer19PhonyNameDueToError17DecodeInputBufferE">
-<span id="_CPPv3N6stored13CompressLayer19PhonyNameDueToError17DecodeInputBufferE"></span><span id="_CPPv2N6stored13CompressLayer19PhonyNameDueToError17DecodeInputBufferE"></span><span class="target" id="classstored_1_1_compress_layer_1aacc2f8cd7fd40f83642bd118b44c7ca6a16144ca72fbd2240454f7886f50f76f1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DecodeInputBuffer</span></span></span><a class="headerlink" href="#_CPPv4N6stored13CompressLayer19PhonyNameDueToError17DecodeInputBufferE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13CompressLayer6__anon17DecodeInputBufferE">
+<span id="_CPPv3N6stored13CompressLayer6__anon17DecodeInputBufferE"></span><span id="_CPPv2N6stored13CompressLayer6__anon17DecodeInputBufferE"></span><span class="target" id="classstored_1_1_compress_layer_1a517fb33d06b50c8ff5c85c27ec6f35eaa16144ca72fbd2240454f7886f50f76f1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DecodeInputBuffer</span></span></span><a class="headerlink" href="#_CPPv4N6stored13CompressLayer6__anon17DecodeInputBufferE" title="Link to this definition"></a><br /></dt>
 <dd><p>Include buffer size in bytes. See heatshrink documentation. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored13CompressLayer19PhonyNameDueToError12FlagEncodingE">
-<span id="_CPPv3N6stored13CompressLayer19PhonyNameDueToError12FlagEncodingE"></span><span id="_CPPv2N6stored13CompressLayer19PhonyNameDueToError12FlagEncodingE"></span><span class="target" id="classstored_1_1_compress_layer_1aacc2f8cd7fd40f83642bd118b44c7ca6a31d43198249982c2618f032f778144d7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FlagEncoding</span></span></span><a class="headerlink" href="#_CPPv4N6stored13CompressLayer19PhonyNameDueToError12FlagEncodingE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13CompressLayer6__anon12FlagEncodingE">
+<span id="_CPPv3N6stored13CompressLayer6__anon12FlagEncodingE"></span><span id="_CPPv2N6stored13CompressLayer6__anon12FlagEncodingE"></span><span class="target" id="classstored_1_1_compress_layer_1a517fb33d06b50c8ff5c85c27ec6f35eaa31d43198249982c2618f032f778144d7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FlagEncoding</span></span></span><a class="headerlink" href="#_CPPv4N6stored13CompressLayer6__anon12FlagEncodingE" title="Link to this definition"></a><br /></dt>
 <dd><p>Flag for <code class="docutils literal notranslate"><span class="pre">m_state</span></code> to indicate an active encoder. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored13CompressLayer19PhonyNameDueToError12FlagDecodingE">
-<span id="_CPPv3N6stored13CompressLayer19PhonyNameDueToError12FlagDecodingE"></span><span id="_CPPv2N6stored13CompressLayer19PhonyNameDueToError12FlagDecodingE"></span><span class="target" id="classstored_1_1_compress_layer_1aacc2f8cd7fd40f83642bd118b44c7ca6a80517e8cbf7ce9ed90d4cabab80f5b3f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FlagDecoding</span></span></span><a class="headerlink" href="#_CPPv4N6stored13CompressLayer19PhonyNameDueToError12FlagDecodingE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13CompressLayer6__anon12FlagDecodingE">
+<span id="_CPPv3N6stored13CompressLayer6__anon12FlagDecodingE"></span><span id="_CPPv2N6stored13CompressLayer6__anon12FlagDecodingE"></span><span class="target" id="classstored_1_1_compress_layer_1a517fb33d06b50c8ff5c85c27ec6f35eaa80517e8cbf7ce9ed90d4cabab80f5b3f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FlagDecoding</span></span></span><a class="headerlink" href="#_CPPv4N6stored13CompressLayer6__anon12FlagDecodingE" title="Link to this definition"></a><br /></dt>
 <dd><p>Flag for <code class="docutils literal notranslate"><span class="pre">m_state</span></code> to indicate an active decoder. </p>
 </dd></dl>
 
@@ -541,87 +623,6 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 </dd></dl>
 
 </section>
-<section id="stored-crc16layer">
-<h2>stored::Crc16Layer<a class="headerlink" href="#stored-crc16layer" title="Link to this heading"></a></h2>
-<dl class="cpp class">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16LayerE">
-<span id="_CPPv3N6stored10Crc16LayerE"></span><span id="_CPPv2N6stored10Crc16LayerE"></span><span id="stored::Crc16Layer"></span><span class="target" id="classstored_1_1_crc16_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Crc16Layer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><a class="headerlink" href="#_CPPv4N6stored10Crc16LayerE" title="Link to this definition"></a><br /></dt>
-<dd><p>A layer that adds a CRC-16 to messages. </p>
-<p>Like <a class="reference internal" href="#classstored_1_1_crc8_layer"><span class="std std-ref">stored::Crc8Layer</span></a>, but using a 0xbaad as polynomial. </p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp enum">
-<dt class="sig sig-object cpp">
-<span class="target" id="classstored_1_1_crc16_layer_1ac15d73e065e7baeca22700afd36b1775"></span><span class="sig-name descname"></span></dt>
-<dd><p><em>Values:</em></p>
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16Layer19PhonyNameDueToError10polynomialE">
-<span id="_CPPv3N6stored10Crc16Layer19PhonyNameDueToError10polynomialE"></span><span id="_CPPv2N6stored10Crc16Layer19PhonyNameDueToError10polynomialE"></span><span class="target" id="classstored_1_1_crc16_layer_1ac15d73e065e7baeca22700afd36b1775aee711989700375651ca8a9c3cc313fa9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">polynomial</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc16Layer19PhonyNameDueToError10polynomialE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16Layer19PhonyNameDueToError4initE">
-<span id="_CPPv3N6stored10Crc16Layer19PhonyNameDueToError4initE"></span><span id="_CPPv2N6stored10Crc16Layer19PhonyNameDueToError4initE"></span><span class="target" id="classstored_1_1_crc16_layer_1ac15d73e065e7baeca22700afd36b1775aeb8e182958fd03c1968f253e0bcb11c6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc16Layer19PhonyNameDueToError4initE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16Layer4baseE">
-<span id="_CPPv3N6stored10Crc16Layer4baseE"></span><span id="_CPPv2N6stored10Crc16Layer4baseE"></span><span id="stored::Crc16Layer::base"></span><span class="target" id="classstored_1_1_crc16_layer_1ae4465a77b90af4bc3c5f8d7f9816a376"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc16Layer4baseE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16Layer10Crc16LayerEP13ProtocolLayerP13ProtocolLayer">
-<span id="_CPPv3N6stored10Crc16Layer10Crc16LayerEP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored10Crc16Layer10Crc16LayerEP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::Crc16Layer::Crc16Layer__ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_crc16_layer_1ac332e25fb8984cdc0c95dc2905e3cb62"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Crc16Layer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10Crc16Layer10Crc16LayerEP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
-<dd><p>Ctor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16LayerD0Ev">
-<span id="_CPPv3N6stored10Crc16LayerD0Ev"></span><span id="_CPPv2N6stored10Crc16LayerD0Ev"></span><span id="stored::Crc16Layer::~Crc16Layer"></span><span class="target" id="classstored_1_1_crc16_layer_1a0b1420d3d3c69c129962c8ece9052ad3"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Crc16Layer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored10Crc16LayerD0Ev" title="Link to this definition"></a><br /></dt>
-<dd><p>Dtor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16Layer6decodeEPv6size_t">
-<span id="_CPPv3N6stored10Crc16Layer6decodeEPv6size_t"></span><span id="_CPPv2N6stored10Crc16Layer6decodeEPv6size_t"></span><span id="stored::Crc16Layer::decode__voidP.s"></span><span class="target" id="classstored_1_1_crc16_layer_1afc268baaaa18446a10a8ab23bf04e967"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">decode</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored10Crc16Layer6decodeEPv6size_t" title="Link to this definition"></a><br /></dt>
-<dd><p>Decode a frame and forward the decoded frame to the upper layer. </p>
-<p>The given buffer may be decoded in-place. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16Layer6encodeEPKv6size_tb">
-<span id="_CPPv3N6stored10Crc16Layer6encodeEPKv6size_tb"></span><span id="_CPPv2N6stored10Crc16Layer6encodeEPKv6size_tb"></span><span id="stored::Crc16Layer::encode__voidCP.s.b"></span><span class="target" id="classstored_1_1_crc16_layer_1aaa370f1466d22991713a951f1a8e9bfd"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">encode</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">last</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored10Crc16Layer6encodeEPKv6size_tb" title="Link to this definition"></a><br /></dt>
-<dd><p>Encode a (partial) frame and forward it to the lower layer. </p>
-<p>The given buffer will not be modified. A new buffer is allocated when required. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6stored10Crc16Layer3mtuEv">
-<span id="_CPPv3NK6stored10Crc16Layer3mtuEv"></span><span id="_CPPv2NK6stored10Crc16Layer3mtuEv"></span><span id="stored::Crc16Layer::mtuC"></span><span class="target" id="classstored_1_1_crc16_layer_1a82d88b7503bdb383c9416e2a0cad8503"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mtu</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6stored10Crc16Layer3mtuEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns the maximum amount of data to be put in one message that is encoded. </p>
-<p>If there is a MTU applicable to the physical transport (like a CAN bus), override this method to reflect that value. Layers on top will decrease the MTU when there protocol adds headers, for example.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the number of bytes, or 0 for infinity </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16Layer5resetEv">
-<span id="_CPPv3N6stored10Crc16Layer5resetEv"></span><span id="_CPPv2N6stored10Crc16Layer5resetEv"></span><span id="stored::Crc16Layer::reset"></span><span class="target" id="classstored_1_1_crc16_layer_1a00610c4aeabd33c565f5331a5aef3e01"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored10Crc16Layer5resetEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Reset the stack (top-down), and drop all messages. </p>
-</dd></dl>
-
-</div>
-</dd></dl>
-
-</section>
 <section id="stored-crc8layer">
 <h2>stored::Crc8Layer<a class="headerlink" href="#stored-crc8layer" title="Link to this heading"></a></h2>
 <dl class="cpp class">
@@ -634,17 +635,17 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp">
-<span class="target" id="classstored_1_1_crc8_layer_1afd628fedef0fa9b1ac226d67cd58451a"></span><span class="sig-name descname"></span></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Crc8Layer6__anonE">
+<span id="_CPPv3N6stored9Crc8Layer6__anonE"></span><span id="_CPPv2N6stored9Crc8Layer6__anonE"></span><span class="target" id="classstored_1_1_crc8_layer_1acdfc359e5f5cd9457921b944c91b40ca"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__anon</span></span></span><a class="headerlink" href="#_CPPv4N6stored9Crc8Layer6__anonE" title="Link to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored9Crc8Layer19PhonyNameDueToError10polynomialE">
-<span id="_CPPv3N6stored9Crc8Layer19PhonyNameDueToError10polynomialE"></span><span id="_CPPv2N6stored9Crc8Layer19PhonyNameDueToError10polynomialE"></span><span class="target" id="classstored_1_1_crc8_layer_1afd628fedef0fa9b1ac226d67cd58451aa14adee897c9ad5499de4c6608c8f78c7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">polynomial</span></span></span><a class="headerlink" href="#_CPPv4N6stored9Crc8Layer19PhonyNameDueToError10polynomialE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Crc8Layer6__anon10polynomialE">
+<span id="_CPPv3N6stored9Crc8Layer6__anon10polynomialE"></span><span id="_CPPv2N6stored9Crc8Layer6__anon10polynomialE"></span><span class="target" id="classstored_1_1_crc8_layer_1acdfc359e5f5cd9457921b944c91b40caa14adee897c9ad5499de4c6608c8f78c7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">polynomial</span></span></span><a class="headerlink" href="#_CPPv4N6stored9Crc8Layer6__anon10polynomialE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored9Crc8Layer19PhonyNameDueToError4initE">
-<span id="_CPPv3N6stored9Crc8Layer19PhonyNameDueToError4initE"></span><span id="_CPPv2N6stored9Crc8Layer19PhonyNameDueToError4initE"></span><span class="target" id="classstored_1_1_crc8_layer_1afd628fedef0fa9b1ac226d67cd58451aa1631c674509e8d7d495cab564f1cd8eb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><a class="headerlink" href="#_CPPv4N6stored9Crc8Layer19PhonyNameDueToError4initE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9Crc8Layer6__anon4initE">
+<span id="_CPPv3N6stored9Crc8Layer6__anon4initE"></span><span id="_CPPv2N6stored9Crc8Layer6__anon4initE"></span><span class="target" id="classstored_1_1_crc8_layer_1acdfc359e5f5cd9457921b944c91b40caa1631c674509e8d7d495cab564f1cd8eb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><a class="headerlink" href="#_CPPv4N6stored9Crc8Layer6__anon4initE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -705,6 +706,173 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 </dd></dl>
 
 </section>
+<section id="stored-crc16layer">
+<h2>stored::Crc16Layer<a class="headerlink" href="#stored-crc16layer" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16LayerE">
+<span id="_CPPv3N6stored10Crc16LayerE"></span><span id="_CPPv2N6stored10Crc16LayerE"></span><span id="stored::Crc16Layer"></span><span class="target" id="classstored_1_1_crc16_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Crc16Layer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><a class="headerlink" href="#_CPPv4N6stored10Crc16LayerE" title="Link to this definition"></a><br /></dt>
+<dd><p>A layer that adds a CRC-16 to messages. </p>
+<p>Like <a class="reference internal" href="#classstored_1_1_crc8_layer"><span class="std std-ref">stored::Crc8Layer</span></a>, but using a 0xbaad as polynomial. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp enum">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16Layer6__anonE">
+<span id="_CPPv3N6stored10Crc16Layer6__anonE"></span><span id="_CPPv2N6stored10Crc16Layer6__anonE"></span><span class="target" id="classstored_1_1_crc16_layer_1af1f6b9096c1fcd2758474865379a495b"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__anon</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc16Layer6__anonE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16Layer6__anon10polynomialE">
+<span id="_CPPv3N6stored10Crc16Layer6__anon10polynomialE"></span><span id="_CPPv2N6stored10Crc16Layer6__anon10polynomialE"></span><span class="target" id="classstored_1_1_crc16_layer_1af1f6b9096c1fcd2758474865379a495baee711989700375651ca8a9c3cc313fa9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">polynomial</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc16Layer6__anon10polynomialE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16Layer6__anon4initE">
+<span id="_CPPv3N6stored10Crc16Layer6__anon4initE"></span><span id="_CPPv2N6stored10Crc16Layer6__anon4initE"></span><span class="target" id="classstored_1_1_crc16_layer_1af1f6b9096c1fcd2758474865379a495baeb8e182958fd03c1968f253e0bcb11c6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc16Layer6__anon4initE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16Layer4baseE">
+<span id="_CPPv3N6stored10Crc16Layer4baseE"></span><span id="_CPPv2N6stored10Crc16Layer4baseE"></span><span id="stored::Crc16Layer::base"></span><span class="target" id="classstored_1_1_crc16_layer_1ae4465a77b90af4bc3c5f8d7f9816a376"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc16Layer4baseE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16Layer10Crc16LayerEP13ProtocolLayerP13ProtocolLayer">
+<span id="_CPPv3N6stored10Crc16Layer10Crc16LayerEP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored10Crc16Layer10Crc16LayerEP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::Crc16Layer::Crc16Layer__ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_crc16_layer_1ac332e25fb8984cdc0c95dc2905e3cb62"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Crc16Layer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10Crc16Layer10Crc16LayerEP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
+<dd><p>Ctor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16LayerD0Ev">
+<span id="_CPPv3N6stored10Crc16LayerD0Ev"></span><span id="_CPPv2N6stored10Crc16LayerD0Ev"></span><span id="stored::Crc16Layer::~Crc16Layer"></span><span class="target" id="classstored_1_1_crc16_layer_1a0b1420d3d3c69c129962c8ece9052ad3"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Crc16Layer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored10Crc16LayerD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Dtor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16Layer6decodeEPv6size_t">
+<span id="_CPPv3N6stored10Crc16Layer6decodeEPv6size_t"></span><span id="_CPPv2N6stored10Crc16Layer6decodeEPv6size_t"></span><span id="stored::Crc16Layer::decode__voidP.s"></span><span class="target" id="classstored_1_1_crc16_layer_1afc268baaaa18446a10a8ab23bf04e967"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">decode</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored10Crc16Layer6decodeEPv6size_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Decode a frame and forward the decoded frame to the upper layer. </p>
+<p>The given buffer may be decoded in-place. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16Layer6encodeEPKv6size_tb">
+<span id="_CPPv3N6stored10Crc16Layer6encodeEPKv6size_tb"></span><span id="_CPPv2N6stored10Crc16Layer6encodeEPKv6size_tb"></span><span id="stored::Crc16Layer::encode__voidCP.s.b"></span><span class="target" id="classstored_1_1_crc16_layer_1aaa370f1466d22991713a951f1a8e9bfd"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">encode</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">last</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored10Crc16Layer6encodeEPKv6size_tb" title="Link to this definition"></a><br /></dt>
+<dd><p>Encode a (partial) frame and forward it to the lower layer. </p>
+<p>The given buffer will not be modified. A new buffer is allocated when required. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored10Crc16Layer3mtuEv">
+<span id="_CPPv3NK6stored10Crc16Layer3mtuEv"></span><span id="_CPPv2NK6stored10Crc16Layer3mtuEv"></span><span id="stored::Crc16Layer::mtuC"></span><span class="target" id="classstored_1_1_crc16_layer_1a82d88b7503bdb383c9416e2a0cad8503"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mtu</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6stored10Crc16Layer3mtuEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the maximum amount of data to be put in one message that is encoded. </p>
+<p>If there is a MTU applicable to the physical transport (like a CAN bus), override this method to reflect that value. Layers on top will decrease the MTU when there protocol adds headers, for example.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the number of bytes, or 0 for infinity </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc16Layer5resetEv">
+<span id="_CPPv3N6stored10Crc16Layer5resetEv"></span><span id="_CPPv2N6stored10Crc16Layer5resetEv"></span><span id="stored::Crc16Layer::reset"></span><span class="target" id="classstored_1_1_crc16_layer_1a00610c4aeabd33c565f5331a5aef3e01"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored10Crc16Layer5resetEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Reset the stack (top-down), and drop all messages. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+<section id="stored-crc32layer">
+<h2>stored::Crc32Layer<a class="headerlink" href="#stored-crc32layer" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc32LayerE">
+<span id="_CPPv3N6stored10Crc32LayerE"></span><span id="_CPPv2N6stored10Crc32LayerE"></span><span id="stored::Crc32Layer"></span><span class="target" id="classstored_1_1_crc32_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Crc32Layer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><a class="headerlink" href="#_CPPv4N6stored10Crc32LayerE" title="Link to this definition"></a><br /></dt>
+<dd><p>A layer that adds a CRC-32 to messages. </p>
+<p>Like <a class="reference internal" href="#classstored_1_1_crc8_layer"><span class="std std-ref">stored::Crc8Layer</span></a>, but using a reversed 0x04c11db7 as polynomial. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp enum">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc32Layer6__anonE">
+<span id="_CPPv3N6stored10Crc32Layer6__anonE"></span><span id="_CPPv2N6stored10Crc32Layer6__anonE"></span><span class="target" id="classstored_1_1_crc32_layer_1a34ca5f0526bf32e6f485583994390afe"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__anon</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer6__anonE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc32Layer6__anon10polynomialE">
+<span id="_CPPv3N6stored10Crc32Layer6__anon10polynomialE"></span><span id="_CPPv2N6stored10Crc32Layer6__anon10polynomialE"></span><span class="target" id="classstored_1_1_crc32_layer_1a34ca5f0526bf32e6f485583994390afea64770ce26de94f8cb7af676b23dc5e0b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">polynomial</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer6__anon10polynomialE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc32Layer6__anon4initE">
+<span id="_CPPv3N6stored10Crc32Layer6__anon4initE"></span><span id="_CPPv2N6stored10Crc32Layer6__anon4initE"></span><span class="target" id="classstored_1_1_crc32_layer_1a34ca5f0526bf32e6f485583994390afea94f07193ba71c092180a47867aae74de"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer6__anon4initE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc32Layer6__anon9final_xorE">
+<span id="_CPPv3N6stored10Crc32Layer6__anon9final_xorE"></span><span id="_CPPv2N6stored10Crc32Layer6__anon9final_xorE"></span><span class="target" id="classstored_1_1_crc32_layer_1a34ca5f0526bf32e6f485583994390afea389ad169f5aa0241f46c6aeda8686261"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">final_xor</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer6__anon9final_xorE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc32Layer4baseE">
+<span id="_CPPv3N6stored10Crc32Layer4baseE"></span><span id="_CPPv2N6stored10Crc32Layer4baseE"></span><span id="stored::Crc32Layer::base"></span><span class="target" id="classstored_1_1_crc32_layer_1a4ded32a60cd9afa2ddd62a9c8235c6f3"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer4baseE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc32Layer10Crc32LayerEP13ProtocolLayerP13ProtocolLayer">
+<span id="_CPPv3N6stored10Crc32Layer10Crc32LayerEP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored10Crc32Layer10Crc32LayerEP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::Crc32Layer::Crc32Layer__ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_crc32_layer_1a0d16bba636121e25ccf4dfed7abb7f9e"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Crc32Layer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer10Crc32LayerEP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
+<dd><p>Ctor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc32LayerD0Ev">
+<span id="_CPPv3N6stored10Crc32LayerD0Ev"></span><span id="_CPPv2N6stored10Crc32LayerD0Ev"></span><span id="stored::Crc32Layer::~Crc32Layer"></span><span class="target" id="classstored_1_1_crc32_layer_1a3aabea99633c1f124c607254f3b5a8a2"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Crc32Layer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32LayerD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Dtor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc32Layer6decodeEPv6size_t">
+<span id="_CPPv3N6stored10Crc32Layer6decodeEPv6size_t"></span><span id="_CPPv2N6stored10Crc32Layer6decodeEPv6size_t"></span><span id="stored::Crc32Layer::decode__voidP.s"></span><span class="target" id="classstored_1_1_crc32_layer_1a0fb67b4b47c2a1f415d7a1e452cb39bd"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">decode</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer6decodeEPv6size_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Decode a frame and forward the decoded frame to the upper layer. </p>
+<p>The given buffer may be decoded in-place. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc32Layer6encodeEPKv6size_tb">
+<span id="_CPPv3N6stored10Crc32Layer6encodeEPKv6size_tb"></span><span id="_CPPv2N6stored10Crc32Layer6encodeEPKv6size_tb"></span><span id="stored::Crc32Layer::encode__voidCP.s.b"></span><span class="target" id="classstored_1_1_crc32_layer_1ad6fbff205300a37785bc0c4b7ec28507"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">encode</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">last</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer6encodeEPKv6size_tb" title="Link to this definition"></a><br /></dt>
+<dd><p>Encode a (partial) frame and forward it to the lower layer. </p>
+<p>The given buffer will not be modified. A new buffer is allocated when required. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored10Crc32Layer3mtuEv">
+<span id="_CPPv3NK6stored10Crc32Layer3mtuEv"></span><span id="_CPPv2NK6stored10Crc32Layer3mtuEv"></span><span id="stored::Crc32Layer::mtuC"></span><span class="target" id="classstored_1_1_crc32_layer_1a7de1f32fb372d7865be60ddfab80ab5c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mtu</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6stored10Crc32Layer3mtuEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the maximum amount of data to be put in one message that is encoded. </p>
+<p>If there is a MTU applicable to the physical transport (like a CAN bus), override this method to reflect that value. Layers on top will decrease the MTU when there protocol adds headers, for example.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the number of bytes, or 0 for infinity </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc32Layer5resetEv">
+<span id="_CPPv3N6stored10Crc32Layer5resetEv"></span><span id="_CPPv2N6stored10Crc32Layer5resetEv"></span><span id="stored::Crc32Layer::reset"></span><span class="target" id="classstored_1_1_crc32_layer_1a681c51e13ea12b7b6bf2b222e96a95bd"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer5resetEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Reset the stack (top-down), and drop all messages. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
 <section id="stored-debugarqlayer">
 <h2>stored::DebugArqLayer<a class="headerlink" href="#stored-debugarqlayer" title="Link to this heading"></a></h2>
 <dl class="cpp class">
@@ -721,7 +889,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <p>Individual messages are not ACKed, like TCP does. If the client does not receive a response to its request, either the request or the response has been lost. In any case, it has to resend its full request, using the same sequence numbers as used with the first attempt. The target will (re)send its response. There is no timeout specified. Use a timeout value that fits the infrastructure of your device. There is no limit in how often a retransmit can occur.</p>
 <p>The application has limited buffering. So, neither the request nor the full response may be buffered for (partial) retransmission. Therefore, it may be the case that when the response was lost, the request is reexecuted. It is up to the buffer size as specified in <a class="reference internal" href="#classstored_1_1_debug_arq_layer"><span class="std std-ref">DebugArqLayer</span></a>’s constructor and <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a> to determine when it is safe or required to reexected upon every retransmit. For example, writes are not reexecuted, as a write may have unexpected side-effects, while it is safe to reexecute a read of a normal variable. When the directory is requested, the response is often too long to buffer, and the response is constant, so it is not buffered either and just reexecuted. Note that if the buffer is too small, reading from a stream (s command) will do a destructive read, but this data may be lost if the response is lost. Configure the stream size and <a class="reference internal" href="#classstored_1_1_debug_arq_layer"><span class="std std-ref">DebugArqLayer</span></a>’s buffer appropriate if that is unacceptable for you.</p>
 <p>Because of this limited buffering, the response may reset the sequence numbers more often. Upon retransmission of the same data, the same sequence numbers are used, just like the retransmission of the request. However, if the data may have been changed, as the response was not buffered and the request was reexecuted, the reset flag is set of the first response message, while it has a new sequence number. The client should accept this new sequence number and discard all previously collected response messages.</p>
-<p>Within one request or response, the same sequence number should be used twice; even if the request or response is very long. Worst-case, when there is only one payload byte per message, this limits the request and response to 128 MB. As the payload is allowed to be of any size, this should not be a real limitation in practice.</p>
+<p>Within one request or response, the same sequence number should not be used twice; even if the request or response is very long. Worst-case, when there is only one payload byte per message, this limits the request and response to 128 MB. As the payload is allowed to be of any size, this should not be a real limitation in practice.</p>
 <p>This protocol is verified by the Promela model in tests/DebugArqLayer.pml. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -806,12 +974,12 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp">
-<span class="target" id="classstored_1_1_debug_zmq_layer_1abe0af6df9cc0eb49c599265ef2695445"></span><span class="sig-name descname"></span></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13DebugZmqLayer6__anonE">
+<span id="_CPPv3N6stored13DebugZmqLayer6__anonE"></span><span id="_CPPv2N6stored13DebugZmqLayer6__anonE"></span><span class="target" id="classstored_1_1_debug_zmq_layer_1a9fd5a30cc38d4fa143d66fbb1574d30d"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__anon</span></span></span><a class="headerlink" href="#_CPPv4N6stored13DebugZmqLayer6__anonE" title="Link to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored13DebugZmqLayer19PhonyNameDueToError11DefaultPortE">
-<span id="_CPPv3N6stored13DebugZmqLayer19PhonyNameDueToError11DefaultPortE"></span><span id="_CPPv2N6stored13DebugZmqLayer19PhonyNameDueToError11DefaultPortE"></span><span class="target" id="classstored_1_1_debug_zmq_layer_1abe0af6df9cc0eb49c599265ef2695445a6e3be45d44a117e2006d26f9adef4611"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DefaultPort</span></span></span><a class="headerlink" href="#_CPPv4N6stored13DebugZmqLayer19PhonyNameDueToError11DefaultPortE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13DebugZmqLayer6__anon11DefaultPortE">
+<span id="_CPPv3N6stored13DebugZmqLayer6__anon11DefaultPortE"></span><span id="_CPPv2N6stored13DebugZmqLayer6__anon11DefaultPortE"></span><span class="target" id="classstored_1_1_debug_zmq_layer_1a9fd5a30cc38d4fa143d66fbb1574d30da6e3be45d44a117e2006d26f9adef4611"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DefaultPort</span></span></span><a class="headerlink" href="#_CPPv4N6stored13DebugZmqLayer6__anon11DefaultPortE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -826,7 +994,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored13DebugZmqLayer13DebugZmqLayerEPviP13ProtocolLayerP13ProtocolLayer">
-<span id="_CPPv3N6stored13DebugZmqLayer13DebugZmqLayerEPviP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored13DebugZmqLayer13DebugZmqLayerEPviP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::DebugZmqLayer::DebugZmqLayer__voidP.i.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_debug_zmq_layer_1a53d99c8a2bf36828686aec34b9175999"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DebugZmqLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">context</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">port</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DefaultPort</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored13DebugZmqLayer13DebugZmqLayerEPviP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored13DebugZmqLayer13DebugZmqLayerEPviP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored13DebugZmqLayer13DebugZmqLayerEPviP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::DebugZmqLayer::DebugZmqLayer__voidP.i.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_debug_zmq_layer_1a53d99c8a2bf36828686aec34b9175999"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DebugZmqLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">context</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">port</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored13DebugZmqLayer6__anon11DefaultPortE" title="stored::DebugZmqLayer::DefaultPort"><span class="n"><span class="pre">DefaultPort</span></span></a>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored13DebugZmqLayer13DebugZmqLayerEPviP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
 <dd><p>Constructor. </p>
 <p>The given <code class="docutils literal notranslate"><span class="pre">port</span></code> used for a REQ/REP socket over TCP. This is the listening side, where a client like the <code class="docutils literal notranslate"><span class="pre">libstored.gui</span></code> can connect to.</p>
 <p><div class="admonition seealso">
@@ -938,17 +1106,207 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 </section>
 <section id="stored-fifoloopback">
 <h2>stored::FifoLoopback<a class="headerlink" href="#stored-fifoloopback" title="Link to this heading"></a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenclass: Cannot find class “stored::FifoLoopback” in doxygen xml output for project “doxygen” from directory: /home/runner/work/libstored/libstored/dist/ubuntu/build/sphinx/doxygen/xml/</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_t_6size_tEN6stored12FifoLoopbackE">
+<span id="_CPPv3I_6size_t_6size_tEN6stored12FifoLoopbackE"></span><span id="_CPPv2I_6size_t_6size_tEN6stored12FifoLoopbackE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Capacity</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Messages</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">defaultMessages</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I_6size_t_6size_tEN6stored12FifoLoopbackE" title="stored::FifoLoopback::Capacity"><span class="n"><span class="pre">Capacity</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_fifo_loopback"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FifoLoopback</span></span></span><a class="headerlink" href="#_CPPv4I_6size_t_6size_tEN6stored12FifoLoopbackE" title="Link to this definition"></a><br /></dt>
+<dd><p>Bidirectional loopback for two protocol stacks with thread-safe FIFOs. </p>
+<p>The loopback has an <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> side, which are symmetrical. Both sides can be used to connect to a <a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a>, for example. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored12FifoLoopback18FifoLoopback1_typeE">
+<span id="_CPPv3N6stored12FifoLoopback18FifoLoopback1_typeE"></span><span id="_CPPv2N6stored12FifoLoopback18FifoLoopback1_typeE"></span><span class="target" id="classstored_1_1_fifo_loopback_1adff329d8d93a6e442e8359665bae1d9f"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FifoLoopback1_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6size_t_6size_tEN6stored13FifoLoopback1E" title="stored::FifoLoopback1"><span class="n"><span class="pre">FifoLoopback1</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_6size_t_6size_tEN6stored12FifoLoopbackE" title="stored::FifoLoopback::Capacity"><span class="n"><span class="pre">Capacity</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6size_t_6size_tEN6stored12FifoLoopbackE" title="stored::FifoLoopback::Messages"><span class="n"><span class="pre">Messages</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6stored12FifoLoopback18FifoLoopback1_typeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
 </div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored12FifoLoopback12FifoLoopbackEv">
+<span id="_CPPv3N6stored12FifoLoopback12FifoLoopbackEv"></span><span id="_CPPv2N6stored12FifoLoopback12FifoLoopbackEv"></span><span id="stored::FifoLoopback::FifoLoopback"></span><span class="target" id="classstored_1_1_fifo_loopback_1aa1af98a997a3d438aa603624d388be4e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FifoLoopback</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12FifoLoopback12FifoLoopbackEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored12FifoLoopback12FifoLoopbackER13ProtocolLayerR13ProtocolLayer">
+<span id="_CPPv3N6stored12FifoLoopback12FifoLoopbackER13ProtocolLayerR13ProtocolLayer"></span><span id="_CPPv2N6stored12FifoLoopback12FifoLoopbackER13ProtocolLayerR13ProtocolLayer"></span><span id="stored::FifoLoopback::FifoLoopback__ProtocolLayerR.ProtocolLayerR"></span><span class="target" id="classstored_1_1_fifo_loopback_1a0da488fb4a7b3b3c9d1b678f843d4424"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FifoLoopback</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12FifoLoopback12FifoLoopbackER13ProtocolLayerR13ProtocolLayer" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored12FifoLoopbackD0Ev">
+<span id="_CPPv3N6stored12FifoLoopbackD0Ev"></span><span id="_CPPv2N6stored12FifoLoopbackD0Ev"></span><span id="stored::FifoLoopback::~FifoLoopback"></span><span class="target" id="classstored_1_1_fifo_loopback_1a26c10a69cd03c9a18aee12e85a2c49d8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~FifoLoopback</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12FifoLoopbackD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored12FifoLoopback1aEv">
+<span id="_CPPv3N6stored12FifoLoopback1aEv"></span><span id="_CPPv2N6stored12FifoLoopback1aEv"></span><span id="stored::FifoLoopback::a"></span><span class="target" id="classstored_1_1_fifo_loopback_1a83536684651a7f073b03c35de4cd2e2e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">a</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12FifoLoopback1aEv" title="Link to this definition"></a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">a</span></code> endpoint. </p>
+<p>Use this layer to register in a <a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a>, for example, or to wrap another stack. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored12FifoLoopback3a2bEv">
+<span id="_CPPv3N6stored12FifoLoopback3a2bEv"></span><span id="_CPPv2N6stored12FifoLoopback3a2bEv"></span><span id="stored::FifoLoopback::a2b"></span><span class="target" id="classstored_1_1_fifo_loopback_1a1c41391b69d47ac30545961cadd6129d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored12FifoLoopback18FifoLoopback1_typeE" title="stored::FifoLoopback::FifoLoopback1_type"><span class="n"><span class="pre">FifoLoopback1_type</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">a2b</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12FifoLoopback3a2bEv" title="Link to this definition"></a><br /></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">a</span></code> to <code class="docutils literal notranslate"><span class="pre">b</span></code> FIFO. </p>
+<p>Use this FIFO to call <code class="docutils literal notranslate"><span class="pre">recv()</span></code> on at the <code class="docutils literal notranslate"><span class="pre">b</span></code> side of the loopback. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored12FifoLoopback1bEv">
+<span id="_CPPv3N6stored12FifoLoopback1bEv"></span><span id="_CPPv2N6stored12FifoLoopback1bEv"></span><span id="stored::FifoLoopback::b"></span><span class="target" id="classstored_1_1_fifo_loopback_1a2948ebf4863d715f801cc5a76794fe1e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">b</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12FifoLoopback1bEv" title="Link to this definition"></a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">b</span></code> endpoint. </p>
+<p>Use this layer to register in a <a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_synchronizer"><span class="std std-ref">stored::Synchronizer</span></a>, for example, or to wrap another stack. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored12FifoLoopback3b2aEv">
+<span id="_CPPv3N6stored12FifoLoopback3b2aEv"></span><span id="_CPPv2N6stored12FifoLoopback3b2aEv"></span><span id="stored::FifoLoopback::b2a"></span><span class="target" id="classstored_1_1_fifo_loopback_1a37869faf39a265b45b72ccbad326da40"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored12FifoLoopback18FifoLoopback1_typeE" title="stored::FifoLoopback::FifoLoopback1_type"><span class="n"><span class="pre">FifoLoopback1_type</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">b2a</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12FifoLoopback3b2aEv" title="Link to this definition"></a><br /></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">b</span></code> to <code class="docutils literal notranslate"><span class="pre">a</span></code> FIFO. </p>
+<p>Use this FIFO to call <code class="docutils literal notranslate"><span class="pre">recv()</span></code> on at the <code class="docutils literal notranslate"><span class="pre">a</span></code> side of the loopback. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
 </section>
 <section id="stored-fifoloopback1">
 <h2>stored::FifoLoopback1<a class="headerlink" href="#stored-fifoloopback1" title="Link to this heading"></a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenclass: Cannot find class “stored::FifoLoopback1” in doxygen xml output for project “doxygen” from directory: /home/runner/work/libstored/libstored/dist/ubuntu/build/sphinx/doxygen/xml/</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I_6size_t_6size_tEN6stored13FifoLoopback1E">
+<span id="_CPPv3I_6size_t_6size_tEN6stored13FifoLoopback1E"></span><span id="_CPPv2I_6size_t_6size_tEN6stored13FifoLoopback1E"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Capacity</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Messages</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">defaultMessages</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I_6size_t_6size_tEN6stored13FifoLoopback1E" title="stored::FifoLoopback1::Capacity"><span class="n"><span class="pre">Capacity</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_fifo_loopback1"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FifoLoopback1</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6stored11PolledLayerE" title="stored::PolledLayer"><span class="n"><span class="pre">PolledLayer</span></span></a><a class="headerlink" href="#_CPPv4I_6size_t_6size_tEN6stored13FifoLoopback1E" title="Link to this definition"></a><br /></dt>
+<dd><p>A <a class="reference internal" href="#classstored_1_1_protocol_layer"><span class="std std-ref">ProtocolLayer</span></a> that buffers downstream messages. </p>
+<p>To get the messages from the fifo, call <a class="reference internal" href="#classstored_1_1_fifo_loopback1_1a04612b1f4c3e1a3165859b296746312a"><span class="std std-ref">recv()</span></a>. If there are any, the are passed upstream. Blocking on a <a class="reference internal" href="#classstored_1_1_fifo_loopback1_1a04612b1f4c3e1a3165859b296746312a"><span class="std std-ref">recv()</span></a> is not supported; always use 0 as timeout (no waiting).</p>
+<p>This fifo is thread-safe by default. Only <a class="reference internal" href="#classstored_1_1_protocol_layer_1a66c24cec6a17c44fac68213d358a5aa8"><span class="std std-ref">encode()</span></a> messages from one context, and only <a class="reference internal" href="#classstored_1_1_fifo_loopback1_1a04612b1f4c3e1a3165859b296746312a"><span class="std std-ref">recv()</span></a> (and therefore <a class="reference internal" href="#classstored_1_1_protocol_layer_1a357b029311be09df61e019682a848ab5"><span class="std std-ref">decode()</span></a>) from another context. Do not mix or have multiple encoding/decoding contexts. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13FifoLoopback14baseE">
+<span id="_CPPv3N6stored13FifoLoopback14baseE"></span><span id="_CPPv2N6stored13FifoLoopback14baseE"></span><span id="stored::FifoLoopback1::base"></span><span class="target" id="classstored_1_1_fifo_loopback1_1af2f0937737080208fd35ebba12201b4e"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored11PolledLayerE" title="stored::PolledLayer"><span class="n"><span class="pre">PolledLayer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored13FifoLoopback14baseE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13FifoLoopback19Fifo_typeE">
+<span id="_CPPv3N6stored13FifoLoopback19Fifo_typeE"></span><span id="_CPPv2N6stored13FifoLoopback19Fifo_typeE"></span><span id="stored::FifoLoopback1::Fifo_type"></span><span class="target" id="classstored_1_1_fifo_loopback1_1a0c9b31861f8ad8ff7b4f3e63f8022b78"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="cpp_util.html#_CPPv4I_6size_t_6size_t_bEN6stored11MessageFifoE" title="stored::MessageFifo"><span class="n"><span class="pre">MessageFifo</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_6size_t_6size_tEN6stored13FifoLoopback1E" title="stored::FifoLoopback1::Capacity"><span class="n"><span class="pre">Capacity</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6size_t_6size_tEN6stored13FifoLoopback1E" title="stored::FifoLoopback1::Messages"><span class="n"><span class="pre">Messages</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Fifo_type</span></span></span><a class="headerlink" href="#_CPPv4N6stored13FifoLoopback19Fifo_typeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13FifoLoopback116OverflowCallbackE">
+<span id="_CPPv3N6stored13FifoLoopback116OverflowCallbackE"></span><span id="_CPPv2N6stored13FifoLoopback116OverflowCallbackE"></span><span class="target" id="classstored_1_1_fifo_loopback1_1aa7c09521aeca8d3ab78450ce38b1f5a7"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OverflowCallback</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N6stored13FifoLoopback116OverflowCallbackE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
 </div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13FifoLoopback113FifoLoopback1EP13ProtocolLayerP13ProtocolLayer">
+<span id="_CPPv3N6stored13FifoLoopback113FifoLoopback1EP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored13FifoLoopback113FifoLoopback1EP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::FifoLoopback1::FifoLoopback1__ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_fifo_loopback1_1a2033ed12d5bf950eed36b63507c52d7b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FifoLoopback1</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored13FifoLoopback113FifoLoopback1EP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13FifoLoopback1D0Ev">
+<span id="_CPPv3N6stored13FifoLoopback1D0Ev"></span><span id="_CPPv2N6stored13FifoLoopback1D0Ev"></span><span id="stored::FifoLoopback1::~FifoLoopback1"></span><span class="target" id="classstored_1_1_fifo_loopback1_1a261f3d51290483ac37978ad8a0ef6276"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~FifoLoopback1</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6stored13FifoLoopback1D0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored13FifoLoopback19availableEv">
+<span id="_CPPv3NK6stored13FifoLoopback19availableEv"></span><span id="_CPPv2NK6stored13FifoLoopback19availableEv"></span><span id="stored::FifoLoopback1::availableC"></span><span class="target" id="classstored_1_1_fifo_loopback1_1a66f11cd7f909284c2d8030a2d125a037"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">available</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored13FifoLoopback19availableEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored13FifoLoopback17boundedEv">
+<span id="_CPPv3NK6stored13FifoLoopback17boundedEv"></span><span id="_CPPv2NK6stored13FifoLoopback17boundedEv"></span><span id="stored::FifoLoopback1::boundedCCE"></span><span class="target" id="classstored_1_1_fifo_loopback1_1a186b4df20867df33d7a2b55339f07187"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bounded</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored13FifoLoopback17boundedEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored13FifoLoopback15emptyEv">
+<span id="_CPPv3NK6stored13FifoLoopback15emptyEv"></span><span id="_CPPv2NK6stored13FifoLoopback15emptyEv"></span><span id="stored::FifoLoopback1::emptyC"></span><span class="target" id="classstored_1_1_fifo_loopback1_1a296e3d075f398ad5c5ab8ab1d1b0611b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">empty</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored13FifoLoopback15emptyEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13FifoLoopback16encodeEPKv6size_tb">
+<span id="_CPPv3N6stored13FifoLoopback16encodeEPKv6size_tb"></span><span id="_CPPv2N6stored13FifoLoopback16encodeEPKv6size_tb"></span><span id="stored::FifoLoopback1::encode__voidCP.s.b"></span><span class="target" id="classstored_1_1_fifo_loopback1_1a3358c2ab3871538995610c474166b854"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">encode</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">last</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored13FifoLoopback16encodeEPKv6size_tb" title="Link to this definition"></a><br /></dt>
+<dd><p>Encode a (partial) frame and forward it to the lower layer.   </p>
+<p>The given buffer will not be modified. A new buffer is allocated when required.  </p>
+<p>When the FIFO is full and new messages are dropped, the <a class="reference internal" href="#classstored_1_1_fifo_loopback1_1ab6ab82116881de5dc3eb6c9260ab1d6c"><span class="std std-ref">overflow()</span></a> is invoked. As long as it returns <code class="docutils literal notranslate"><span class="pre">true</span></code>, the FIFO push is retried.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_fifo_loopback1_1ac47f03a2f805e53dadcd2b19c4ecde98"><span class="std std-ref">setOverflowHandler()</span></a></p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored13FifoLoopback14fullEv">
+<span id="_CPPv3NK6stored13FifoLoopback14fullEv"></span><span id="_CPPv2NK6stored13FifoLoopback14fullEv"></span><span id="stored::FifoLoopback1::fullC"></span><span class="target" id="classstored_1_1_fifo_loopback1_1a97960fb31d084f0c096125de2da53d74"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">full</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored13FifoLoopback14fullEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored13FifoLoopback13mtuEv">
+<span id="_CPPv3NK6stored13FifoLoopback13mtuEv"></span><span id="_CPPv2NK6stored13FifoLoopback13mtuEv"></span><span id="stored::FifoLoopback1::mtuC"></span><span class="target" id="classstored_1_1_fifo_loopback1_1a8212d5a95b0c770a240463bd8b595c9f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mtu</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6stored13FifoLoopback13mtuEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the maximum amount of data to be put in one message that is encoded. </p>
+<p>If there is a MTU applicable to the physical transport (like a CAN bus), override this method to reflect that value. Layers on top will decrease the MTU when there protocol adds headers, for example.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the number of bytes, or 0 for infinity </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13FifoLoopback18overflowEv">
+<span id="_CPPv3N6stored13FifoLoopback18overflowEv"></span><span id="_CPPv2N6stored13FifoLoopback18overflowEv"></span><span id="stored::FifoLoopback1::overflow"></span><span class="target" id="classstored_1_1_fifo_loopback1_1ab6ab82116881de5dc3eb6c9260ab1d6c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">overflow</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored13FifoLoopback18overflowEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Invoke overflow handler. </p>
+<p>If no callback is set, <a class="reference internal" href="#classstored_1_1_polled_layer_1a5f93b36636abab8f4cacb5f1b4fbcd82"><span class="std std-ref">lastError()</span></a> is set to <code class="docutils literal notranslate"><span class="pre">ENOMEM</span></code>, and <code class="docutils literal notranslate"><span class="pre">false</span></code> is returned. This flag is only reset by <a class="reference internal" href="#classstored_1_1_fifo_loopback1_1abab48eaa4ab02b0fab6489aca3000ddc"><span class="std std-ref">reset()</span></a>.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classstored_1_1_fifo_loopback1_1ac47f03a2f805e53dadcd2b19c4ecde98"><span class="std std-ref">setOverflowHandler()</span></a></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> if the overflow situation might be resolved, <code class="docutils literal notranslate"><span class="pre">false</span></code> when no other fifo push is to be attempted and the data is to be dropped.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13FifoLoopback14recvEl">
+<span id="_CPPv3N6stored13FifoLoopback14recvEl"></span><span id="_CPPv2N6stored13FifoLoopback14recvEl"></span><span id="stored::FifoLoopback1::recv__l"></span><span class="target" id="classstored_1_1_fifo_loopback1_1a04612b1f4c3e1a3165859b296746312a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">recv</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">timeout_us</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored13FifoLoopback14recvEl" title="Link to this definition"></a><br /></dt>
+<dd><p>Pass at most one message in the FIFO to <a class="reference internal" href="#classstored_1_1_protocol_layer_1a357b029311be09df61e019682a848ab5"><span class="std std-ref">decode()</span></a>. </p>
+<p><code class="docutils literal notranslate"><span class="pre">timeout_us</span></code> is here for compatibility with the <a class="reference internal" href="#classstored_1_1_protocol_layer"><span class="std std-ref">ProtocolLayer</span></a> interface, but must be 0. Actual blocking is not supported.</p>
+<p>The return value is either 0 on success or <code class="docutils literal notranslate"><span class="pre">EAGAIN</span></code> in case the FIFO is empty. This value is not saved in <a class="reference internal" href="#classstored_1_1_polled_layer_1a5f93b36636abab8f4cacb5f1b4fbcd82"><span class="std std-ref">lastError()</span></a>, as that field is only used by <a class="reference internal" href="#classstored_1_1_protocol_layer_1a66c24cec6a17c44fac68213d358a5aa8"><span class="std std-ref">encode()</span></a> and is not thread-safe. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13FifoLoopback17recvAllEv">
+<span id="_CPPv3N6stored13FifoLoopback17recvAllEv"></span><span id="_CPPv2N6stored13FifoLoopback17recvAllEv"></span><span id="stored::FifoLoopback1::recvAll"></span><span class="target" id="classstored_1_1_fifo_loopback1_1a4e81182caa5eb78c5ca7b40076e52acb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">recvAll</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored13FifoLoopback17recvAllEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Pass all available messages in the FIFO to <a class="reference internal" href="#classstored_1_1_protocol_layer_1a357b029311be09df61e019682a848ab5"><span class="std std-ref">decode()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13FifoLoopback15resetEv">
+<span id="_CPPv3N6stored13FifoLoopback15resetEv"></span><span id="_CPPv2N6stored13FifoLoopback15resetEv"></span><span id="stored::FifoLoopback1::reset"></span><span class="target" id="classstored_1_1_fifo_loopback1_1abab48eaa4ab02b0fab6489aca3000ddc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored13FifoLoopback15resetEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Reset the stack (top-down), and drop all messages. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_F18SFINAE_IS_FUNCTION1F16OverflowCallbackiEEN6stored13FifoLoopback118setOverflowHandlerEvRR1F">
+<span id="_CPPv3I0_F18SFINAE_IS_FUNCTION1F16OverflowCallbackiEEN6stored13FifoLoopback118setOverflowHandlerERR1F"></span><span id="_CPPv2I0_F18SFINAE_IS_FUNCTION1F16OverflowCallbackiEEN6stored13FifoLoopback118setOverflowHandlerERR1F"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">nullptr_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">SFINAE_IS_FUNCTION</span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_F18SFINAE_IS_FUNCTION1F16OverflowCallbackiEEN6stored13FifoLoopback118setOverflowHandlerEvRR1F" title="stored::FifoLoopback1::setOverflowHandler::F"><span class="n"><span class="pre">F</span></span></a>, <a class="reference internal" href="#_CPPv4N6stored13FifoLoopback116OverflowCallbackE" title="stored::FifoLoopback1::OverflowCallback"><span class="n"><span class="pre">OverflowCallback</span></span></a>, <span class="kt"><span class="pre">int</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_fifo_loopback1_1ac47f03a2f805e53dadcd2b19c4ecde98"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setOverflowHandler</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_F18SFINAE_IS_FUNCTION1F16OverflowCallbackiEEN6stored13FifoLoopback118setOverflowHandlerEvRR1F" title="stored::FifoLoopback1::setOverflowHandler::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cb</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0_F18SFINAE_IS_FUNCTION1F16OverflowCallbackiEEN6stored13FifoLoopback118setOverflowHandlerEvRR1F" title="Link to this definition"></a><br /></dt>
+<dd><p>Set the handler to be called by <a class="reference internal" href="#classstored_1_1_fifo_loopback1_1ab6ab82116881de5dc3eb6c9260ab1d6c"><span class="std std-ref">overflow()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored13FifoLoopback14sizeEv">
+<span id="_CPPv3NK6stored13FifoLoopback14sizeEv"></span><span id="_CPPv2NK6stored13FifoLoopback14sizeEv"></span><span id="stored::FifoLoopback1::sizeCCE"></span><span class="target" id="classstored_1_1_fifo_loopback1_1a8fb5d15d2c42608f0d165ff88084f061"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored13FifoLoopback14sizeEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored13FifoLoopback15spaceEv">
+<span id="_CPPv3NK6stored13FifoLoopback15spaceEv"></span><span id="_CPPv2NK6stored13FifoLoopback15spaceEv"></span><span id="stored::FifoLoopback1::spaceC"></span><span class="target" id="classstored_1_1_fifo_loopback1_1a2b22625a82433eb7416c7050593895e2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">space</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6stored13FifoLoopback15spaceEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
 </section>
 <section id="stored-filelayer">
 <h2>stored::FileLayer<a class="headerlink" href="#stored-filelayer" title="Link to this heading"></a></h2>
@@ -962,12 +1320,12 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp">
-<span class="target" id="classstored_1_1_file_layer_1a69d1681090f2d69db80aeee4b79a6ca4"></span><span class="sig-name descname"></span></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9FileLayer6__anonE">
+<span id="_CPPv3N6stored9FileLayer6__anonE"></span><span id="_CPPv2N6stored9FileLayer6__anonE"></span><span class="target" id="classstored_1_1_file_layer_1ae96b8a9a3b9b57b9bb1f0799757bdc59"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__anon</span></span></span><a class="headerlink" href="#_CPPv4N6stored9FileLayer6__anonE" title="Link to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored9FileLayer19PhonyNameDueToError17DefaultBufferSizeE">
-<span id="_CPPv3N6stored9FileLayer19PhonyNameDueToError17DefaultBufferSizeE"></span><span id="_CPPv2N6stored9FileLayer19PhonyNameDueToError17DefaultBufferSizeE"></span><span class="target" id="classstored_1_1_file_layer_1a69d1681090f2d69db80aeee4b79a6ca4acf99299bb7f36b81c8f12deb56c85301"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DefaultBufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored9FileLayer19PhonyNameDueToError17DefaultBufferSizeE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored9FileLayer6__anon17DefaultBufferSizeE">
+<span id="_CPPv3N6stored9FileLayer6__anon17DefaultBufferSizeE"></span><span id="_CPPv2N6stored9FileLayer6__anon17DefaultBufferSizeE"></span><span class="target" id="classstored_1_1_file_layer_1ae96b8a9a3b9b57b9bb1f0799757bdc59acf99299bb7f36b81c8f12deb56c85301"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DefaultBufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored9FileLayer6__anon17DefaultBufferSizeE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -987,7 +1345,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored9FileLayer9FileLayerEPKcPKc6size_tP13ProtocolLayerP13ProtocolLayer">
-<span id="_CPPv3N6stored9FileLayer9FileLayerEPKcPKc6size_tP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored9FileLayer9FileLayerEPKcPKc6size_tP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::FileLayer::FileLayer__cCP.cCP.s.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_file_layer_1a8d97e5310bd3770f4ade9af0b08948ff"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FileLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name_r</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name_w</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DefaultBufferSize</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored9FileLayer9FileLayerEPKcPKc6size_tP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored9FileLayer9FileLayerEPKcPKc6size_tP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored9FileLayer9FileLayerEPKcPKc6size_tP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::FileLayer::FileLayer__cCP.cCP.s.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_file_layer_1a8d97e5310bd3770f4ade9af0b08948ff"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FileLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name_r</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name_w</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored9FileLayer6__anon17DefaultBufferSizeE" title="stored::FileLayer::DefaultBufferSize"><span class="n"><span class="pre">DefaultBufferSize</span></span></a>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored9FileLayer9FileLayerEPKcPKc6size_tP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
 <dd><p>Ctor for two files to be opened. </p>
 <p>If <code class="docutils literal notranslate"><span class="pre">name_w</span></code> is <code class="docutils literal notranslate"><span class="pre">nullptr</span></code>, <code class="docutils literal notranslate"><span class="pre">name_r</span></code> is used to write to as well. Files are created when required. If the file exists, writing will append data to the file (it is not truncated).</p>
 <p>Do not use this ctor when inheriting this class.</p>
@@ -996,7 +1354,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored9FileLayer9FileLayerEii6size_tP13ProtocolLayerP13ProtocolLayer">
-<span id="_CPPv3N6stored9FileLayer9FileLayerEii6size_tP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored9FileLayer9FileLayerEii6size_tP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::FileLayer::FileLayer__i.i.s.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_file_layer_1af0988d5e71c6e665b5f68b80550d0c84"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FileLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fd_r</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fd_w</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">1</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DefaultBufferSize</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored9FileLayer9FileLayerEii6size_tP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored9FileLayer9FileLayerEii6size_tP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored9FileLayer9FileLayerEii6size_tP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::FileLayer::FileLayer__i.i.s.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_file_layer_1af0988d5e71c6e665b5f68b80550d0c84"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FileLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fd_r</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fd_w</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">1</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored9FileLayer6__anon17DefaultBufferSizeE" title="stored::FileLayer::DefaultBufferSize"><span class="n"><span class="pre">DefaultBufferSize</span></span></a>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored9FileLayer9FileLayerEii6size_tP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
 <dd><p>Ctor for two already opened file descriptors. </p>
 <p>If <code class="docutils literal notranslate"><span class="pre">fd_w</span></code> is -1, <code class="docutils literal notranslate"><span class="pre">fd_r</span></code> is used to write to as well.</p>
 <p>Do not use this ctor when inheriting this class.</p>
@@ -1157,27 +1515,27 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp">
-<span class="target" id="classstored_1_1_named_pipe_layer_1a948c0a4e4fb68e5885fdc40c6d256b79"></span><span class="sig-name descname"></span></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayer6__anonE">
+<span id="_CPPv3N6stored14NamedPipeLayer6__anonE"></span><span id="_CPPv2N6stored14NamedPipeLayer6__anonE"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a885a7136a65a369ddc643dbad7f073f2"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__anon</span></span></span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayer6__anonE" title="Link to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayer19PhonyNameDueToError10BufferSizeE">
-<span id="_CPPv3N6stored14NamedPipeLayer19PhonyNameDueToError10BufferSizeE"></span><span id="_CPPv2N6stored14NamedPipeLayer19PhonyNameDueToError10BufferSizeE"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a948c0a4e4fb68e5885fdc40c6d256b79a95b2f2194c488d701e80c07be6165338"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayer19PhonyNameDueToError10BufferSizeE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayer6__anon10BufferSizeE">
+<span id="_CPPv3N6stored14NamedPipeLayer6__anon10BufferSizeE"></span><span id="_CPPv2N6stored14NamedPipeLayer6__anon10BufferSizeE"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a885a7136a65a369ddc643dbad7f073f2a95b2f2194c488d701e80c07be6165338"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayer6__anon10BufferSizeE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayer19PhonyNameDueToError7InboundE">
-<span id="_CPPv3N6stored14NamedPipeLayer19PhonyNameDueToError7InboundE"></span><span id="_CPPv2N6stored14NamedPipeLayer19PhonyNameDueToError7InboundE"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a948c0a4e4fb68e5885fdc40c6d256b79aad8e2ca47b9e207235eb80f702f79f1a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Inbound</span></span></span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayer19PhonyNameDueToError7InboundE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayer6__anon7InboundE">
+<span id="_CPPv3N6stored14NamedPipeLayer6__anon7InboundE"></span><span id="_CPPv2N6stored14NamedPipeLayer6__anon7InboundE"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a885a7136a65a369ddc643dbad7f073f2aad8e2ca47b9e207235eb80f702f79f1a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Inbound</span></span></span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayer6__anon7InboundE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayer19PhonyNameDueToError8OutboundE">
-<span id="_CPPv3N6stored14NamedPipeLayer19PhonyNameDueToError8OutboundE"></span><span id="_CPPv2N6stored14NamedPipeLayer19PhonyNameDueToError8OutboundE"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a948c0a4e4fb68e5885fdc40c6d256b79a459f45b6f4d1f7f42ebe5c47df1d8fd5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Outbound</span></span></span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayer19PhonyNameDueToError8OutboundE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayer6__anon8OutboundE">
+<span id="_CPPv3N6stored14NamedPipeLayer6__anon8OutboundE"></span><span id="_CPPv2N6stored14NamedPipeLayer6__anon8OutboundE"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a885a7136a65a369ddc643dbad7f073f2a459f45b6f4d1f7f42ebe5c47df1d8fd5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Outbound</span></span></span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayer6__anon8OutboundE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayer19PhonyNameDueToError6DuplexE">
-<span id="_CPPv3N6stored14NamedPipeLayer19PhonyNameDueToError6DuplexE"></span><span id="_CPPv2N6stored14NamedPipeLayer19PhonyNameDueToError6DuplexE"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a948c0a4e4fb68e5885fdc40c6d256b79aa98b3f65c70d630a9e08529c0d3cf8bc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Duplex</span></span></span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayer19PhonyNameDueToError6DuplexE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayer6__anon6DuplexE">
+<span id="_CPPv3N6stored14NamedPipeLayer6__anon6DuplexE"></span><span id="_CPPv2N6stored14NamedPipeLayer6__anon6DuplexE"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a885a7136a65a369ddc643dbad7f073f2aa98b3f65c70d630a9e08529c0d3cf8bc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Duplex</span></span></span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayer6__anon6DuplexE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1192,7 +1550,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14NamedPipeLayer14NamedPipeLayerEPKc5DWORDP13ProtocolLayerP13ProtocolLayer">
-<span id="_CPPv3N6stored14NamedPipeLayer14NamedPipeLayerEPKc5DWORDP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored14NamedPipeLayer14NamedPipeLayerEPKc5DWORDP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::NamedPipeLayer::NamedPipeLayer__cCP.DWORD.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a5984816865cd8b322e4eed77d7bd5637"></span><span class="sig-name descname"><span class="n"><span class="pre">NamedPipeLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">DWORD</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">openMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">Duplex</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayer14NamedPipeLayerEPKc5DWORDP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored14NamedPipeLayer14NamedPipeLayerEPKc5DWORDP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored14NamedPipeLayer14NamedPipeLayerEPKc5DWORDP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::NamedPipeLayer::NamedPipeLayer__cCP.DWORD.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_named_pipe_layer_1a5984816865cd8b322e4eed77d7bd5637"></span><span class="sig-name descname"><span class="n"><span class="pre">NamedPipeLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">DWORD</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">openMode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored14NamedPipeLayer6__anon6DuplexE" title="stored::NamedPipeLayer::Duplex"><span class="n"><span class="pre">Duplex</span></span></a>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14NamedPipeLayer14NamedPipeLayerEPKc5DWORDP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
 <dd><p>Ctor for the server part of a named pipe. </p>
 <p>The given name is prefixed with <code class="docutils literal notranslate"><span class="pre">\\</span></code>.\pipe. </p>
 </dd></dl>
@@ -1439,12 +1797,12 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp">
-<span class="target" id="classstored_1_1_serial_layer_1aa62954cd3f7b586c9319b7aa28b94281"></span><span class="sig-name descname"></span></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11SerialLayer6__anonE">
+<span id="_CPPv3N6stored11SerialLayer6__anonE"></span><span id="_CPPv2N6stored11SerialLayer6__anonE"></span><span class="target" id="classstored_1_1_serial_layer_1ae7f825878c0eba26b9958a9ddaccddfb"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__anon</span></span></span><a class="headerlink" href="#_CPPv4N6stored11SerialLayer6__anonE" title="Link to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored11SerialLayer19PhonyNameDueToError10BufferSizeE">
-<span id="_CPPv3N6stored11SerialLayer19PhonyNameDueToError10BufferSizeE"></span><span id="_CPPv2N6stored11SerialLayer19PhonyNameDueToError10BufferSizeE"></span><span class="target" id="classstored_1_1_serial_layer_1aa62954cd3f7b586c9319b7aa28b94281a341472fa8687d9e1a8e08406fcbf8265"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored11SerialLayer19PhonyNameDueToError10BufferSizeE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11SerialLayer6__anon10BufferSizeE">
+<span id="_CPPv3N6stored11SerialLayer6__anon10BufferSizeE"></span><span id="_CPPv2N6stored11SerialLayer6__anon10BufferSizeE"></span><span class="target" id="classstored_1_1_serial_layer_1ae7f825878c0eba26b9958a9ddaccddfba341472fa8687d9e1a8e08406fcbf8265"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored11SerialLayer6__anon10BufferSizeE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1487,12 +1845,12 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp">
-<span class="target" id="classstored_1_1_stdio_layer_1a5b68a3ffde2f4b9f83d76b72807e3bc6"></span><span class="sig-name descname"></span></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10StdioLayer6__anonE">
+<span id="_CPPv3N6stored10StdioLayer6__anonE"></span><span id="_CPPv2N6stored10StdioLayer6__anonE"></span><span class="target" id="classstored_1_1_stdio_layer_1a950cc44b07aba07670cbf3c34f805a20"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__anon</span></span></span><a class="headerlink" href="#_CPPv4N6stored10StdioLayer6__anonE" title="Link to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored10StdioLayer19PhonyNameDueToError17DefaultBufferSizeE">
-<span id="_CPPv3N6stored10StdioLayer19PhonyNameDueToError17DefaultBufferSizeE"></span><span id="_CPPv2N6stored10StdioLayer19PhonyNameDueToError17DefaultBufferSizeE"></span><span class="target" id="classstored_1_1_stdio_layer_1a5b68a3ffde2f4b9f83d76b72807e3bc6af93c50653d79f9c4e54459e624d3e8e1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DefaultBufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored10StdioLayer19PhonyNameDueToError17DefaultBufferSizeE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored10StdioLayer6__anon17DefaultBufferSizeE">
+<span id="_CPPv3N6stored10StdioLayer6__anon17DefaultBufferSizeE"></span><span id="_CPPv2N6stored10StdioLayer6__anon17DefaultBufferSizeE"></span><span class="target" id="classstored_1_1_stdio_layer_1a950cc44b07aba07670cbf3c34f805a20af93c50653d79f9c4e54459e624d3e8e1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DefaultBufferSize</span></span></span><a class="headerlink" href="#_CPPv4N6stored10StdioLayer6__anon17DefaultBufferSizeE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1512,7 +1870,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored10StdioLayer10StdioLayerE6size_tP13ProtocolLayerP13ProtocolLayer">
-<span id="_CPPv3N6stored10StdioLayer10StdioLayerE6size_tP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored10StdioLayer10StdioLayerE6size_tP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::StdioLayer::StdioLayer__s.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_stdio_layer_1ab2d0fca98e64a959c23d299e1cac7bc7"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StdioLayer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">DefaultBufferSize</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10StdioLayer10StdioLayerE6size_tP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored10StdioLayer10StdioLayerE6size_tP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored10StdioLayer10StdioLayerE6size_tP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::StdioLayer::StdioLayer__s.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_stdio_layer_1ab2d0fca98e64a959c23d299e1cac7bc7"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StdioLayer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored10StdioLayer6__anon17DefaultBufferSizeE" title="stored::StdioLayer::DefaultBufferSize"><span class="n"><span class="pre">DefaultBufferSize</span></span></a>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored10StdioLayer10StdioLayerE6size_tP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
 <dd><p>Ctor. </p>
 </dd></dl>
 
@@ -1614,12 +1972,12 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp">
-<span class="target" id="classstored_1_1_terminal_layer_1a6af8ac4d0fade49859af85ceb93ced2a"></span><span class="sig-name descname"></span></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13TerminalLayer6__anonE">
+<span id="_CPPv3N6stored13TerminalLayer6__anonE"></span><span id="_CPPv2N6stored13TerminalLayer6__anonE"></span><span class="target" id="classstored_1_1_terminal_layer_1a4a63347ab75ee3976eb4c52db46b7c8f"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__anon</span></span></span><a class="headerlink" href="#_CPPv4N6stored13TerminalLayer6__anonE" title="Link to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored13TerminalLayer19PhonyNameDueToError9MaxBufferE">
-<span id="_CPPv3N6stored13TerminalLayer19PhonyNameDueToError9MaxBufferE"></span><span id="_CPPv2N6stored13TerminalLayer19PhonyNameDueToError9MaxBufferE"></span><span class="target" id="classstored_1_1_terminal_layer_1a6af8ac4d0fade49859af85ceb93ced2aac2e5fe6228ece37b246ab755b987f59f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MaxBuffer</span></span></span><a class="headerlink" href="#_CPPv4N6stored13TerminalLayer19PhonyNameDueToError9MaxBufferE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13TerminalLayer6__anon9MaxBufferE">
+<span id="_CPPv3N6stored13TerminalLayer6__anon9MaxBufferE"></span><span id="_CPPv2N6stored13TerminalLayer6__anon9MaxBufferE"></span><span class="target" id="classstored_1_1_terminal_layer_1a4a63347ab75ee3976eb4c52db46b7c8fac2e5fe6228ece37b246ab755b987f59f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MaxBuffer</span></span></span><a class="headerlink" href="#_CPPv4N6stored13TerminalLayer6__anon9MaxBufferE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1630,27 +1988,17 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dd></dd></dl>
 
 <dl class="cpp type">
-<dt class="sig sig-object cpp">
-<span class="target" id="classstored_1_1_terminal_layer_1a4f3d34283f5b3790e6b2289a8ae6679b"></span><span class="sig-name descname"><span class="pre">void()</span> <span class="pre">NonDebugDecodeCallback</span> <span class="pre">(void</span> <span class="pre">*buf,</span> <span class="pre">size_t</span> <span class="pre">len)</span></span></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored13TerminalLayer22NonDebugDecodeCallbackE">
+<span id="_CPPv3N6stored13TerminalLayer22NonDebugDecodeCallbackE"></span><span id="_CPPv2N6stored13TerminalLayer22NonDebugDecodeCallbackE"></span><span class="target" id="classstored_1_1_terminal_layer_1aee864285bbae09176ff729dae9d7b051"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NonDebugDecodeCallback</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">buf</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">len</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N6stored13TerminalLayer22NonDebugDecodeCallbackE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored13TerminalLayer13TerminalLayerEP22NonDebugDecodeCallbackP13ProtocolLayerP13ProtocolLayer">
-<span id="_CPPv3N6stored13TerminalLayer13TerminalLayerEP22NonDebugDecodeCallbackP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored13TerminalLayer13TerminalLayerEP22NonDebugDecodeCallbackP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::TerminalLayer::TerminalLayer__NonDebugDecodeCallbackP.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_terminal_layer_1a2f1599eb9f2d5e3ab3d7314f0986b3a6"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TerminalLayer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">NonDebugDecodeCallback</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cb</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored13TerminalLayer13TerminalLayerEP22NonDebugDecodeCallbackP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
-<dd><p>Constructor.   </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>up</strong> – the layer above, which receives our decoded frames </p></li>
-<li><p><strong>down</strong> – the layer below, which receives our encoded frames   </p></li>
-<li><p><strong>cb</strong> – the callback to call with the data that is not part of debug messages during <a class="reference internal" href="#classstored_1_1_terminal_layer_1a189c272877b09b93aac1b1ddc96fe58c"><span class="std std-ref">decode()</span></a>. Set to <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> to drop this data. </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4I0_F18SFINAE_IS_FUNCTION1F22NonDebugDecodeCallbackiEEN6stored13TerminalLayer13TerminalLayerERR1FP13ProtocolLayerP13ProtocolLayer">
+<span id="_CPPv3I0_F18SFINAE_IS_FUNCTION1F22NonDebugDecodeCallbackiEEN6stored13TerminalLayer13TerminalLayerERR1FP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2I0_F18SFINAE_IS_FUNCTION1F22NonDebugDecodeCallbackiEEN6stored13TerminalLayer13TerminalLayerERR1FP13ProtocolLayerP13ProtocolLayer"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">SFINAE_IS_FUNCTION</span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_F18SFINAE_IS_FUNCTION1F22NonDebugDecodeCallbackiEEN6stored13TerminalLayer13TerminalLayerERR1FP13ProtocolLayerP13ProtocolLayer" title="stored::TerminalLayer::TerminalLayer::F"><span class="n"><span class="pre">F</span></span></a>, <a class="reference internal" href="#_CPPv4N6stored13TerminalLayer22NonDebugDecodeCallbackE" title="stored::TerminalLayer::NonDebugDecodeCallback"><span class="n"><span class="pre">NonDebugDecodeCallback</span></span></a>, <span class="kt"><span class="pre">int</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_terminal_layer_1ac6c3e9caf382d8662e20d240e7293b83"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TerminalLayer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0_F18SFINAE_IS_FUNCTION1F22NonDebugDecodeCallbackiEEN6stored13TerminalLayer13TerminalLayerERR1FP13ProtocolLayerP13ProtocolLayer" title="stored::TerminalLayer::TerminalLayer::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cb</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0_F18SFINAE_IS_FUNCTION1F22NonDebugDecodeCallbackiEEN6stored13TerminalLayer13TerminalLayerERR1FP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored13TerminalLayer13TerminalLayerEP13ProtocolLayerP13ProtocolLayer">
@@ -1829,12 +2177,12 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp">
-<span class="target" id="classstored_1_1_arq_layer_1a26b8912022dfec0f36cdf7895f1a718c"></span><span class="sig-name descname"></span></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8ArqLayer6__anonE">
+<span id="_CPPv3N6stored8ArqLayer6__anonE"></span><span id="_CPPv2N6stored8ArqLayer6__anonE"></span><span class="target" id="classstored_1_1_arq_layer_1af1c0d2d7c932493e2bfd5311096699a2"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__anon</span></span></span><a class="headerlink" href="#_CPPv4N6stored8ArqLayer6__anonE" title="Link to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6stored8ArqLayer19PhonyNameDueToError27RetransmitCallbackThresholdE">
-<span id="_CPPv3N6stored8ArqLayer19PhonyNameDueToError27RetransmitCallbackThresholdE"></span><span id="_CPPv2N6stored8ArqLayer19PhonyNameDueToError27RetransmitCallbackThresholdE"></span><span class="target" id="classstored_1_1_arq_layer_1a26b8912022dfec0f36cdf7895f1a718ca39ab31057c8c5eea4f5e0afb1a8fcbc7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RetransmitCallbackThreshold</span></span></span><a class="headerlink" href="#_CPPv4N6stored8ArqLayer19PhonyNameDueToError27RetransmitCallbackThresholdE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8ArqLayer6__anon27RetransmitCallbackThresholdE">
+<span id="_CPPv3N6stored8ArqLayer6__anon27RetransmitCallbackThresholdE"></span><span id="_CPPv2N6stored8ArqLayer6__anon27RetransmitCallbackThresholdE"></span><span class="target" id="classstored_1_1_arq_layer_1af1c0d2d7c932493e2bfd5311096699a2a39ab31057c8c5eea4f5e0afb1a8fcbc7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RetransmitCallbackThreshold</span></span></span><a class="headerlink" href="#_CPPv4N6stored8ArqLayer6__anon27RetransmitCallbackThresholdE" title="Link to this definition"></a><br /></dt>
 <dd><p>Number of successive retransmits before the event is emitted. </p>
 </dd></dl>
 
@@ -1872,15 +2220,21 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored8ArqLayer5Event15EventRetransmitE">
 <span id="_CPPv3N6stored8ArqLayer5Event15EventRetransmitE"></span><span id="_CPPv2N6stored8ArqLayer5Event15EventRetransmitE"></span><span class="target" id="classstored_1_1_arq_layer_1a1d3b18fc5b159e527b087385ac961e52a67b425c96fa51d033359fbea7f1c344a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EventRetransmit</span></span></span><a class="headerlink" href="#_CPPv4N6stored8ArqLayer5Event15EventRetransmitE" title="Link to this definition"></a><br /></dt>
-<dd><p><a class="reference internal" href="#classstored_1_1_arq_layer_1a26b8912022dfec0f36cdf7895f1a718ca39ab31057c8c5eea4f5e0afb1a8fcbc7"><span class="std std-ref">RetransmitCallbackThreshold</span></a> has been reached on the current message. </p>
+<dd><p><a class="reference internal" href="#classstored_1_1_arq_layer_1af1c0d2d7c932493e2bfd5311096699a2a39ab31057c8c5eea4f5e0afb1a8fcbc7"><span class="std std-ref">RetransmitCallbackThreshold</span></a> has been reached on the current message. </p>
 <p>This is an indicator that the connection has been lost. </p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="cpp type">
-<dt class="sig sig-object cpp">
-<span class="target" id="classstored_1_1_arq_layer_1a0fa6e75d37245bfe70669aae2982d8e3"></span><span class="sig-name descname"><span class="pre">void()</span> <span class="pre">EventCallbackArg</span> <span class="pre">(ArqLayer</span> <span class="pre">&amp;,</span> <span class="pre">Event,</span> <span class="pre">void</span> <span class="pre">*)</span></span></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8ArqLayer13EventCallbackE">
+<span id="_CPPv3N6stored8ArqLayer13EventCallbackE"></span><span id="_CPPv2N6stored8ArqLayer13EventCallbackE"></span><span class="target" id="classstored_1_1_arq_layer_1ae9935e268008b6883d444eb119f2d2fa"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EventCallback</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4N6stored8ArqLayerE" title="stored::ArqLayer"><span class="n"><span class="pre">ArqLayer</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored8ArqLayer5EventE" title="stored::ArqLayer::Event"><span class="n"><span class="pre">Event</span></span></a><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N6stored8ArqLayer13EventCallbackE" title="Link to this definition"></a><br /></dt>
+<dd><p>Callback type for <a class="reference internal" href="#classstored_1_1_arq_layer_1a021b579df6a03cbf7a7f77098360547d"><span class="std std-ref">setEventCallback(F&amp;&amp;)</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8ArqLayer16EventCallbackArgE">
+<span id="_CPPv3N6stored8ArqLayer16EventCallbackArgE"></span><span id="_CPPv2N6stored8ArqLayer16EventCallbackArgE"></span><span class="target" id="classstored_1_1_arq_layer_1a158a5d4eacc3500c71e3cd965b7b6a47"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EventCallbackArg</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4N6stored8ArqLayerE" title="stored::ArqLayer"><span class="n"><span class="pre">ArqLayer</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored8ArqLayer5EventE" title="stored::ArqLayer::Event"><span class="n"><span class="pre">Event</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N6stored8ArqLayer16EventCallbackArgE" title="Link to this definition"></a><br /></dt>
 <dd><p>Callback type for <a class="reference internal" href="#classstored_1_1_arq_layer_1aea5caae38968fc00bd7de90915a154a8"><span class="std std-ref">setEventCallback(EventCallbackArg*,void*)</span></a>. </p>
 </dd></dl>
 
@@ -1990,7 +2344,13 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored8ArqLayer16setEventCallbackEP16EventCallbackArgPv">
-<span id="_CPPv3N6stored8ArqLayer16setEventCallbackEP16EventCallbackArgPv"></span><span id="_CPPv2N6stored8ArqLayer16setEventCallbackEP16EventCallbackArgPv"></span><span id="stored::ArqLayer::setEventCallback__EventCallbackArgP.voidP"></span><span class="target" id="classstored_1_1_arq_layer_1aea5caae38968fc00bd7de90915a154a8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setEventCallback</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">EventCallbackArg</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cb</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">arg</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8ArqLayer16setEventCallbackEP16EventCallbackArgPv" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored8ArqLayer16setEventCallbackEP16EventCallbackArgPv"></span><span id="_CPPv2N6stored8ArqLayer16setEventCallbackEP16EventCallbackArgPv"></span><span id="stored::ArqLayer::setEventCallback__EventCallbackArgP.voidP"></span><span class="target" id="classstored_1_1_arq_layer_1aea5caae38968fc00bd7de90915a154a8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setEventCallback</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored8ArqLayer16EventCallbackArgE" title="stored::ArqLayer::EventCallbackArg"><span class="n"><span class="pre">EventCallbackArg</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cb</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">arg</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8ArqLayer16setEventCallbackEP16EventCallbackArgPv" title="Link to this definition"></a><br /></dt>
+<dd><p>Set event callback. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6stored8ArqLayer16setEventCallbackERR1F">
+<span id="_CPPv3I0EN6stored8ArqLayer16setEventCallbackERR1F"></span><span id="_CPPv2I0EN6stored8ArqLayer16setEventCallbackERR1F"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classstored_1_1_arq_layer_1a021b579df6a03cbf7a7f77098360547d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setEventCallback</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6stored8ArqLayer16setEventCallbackERR1F" title="stored::ArqLayer::setEventCallback::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cb</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6stored8ArqLayer16setEventCallbackERR1F" title="Link to this definition"></a><br /></dt>
 <dd><p>Set event callback. </p>
 </dd></dl>
 
@@ -2076,7 +2436,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <span id="_CPPv3N6stored11PolledLayerE"></span><span id="_CPPv2N6stored11PolledLayerE"></span><span id="stored::PolledLayer"></span><span class="target" id="classstored_1_1_polled_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PolledLayer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><a class="headerlink" href="#_CPPv4N6stored11PolledLayerE" title="Link to this definition"></a><br /></dt>
 <dd><p>A generalized layer that needs a call to <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_polled_layer_1a5543b676964a05c72c40137edeb4af98"><span class="std std-ref"><span class="pre">recv()</span></span></a></code> to get decodable data from somewhere else. </p>
 <p>This includes files, sockets, etc. <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_polled_layer_1a5543b676964a05c72c40137edeb4af98"><span class="std std-ref"><span class="pre">recv()</span></span></a></code> reads data, and passes the data upstream. </p>
-<p>Subclassed by <a class="reference internal" href="#classstored_1_1_polled_file_layer"><span class="std std-ref">stored::PolledFileLayer</span></a></p>
+<p>Subclassed by <a class="reference internal" href="#classstored_1_1_fifo_loopback1"><span class="std std-ref">stored::FifoLoopback1&lt; Capacity, impl::defaultMessages(Capacity) &gt;</span></a>, <a class="reference internal" href="#classstored_1_1_fifo_loopback1"><span class="std std-ref">stored::FifoLoopback1&lt; Capacity, Messages &gt;</span></a>, <a class="reference internal" href="#classstored_1_1_polled_file_layer"><span class="std std-ref">stored::PolledFileLayer</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
@@ -2130,7 +2490,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dd><p>Protocol layer base class. </p>
 <p>A layer is usually part of the protocol stack. Bytes are decoded and forwarded to the layer above this one, and the layer above sends bytes for encoding down. Moreover, <a class="reference internal" href="#classstored_1_1_protocol_layer_1a357b029311be09df61e019682a848ab5"><span class="std std-ref">decode()</span></a> is the inverse of <a class="reference internal" href="#classstored_1_1_protocol_layer_1a66c24cec6a17c44fac68213d358a5aa8"><span class="std std-ref">encode()</span></a>. It is wise to stick to this concept, even though the interface of this class allows more irregular structures, such that decoding and encoding take a different path through the protocol layers.</p>
 <p>The implementation of this class does nothing except forwarding bytes. Override <a class="reference internal" href="#classstored_1_1_protocol_layer_1a66c24cec6a17c44fac68213d358a5aa8"><span class="std std-ref">encode()</span></a> and <a class="reference internal" href="#classstored_1_1_protocol_layer_1a357b029311be09df61e019682a848ab5"><span class="std std-ref">decode()</span></a> in a subclass. </p>
-<p>Subclassed by stored::Stream&lt; false &gt;, LossyChannel, PrintfPhysical, <a class="reference internal" href="#classstored_1_1_arq_layer"><span class="std std-ref">stored::ArqLayer</span></a>, <a class="reference internal" href="#classstored_1_1_ascii_escape_layer"><span class="std std-ref">stored::AsciiEscapeLayer</span></a>, <a class="reference internal" href="#classstored_1_1_buffer_layer"><span class="std std-ref">stored::BufferLayer</span></a>, <a class="reference internal" href="#classstored_1_1_compress_layer"><span class="std std-ref">stored::CompressLayer</span></a>, <a class="reference internal" href="#classstored_1_1_crc16_layer"><span class="std std-ref">stored::Crc16Layer</span></a>, <a class="reference internal" href="#classstored_1_1_crc8_layer"><span class="std std-ref">stored::Crc8Layer</span></a>, <a class="reference internal" href="#classstored_1_1_debug_arq_layer"><span class="std std-ref">stored::DebugArqLayer</span></a>, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>, stored::FrameMerger, <a class="reference internal" href="#classstored_1_1_idle_check_layer"><span class="std std-ref">stored::IdleCheckLayer</span></a>, <a class="reference internal" href="#classstored_1_1_polled_layer"><span class="std std-ref">stored::PolledLayer</span></a>, <a class="reference internal" href="#classstored_1_1_print_layer"><span class="std std-ref">stored::PrintLayer</span></a>, <a class="reference internal" href="#classstored_1_1_segmentation_layer"><span class="std std-ref">stored::SegmentationLayer</span></a>, stored::Stream&lt; Compress &gt;, stored::Stream&lt; true &gt;, <a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a>, <a class="reference internal" href="#classstored_1_1_terminal_layer"><span class="std std-ref">stored::TerminalLayer</span></a>, stored::XsimLayer::DecodeCallback, stored::impl::Loopback1</p>
+<p>Subclassed by stored::Stream&lt; false &gt;, LossyChannel, PrintfPhysical, <a class="reference internal" href="#classstored_1_1_arq_layer"><span class="std std-ref">stored::ArqLayer</span></a>, <a class="reference internal" href="#classstored_1_1_ascii_escape_layer"><span class="std std-ref">stored::AsciiEscapeLayer</span></a>, <a class="reference internal" href="#classstored_1_1_buffer_layer"><span class="std std-ref">stored::BufferLayer</span></a>, <a class="reference internal" href="#classstored_1_1_callback_layer"><span class="std std-ref">stored::CallbackLayer&lt; Up, Down, Connected &gt;</span></a>, <a class="reference internal" href="#classstored_1_1_compress_layer"><span class="std std-ref">stored::CompressLayer</span></a>, <a class="reference internal" href="#classstored_1_1_crc16_layer"><span class="std std-ref">stored::Crc16Layer</span></a>, <a class="reference internal" href="#classstored_1_1_crc32_layer"><span class="std std-ref">stored::Crc32Layer</span></a>, <a class="reference internal" href="#classstored_1_1_crc8_layer"><span class="std std-ref">stored::Crc8Layer</span></a>, <a class="reference internal" href="#classstored_1_1_debug_arq_layer"><span class="std std-ref">stored::DebugArqLayer</span></a>, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>, stored::FrameMerger, <a class="reference internal" href="#classstored_1_1_idle_check_layer"><span class="std std-ref">stored::IdleCheckLayer</span></a>, <a class="reference internal" href="#classstored_1_1_polled_layer"><span class="std std-ref">stored::PolledLayer</span></a>, <a class="reference internal" href="#classstored_1_1_print_layer"><span class="std std-ref">stored::PrintLayer</span></a>, <a class="reference internal" href="#classstored_1_1_segmentation_layer"><span class="std std-ref">stored::SegmentationLayer</span></a>, stored::Stream&lt; Compress &gt;, stored::Stream&lt; true &gt;, <a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a>, <a class="reference internal" href="#classstored_1_1_terminal_layer"><span class="std std-ref">stored::TerminalLayer</span></a>, stored::XsimLayer::DecodeCallback, stored::impl::Loopback1</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">

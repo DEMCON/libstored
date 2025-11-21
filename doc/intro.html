@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>libstored &mdash; libstored 1.8.1-alpha documentation</title>
+  <title>libstored &mdash; libstored 2.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=ef19cc8a"></script>
+      <script src="../_static/documentation_options.js?v=51b770b3"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -177,7 +177,7 @@ objects in the store can be read/written or sampled at high frequency for nice
 plots. It offers streams to have a sort of stdout redirection or debugging
 output from your application. The protocol is ASCII based, and usable via
 PuTTY, for example.  However, there is GUI and CLI implementation available,
-which can be extended easily to build your custom (Qt) debugging GUI.</p></li>
+which can be extended easily to build your custom debugging GUI.</p></li>
 </ol>
 <p>See next sections for details, but the following is worth to mention here:</p>
 <ul class="simple">
@@ -318,9 +318,10 @@ C++ that has the same store, a Synchronizer connected to the FPGA, and a
 Debugger instance. The connect to this C++ bridge.</p>
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h3>
-<p>The host tools to debug your application are written in Python, based on
-PySide6. The <code class="docutils literal notranslate"><span class="pre">libstored</span></code> wheel file from the <code class="docutils literal notranslate"><span class="pre">python</span></code> directory is by
-default installed in the venv, located in <code class="docutils literal notranslate"><span class="pre">dist/venv</span></code>.</p>
+<p>The host tools to debug your application are written in Python, with support for
+asyncio, and tkinter-based GUIs. The <code class="docutils literal notranslate"><span class="pre">libstored</span></code> wheel file from the
+<code class="docutils literal notranslate"><span class="pre">python</span></code> directory is by default installed in the venv, located in
+<code class="docutils literal notranslate"><span class="pre">dist/venv</span></code>.</p>
 <p>To get a grasp how debugging feels like, try the following.</p>
 <ol class="arabic simple">
 <li><p>Build the examples, as discussed above.</p></li>
@@ -512,7 +513,7 @@ all dependencies.</p></li>
 </div>
 <p>Before including <code class="docutils literal notranslate"><span class="pre">libstored</span></code>, you can specify several options (see
 <code class="docutils literal notranslate"><span class="pre">cmake/libstored.cmake</span></code>), such as enabling ASan or clang-tidy.
-Especially the library dependencies (ZeroMQ, Zth, Qt, heatshrink) are
+Especially the library dependencies (ZeroMQ, Zth, heatshrink) are
 relevant to consider.  For example, to enable ZeroMQ:</p>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">list</span><span class="p">(</span><span class="s">APPEND</span><span class="w"> </span><span class="s">CMAKE_MODULE_PATH</span><span class="w"> </span><span class="s">extern/libstored/dist/common</span><span class="p">)</span>
 <span class="nb">find_package</span><span class="p">(</span><span class="s">ZeroMQ</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
@@ -564,12 +565,11 @@ approach.  In that case:</p>
 <li><p>Run <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">libstored.cmake</span></code> to generate a <code class="docutils literal notranslate"><span class="pre">FindLibstored.cmake</span></code>.</p></li>
 <li><p>In your project, call <code class="docutils literal notranslate"><span class="pre">find_package(Libstored)</span></code>, while having the
 generated <code class="docutils literal notranslate"><span class="pre">FindLibstored.cmake</span></code> in your <code class="docutils literal notranslate"><span class="pre">CMAKE_MODULE_PATH</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">Libstored</span></code> accepts <code class="docutils literal notranslate"><span class="pre">ZeroMQ</span></code>, <code class="docutils literal notranslate"><span class="pre">Zth</span></code>, <code class="docutils literal notranslate"><span class="pre">Heatshrink</span></code>, <code class="docutils literal notranslate"><span class="pre">Qt5</span></code>, <code class="docutils literal notranslate"><span class="pre">Qt6</span></code>
-as <code class="docutils literal notranslate"><span class="pre">COMPONENTS</span></code>.  Setting these enables integration of these libraries
-with libstored. When possible, they are taken from your host system, or
-built from source (except Qt).  If you want more control over these
-libraries, you can also use the mechanism described above with manually
-setting <code class="docutils literal notranslate"><span class="pre">LIBSTORED_HAVE_LIBZMQ</span></code> and friends.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Libstored</span></code> accepts <code class="docutils literal notranslate"><span class="pre">ZeroMQ</span></code>, <code class="docutils literal notranslate"><span class="pre">Zth</span></code>, <code class="docutils literal notranslate"><span class="pre">Heatshrink</span></code> as <code class="docutils literal notranslate"><span class="pre">COMPONENTS</span></code>.
+Setting these enables integration of these libraries with libstored. When
+possible, they are taken from your host system, or built from source.  If you
+want more control over these libraries, you can also use the mechanism
+described above with manually setting <code class="docutils literal notranslate"><span class="pre">LIBSTORED_HAVE_LIBZMQ</span></code> and friends.</p>
 </li>
 <li><p>Continue with step 5 of the submodule-approach above.</p></li>
 </ol>

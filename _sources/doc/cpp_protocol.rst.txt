@@ -46,7 +46,9 @@ Standard layer implementations can be used to construct the following stacks (to
 - Lossy UART:
   :cpp:class:`stored::Debugger`,
   :cpp:class:`stored::DebugArqLayer`,
+  :cpp:class:`stored::Crc8Layer`,
   :cpp:class:`stored::Crc16Layer`,
+  :cpp:class:`stored::Crc32Layer`,
   :cpp:class:`stored::AsciiEscapeLayer`,
   :cpp:class:`stored::TerminalLayer`,
   :cpp:class:`stored::StdioLayer`
@@ -84,7 +86,9 @@ The inheritance of the layers is shown below.
    ProtocolLayer <|-- SegmentationLayer
    ProtocolLayer <|-- Crc8Layer
    ProtocolLayer <|-- Crc16Layer
+   ProtocolLayer <|-- Crc32Layer
    Crc8Layer -[hidden]--> Crc16Layer
+   Crc8Layer -[hidden]--> Crc32Layer
    ProtocolLayer <|-- BufferLayer
    ProtocolLayer <|-- PrintLayer
    ProtocolLayer <|-- IdleCheckLayer
@@ -148,15 +152,20 @@ stored::CompressLayer
 
 .. doxygenclass:: stored::CompressLayer
 
+stored::Crc8Layer
+-----------------
+
+.. doxygenclass:: stored::Crc8Layer
+
 stored::Crc16Layer
 ------------------
 
 .. doxygenclass:: stored::Crc16Layer
 
-stored::Crc8Layer
------------------
+stored::Crc32Layer
+------------------
 
-.. doxygenclass:: stored::Crc8Layer
+.. doxygenclass:: stored::Crc32Layer
 
 stored::DebugArqLayer
 ---------------------
