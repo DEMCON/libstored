@@ -24,6 +24,18 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 Added
 `````
 
+...
+
+.. _Unreleased: https://github.com/DEMCON/libstored/compare/v2.0.0...HEAD
+
+
+
+`2.0.0`_ - 2025-11-22
+---------------------
+
+Added
+`````
+
 - ``stored::Crc32Layer`` and ``libstored.protocol.Crc32Layer``.
 - ``libstored.protocol.MuxLayer`` (Python only)
 - Add returning the currently used macros via the ``m`` debugger command.
@@ -46,7 +58,7 @@ Removed
 - (Qt-based) visu examples and framework.
 - Deprecated old Poller API.
 
-.. _Unreleased: https://github.com/DEMCON/libstored/compare/v1.8.0...HEAD
+.. _2.0.0: https://github.com/DEMCON/libstored/releases/tag/v2.0.0
 
 
 
