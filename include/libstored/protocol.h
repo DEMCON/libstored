@@ -1,6 +1,6 @@
 #ifndef LIBSTORED_PROTOCOL_H
 #define LIBSTORED_PROTOCOL_H
-// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -966,6 +966,38 @@ private:
 	FILE* m_f;
 	char const* m_name;
 	bool m_enable;
+};
+
+/*!
+ * \brief A layer that deliberately injects bit errors into the message stream.
+ *
+ * Depending on the given bit error rate (BER), bits are flipped randomly in
+ * both the encoded and decoded messages.
+ *
+ * Mainly for debugging purposes.
+ */
+class LossyLayer : public ProtocolLayer {
+	STORED_CLASS_NOCOPY(LossyLayer)
+public:
+	typedef ProtocolLayer base;
+	explicit LossyLayer(
+		float ber = 0, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+
+	virtual ~LossyLayer() override is_default
+
+	virtual void decode(void* buffer, size_t len) override;
+	virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#  ifndef DOXYGEN
+	using base::encode;
+#  endif
+
+	float ber() const;
+	void ber(float ber);
+
+private:
+	float m_ber;
+	int m_bitThreshold;
+	int m_byteThreshold;
 };
 
 /*!

@@ -36,6 +36,28 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT APPLE)
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections")
 endif()
 
+if(NOT CMAKE_CXX_STANDARD)
+	foreach(
+		cxx
+		cxx_std_26
+		cxx_std_23
+		cxx_std_20
+		cxx_std_17
+		cxx_std_14
+		cxx_std_11
+		cxx_std_98
+	)
+		list(FIND CMAKE_CXX_COMPILE_FEATURES "${cxx}" _cxx)
+		if(${_cxx} GREATER -1)
+			string(REPLACE "cxx_std_" "" _std "${cxx}")
+			set(CMAKE_CXX_STANDARD "${_std}")
+			break()
+		endif()
+	endforeach()
+endif()
+
+add_subdirectory(lib)
+
 add_subdirectory(1_hello)
 add_subdirectory(2_basic)
 add_subdirectory(3_scope)
@@ -61,6 +83,10 @@ if(LIBSTORED_HAVE_LIBZMQ)
 	add_subdirectory(components)
 	add_subdirectory(control)
 	add_subdirectory(zmqserver)
+
+	if(CMAKE_CXX_STANDARD LESS 98 AND CMAKE_CXX_STANDARD GREATER_EQUAL 11)
+		add_subdirectory(lossy_sync)
+	endif()
 endif()
 
 if(LIBSTORED_HAVE_ZTH AND LIBSTORED_HAVE_LIBZMQ)
@@ -71,13 +97,6 @@ if(LIBSTORED_PYLIBSTORED AND TARGET pylibstored-install)
 	add_subdirectory(int_pip)
 endif()
 
-list(FIND CMAKE_CXX_COMPILE_FEATURES "cxx_std_17" _cxx17)
-if(${_cxx17} GREATER -1)
-	if(NOT CMAKE_CXX_STANDARD)
-		set(CMAKE_CXX_STANDARD 17)
-	endif()
-
-	if(CMAKE_CXX_STANDARD GREATER_EQUAL 17 AND CMAKE_CXX_STANDARD LESS 98)
-		add_subdirectory(pipes)
-	endif()
+if(CMAKE_CXX_STANDARD GREATER_EQUAL 17 AND CMAKE_CXX_STANDARD LESS 98)
+	add_subdirectory(pipes)
 endif()

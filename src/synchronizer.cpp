@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -1397,7 +1397,7 @@ StoreJournal* Synchronizer::toJournal(char const* hash) const
  * \brief Connect the given connection to this Synchronizer.
  *
  * A #stored::SyncConnection is instantiated on top of the given protocol stack.
- * This SyncConnection is the OSI Application layer of the synchronization prococol.
+ * This SyncConnection is the OSI Application layer of the synchronization protocol.
  *
  * \return the #stored::SyncConnection, which is valid until #disconnect() is called
  */

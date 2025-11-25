@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -1719,6 +1719,50 @@ void PrintLayer::disable()
 bool PrintLayer::enabled() const
 {
 	return m_enable;
+}
+
+
+
+//////////////////////////////
+// LossyLayer
+//
+
+LossyLayer::LossyLayer(float ber, ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_ber()
+	, m_bitThreshold()
+	, m_byteThreshold()
+{
+	this->ber(ber);
+}
+
+void LossyLayer::decode(void* buffer, size_t len)
+{
+	base::decode(buffer, len);
+}
+
+void LossyLayer::encode(void const* buffer, size_t len, bool last)
+{
+	base::encode(buffer, len, last);
+}
+
+float LossyLayer::ber() const
+{
+	return m_ber;
+}
+
+void LossyLayer::ber(float ber)
+{
+	if(ber < 0.F || std::isnan(ber))
+		ber = 0.F;
+	else if(ber > 1.F)
+		ber = 1.F;
+
+	m_ber = ber;
+	m_bitThreshold =
+		(int)(std::min<unsigned int>(RAND_MAX, (unsigned int)(ber * (float)RAND_MAX)));
+	m_byteThreshold = (int)(std::min<unsigned int>(
+		RAND_MAX, (unsigned int)(std::pow(ber, 8.F) * (float)RAND_MAX)));
 }
 
 

@@ -1,12 +1,12 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MIT
 
-#include "getopt_mini.h"
+#include <getopt_mini.h>
 
-#ifdef STORED_COMPILER_MSVC
+#if !defined(__linux__) && !defined(__APPLE__)
 
-#	include <stddef.h>
+#  include <stddef.h>
 
 int opterr = 1;
 int optopt = 0;
@@ -61,4 +61,4 @@ int getopt(int argc, char* const* argv, char const* options)
 	return optopt;
 }
 
-#endif // STORED_COMPILER_MSVC
+#endif // !POSIX
