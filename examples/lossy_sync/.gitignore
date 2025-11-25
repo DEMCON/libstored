@@ -2,9 +2,4 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-/*.csv
-/*.egg-info/
-/build/
-/version.txt
-/libstored/data
-/libstored-*/
+/libstored/
