@@ -54,8 +54,8 @@ struct Type {
 		Uint32 = FlagFixed | FlagInt | 3U,
 		Int64 = FlagFixed | FlagInt | FlagSigned | 7U,
 		Uint64 = FlagFixed | FlagInt | 7U,
-		Int = FlagFixed | FlagInt | (sizeof(int) - 1),
-		Uint = FlagFixed | (sizeof(int) - 1),
+		Int = FlagFixed | FlagInt | FlagSigned | (sizeof(int) - 1),
+		Uint = FlagFixed | FlagInt | (sizeof(int) - 1),
 
 		// things with fixed length
 		Float = FlagFixed | FlagSigned | 3U,
@@ -94,6 +94,15 @@ struct Type {
 	static constexpr bool isInt(type t) noexcept
 	{
 		return isFixed(t) && (t & FlagInt);
+	}
+
+	/*!
+	 * \brief Checks if the given type is a floating point number, or is a function with
+	 *	such an argument.
+	 */
+	static constexpr bool isFloat(type t) noexcept
+	{
+		return isFixed(t) && isSigned(t) && !isInt(t);
 	}
 
 	/*!
@@ -341,6 +350,47 @@ struct fromType {
 		(unsigned int)T&(unsigned int)~Type::FlagFunction)>::type type;
 };
 
+#  define STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, op)                              \
+    Class& operator op##=(type v) noexcept                                           \
+    {                                                                                \
+      stored_assert(Type::isInt(toType<T>::type) || Type::isFloat(toType<T>::type)); \
+      set(get() op v);                                                               \
+      return *this;                                                                  \
+    }
+
+#  define STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, op) \
+    Class& operator op##=(type v) noexcept                 \
+    {                                                      \
+      stored_assert(Type::isInt(toType<T>::type));         \
+      set(get() op v);                                     \
+      return *this;                                        \
+    }
+
+#  define STORED_VARIABLE_MEMBER_ARITH_OPS(Class, T) \
+    STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, +)     \
+    STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, -)     \
+    STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, *)     \
+    STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, /)     \
+    STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, %)     \
+    STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, &)  \
+    STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, |)  \
+    STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, ^)  \
+    STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, <<) \
+    STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, >>) \
+                                                     \
+    Class& operator++() noexcept                     \
+    {                                                \
+      stored_assert(Type::isInt(toType<T>::type));   \
+      return *this += 1;                             \
+    }                                                \
+                                                     \
+    Class& operator--() noexcept                     \
+    {                                                \
+      stored_assert(Type::isInt(toType<T>::type));   \
+      return *this -= 1;                             \
+    }
+
+
 template <typename Container = void>
 class Variant;
 
@@ -520,6 +570,8 @@ public:
 		return sizeof(type);
 	}
 
+	STORED_VARIABLE_MEMBER_ARITH_OPS(Variable, T)
+
 protected:
 	/*!
 	 * \brief Returns the buffer this Variable points to.
@@ -537,7 +589,7 @@ protected:
 private:
 	/*! \brief The buffer of this Variable. */
 	type* m_buffer;
-};
+}; // namespace stored
 
 /*!
  * \brief A typed variable in a store, with hook support.
@@ -774,6 +826,8 @@ public:
 #  endif
 		container().hookExitRO(toType<T>::type, &this->buffer(), sizeof(type));
 	}
+
+	STORED_VARIABLE_MEMBER_ARITH_OPS(Variable, T)
 
 private:
 	/*! \brief The container of this Variable. */
@@ -2124,6 +2178,8 @@ public:
 	{
 		return sizeof(type);
 	}
+
+	STORED_VARIABLE_MEMBER_ARITH_OPS(StoreVariable, T)
 };
 
 /*!
@@ -2401,6 +2457,10 @@ public:
 	}
 };
 } // namespace impl
+
+#  undef STORED_VARIABLE_MEMBER_ARITH_OPS
+#  undef STORED_VARIABLE_MEMBER_ARITH_BITOP
+#  undef STORED_VARIABLE_MEMBER_ARITH_OP
 
 } // namespace stored
 #endif // __cplusplus
