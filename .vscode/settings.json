@@ -23,7 +23,9 @@
 	"C_Cpp.doxygen.generatedStyle": "/*!",
 	"files.exclude": {
 		"**/.git": true,
-		"**/dist/venv/**": true
+		"**/dist/venv/**": true,
+		"python/libstored/data/**": true,
+		"python/libstored-*/**": true
 	},
 	"clang-format.executable": "clang-format-15",
 	"cmakeFormat.env": {
