@@ -24,7 +24,7 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 Added
 `````
 
-...
+- Operations such as ``-=`` and ``++`` for store variables in C++.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v2.0.0...HEAD
 
