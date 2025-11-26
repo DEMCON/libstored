@@ -3,6 +3,7 @@
 		{
 			"name": "Linux",
 			"includePath": [
+				"${workspaceFolder}/include",
 				"${workspaceFolder}/**"
 			],
 			"defines": [
@@ -16,6 +17,7 @@
 		{
 			"name": "Win32",
 			"includePath": [
+				"${workspaceFolder}/include",
 				"${workspaceFolder}/**"
 			],
 			"defines": [
@@ -27,6 +29,7 @@
 		{
 			"name": "Mac",
 			"includePath": [
+				"${workspaceFolder}/include",
 				"${workspaceFolder}/**"
 			],
 			"defines": [

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-20255555 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: CC0-1.0
 
@@ -11,6 +11,7 @@
 #include "ExampleSync.h"
 
 #include <chrono>
+#include <cstdarg>
 #include <cstdlib>
 #include <cstring>
 #include <memory>
@@ -18,6 +19,42 @@
 #include <thread>
 
 #include <getopt_mini.h>
+
+enum {
+	PollInterval_ms = 100,
+	SyncInterval_ms = PollInterval_ms * 5,
+	IdleTimeout_ms = SyncInterval_ms,
+	DisconnectTimeout_ms = IdleTimeout_ms * 10,
+	HeartbeatInterval_ms = 1000,
+	ReconnectDelay_ms = DisconnectTimeout_ms + IdleTimeout_ms * 2,
+};
+
+
+/////////////////////////////////////////////////////////////////////////
+// Logging
+//
+
+static std::function<void(char const*)> logger_callback;
+
+__attribute__((format(printf, 1, 0))) static void logv(char const* format, va_list args)
+{
+	static char msg[1024];
+	vsnprintf(msg, sizeof(msg), format, args);
+	fputs(msg, stderr);
+
+	if(logger_callback)
+		logger_callback(msg);
+}
+
+__attribute__((format(printf, 1, 2))) static void log(char const* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	logv(format, args);
+	va_end(args);
+}
+
+
 
 /////////////////////////////////////////////////////////////////////////
 // The store
@@ -27,6 +64,37 @@ class ExampleSync : public STORE_T(ExampleSync, stored::Synchronizable, stored::
 	STORE_CLASS(ExampleSync, stored::Synchronizable, stored::ExampleSyncBase)
 public:
 	ExampleSync() is_default
+
+	void __ber(bool set, float& value) noexcept
+	{
+		auto l = m_lossyLayer.lock();
+		if(set)
+			l->ber(value);
+		else
+			value = l ? l->ber() : std::numeric_limits<float>::quiet_NaN();
+	}
+
+	void __errors(bool set, uint32_t& value) noexcept
+	{
+		if(set)
+			return;
+
+		auto l = m_lossyLayer.lock();
+		value = l ? static_cast<uint32_t>(l->errors()) : 0U;
+	}
+
+	void setLossyLayer(std::shared_ptr<stored::LossyLayer>&& layer) noexcept
+	{
+		m_lossyLayer = std::move(layer);
+	}
+
+	void setLossyLayer(std::shared_ptr<stored::LossyLayer> const& layer) noexcept
+	{
+		m_lossyLayer = layer;
+	}
+
+private:
+	std::weak_ptr<stored::LossyLayer> m_lossyLayer;
 };
 
 
@@ -35,32 +103,27 @@ public:
 // Argument parsing and help
 //
 
-static int parse_port(char const* str)
-{
-	char* endptr = nullptr;
-	long port = strtol(str, &endptr, 0);
-	if(*endptr || port <= 0 || port >= 0x10000)
-		throw std::invalid_argument{"Invalid port"};
-	return (int)port;
-}
-
 static void print_help(FILE* out, char const* progname)
 {
-	fprintf(out, "Usage: %s [-h] [-v] [-p <port>] {-s <endpoint>|-c <endpoint>}\n", progname);
+	fprintf(out, "Usage: %s [-h] [-v] [-p <port>] {-s <endpoint>|-c <endpoint>} [-b <BER>]\n",
+		progname);
 	fprintf(out, "where\n");
 	fprintf(out, "  -h   Show this help message.\n");
-	fprintf(out, "  -s   Server 0MQ endpoint for downstream sync.\n");
-	fprintf(out, "  -c   Client 0MQ endpoint for upstream sync.\n");
+	fprintf(out, "  -s   Server 0MQ endpoint for downstream sync, such as: tcp://*:5555\n");
+	fprintf(out,
+		"  -c   Client 0MQ endpoint for upstream sync, such as: tcp://localhost:5555\n");
 	fprintf(out, "  -p   Set debugger's port. Default: %d\n",
 		stored::DebugZmqLayer::DefaultPort);
 	fprintf(out, "  -v   Verbose output of sync connections.\n");
+	fprintf(out, "  -b   Bit error rate (BER) for lossy channel. Default: 0\n");
 }
 
 struct Arguments {
 	bool verbose = false;
 	int debug_port = stored::DebugZmqLayer::DefaultPort;
-	int client_port = 0;
-	int server_port = 0;
+	std::string client;
+	std::string server;
+	float ber = 0;
 };
 
 class exit_now : public std::exception {};
@@ -71,14 +134,16 @@ static Arguments parse_arguments(int argc, char** argv)
 
 	int c;
 	// flawfinder: ignore
-	while((c = getopt(argc, argv, "hs:c:p:v")) != -1) {
+	while((c = getopt(argc, argv, "hs:c:p:vb:")) != -1) {
 		switch(c) {
 		case 'p':
 			try {
-				args.debug_port = parse_port(optarg);
-			} catch(std::invalid_argument&) {
-				fprintf(stderr, "Invalid debug port '%s'\n", optarg);
-				throw;
+				int port = std::stoi(optarg);
+				if(port <= 0 || port >= 0x10000)
+					throw std::invalid_argument{"Invalid port"};
+				args.debug_port = port;
+			} catch(std::exception& e) {
+				throw std::invalid_argument{e.what()};
 			}
 			break;
 		case 'v':
@@ -86,19 +151,20 @@ static Arguments parse_arguments(int argc, char** argv)
 			printf("Enable verbose output\n");
 			break;
 		case 's':
-			try {
-				args.server_port = parse_port(optarg);
-			} catch(std::invalid_argument&) {
-				fprintf(stderr, "Invalid server port '%s'\n", optarg);
-				throw;
-			}
+			args.server = optarg;
 			break;
 		case 'c':
+			args.client = optarg;
+			break;
+		case 'b':
 			try {
-				args.client_port = parse_port(optarg);
+				args.ber = std::stof(optarg);
+				if(args.ber < 0.F || args.ber > 1.F)
+					throw std::invalid_argument{"Invalid BER"};
 			} catch(std::invalid_argument&) {
-				fprintf(stderr, "Invalid client port '%s'\n", optarg);
 				throw;
+			} catch(std::exception& e) {
+				throw std::invalid_argument{e.what()};
 			}
 			break;
 		case 'h':
@@ -110,13 +176,13 @@ static Arguments parse_arguments(int argc, char** argv)
 		}
 	}
 
-	if(args.client_port && args.server_port) {
-		fprintf(stderr, "Cannot be both client and server\n");
+	if(!args.client.empty() && !args.server.empty()) {
+		log("Cannot be both client and server\n");
 		throw std::invalid_argument{""};
 	}
 
-	if(!args.client_port && !args.server_port) {
-		fprintf(stderr, "Must be either client or server\n");
+	if(args.client.empty() && args.server.empty()) {
+		log("Must be either client or server\n");
 		throw std::invalid_argument{""};
 	}
 
@@ -129,24 +195,36 @@ static Arguments parse_arguments(int argc, char** argv)
 // The stacks
 //
 
+class disconnected : public std::exception {};
+
 /*!
  * \brief ZeroMQ interface for the debugger.
  */
 class DebugStack {
 	STORED_CLASS_NOCOPY(DebugStack)
 public:
-	explicit DebugStack(ExampleSync& store, int port)
-		: m_debugger{"lossy_sync"}
-		, m_debugLayer{nullptr, port}
+	explicit DebugStack(ExampleSync& store, int port, char const* name = nullptr)
+		: m_debugLayer{nullptr, port}
 	{
 		if((errno = m_debugLayer.lastError())) {
-			fprintf(stderr, "Cannot initialize ZMQ for debugging, got error %d; %s\n",
-				errno, zmq_strerror(errno));
+			log("Cannot initialize ZMQ for debugging, got error %d; %s\n", errno,
+			    zmq_strerror(errno));
 			throw std::runtime_error{"ZMQ initialization failed"};
 		}
 
+		m_id = "lossy_sync";
+		if(name)
+			m_id += std::string{" ("} + name + ")";
+		m_debugger.setIdentification(m_id.c_str());
+
 		m_debugger.map(store);
 		m_debugLayer.wrap(m_debugger);
+		logger_callback = [&](char const* msg) { m_debugger.stream('l', msg); };
+	}
+
+	~DebugStack() noexcept
+	{
+		logger_callback = nullptr;
 	}
 
 	stored::Pollable& pollable()
@@ -154,7 +232,7 @@ public:
 		return m_pollable;
 	}
 
-	void recv()
+	void process()
 	{
 		int res = m_debugLayer.recv();
 
@@ -163,13 +241,13 @@ public:
 		case EAGAIN:
 			return;
 		default:
-			fprintf(stderr, "Debugger recv failed with error %d; %s\n", res,
-				zmq_strerror(res));
+			log("Debugger recv failed with error %d; %s\n", res, zmq_strerror(res));
 			break;
 		}
 	}
 
 private:
+	std::string m_id;
 	stored::Debugger m_debugger;
 	stored::DebugZmqLayer m_debugLayer;
 	stored::PollableZmqSocket m_pollable{m_debugLayer.socket(), stored::Pollable::PollIn};
@@ -183,21 +261,40 @@ class SyncStack {
 public:
 	explicit SyncStack(
 		ExampleSync& store, char const* endpoint, bool server, bool verbose, float ber = 0)
-		: m_syncLayer(nullptr, endpoint, server)
+		: m_zmqLayer(nullptr, endpoint, server)
 	{
-		if((errno = m_syncLayer.lastError())) {
-			fprintf(stderr, "Cannot initialize ZMQ for sync, got error %d; %s\n", errno,
-				zmq_strerror(errno));
+		if((errno = m_zmqLayer.lastError())) {
+			log("Cannot initialize ZMQ for sync, got error %d; %s\n", errno,
+			    zmq_strerror(errno));
 			throw std::runtime_error{"ZMQ initialization failed"};
 		}
+
+		int linger = 0;
+		if(zmq_setsockopt(m_zmqLayer.socket(), ZMQ_LINGER, &linger, sizeof(linger)) == -1) {
+			log("Cannot set ZMQ_LINGER, got error %d; %s\n", errno,
+			    zmq_strerror(errno));
+			throw std::runtime_error{"ZMQ setsockopt failed"};
+		}
+
+		if(verbose)
+			wrap<stored::PrintLayer>(stdout, "sync");
 
 		// We don't want to do ARQ on large messages, so we segment them to some
 		// appropriate size.
 		wrap<stored::SegmentationLayer>(32U);
-		// Perform retransmits.
-		m_arq = &wrap<stored::ArqLayer>();
+		// Perform retransmits. Limit the encode queue to 10 KiB.
+		m_arq = wrap<stored::ArqLayer>(10240U);
+		m_arq->setEventCallback(
+			[](stored::ArqLayer&, stored::ArqLayer::Event event, void* arg) {
+				static_cast<SyncStack*>(arg)->event(event);
+			},
+			this);
 		// Check if we have communication at all.
-		m_idle = &wrap<stored::IdleCheckLayer>();
+		m_idle = wrap<stored::IdleCheckLayer>();
+
+		if(verbose)
+			wrap<stored::PrintLayer>(stdout, "arq");
+
 		// Do CRC checks. Do this below the ARQ, such that the ARQ sees no or
 		// correct messages.
 		wrap<stored::Crc32Layer>();
@@ -205,15 +302,19 @@ public:
 		wrap<stored::AsciiEscapeLayer>();
 		// Framing.
 		wrap<stored::TerminalLayer>();
-		if(ber > 0)
+		if(server)
 			// The server simulates a lossy channel.
-			wrap<stored::LossyLayer>(ber);
-		// Verbose output.
+			store.setLossyLayer(wrap<stored::LossyLayer>(ber));
+
+		// Optional: buffer partial messages to reduce the number of sends/receives on the
+		// wire.
+		wrap<stored::BufferLayer>();
+
 		if(verbose)
-			wrap<stored::PrintLayer>();
+			wrap<stored::PrintLayer>(stdout, "raw");
 
 		// Connect to I/O.
-		m_syncLayer.wrap(*m_layers.back());
+		m_zmqLayer.wrap(*m_layers.back());
 
 		// Register the store...
 		m_synchronizer.map(store);
@@ -221,8 +322,19 @@ public:
 		m_synchronizer.connect(**m_layers.begin());
 
 		// There we go!
-		if(!server)
-			m_synchronizer.syncFrom(store, m_syncLayer);
+		auto now = std::chrono::steady_clock::now();
+		m_idleUpSince = now;
+		m_idleDownSince = now;
+		m_lastSync = now;
+		m_lastHeartbeat = now;
+		m_heartbeat = server ? store.server_heartbeat.variable()
+				     : store.client_heartbeat.variable();
+
+		if(!server) {
+			m_synchronizer.syncFrom(store, *m_layers.front());
+			m_connected = true;
+			m_arq->keepAlive();
+		}
 	}
 
 	stored::Pollable& pollable()
@@ -230,42 +342,136 @@ public:
 		return m_pollable;
 	}
 
+	void process()
+	{
+		auto now = std::chrono::steady_clock::now();
+
+		recv();
+		doSync(now);
+		checkRetransmit(now);
+		checkDisconnect(now);
+		doHeartbeat(now);
+
+		m_idle->setIdle();
+	}
+
+	bool connected() const
+	{
+		return m_connected;
+	}
+
+protected:
+	template <typename T, typename... Args>
+	std::shared_ptr<T> wrap(Args&&... args)
+	{
+		auto* p = new T{std::forward<Args>(args)...};
+		std::shared_ptr<T> layer{p};
+
+		if(!m_layers.empty())
+			layer->wrap(*m_layers.back());
+
+		m_layers.emplace_back(layer);
+		return layer;
+	}
+
 	void recv()
 	{
-		int res = m_syncLayer.recv();
+		// Process incoming messages.
+		int res = m_zmqLayer.recv();
 
 		switch(res) {
 		case 0:
 		case EAGAIN:
 			return;
 		default:
-			fprintf(stderr, "Sync recv failed with error %d; %s\n", res,
-				zmq_strerror(res));
+			log("Sync recv failed with error %d; %s\n", res, zmq_strerror(res));
 			break;
 		}
 	}
 
-protected:
-	template <typename T, typename... Args>
-	T& wrap(Args&&... args)
+	void doSync(std::chrono::time_point<std::chrono::steady_clock> const& now)
 	{
-		auto* p = new T{std::forward<Args>(args)...};
-		std::unique_ptr<stored::ProtocolLayer> layer{p};
+		if(now - m_lastSync >= std::chrono::milliseconds(SyncInterval_ms)) {
+			m_lastSync = now;
+			m_synchronizer.process();
+		}
+	}
 
-		if(!m_layers.empty())
-			layer->wrap(*m_layers.back());
+	void checkRetransmit(std::chrono::time_point<std::chrono::steady_clock> const& now)
+	{
+		if(!connected())
+			return;
 
-		m_layers.emplace_back(std::move(layer));
-		return *p;
+		if(m_idle->idleDown()) {
+			auto dt = now - m_idleDownSince;
+			if(dt > std::chrono::milliseconds(IdleTimeout_ms)) {
+				m_arq->keepAlive();
+				m_idleDownSince = now;
+			}
+		} else {
+			m_idleDownSince = now;
+		}
+	}
+
+	void checkDisconnect(std::chrono::time_point<std::chrono::steady_clock> const& now)
+	{
+		if(connected()) {
+			if(m_idle->idleUp()) {
+				auto dt = now - m_idleUpSince;
+				if(dt > std::chrono::milliseconds(DisconnectTimeout_ms)) {
+					log("No upstream activity, disconnecting\n");
+					throw disconnected{};
+				}
+			} else {
+				m_idleUpSince = now;
+			}
+		} else if(!m_idle->idleUp()) {
+			log("Upstream activity detected, connected\n");
+			m_connected = true;
+			m_idleUpSince = now;
+		}
+	}
+
+	void doHeartbeat(std::chrono::time_point<std::chrono::steady_clock> const& now)
+	{
+		auto dt = now - m_lastHeartbeat;
+		if(dt >= std::chrono::milliseconds(HeartbeatInterval_ms)) {
+			m_lastHeartbeat = now;
+			m_heartbeat++;
+		}
+	}
+
+	void event(stored::ArqLayer::Event event)
+	{
+		switch(event) {
+		case stored::ArqLayer::EventEncodeBufferOverflow:
+			log("ARQ encode buffer overflow\n");
+			throw disconnected{};
+		case stored::ArqLayer::EventReconnect:
+			log("ARQ reconnect event\n");
+			// We need to reinitialize the synchronizer state.
+			throw disconnected{};
+		case stored::ArqLayer::EventRetransmit:
+			log("ARQ retransmit limit exceeded, ignored\n");
+			break;
+		default:
+			break;
+		}
 	}
 
 private:
 	stored::Synchronizer m_synchronizer;
-	stored::ArqLayer* m_arq = nullptr;
-	stored::IdleCheckLayer* m_idle = nullptr;
-	std::list<std::unique_ptr<stored::ProtocolLayer>> m_layers;
-	stored::SyncZmqLayer m_syncLayer;
-	stored::PollableZmqSocket m_pollable{m_syncLayer.socket(), stored::Pollable::PollIn};
+	std::shared_ptr<stored::ArqLayer> m_arq;
+	std::shared_ptr<stored::IdleCheckLayer> m_idle;
+	std::list<std::shared_ptr<stored::ProtocolLayer>> m_layers;
+	stored::ZmqLayer m_zmqLayer;
+	stored::PollableZmqSocket m_pollable{m_zmqLayer.socket(), stored::Pollable::PollIn};
+	std::chrono::time_point<std::chrono::steady_clock> m_idleUpSince;
+	std::chrono::time_point<std::chrono::steady_clock> m_idleDownSince;
+	std::chrono::time_point<std::chrono::steady_clock> m_lastSync;
+	std::chrono::time_point<std::chrono::steady_clock> m_lastHeartbeat;
+	stored::Variable<uint32_t, ExampleSync> m_heartbeat;
+	bool m_connected = false;
 };
 
 
@@ -274,28 +480,14 @@ private:
 // Main function
 //
 
-class disconnected : public std::exception {};
-
 static void run(Arguments const& args, ExampleSync& store, DebugStack& debugStack)
 {
 	std::unique_ptr<SyncStack> syncStack;
 
-	if(args.client_port) {
-		char endpoint[32]{};
-		int res = snprintf(
-			endpoint, sizeof(endpoint), "tcp://localhost:%d", args.client_port);
-		if(res < 0 || (size_t)res >= sizeof(endpoint))
-			throw std::runtime_error{"Endpoint string too long"};
-
-		syncStack.reset(new SyncStack{store, endpoint, false, args.verbose});
-	} else if(args.server_port) {
-		char endpoint[32]{};
-		int res = snprintf(
-			endpoint, sizeof(endpoint), "tcp://localhost:%d", args.server_port);
-		if(res < 0 || (size_t)res >= sizeof(endpoint))
-			throw std::runtime_error{"Endpoint string too long"};
-
-		syncStack.reset(new SyncStack{store, endpoint, true, args.verbose});
+	if(!args.client.empty()) {
+		syncStack.reset(new SyncStack{store, args.client.c_str(), false, args.verbose});
+	} else if(!args.server.empty()) {
+		syncStack.reset(new SyncStack{store, args.server.c_str(), true, args.verbose});
 	}
 
 	stored::Poller poller;
@@ -309,28 +501,53 @@ static void run(Arguments const& args, ExampleSync& store, DebugStack& debugStac
 		throw std::runtime_error{"Poller add failed"};
 	}
 
-	while(true) {
-		poller.poll(200);
-		debugStack.recv();
-		syncStack->recv();
+	try {
+		while(true) {
+			poller.poll(PollInterval_ms);
+			debugStack.process();
+			syncStack->process();
+		}
+	} catch(disconnected&) {
+		poller.remove(syncStack->pollable());
+		syncStack.reset();
+
+		log("Disconnected, lingering...\n");
+
+		auto now = std::chrono::steady_clock::now();
+		auto end = now + std::chrono::milliseconds(ReconnectDelay_ms);
+
+		while(now < end) {
+			poller.poll(PollInterval_ms);
+			debugStack.process();
+			now = std::chrono::steady_clock::now();
+		}
+
+		throw;
 	}
 }
 
 int main(int argc, char** argv)
 {
+#ifdef STORED_OS_WINDOWS
+	setvbuf(stdout, nullptr, _IONBF, 0);
+#else
+	setvbuf(stdout, nullptr, _IOLBF, 0);
+#endif
+	srand((unsigned int)time(nullptr));
+
 	try {
 		Arguments args = parse_arguments(argc, argv);
 
 		ExampleSync store;
-		DebugStack debugStack{store, args.debug_port};
+		DebugStack debugStack{
+			store, args.debug_port, args.client.empty() ? "server" : "client"};
 
 		while(true) {
 			try {
 				run(args, store, debugStack);
 			} catch(disconnected&) {
-				fprintf(stderr, "Disconnected, restarting...\n");
-				std::this_thread::sleep_for(std::chrono::seconds(1));
-				++store.restarted;
+				log("Restarting...\n");
+				store.restarted++;
 			}
 		}
 	} catch(exit_now&) {
@@ -338,10 +555,10 @@ int main(int argc, char** argv)
 	} catch(std::invalid_argument&) {
 		return 1;
 	} catch(std::exception& e) {
-		fprintf(stderr, "Error: %s\n", e.what());
+		log("Error: %s\n", e.what());
 		return 2;
 	} catch(...) {
-		fprintf(stderr, "Unknown error\n");
+		log("Unknown error\n");
 		return 3;
 	}
 }
