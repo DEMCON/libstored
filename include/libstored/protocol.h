@@ -993,11 +993,19 @@ public:
 
 	float ber() const;
 	void ber(float ber);
+	size_t errors() const;
+
+protected:
+	bool error(int threshold);
 
 private:
 	float m_ber;
 	int m_bitThreshold;
 	int m_byteThreshold;
+	size_t m_errors;
+#  ifdef STORED_OS_POSIX
+	unsigned int m_seed;
+#  endif // STORED_OS_POSIX
 };
 
 /*!

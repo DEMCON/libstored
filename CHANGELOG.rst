@@ -25,6 +25,8 @@ Added
 `````
 
 - Operations such as ``-=`` and ``++`` for store variables in C++.
+- Don't auto-retransmit on encode by the ``stored::ArqLayer``. Only retransmit
+  on ``keepAlive()``.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v2.0.0...HEAD
 

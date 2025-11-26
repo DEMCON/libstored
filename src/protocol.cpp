@@ -662,6 +662,8 @@ bool ArqLayer::waitingForAck() const
 
 void ArqLayer::encode(void const* buffer, size_t len, bool last)
 {
+	bool isIdle = !waitingForAck();
+
 	if(m_maxEncodeBuffer > 0 && m_maxEncodeBuffer < m_encodeQueueSize + len + 1U /* seq */)
 		event(EventEncodeBufferOverflow);
 
@@ -685,7 +687,8 @@ void ArqLayer::encode(void const* buffer, size_t len, bool last)
 		break;
 	}
 
-	transmit();
+	if(isIdle)
+		transmit();
 }
 
 bool ArqLayer::flush()
@@ -1727,30 +1730,110 @@ bool PrintLayer::enabled() const
 // LossyLayer
 //
 
+/*!
+ * \brief Ctor.
+ *
+ * The \c ber (bit error rate, between 0.0 and 1.0) is the probability that a
+ * bit is flipped for every bit passing this layer.
+ */
 LossyLayer::LossyLayer(float ber, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_ber()
 	, m_bitThreshold()
 	, m_byteThreshold()
+	, m_errors()
+#ifdef STORED_OS_POSIX
+	// NOLINTNEXTLINE
+	, m_seed((unsigned int)(uintptr_t)this)
+#endif // STORED_OS_POSIX
 {
 	this->ber(ber);
 }
 
+/*!
+ * \brief Check if an error should be injected, given a threshold.
+ *
+ * The threshold is a value between 0 and \c RAND_MAX. The higher the threshold,
+ * the more likely an error is injected.
+ */
+bool LossyLayer::error(int threshold)
+{
+#ifdef STORED_OS_POSIX
+	bool res = rand_r(&m_seed) < threshold;
+#else  // !STORED_OS_POSIX
+	bool res = rand() < threshold;
+#endif // !STORED_OS_POSIX
+	if(res)
+		m_errors++;
+	return res;
+}
+
+/*!
+ * \brief Number of injected errors.
+ */
+size_t LossyLayer::errors() const
+{
+	return m_errors;
+}
+
 void LossyLayer::decode(void* buffer, size_t len)
 {
-	base::decode(buffer, len);
+	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
+
+	for(size_t i = 0; i < len; i++) {
+		if(!error(m_byteThreshold))
+			continue;
+
+		// Inject error.
+		buffer_[i] = (uint8_t)(buffer_[i] ^ 0x01U);
+		for(unsigned int b = 1U; b < 8U; b++)
+			if(error(m_bitThreshold))
+				buffer_[i] = (uint8_t)(buffer_[i] ^ (0x01U << b));
+	}
+
+	base::decode(buffer_, len);
 }
 
 void LossyLayer::encode(void const* buffer, size_t len, bool last)
 {
-	base::encode(buffer, len, last);
+	uint8_t const* buffer_ = static_cast<uint8_t const*>(buffer);
+
+	size_t i = 0;
+	while(i < len) {
+		// First part without errors.
+		size_t c = i;
+		for(; c < len && !error(m_byteThreshold); c++)
+			;
+		if(c > i)
+			base::encode(buffer_ + i, c - i, i + c >= len && last);
+
+		i += c;
+		if(i >= len)
+			break;
+
+		// Inject an error byte.
+		uint8_t e = (uint8_t)(buffer_[i] ^ 0x01U);
+		for(unsigned int b = 1U; b < 8U; b++)
+			if(error(m_bitThreshold))
+				e = (uint8_t)(e ^ (0x01U << b));
+
+		i++;
+		base::encode(&e, 1U, i >= len && last);
+	}
 }
 
+/*!
+ * \brief The configured bit error rate (BER).
+ */
 float LossyLayer::ber() const
 {
 	return m_ber;
 }
 
+/*!
+ * \brief Set a new bit error rate.
+ * \param ber the new bit error rate, between 0.0 and 1.0
+ */
 void LossyLayer::ber(float ber)
 {
 	if(ber < 0.F || std::isnan(ber))
@@ -1762,7 +1845,7 @@ void LossyLayer::ber(float ber)
 	m_bitThreshold =
 		(int)(std::min<unsigned int>(RAND_MAX, (unsigned int)(ber * (float)RAND_MAX)));
 	m_byteThreshold = (int)(std::min<unsigned int>(
-		RAND_MAX, (unsigned int)(std::pow(ber, 8.F) * (float)RAND_MAX)));
+		RAND_MAX, (unsigned int)((1.F - std::pow((1.F - ber), 8.F)) * (float)RAND_MAX)));
 }
 
 
