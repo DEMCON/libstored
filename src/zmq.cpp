@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -6,27 +6,27 @@
 #include <libstored/protocol.h>
 
 #ifdef STORED_HAVE_ZMQ
-#	include <zmq.h>
+#  include <zmq.h>
 
-#	ifdef STORED_HAVE_ZTH
+#  ifdef STORED_HAVE_ZTH
 // Allow Zth to provide wrappers for blocking ZMQ calls.
-#		include <libzth/zmq.h>
-#	endif
+#    include <libzth/zmq.h>
+#  endif
 
-#	include <cerrno>
-#	include <cstdlib>
+#  include <cerrno>
+#  include <cstdlib>
 
-#	if STORED_cplusplus < 201103L
-#		include <inttypes.h>
-#	else
-#		include <cinttypes>
-#	endif
+#  if STORED_cplusplus < 201103L
+#    include <inttypes.h>
+#  else
+#    include <cinttypes>
+#  endif
 
 namespace stored {
 
 
 //////////////////////////////
-// ZmqLayer
+// ZmqBaseLayer
 //
 
 /*!
@@ -34,7 +34,7 @@ namespace stored {
  * \param context the ZeroMQ context to use. If \c nullptr, a new context is allocated.
  * \param type the ZeroMQ socket type to create.
  */
-ZmqLayer::ZmqLayer(void* context, int type, ProtocolLayer* up, ProtocolLayer* down)
+ZmqBaseLayer::ZmqBaseLayer(void* context, int type, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_context(context ? context : zmq_ctx_new())
 	, m_contextCleanup(!context)
@@ -53,7 +53,7 @@ ZmqLayer::ZmqLayer(void* context, int type, ProtocolLayer* up, ProtocolLayer* do
  * The sockets are closed (which may block).
  * If a ZeroMQ context was allocated, it is terminated here.
  */
-ZmqLayer::~ZmqLayer()
+ZmqBaseLayer::~ZmqBaseLayer()
 {
 	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc)
 	free(m_buffer);
@@ -68,7 +68,7 @@ ZmqLayer::~ZmqLayer()
 /*!
  * \brief The ZeroMQ context.
  */
-void* ZmqLayer::context() const
+void* ZmqBaseLayer::context() const
 {
 	return m_context;
 }
@@ -78,7 +78,7 @@ void* ZmqLayer::context() const
  *
  * Do not use this function to manipulate the socket, only for calls like \c zmq_poll().
  */
-void* ZmqLayer::socket() const
+void* ZmqBaseLayer::socket() const
 {
 	return m_socket;
 }
@@ -88,23 +88,23 @@ void* ZmqLayer::socket() const
  *
  * Use this socket to determine if recv() would block.
  */
-ZmqLayer::fd_type ZmqLayer::fd() const
+ZmqBaseLayer::fd_type ZmqBaseLayer::fd() const
 {
 	fd_type socket; // NOLINT(cppcoreguidelines-init-variables)
 	size_t size = sizeof(socket);
 
 	if(zmq_getsockopt(m_socket, ZMQ_FD, &socket, &size) == -1) {
-#	ifdef STORED_OS_WINDOWS
+#  ifdef STORED_OS_WINDOWS
 		return INVALID_SOCKET; // NOLINT(hicpp-signed-bitwise)
-#	else
+#  else
 		return -1;
-#	endif
+#  endif
 	}
 
 	return socket;
 }
 
-int ZmqLayer::block(fd_type fd, bool forReading, long timeout_us, bool suspend)
+int ZmqBaseLayer::block(fd_type fd, bool forReading, long timeout_us, bool suspend)
 {
 	STORED_UNUSED(fd)
 	// Just use our socket.
@@ -114,7 +114,7 @@ int ZmqLayer::block(fd_type fd, bool forReading, long timeout_us, bool suspend)
 /*!
  * \brief Like #block(fd_type,bool,long,bool), but using the #socket() by default.
  */
-int ZmqLayer::block(bool forReading, long timeout_us, bool suspend)
+int ZmqBaseLayer::block(bool forReading, long timeout_us, bool suspend)
 {
 	STORED_UNUSED(suspend)
 
@@ -168,7 +168,7 @@ done:
  * \brief Try to receive a message from the ZeroMQ REP socket, and decode() it.
  * \param timeout_us if zero, this function does not block. -1 blocks indefinitely.
  */
-int ZmqLayer::recv1(long timeout_us)
+int ZmqBaseLayer::recv1(long timeout_us)
 {
 	int res = 0;
 	int more = 0;
@@ -250,7 +250,7 @@ error_msg:
  * \brief Try to receive all available data from the ZeroMQ REP socket, and decode() it.
  * \param timeout_us if zero, this function does not block. -1 blocks indefinitely.
  */
-int ZmqLayer::recv(long timeout_us)
+int ZmqBaseLayer::recv(long timeout_us)
 {
 	bool first = true;
 
@@ -280,7 +280,7 @@ int ZmqLayer::recv(long timeout_us)
  * \copydoc stored::ProtocolLayer::encode(void const*, size_t, bool)
  * \details Encoded data is send as REP over the ZeroMQ socket.
  */
-void ZmqLayer::encode(void const* buffer, size_t len, bool last)
+void ZmqBaseLayer::encode(void const* buffer, size_t len, bool last)
 {
 	// First try, assume we are writable.
 	// NOLINTNEXTLINE(hicpp-signed-bitwise,cppcoreguidelines-pro-type-cstyle-cast)
@@ -362,7 +362,7 @@ int DebugZmqLayer::recv(long timeout_us)
  *
  * \see #stored::Synchronizer
  */
-SyncZmqLayer::SyncZmqLayer(
+ZmqLayer::ZmqLayer(
 	void* context, char const* endpoint, bool listen, ProtocolLayer* up, ProtocolLayer* down)
 	: base(context, ZMQ_DEALER, up, down)
 {

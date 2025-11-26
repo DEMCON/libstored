@@ -1,6 +1,6 @@
 #ifndef LIBSTORED_ZMQ_H
 #define LIBSTORED_ZMQ_H
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -19,21 +19,22 @@
 namespace stored {
 
 /*!
- * \brief A protocol layer that wraps the protocol stack and implements ZeroMQ socket around it.
+ * \brief A protocol layer that wraps the protocol stack and implements ZeroMQ
+ *        socket around it.
  *
  * This is a generic ZeroMQ class, for practical usages, instantiate
  * #stored::DebugZmqLayer or #stored::SyncZmqLayer instead.
  */
-class ZmqLayer : public PolledSocketLayer {
-	STORED_CLASS_NOCOPY(ZmqLayer)
+class ZmqBaseLayer : public PolledSocketLayer {
+	STORED_CLASS_NOCOPY(ZmqBaseLayer)
 public:
 	typedef PolledSocketLayer base;
 	using base::fd_type;
 
-	ZmqLayer(
+	ZmqBaseLayer(
 		void* context, int type, ProtocolLayer* up = nullptr,
 		ProtocolLayer* down = nullptr);
-	virtual ~ZmqLayer() override;
+	virtual ~ZmqBaseLayer() override;
 
 	void* context() const;
 	void* socket() const;
@@ -70,10 +71,10 @@ private:
  * \brief Constructs a protocol stack on top of a REQ/REP ZeroMQ socket, specifically for the
  * #stored::Debugger.
  */
-class DebugZmqLayer : public ZmqLayer {
+class DebugZmqLayer : public ZmqBaseLayer {
 	STORED_CLASS_NOCOPY(DebugZmqLayer)
 public:
-	typedef ZmqLayer base;
+	typedef ZmqBaseLayer base;
 
 	enum STORED_ANONYMOUS {
 		DefaultPort = 19026,
@@ -89,20 +90,25 @@ public:
 };
 
 /*!
- * \brief Constructs a protocol stack on top of a PAIR ZeroMQ socket, specifically for the
- * #stored::Synchronizer.
+ * \brief Generic ZeroMQ DEALER socket, for raw byte I/O via sockets.
  */
-class SyncZmqLayer : public ZmqLayer {
-	STORED_CLASS_NOCOPY(SyncZmqLayer)
+class ZmqLayer : public ZmqBaseLayer {
+	STORED_CLASS_NOCOPY(ZmqLayer)
 public:
-	typedef ZmqLayer base;
+	typedef ZmqBaseLayer base;
 
-	SyncZmqLayer(
+	ZmqLayer(
 		void* context, char const* endpoint, bool listen, ProtocolLayer* up = nullptr,
 		ProtocolLayer* down = nullptr);
 	/*! \brief Dtor. */
-	virtual ~SyncZmqLayer() override is_default
+	virtual ~ZmqLayer() override is_default
 };
+
+/*!
+ * \brief Constructs a protocol stack on top of a DEALER ZeroMQ socket,
+ *        specifically for the #stored::Synchronizer.
+ */
+typedef ZmqLayer SyncZmqLayer;
 
 } // namespace stored
 

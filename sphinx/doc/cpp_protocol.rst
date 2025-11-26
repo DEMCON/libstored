@@ -123,10 +123,11 @@ The inheritance of the layers is shown below.
    ProtocolLayer <|-- Debugger
    ProtocolLayer <|-- SyncConnection
 
-   abstract ZmqLayer
-   PolledSocketLayer <|-- ZmqLayer
-   ZmqLayer <|-- DebugZmqLayer
-   ZmqLayer <|-- SyncZmqLayer
+   abstract ZmqBaseLayer
+   PolledSocketLayer <|-- ZmqBaseLayer
+   ZmqBaseLayer <|-- DebugZmqLayer
+   ZmqBaseLayer <|-- SyncZmqLayer
+   ZmqBaseLayer <|-- ZmqLayer
 
    class Loopback
    FifoLoopback --> FifoLoopback1
@@ -246,6 +247,16 @@ stored::XsimLayer
 -----------------------
 
 .. doxygenclass:: stored::XsimLayer
+
+stored::ZmqBaseLayer
+--------------------
+
+.. doxygenclass:: stored::ZmqBaseLayer
+
+stored::ZmqLayer
+--------------------
+
+.. doxygenclass:: stored::ZmqLayer
 
 
 

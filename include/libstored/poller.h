@@ -443,15 +443,16 @@ inline PollableZmqSocket pollable(void* s, Pollable::Events const& events, void*
 class PollableZmqLayer : public TypedPollable {
 	STORED_POLLABLE_TYPE(PollableZmqLayer)
 public:
-	constexpr PollableZmqLayer(ZmqLayer& l, Events const& e, void* user = nullptr) noexcept
+	constexpr PollableZmqLayer(ZmqBaseLayer& l, Events const& e, void* user = nullptr) noexcept
 		: TypedPollable(e, user)
 		, layer(&l)
 	{}
 
-	ZmqLayer* layer;
+	ZmqBaseLayer* layer;
 };
 
-inline PollableZmqLayer pollable(ZmqLayer& l, Pollable::Events const& events, void* user = nullptr)
+inline PollableZmqLayer
+pollable(ZmqBaseLayer& l, Pollable::Events const& events, void* user = nullptr)
 {
 	return PollableZmqLayer(l, events, user);
 }
