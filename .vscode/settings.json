@@ -32,5 +32,7 @@
 		"PYTHONPATH": "${workspaceFolder}/dist/venv"
 	},
 	"python.analysis.typeCheckingMode": "standard",
-	"python.defaultInterpreterPath": "${workspaceFolder}/dist/venv/bin/python3"
+	"python.defaultInterpreterPath": "${workspaceFolder}/dist/venv/bin/python3",
+	"vim.textwidth": 100,
+	"vim.tabstop": 8,
 }

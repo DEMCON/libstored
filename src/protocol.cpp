@@ -466,6 +466,7 @@ ArqLayer::ArqLayer(size_t maxEncodeBuffer, ProtocolLayer* up, ProtocolLayer* dow
 	, m_maxEncodeBuffer(maxEncodeBuffer)
 	, m_encodeQueueSize()
 	, m_encodeState(EncodeStateIdle)
+	, m_connected()
 	, m_pauseTransmit()
 	, m_didTransmit()
 	, m_retransmits()
@@ -495,11 +496,13 @@ void ArqLayer::reset()
 	stored_assert(m_encodeQueueSize == 0);
 
 	m_encodeState = EncodeStateIdle;
+	m_connected = false;
 	m_pauseTransmit = false;
 	m_didTransmit = false;
 	m_retransmits = 0;
 	m_sendSeq = 0;
 	m_recvSeq = 0;
+	base::disconnected();
 	base::reset();
 	keepAlive();
 }
@@ -507,7 +510,7 @@ void ArqLayer::reset()
 void ArqLayer::decode(void* buffer, size_t len)
 {
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
-	bool reconnect = false;
+	bool reset_handshake = false;
 
 	// Usually, we expect something we have to ack. Possibly a reset command to ack afterwards.
 	// After the response, a transmit() may be called.
@@ -515,6 +518,9 @@ void ArqLayer::decode(void* buffer, size_t len)
 	size_t resplen = 0;
 	bool do_transmit = false;
 	bool do_decode = false;
+
+	stored_assert(!m_pauseTransmit);
+	m_pauseTransmit = true;
 
 	while(len > 0) {
 		uint8_t hdr = buffer_[0];
@@ -532,7 +538,8 @@ void ArqLayer::decode(void* buffer, size_t len)
 				if(unlikely((hdr & SeqMask) == 0)) {
 					// This is an ack to our reset message. We are connected
 					// now.
-					reconnect = true;
+					reset_handshake = true;
+					m_connected = true;
 					base::connected();
 				}
 			}
@@ -551,37 +558,26 @@ void ArqLayer::decode(void* buffer, size_t len)
 			len--;
 		} else if((hdr & SeqMask) == 0) {
 			// This is an unexpected reset message. Reset communication.
-			event(EventReconnect);
+			base::disconnected();
+
+			if(isConnected()) {
+				m_connected = false;
+				event(EventReconnect);
+			}
 
 			// Send ack.
 			m_recvSeq = nextSeq(0);
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
 			resp[resplen++] = (uint8_t)AckFlag;
 
-			// Also reset our send seq.
-			if(!reconnect
-			   && (m_encodeQueueSize == 0
-			       || (*m_encodeQueue.front())[0] != (char)NopFlag)) {
-				// Inject reset message in queue.
-				String::type& s = pushEncodeQueueRaw(false);
-				s.push_back((char)NopFlag);
-				m_encodeQueueSize++;
-				m_sendSeq = nextSeq(0);
-
-				// Reencode existing outbound messages.
-				for(Deque<String::type*>::type::iterator it =
-					    ++m_encodeQueue.begin();
-				    it != m_encodeQueue.end(); ++it) {
-					(**it)[0] =
-						(char)((uint8_t)((uint8_t)(**it)[0] & (uint8_t)~SeqMask)
-						       | m_sendSeq);
-					m_sendSeq = nextSeq(m_sendSeq);
-				}
+			if(!reset_handshake) {
+				// Reset from our direction too.
+				pushReset();
+				do_transmit = true;
 			}
 
-			do_transmit = true;
-			buffer_++;
-			len--;
+			// Drop the rest.
+			len = 0;
 		} else if(nextSeq((uint8_t)(hdr & SeqMask)) == m_recvSeq) {
 			// This is a retransmit of the previous message.
 			// Send ack again.
@@ -616,19 +612,16 @@ void ArqLayer::decode(void* buffer, size_t len)
 	if(do_decode) {
 		// Do decode first, as recursive calls to decode/encode may corrupt our buffer.
 
-		stored_assert(!m_pauseTransmit);
-		m_pauseTransmit = true;
-
 		resetDidTransmit();
 		// Decode and queue encodes only.
 		base::decode(buffer_, len);
 		if(didTransmit())
 			do_transmit = true;
-
-		// We do not expect recursion here that influence this flag.
-		stored_assert(m_pauseTransmit);
-		m_pauseTransmit = false;
 	}
+
+	// We do not expect recursion here that influence this flag.
+	stored_assert(m_pauseTransmit);
+	m_pauseTransmit = false;
 
 	if(resplen) {
 		// First encode the responses...
@@ -751,7 +744,7 @@ void ArqLayer::event(ArqLayer::Event e)
 			break;
 		case EventEncodeBufferOverflow:
 			// Cannot handle this.
-			abort();
+			throw std::bad_alloc();
 		}
 	}
 }
@@ -815,6 +808,14 @@ size_t ArqLayer::retransmits() const
 }
 
 /*!
+ * \brief Returns whether the connection is currently established.
+ */
+bool ArqLayer::isConnected() const
+{
+	return m_connected;
+}
+
+/*!
  * \brief Send a keep-alive packet to check the connection.
  *
  * It actually retransmits the message that is currently processed (waiting for
@@ -833,6 +834,21 @@ void ArqLayer::keepAlive()
 	}
 
 	transmit();
+}
+
+/*!
+ * \brief Clear encode queue and push a reset message.
+ */
+void ArqLayer::pushReset()
+{
+	while(!m_encodeQueue.empty())
+		popEncodeQueue();
+
+	stored_assert(m_encodeQueueSize == 0);
+	m_sendSeq = 0;
+	pushEncodeQueueRaw().push_back((char)(m_sendSeq | NopFlag));
+	m_encodeQueueSize++;
+	m_sendSeq = nextSeq(m_sendSeq);
 }
 
 /*!
@@ -931,6 +947,12 @@ void ArqLayer::connected()
 {
 	// Don't propagate the connected event.  A reconnection is handled by this layer itself, via
 	// retransmits or resets.
+}
+
+void ArqLayer::disconnected()
+{
+	// Don't propagate the disconnected event.  A disconnection is handled by this layer itself,
+	// via retransmits or resets.
 }
 
 
