@@ -270,6 +270,7 @@ typedef SSIZE_T ssize_t;
 #  if !defined(STORED_cpp_exceptions)
 #    define try	       if(true)
 #    define catch(...) if(false)
+#    define throw      std::terminate(), (void)
 #  endif
 
 #  if !defined(STORED_cpp_rtti) && defined(__cpp_rtti)

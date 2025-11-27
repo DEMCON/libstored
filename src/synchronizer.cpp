@@ -844,6 +844,13 @@ void SyncConnection::reset()
 	helloAgain();
 }
 
+void SyncConnection::disconnected()
+{
+	dropNonSources();
+	base::disconnected();
+	helloAgain();
+}
+
 /*!
  * \brief Returns the Synchronizer that manages this connection.
  */

@@ -449,8 +449,7 @@ protected:
 			throw disconnected{};
 		case stored::ArqLayer::EventReconnect:
 			log("ARQ reconnect event\n");
-			// We need to reinitialize the synchronizer state.
-			throw disconnected{};
+			break;
 		case stored::ArqLayer::EventRetransmit:
 			log("ARQ retransmit limit exceeded, ignored\n");
 			break;

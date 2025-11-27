@@ -1,19 +1,19 @@
 #ifndef LIBSTORED_SYNCHRONIZER_H
 #define LIBSTORED_SYNCHRONIZER_H
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
 #ifdef __cplusplus
 
-#	include <libstored/macros.h>
-#	include <libstored/protocol.h>
-#	include <libstored/types.h>
-#	include <libstored/util.h>
+#  include <libstored/macros.h>
+#  include <libstored/protocol.h>
+#  include <libstored/types.h>
+#  include <libstored/util.h>
 
-#	include <cstring>
-#	include <map>
-#	include <set>
+#  include <cstring>
+#  include <map>
+#  include <set>
 
 namespace stored {
 
@@ -125,15 +125,15 @@ public:
 	bool hasChanged(Key key, Seq since) const;
 	bool hasChanged(Seq since) const;
 
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	// breathe does not like function typedefs
 	using IterateChangedCallback = void(Key, void*);
-#	else
+#  else
 	typedef void(IterateChangedCallback)(Key, void*);
-#	endif
+#  endif
 	void iterateChanged(Seq since, IterateChangedCallback* cb, void* arg = nullptr) const;
 
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	/*!
 	 * \brief Iterate all changes since the given seq.
 	 *
@@ -152,7 +152,7 @@ public:
 			},
 			&cb);
 	}
-#	endif
+#  endif
 
 	void encodeHash(ProtocolLayer& p, bool last = false) const;
 	static void encodeHash(ProtocolLayer& p, char const* hash, bool last = false);
@@ -396,14 +396,14 @@ public:
 
 	typedef typename base::Objects Objects;
 
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	template <typename... Args>
 	explicit Synchronizable(Args&&... args)
 		: base(std::forward<Args>(args)...)
-#	else
+#  else
 	Synchronizable()
 		: base()
-#	endif
+#  endif
 		, m_callback(*this)
 		, m_journal(base::hash(), base::buffer(), sizeof(base::data().buffer), &m_callback)
 	{
@@ -425,7 +425,7 @@ public:
 	}
 
 	// NOLINTNEXTLINE(hicpp-explicit-conversions)
-	operator StoreJournal const &() const
+	operator StoreJournal const&() const
 	{
 		return journal();
 	}
@@ -448,9 +448,9 @@ public:
 		journal().reserveHeap(Base::VariableCount);
 	}
 
-#	define MAX2(a, b)	 ((a) > (b) ? (a) : (b))
-#	define MAX3(a, b, c)	 MAX2(MAX2((a), (b)), (c))
-#	define MAX4(a, b, c, d) MAX3(MAX2((a), (b)), (c), (d))
+#  define MAX2(a, b)	   ((a) > (b) ? (a) : (b))
+#  define MAX3(a, b, c)	   MAX2(MAX2((a), (b)), (c))
+#  define MAX4(a, b, c, d) MAX3(MAX2((a), (b)), (c), (d))
 	enum STORED_ANONYMOUS {
 		/*! \brief Maximum size of any Synchronizer message for this store. */
 		MaxMessageSize = MAX4(
@@ -465,9 +465,9 @@ public:
 			1 /*cmd*/ + 40 /*hash*/
 			),
 	};
-#	undef MAX4
-#	undef MAX3
-#	undef MAX2
+#  undef MAX4
+#  undef MAX3
+#  undef MAX2
 
 protected:
 	void __hookExitX(Type::type type, void* buffer, size_t len, bool changed) noexcept
@@ -497,12 +497,11 @@ private:
 };
 
 /*! \deprecated Use \c stored::store or \c STORE_T instead. */
-#	define STORE_SYNC_BASE_CLASS(Base, Impl) \
-		STORE_T(Impl, ::stored::Synchronizable, ::stored::Base)
+#  define STORE_SYNC_BASE_CLASS(Base, Impl) STORE_T(Impl, ::stored::Synchronizable, ::stored::Base)
 
 /*! \deprecated Use \c STORE_CLASS instead. */
-#	define STORE_SYNC_CLASS_BODY(Base, Impl) \
-		STORE_CLASS(Impl, ::stored::Synchronizable, ::stored::Base)
+#  define STORE_SYNC_CLASS_BODY(Base, Impl) \
+    STORE_CLASS(Impl, ::stored::Synchronizable, ::stored::Base)
 
 class Synchronizer;
 
@@ -533,18 +532,18 @@ public:
 	typedef ProtocolLayer base;
 	typedef uint16_t Id;
 
-#	ifdef DOXYGEN
+#  ifdef DOXYGEN
 	// breathe does not like complex expressions.
 	static char const Hello = 'h';
 	static char const Welcome = 'w';
 	static char const Update = 'u';
 	static char const Bye = 'b';
-#	else
+#  else
 	static char const Hello = Config::StoreInLittleEndian ? 'h' : 'H';
 	static char const Welcome = Config::StoreInLittleEndian ? 'w' : 'W';
 	static char const Update = Config::StoreInLittleEndian ? 'u' : 'U';
 	static char const Bye = Config::StoreInLittleEndian ? 'b' : 'B';
-#	endif
+#  endif
 
 	SyncConnection(Synchronizer& synchronizer, ProtocolLayer& connection);
 	virtual ~SyncConnection() override;
@@ -559,6 +558,7 @@ public:
 	void decode(void* buffer, size_t len) override final;
 
 	virtual void reset() override;
+	virtual void disconnected() override;
 
 protected:
 	Id nextId();

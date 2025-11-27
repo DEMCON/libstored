@@ -66,29 +66,59 @@ public:
 
 	virtual ~ProtocolLayer();
 
+protected:
 	/*!
 	 * \brief Change the layer that receives our decoded frames.
 	 * \param up the layer, which can be \c nullptr
 	 */
-	void setUp(ProtocolLayer* up = nullptr)
+	void justSetUp(ProtocolLayer* up = nullptr) noexcept
 	{
 		m_up = up;
-		connected();
 	}
 
+public:
+	/*!
+	 * \brief Change the layer that receives our decoded frames.
+	 * \param up the layer, which can be \c nullptr
+	 *
+	 * It calls #disconnected() and #connected() appropriately.
+	 */
+	void setUp(ProtocolLayer* up = nullptr)
+	{
+		ProtocolLayer* oldUp = m_up;
+		justSetUp(up);
+
+		if(oldUp)
+			oldUp->disconnected();
+		if(up)
+			up->connected();
+	}
+
+protected:
+	/*!
+	 * \brief Change the layer that receives our encoded frames.
+	 * \param down the layer, which can be \c nullptr
+	 */
+	void justSetDown(ProtocolLayer* down = nullptr) noexcept
+	{
+		m_down = down;
+	}
+
+public:
 	/*!
 	 * \brief Change the layer that receives our encoded frames.
 	 * \param down the layer, which can be \c nullptr
 	 */
 	void setDown(ProtocolLayer* down = nullptr)
 	{
-		m_down = down;
+		// For symmetry with setUp().
+		justSetDown(down);
 	}
 
 	/*!
 	 * \brief Return the lowest layer of the stack.
 	 */
-	ProtocolLayer& bottom()
+	ProtocolLayer& bottom() noexcept
 	{
 		ProtocolLayer* p = this;
 
@@ -101,7 +131,7 @@ public:
 	/*!
 	 * \brief Return the lowest layer of the stack.
 	 */
-	ProtocolLayer const& bottom() const
+	ProtocolLayer const& bottom() const noexcept
 	{
 		ProtocolLayer const* p = this;
 
@@ -114,7 +144,7 @@ public:
 	/*!
 	 * \brief Return the highest layer of the stack.
 	 */
-	ProtocolLayer& top()
+	ProtocolLayer& top() noexcept
 	{
 		ProtocolLayer* p = this;
 
@@ -127,7 +157,7 @@ public:
 	/*!
 	 * \brief Return the highest layer of the stack.
 	 */
-	ProtocolLayer const& top() const
+	ProtocolLayer const& top() const noexcept
 	{
 		ProtocolLayer const* p = this;
 
@@ -148,18 +178,38 @@ public:
 	 */
 	ProtocolLayer& wrap(ProtocolLayer& up)
 	{
-		ProtocolLayer* b = &bottom();
-		ProtocolLayer* d = up.down();
-
-		if(d) {
-			b->setDown(d);
-			d->setUp(b);
-			b = &d->bottom();
+		// Disconnect our old upper layer.
+		ProtocolLayer* old_up = this->up();
+		if(old_up) {
+			old_up->justSetDown(nullptr);
+			justSetUp(nullptr);
 		}
 
-		up.setDown(this);
-		setUp(&up);
-		return *b;
+		// Inject ourselves below the given layer.
+		ProtocolLayer* current_bottom = &bottom();
+		ProtocolLayer* inject_above = up.down();
+
+		if(inject_above) {
+			current_bottom->justSetDown(inject_above);
+			inject_above->justSetUp(current_bottom);
+			current_bottom = &inject_above->bottom();
+		}
+
+		// Set our new upper layer.
+		up.justSetDown(this);
+		justSetUp(&up);
+
+		// Invoke all notifications.  If an exception would be thrown here, the stack is
+		// updated appropriately.
+		if(old_up)
+			old_up->disconnected();
+
+		if(inject_above)
+			current_bottom->connected();
+		else
+			up.connected();
+
+		return *current_bottom;
 	}
 
 	/*!
@@ -173,27 +223,39 @@ public:
 	 */
 	ProtocolLayer& stack(ProtocolLayer& down)
 	{
-		ProtocolLayer* u = down.up();
+		// Disconnect our old lower layer.
+		ProtocolLayer* old_down = this->down();
+		if(old_down)
+			old_down->justSetUp(nullptr);
 
-		setDown(&down);
-		down.setUp(this);
+		// Inject ourselves above the given layer.
+		ProtocolLayer* current_top = &top();
+		ProtocolLayer* inject_below = down.up();
 
-		ProtocolLayer* t = &top();
-
-		if(u) {
-			u->setDown(t);
-			t->setUp(u);
-			t = &u->top();
+		if(inject_below) {
+			inject_below->justSetDown(current_top);
+			current_top->justSetUp(inject_below);
+			current_top = &inject_below->top();
 		}
 
-		return *t;
+		justSetDown(&down);
+		down.justSetUp(this);
+
+		// Invoke all notifications.  If an exception would be thrown here, the stack is
+		// updated appropriately.
+		if(old_down)
+			old_down->disconnected();
+
+		connected();
+
+		return *current_top;
 	}
 
 	/*!
 	 * \brief Returns the layer above this one.
 	 * \return the layer, or \c nullptr if there is none.
 	 */
-	ProtocolLayer* up() const
+	ProtocolLayer* up() const noexcept
 	{
 		return m_up;
 	}
@@ -202,7 +264,7 @@ public:
 	 * \brief Returns the layer below this one.
 	 * \return the layer, or \c nullptr if there is none.
 	 */
-	ProtocolLayer* down() const
+	ProtocolLayer* down() const noexcept
 	{
 		return m_down;
 	}
@@ -242,12 +304,12 @@ public:
 	 * \brief Flags the current response as purgeable.
 	 *
 	 * This may influence how a response is handled.  Especially, in case
-	 * of retransmits of lost packets, one may decide to either reexecute
+	 * of retransmits of lost packets, one may decide to either re-execute
 	 * the command, or to save the first response and resend it when the
 	 * command was retransmitted. In that sense, a precious response
 	 * (default) means that every layer should handle the data with case,
 	 * as it cannot be recovered once it is lost. When the response is
-	 * flagged purgeeble, the response may be thrown away after the first
+	 * flagged purgeable, the response may be thrown away after the first
 	 * try to transmit it to the client.
 	 *
 	 * By default, all responses are precious.
@@ -303,6 +365,15 @@ public:
 	{
 		if(up())
 			up()->connected();
+	}
+
+	/*!
+	 * \brief Disconnected notification (bottom-up).
+	 */
+	virtual void disconnected()
+	{
+		if(up())
+			up()->disconnected();
 	}
 
 private:
@@ -471,8 +542,8 @@ private:
  * not have a payload (so, no decode() has to be invoked upon receive), should set bit 6. This also
  * applies to the reset message. Bit 6 is implied for an ack.
  *
- * Retransmits are triggered every time a message is queued for encoding, or when #flush() is
- * called. There is no timeout specified.
+ * Retransmits are triggered only upon #keepAlive() or when #flush() is called. There is no timeout
+ * specified.
  *
  * One may decide to use a #stored::SegmentationLayer higher in the protocol stack to reduce the
  * amount of data to retransmit when a message is lost (only one segment is retransmitted, not the
@@ -499,8 +570,10 @@ private:
  * A -> B: ack (0x80)
  * \endverbatim
  *
- * Queued messages are retransmitted after the reset, although they may be duplicated when an ack is
- * lost during the reset. Messages are never completely lost.
+ * When a reset is received, it is unknown what happened to the previous messages; the last
+ * unacknowledged messages may or may not have been received.  Therefore, the session is assumed to
+ * be reset, the encode queue is dropped, and the connection is considered disconnected, until the
+ * ack on the reset is received.
  */
 class ArqLayer : public ProtocolLayer {
 	STORED_CLASS_NOCOPY(ArqLayer)
@@ -532,6 +605,8 @@ public:
 	virtual bool flush() override;
 	virtual void reset() override;
 	virtual void connected() override;
+	virtual void disconnected() override;
+	bool isConnected() const;
 	void keepAlive();
 
 	enum Event {
@@ -630,6 +705,7 @@ protected:
 	void popEncodeQueue();
 	void pushEncodeQueue(void const* buffer, size_t len, bool back = true);
 	String::type& pushEncodeQueueRaw(bool back = true);
+	void pushReset();
 
 private:
 #  if STORED_cplusplus < 201103L
@@ -644,6 +720,7 @@ private:
 	Deque<String::type*>::type m_spare;
 	size_t m_encodeQueueSize;
 	EncodeState m_encodeState;
+	bool m_connected;
 	bool m_pauseTransmit;
 	bool m_didTransmit;
 	uint8_t m_retransmits;
@@ -1085,47 +1162,61 @@ private:
 };
 
 #  if STORED_cplusplus >= 201103L
-template <typename Up, typename Down, typename Connected>
+template <typename Up, typename Down, typename Connected, typename Disconnected>
 class CallbackLayer;
 
 template <typename Up, typename Down>
 static inline CallbackLayer<
-	typename std::decay<Up>::type, typename std::decay<Down>::type, void (*)()>
+	typename std::decay<Up>::type, typename std::decay<Down>::type, void (*)(), void (*)()>
 make_callback(Up&& up, Down&& down);
 
 template <typename Up, typename Down, typename Connected>
 static inline CallbackLayer<
 	typename std::decay<Up>::type, typename std::decay<Down>::type,
-	typename std::decay<Connected>::type>
+	typename std::decay<Connected>::type, void (*)()>
 make_callback(Up&& up, Down&& down, Connected&& connected);
+
+template <typename Up, typename Down, typename Connected, typename Disconnected>
+static inline CallbackLayer<
+	typename std::decay<Up>::type, typename std::decay<Down>::type,
+	typename std::decay<Connected>::type, typename std::decay<Disconnected>::type>
+make_callback(Up&& up, Down&& down, Connected&& connected, Disconnected&& disconnected);
 
 /*!
  * \brief Callback class that invokes a callback for every messages through the stack.
  *
  * \copydetails #stored::make_callback()
  */
-template <typename Up, typename Down, typename Connected>
+template <typename Up, typename Down, typename Connected, typename Disconnected>
 class CallbackLayer : public ProtocolLayer {
 public:
 	typedef ProtocolLayer base;
 
 protected:
-	template <typename U, typename D, typename C>
-	CallbackLayer(U&& u, D&& d, C&& c)
+	template <typename U, typename D, typename C, typename Z>
+	CallbackLayer(U&& u, D&& d, C&& c, Z&& z)
 		: m_up{std::forward<U>(u)}
 		, m_down{std::forward<D>(d)}
 		, m_connected{std::forward<C>(c)}
+		, m_disconnected{std::forward<Z>(z)}
 	{}
 
 	template <typename U, typename D>
-	friend CallbackLayer<typename std::decay<U>::type, typename std::decay<D>::type, void (*)()>
+	friend CallbackLayer<
+		typename std::decay<U>::type, typename std::decay<D>::type, void (*)(), void (*)()>
 	make_callback(U&& up, D&& down);
 
 	template <typename U, typename D, typename C>
 	friend CallbackLayer<
 		typename std::decay<U>::type, typename std::decay<D>::type,
-		typename std::decay<C>::type>
+		typename std::decay<C>::type, void (*)()>
 	make_callback(U&& up, D&& down, C&& connected);
+
+	template <typename U, typename D, typename C, typename Z>
+	friend CallbackLayer<
+		typename std::decay<U>::type, typename std::decay<D>::type,
+		typename std::decay<C>::type, typename std::decay<Z>::type>
+	make_callback(U&& up, D&& down, C&& connected, Z&& disconnected);
 
 public:
 	CallbackLayer(CallbackLayer&& l) noexcept
@@ -1159,6 +1250,12 @@ public:
 		base::connected();
 	}
 
+	virtual void disconnected() override
+	{
+		m_disconnected();
+		base::disconnected();
+	}
+
 #    ifndef DOXYGEN
 	using base::encode;
 #    endif
@@ -1167,6 +1264,7 @@ private:
 	Up m_up;
 	Down m_down;
 	Connected m_connected;
+	Disconnected m_disconnected;
 };
 
 /*!
@@ -1185,12 +1283,12 @@ private:
  */
 template <typename Up, typename Down>
 static inline CallbackLayer<
-	typename std::decay<Up>::type, typename std::decay<Down>::type, void (*)()>
+	typename std::decay<Up>::type, typename std::decay<Down>::type, void (*)(), void (*)()>
 make_callback(Up&& up, Down&& down)
 {
 	return CallbackLayer<
-		typename std::decay<Up>::type, typename std::decay<Down>::type, void (*)()>{
-		std::forward<Up>(up), std::forward<Down>(down), []() {}};
+		typename std::decay<Up>::type, typename std::decay<Down>::type, void (*)(),
+		void (*)()>{std::forward<Up>(up), std::forward<Down>(down), []() {}, []() {}};
 }
 
 /*!
@@ -1213,13 +1311,44 @@ make_callback(Up&& up, Down&& down)
 template <typename Up, typename Down, typename Connected>
 static inline CallbackLayer<
 	typename std::decay<Up>::type, typename std::decay<Down>::type,
-	typename std::decay<Connected>::type>
+	typename std::decay<Connected>::type, void (*)()>
 make_callback(Up&& up, Down&& down, Connected&& connected)
 {
 	return CallbackLayer<
 		typename std::decay<Up>::type, typename std::decay<Down>::type,
-		typename std::decay<Connected>::type>{
-		std::forward<Up>(up), std::forward<Down>(down), std::forward<Connected>(connected)};
+		typename std::decay<Connected>::type, void (*)()>{
+		std::forward<Up>(up), std::forward<Down>(down), std::forward<Connected>(connected),
+		[]() {}};
+}
+/*!
+ * \brief Creates a ProtocolLayer that invokes a given callback on every messages, connected, or
+ *        disconnected event through the layer.
+ *
+ * Use as follows:
+ *
+ * \code
+ * auto cb = stored::make_callback(
+ *               [&](void*, size_t){ ... },
+ *               [&](void const&, size_t, bool){ ... },
+ *               [&](){ ... },
+ *               [&](){ ... });
+ * \endcode
+ *
+ * The first argument (a lambda in the example above), gets the parameters as passed to \c decode().
+ * The second argument get the parameters as passed to \c encode(). The third one gets invoked upon
+ * \c connected(), the fourth on \c disconnected().
+ */
+template <typename Up, typename Down, typename Connected, typename Disconnected>
+static inline CallbackLayer<
+	typename std::decay<Up>::type, typename std::decay<Down>::type,
+	typename std::decay<Connected>::type, typename std::decay<Disconnected>::type>
+make_callback(Up&& up, Down&& down, Connected&& connected, Disconnected&& disconnected)
+{
+	return CallbackLayer<
+		typename std::decay<Up>::type, typename std::decay<Down>::type,
+		typename std::decay<Connected>::type, typename std::decay<Disconnected>::type>{
+		std::forward<Up>(up), std::forward<Down>(down), std::forward<Connected>(connected),
+		std::forward<Disconnected>(disconnected)};
 }
 #  endif // C++11
 
