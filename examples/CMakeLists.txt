@@ -37,16 +37,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT APPLE)
 endif()
 
 if(NOT CMAKE_CXX_STANDARD)
-	foreach(
-		cxx
-		cxx_std_26
-		cxx_std_23
-		cxx_std_20
-		cxx_std_17
-		cxx_std_14
-		cxx_std_11
-		cxx_std_98
-	)
+	foreach(cxx cxx_std_17 cxx_std_14 cxx_std_11 cxx_std_98)
 		list(FIND CMAKE_CXX_COMPILE_FEATURES "${cxx}" _cxx)
 		if(${_cxx} GREATER -1)
 			string(REPLACE "cxx_std_" "" _std "${cxx}")

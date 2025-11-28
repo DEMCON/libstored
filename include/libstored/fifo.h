@@ -665,12 +665,12 @@ public:
 	}
 
 	typedef PopIterator<Fifo> iterator;
-	constexpr iterator begin() noexcept
+	iterator begin() noexcept
 	{
 		return PopIterator<Fifo>(*this);
 	}
 
-	constexpr iterator end() noexcept
+	iterator end() noexcept
 	{
 		return PopIterator<Fifo>();
 	}
@@ -1066,12 +1066,12 @@ public:
 	}
 
 	typedef PopIterator<MessageFifo> iterator;
-	constexpr iterator begin() noexcept
+	iterator begin() noexcept
 	{
 		return PopIterator<MessageFifo>(*this);
 	}
 
-	constexpr iterator end() noexcept
+	iterator end() noexcept
 	{
 		return PopIterator<MessageFifo>();
 	}

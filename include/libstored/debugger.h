@@ -1,27 +1,27 @@
 #ifndef LIBSTORED_DEBUGGER_H
 #define LIBSTORED_DEBUGGER_H
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
 #ifdef __cplusplus
 
-#	include <libstored/macros.h>
-#	include <libstored/compress.h>
-#	include <libstored/protocol.h>
-#	include <libstored/spm.h>
-#	include <libstored/types.h>
-#	include <libstored/util.h>
+#  include <libstored/macros.h>
+#  include <libstored/compress.h>
+#  include <libstored/protocol.h>
+#  include <libstored/spm.h>
+#  include <libstored/types.h>
+#  include <libstored/util.h>
 
-#	include <map>
-#	include <memory>
-#	include <new>
-#	include <utility>
-#	include <vector>
+#  include <map>
+#  include <memory>
+#  include <new>
+#  include <utility>
+#  include <vector>
 
-#	if STORED_cplusplus >= 201103L
-#		include <functional>
-#	endif
+#  if STORED_cplusplus >= 201103L
+#    include <functional>
+#  endif
 
 namespace stored {
 
@@ -58,7 +58,7 @@ public:
 		if(blocked())
 			return;
 
-#	ifdef STORED_HAVE_ZTH
+#  ifdef STORED_HAVE_ZTH
 		// With Zth, the encode context may be different from
 		// Debugger's CmdTrace context.  As we pass a buffer pointer to
 		// encode within CmdTrace, this buffer should not be changed
@@ -68,7 +68,7 @@ public:
 		stored_assert(
 			!Config::AvoidDynamicMemory
 			|| m_buffer.size() + len <= m_buffer.capacity());
-#	endif
+#  endif
 
 		m_buffer.append(static_cast<char const*>(buffer), len);
 	}
@@ -210,9 +210,9 @@ public:
 	bool empty() const noexcept
 	{
 		return
-#	ifdef STORED_HAVE_HEATSHRINK
+#  ifdef STORED_HAVE_HEATSHRINK
 			m_compress.idle() &&
-#	endif
+#  endif
 			m_string.empty();
 	}
 
@@ -259,10 +259,10 @@ private:
 	Stream<false> m_string;
 };
 
-#	ifdef STORED_COMPILER_ARMCC
-#		pragma clang diagnostic push
-#		pragma clang diagnostic ignored "-Wnon-virtual-dtor"
-#	endif
+#  ifdef STORED_COMPILER_ARMCC
+#    pragma clang diagnostic push
+#    pragma clang diagnostic ignored "-Wnon-virtual-dtor"
+#  endif
 /*!
  * \brief Container-template-type-invariant base class of a wrapper for #stored::Variant.
  */
@@ -365,11 +365,11 @@ public:
 	explicit DebugVariantTyped(Variant<Container> const& variant)
 		: m_variant(variant)
 	{
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 		static_assert(std::is_trivially_destructible<Variant<Container>>::value, "");
-#	elif defined(__GCC__)
+#  elif defined(__GCC__)
 		static_assert(__has_trivial_destructor(Variant<Container>), "");
-#	endif
+#  endif
 	}
 
 	/*!
@@ -474,13 +474,13 @@ public:
 			sizeof(DebugVariantTyped<Container>) == sizeof(DebugVariantTyped<>), "");
 
 		// Check if our default copy constructor works properly.
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 		static_assert(std::is_trivially_copyable<Variant<Container>>::value, "");
 		static_assert(std::is_trivially_destructible<Variant<Container>>::value, "");
-#	elif defined(__GCC__)
+#  elif defined(__GCC__)
 		static_assert(__has_trivial_copy(Variant<Container>), "");
 		static_assert(__has_trivial_destructor(Variant<Container>), "");
-#	endif
+#  endif
 
 		new(m_buffer) DebugVariantTyped<Container>(variant);
 		// Check if the cast of variant() works properly.
@@ -568,9 +568,9 @@ private:
 	// flawfinder: ignore
 	char m_buffer[sizeof(DebugVariantTyped<>)];
 };
-#	ifdef STORED_COMPILER_ARMCC
-#		pragma clang diagnostic pop
-#	endif
+#  ifdef STORED_COMPILER_ARMCC
+#    pragma clang diagnostic pop
+#  endif
 
 /*!
  * \brief Wrapper for a store, that hides the store's template parameters.
@@ -614,14 +614,14 @@ public:
 	 * #stored::DebugVariant of the object, and the \c arg value, as passed
 	 * to \c list().
 	 *
-	 * \see #stored::DebugStoreBase::list(ListCallbackArg*, void*, char const*) const
+	 * \see stored::DebugStoreBase::list(ListCallbackArg*, void*, char const*) const
 	 */
-#	ifdef DOXYGEN
+#  ifdef DOXYGEN
 	// breathe breaks on the function typedef.
 	using ListCallbackArg = void(char const*, DebugVariant&, void*);
-#	else
+#  else
 	typedef void(ListCallbackArg)(char const*, DebugVariant&, void*);
-#	endif
+#  endif
 
 	/*!
 	 * \brief Iterates over the directory and invoke a callback for every object.
@@ -798,7 +798,7 @@ public:
 	typedef DebugStoreBase::ListCallbackArg ListCallbackArg;
 	void list(ListCallbackArg* f, void* arg = nullptr) const;
 
-#	if STORED_cplusplus >= 201103L
+#  if STORED_cplusplus >= 201103L
 	/*!
 	 * \brief Callback function prototype as supplied to \c list().
 	 *
@@ -824,7 +824,7 @@ public:
 		};
 		list(static_cast<ListCallbackArg*>(cb), &f);
 	}
-#	endif
+#  endif
 private:
 	static void listCmdCallback(char const* name, DebugVariant& variant, void* arg);
 

@@ -90,7 +90,7 @@ stored::PollableZmqLayer
 
 .. doxygenclass:: stored::PollableZmqLayer
 
-.. doxygenfunction:: stored::pollable(ZmqLayer &l, Pollable::Events const &events, void *user = nullptr)
+.. doxygenfunction:: stored::pollable(ZmqBaseLayer &l, Pollable::Events const &events, void *user = nullptr)
 .. dummy*
 
 stored::PollableZmqSocket
