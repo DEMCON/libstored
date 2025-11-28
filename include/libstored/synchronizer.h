@@ -551,6 +551,7 @@ public:
 	Synchronizer& synchronizer() const;
 
 	bool isSynchronizing(StoreJournal& store) const;
+	bool isConnected(StoreJournal& store) const;
 
 	void source(StoreJournal& store);
 	void drop(StoreJournal& store);
@@ -591,10 +592,17 @@ private:
 		{}
 
 		StoreJournal::Seq seq;
-		// Id determined by remote class (got via Hello message)
+		// Id determined by remote class (got via Hello message).
+		// idOut == 0 means not connected.
 		Id idOut;
 		// When true, this store was initially synchronized from there to here.
 		bool source;
+
+		/*! \brief Return if the store is connected. */
+		bool connected() const
+		{
+			return idOut != 0;
+		}
 	};
 
 	typedef Map<StoreJournal*, StoreInfo>::type StoreMap;
@@ -694,6 +702,7 @@ public:
 
 	bool isSynchronizing(StoreJournal& j) const;
 	bool isSynchronizing(StoreJournal& j, SyncConnection& notOverConnection) const;
+	bool isConnected(StoreJournal& j, SyncConnection& connection) const;
 
 	/*!
 	 * \brief Return a buffer large enough to encode messages in.

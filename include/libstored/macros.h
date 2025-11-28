@@ -292,7 +292,11 @@ typedef SSIZE_T ssize_t;
 #	define nullptr NULL
 #      endif
 #      ifndef noexcept
-#	define noexcept throw()
+#	ifdef STORED_cpp_exceptions
+#	  define noexcept throw()
+#	else
+#	  define noexcept
+#	endif
 #      endif
 #    endif
 #    ifndef is_default

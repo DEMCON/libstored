@@ -884,6 +884,17 @@ bool SyncConnection::isSynchronizing(StoreJournal& store) const
 }
 
 /*!
+ * \brief Returns if the given store is currently connected over this connection.
+ */
+bool SyncConnection::isConnected(StoreJournal& store) const
+{
+	StoreMap::const_iterator it = m_store.find(&store);
+	if(it == m_store.end())
+		return false;
+	return it->second.connected();
+}
+
+/*!
  * \brief Use this connection as a source of the given store.
  */
 void SyncConnection::source(StoreJournal& store)
@@ -1076,7 +1087,7 @@ StoreJournal::Seq SyncConnection::process(StoreJournal& store, void* encodeBuffe
 	if(s == m_store.end())
 		// Unknown store.
 		return 0;
-	if(!store.hasChanged(s->second.seq))
+	if(!s->second.connected() || !store.hasChanged(s->second.seq))
 		// No recent changes.
 		return 0;
 
@@ -1145,6 +1156,7 @@ void SyncConnection::decode(void* buffer, size_t len)
 				break;
 			}
 
+		stored_assert(si.connected());
 		id = nextId();
 		m_idIn[id] = j;
 		encodeId(id, false);
@@ -1188,6 +1200,7 @@ void SyncConnection::decode(void* buffer, size_t len)
 
 		si.seq = seq;
 		si.idOut = welcome_id;
+		stored_assert(si.connected());
 		break;
 	}
 	case Update: {
@@ -1243,7 +1256,7 @@ void SyncConnection::decode(void* buffer, size_t len)
 				break;
 
 			StoreInfo const& si = m_store[it->second];
-			if(si.source && si.idOut)
+			if(si.source && si.connected())
 				// Hey, we need it!
 				helloAgain(*(it->second));
 			else
@@ -1259,7 +1272,7 @@ void SyncConnection::decode(void* buffer, size_t len)
 				break;
 
 			StoreInfo const& si = it->second;
-			if(si.source && si.idOut)
+			if(si.source && si.connected())
 				// Hey, we need it!
 				helloAgain(*j);
 			else
@@ -1365,6 +1378,7 @@ void SyncConnection::helloAgain(StoreJournal& store)
 		}
 
 	stored_assert(id);
+	stored_assert(!si.connected());
 
 	encodeCmd(Hello);
 	store.encodeHash(*this, false);
@@ -1497,6 +1511,9 @@ StoreJournal::Seq Synchronizer::process(ProtocolLayer& connection, StoreJournal&
 	return 0;
 }
 
+/*!
+ * \brief Returns if the given store is registered for synchronization over any connection.
+ */
 bool Synchronizer::isSynchronizing(StoreJournal& j) const
 {
 	for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it)
@@ -1506,6 +1523,10 @@ bool Synchronizer::isSynchronizing(StoreJournal& j) const
 	return false;
 }
 
+/*!
+ * \brief Returns if the given store is registered for synchronization over any connection,
+ *        except the given one.
+ */
 bool Synchronizer::isSynchronizing(StoreJournal& j, SyncConnection& notOverConnection) const
 {
 	for(Connections::iterator it = m_connections.begin(); it != m_connections.end(); ++it) {
@@ -1515,6 +1536,15 @@ bool Synchronizer::isSynchronizing(StoreJournal& j, SyncConnection& notOverConne
 			return true;
 	}
 	return false;
+}
+
+/*!
+ * \brief Returns if the given store is currently connected over the given connection.
+ */
+bool Synchronizer::isConnected(StoreJournal& j, SyncConnection& connection) const
+{
+	SyncConnection const* c = toConnection(connection);
+	return c && c->isConnected(j);
 }
 
 } // namespace stored

@@ -36,6 +36,7 @@
 #endif
 
 #include <algorithm>
+#include <exception>
 #include <new>
 
 namespace stored {
@@ -54,9 +55,9 @@ namespace stored {
 ProtocolLayer::~ProtocolLayer()
 {
 	if(up() && up()->down() == this)
-		up()->setDown(down());
+		up()->justSetDown(down());
 	if(down() && down()->up() == this)
-		down()->setUp(up());
+		down()->justSetUp(up());
 }
 
 
@@ -219,6 +220,13 @@ void TerminalLayer::reset()
 	base::reset();
 }
 
+void TerminalLayer::disconnected()
+{
+	m_decodeState = StateNormal;
+	m_buffer.clear();
+	base::disconnected();
+}
+
 /*!
  * \copydoc stored::ProtocolLayer::~ProtocolLayer()
  */
@@ -358,6 +366,12 @@ void SegmentationLayer::reset()
 	m_decode.clear();
 	m_encoded = 0;
 	base::reset();
+}
+
+void SegmentationLayer::disconnected()
+{
+	m_decode.clear();
+	base::disconnected();
 }
 
 size_t SegmentationLayer::mtu() const
@@ -523,11 +537,17 @@ void ArqLayer::decode(void* buffer, size_t len)
 	m_pauseTransmit = true;
 
 	while(len > 0) {
-		uint8_t hdr = buffer_[0];
+		uint8_t const hdr = buffer_[0];
+		uint8_t const hdrSeq = (uint8_t)(hdr & SeqMask);
 
 		if(hdr & AckFlag) {
+			if(unlikely(hdrSeq == 0)) {
+				// This may be an ack to our reset message.
+				reset_handshake = true;
+			}
+
 			if(waitingForAck()
-			   && (hdr & SeqMask) == ((uint8_t)(*m_encodeQueue.front())[0] & SeqMask)) {
+			   && hdrSeq == ((uint8_t)(*m_encodeQueue.front())[0] & SeqMask)) {
 				// They got our last transmission.
 				popEncodeQueue();
 				m_retransmits = 0;
@@ -535,18 +555,39 @@ void ArqLayer::decode(void* buffer, size_t len)
 				// Transmit next message, if any.
 				do_transmit = true;
 
-				if(unlikely((hdr & SeqMask) == 0)) {
+				if(unlikely(reset_handshake)) {
 					// This is an ack to our reset message. We are connected
 					// now.
-					reset_handshake = true;
 					m_connected = true;
+					m_recvSeq = nextSeq(0);
 					base::connected();
 				}
 			}
 
 			buffer_++;
 			len--;
-		} else if(likely((hdr & SeqMask) == m_recvSeq)) {
+		} else if(unlikely(hdrSeq == 0)) {
+			// This is part of the reset handshake.
+
+			// Send ack.
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
+			resp[resplen++] = (uint8_t)AckFlag;
+			// Drop the rest.
+			len = 0;
+
+			if(!reset_handshake) {
+				// This is an unexpected reset message. Reset communication.
+				pushReset();
+				do_transmit = true;
+
+				if(isConnected()) {
+					m_connected = false;
+					event(EventReconnect);
+				}
+
+				base::disconnected();
+			}
+		} else if(likely(hdrSeq == m_recvSeq)) {
 			// This is a proper next message.
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
 			resp[resplen++] = (uint8_t)(m_recvSeq | AckFlag);
@@ -556,34 +597,11 @@ void ArqLayer::decode(void* buffer, size_t len)
 			do_transmit = true; // Send out next message.
 			buffer_++;
 			len--;
-		} else if((hdr & SeqMask) == 0) {
-			// This is an unexpected reset message. Reset communication.
-			base::disconnected();
-
-			if(isConnected()) {
-				m_connected = false;
-				event(EventReconnect);
-			}
-
-			// Send ack.
-			m_recvSeq = nextSeq(0);
-			// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
-			resp[resplen++] = (uint8_t)AckFlag;
-
-			if(!reset_handshake) {
-				// Reset from our direction too.
-				pushReset();
-				do_transmit = true;
-			}
-
-			// Drop the rest.
-			len = 0;
-		} else if(nextSeq((uint8_t)(hdr & SeqMask)) == m_recvSeq) {
+		} else if(nextSeq(hdrSeq) == m_recvSeq) {
 			// This is a retransmit of the previous message.
 			// Send ack again.
 			// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
-			resp[resplen++] = (uint8_t)((uint8_t)(hdr & SeqMask) | AckFlag);
-
+			resp[resplen++] = (uint8_t)(hdrSeq | AckFlag);
 			if((hdr & NopFlag)) {
 				buffer_++;
 				len--;
@@ -712,10 +730,12 @@ bool ArqLayer::transmit()
 		// Only queue for now.
 		return false;
 
-	if(m_retransmits < std::numeric_limits<decltype(m_retransmits)>::max())
-		m_retransmits++;
-	if(m_retransmits >= RetransmitCallbackThreshold)
+	if(m_retransmits < std::numeric_limits<decltype(m_retransmits)>::max()) {
+		if(++m_retransmits % RetransmitCallbackThreshold == 0)
+			event(EventRetransmit);
+	} else {
 		event(EventRetransmit);
+	}
 
 	// (Re)transmit first message.
 	stored_assert(waitingForAck());
@@ -849,6 +869,7 @@ void ArqLayer::pushReset()
 	pushEncodeQueueRaw().push_back((char)(m_sendSeq | NopFlag));
 	m_encodeQueueSize++;
 	m_sendSeq = nextSeq(m_sendSeq);
+	m_recvSeq = 0;
 }
 
 /*!
@@ -1327,6 +1348,12 @@ void Crc8Layer::reset()
 	base::reset();
 }
 
+void Crc8Layer::disconnected()
+{
+	m_crc = init;
+	base::disconnected();
+}
+
 void Crc8Layer::decode(void* buffer, size_t len)
 {
 	if(len == 0)
@@ -1421,6 +1448,12 @@ void Crc16Layer::reset()
 {
 	m_crc = init;
 	base::reset();
+}
+
+void Crc16Layer::disconnected()
+{
+	m_crc = init;
+	base::disconnected();
 }
 
 void Crc16Layer::decode(void* buffer, size_t len)
@@ -1533,6 +1566,12 @@ void Crc32Layer::reset()
 	base::reset();
 }
 
+void Crc32Layer::disconnected()
+{
+	m_crc = (uint32_t)init;
+	base::disconnected();
+}
+
 void Crc32Layer::decode(void* buffer, size_t len)
 {
 	if(len < 4)
@@ -1595,17 +1634,57 @@ size_t Crc32Layer::mtu() const
 /*!
  * \brief Constructor for a buffer with given size.
  *
- * If \p size is 0, the buffer it not bounded.
+ * If \p size is 0, the buffer it not bounded. Note that for unbounded buffers, the buffer may
+ * dynamically allocate memory as needed, which may fail.
  */
 BufferLayer::BufferLayer(size_t size, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_size(size ? size : std::numeric_limits<size_t>::max())
-{}
+{
+	allocate();
+}
 
 void BufferLayer::reset()
 {
 	m_buffer.clear();
 	base::reset();
+}
+
+void BufferLayer::connected()
+{
+	allocate();
+	base::connected();
+}
+
+void BufferLayer::allocate()
+{
+	size_t const max_prealloc = 0x100000U; // 1 MiB
+
+	bool const unbounded = m_size == std::numeric_limits<size_t>::max();
+	size_t const mtu = this->mtu();
+
+	if(mtu == 0 && unbounded) {
+		// No limit. Allocate when required.
+		return;
+	}
+
+	size_t bounded = m_buffer.max_size();
+	if(!unbounded && m_size < bounded)
+		bounded = m_size;
+	if(mtu && mtu < bounded)
+		bounded = mtu;
+
+	if(bounded > max_prealloc) {
+		// High limit. Assume that dynamic allocation is fine.
+		return;
+	}
+
+	if(m_buffer.capacity() >= bounded) {
+		// Already allocated.
+		return;
+	}
+
+	m_buffer.reserve(bounded);
 }
 
 /*!
@@ -1904,6 +1983,10 @@ void impl::Loopback1::reset()
 	base::reset();
 }
 
+void impl::Loopback1::connected() {}
+
+void impl::Loopback1::disconnected() {}
+
 void impl::Loopback1::reserve(size_t capacity)
 {
 	if(likely(capacity <= m_capacity))
@@ -1911,13 +1994,8 @@ void impl::Loopback1::reserve(size_t capacity)
 
 	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory, cppcoreguidelines-no-malloc)
 	void* p = realloc(m_buffer, capacity);
-	if(unlikely(!p)) {
-#ifdef STORED_cpp_exceptions
+	if(unlikely(!p))
 		throw std::bad_alloc();
-#else
-		std::terminate();
-#endif
-	}
 
 	m_buffer = static_cast<char*>(p);
 	m_capacity = capacity;
@@ -1925,7 +2003,7 @@ void impl::Loopback1::reserve(size_t capacity)
 
 /*!
  * \brief Collect partial data, and passes into the \c decode() of \c to when it has the full
- * message.
+ *        message.
  */
 void impl::Loopback1::encode(void const* buffer, size_t len, bool last)
 {

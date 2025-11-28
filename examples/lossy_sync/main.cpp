@@ -282,8 +282,9 @@ public:
 		// We don't want to do ARQ on large messages, so we segment them to some
 		// appropriate size.
 		wrap<stored::SegmentationLayer>(32U);
-		// Perform retransmits. Limit the encode queue to 10 KiB.
-		m_arq = wrap<stored::ArqLayer>(10240U);
+		// Perform retransmits. Limit the encode queue to have some bound on the maximum
+		// RTT.
+		m_arq = wrap<stored::ArqLayer>(1024U);
 		m_arq->setEventCallback(
 			[](stored::ArqLayer&, stored::ArqLayer::Event event, void* arg) {
 				static_cast<SyncStack*>(arg)->event(event);
@@ -308,7 +309,7 @@ public:
 
 		// Optional: buffer partial messages to reduce the number of sends/receives on the
 		// wire.
-		wrap<stored::BufferLayer>();
+		wrap<stored::BufferLayer>(64U);
 
 		if(verbose)
 			wrap<stored::PrintLayer>(stdout, "raw");
@@ -486,7 +487,8 @@ static void run(Arguments const& args, ExampleSync& store, DebugStack& debugStac
 	if(!args.client.empty()) {
 		syncStack.reset(new SyncStack{store, args.client.c_str(), false, args.verbose});
 	} else if(!args.server.empty()) {
-		syncStack.reset(new SyncStack{store, args.server.c_str(), true, args.verbose});
+		syncStack.reset(
+			new SyncStack{store, args.server.c_str(), true, args.verbose, args.ber});
 	}
 
 	stored::Poller poller;
