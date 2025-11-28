@@ -140,10 +140,10 @@ static Arguments parse_arguments(int argc, char** argv)
 			try {
 				int port = std::stoi(optarg);
 				if(port <= 0 || port >= 0x10000)
-					throw std::invalid_argument{"Invalid port"};
+					STORED_throw(std::invalid_argument{"Invalid port"});
 				args.debug_port = port;
 			} catch(std::exception& e) {
-				throw std::invalid_argument{e.what()};
+				STORED_throw(std::invalid_argument{e.what()});
 			}
 			break;
 		case 'v':
@@ -160,30 +160,30 @@ static Arguments parse_arguments(int argc, char** argv)
 			try {
 				args.ber = std::stof(optarg);
 				if(args.ber < 0.F || args.ber > 1.F)
-					throw std::invalid_argument{"Invalid BER"};
+					STORED_throw(std::invalid_argument{"Invalid BER"});
 			} catch(std::invalid_argument&) {
-				throw;
+				STORED_rethrow;
 			} catch(std::exception& e) {
-				throw std::invalid_argument{e.what()};
+				STORED_throw(std::invalid_argument{e.what()});
 			}
 			break;
 		case 'h':
 			print_help(stdout, argv[0]);
-			throw exit_now();
+			STORED_throw(exit_now());
 		default:
 			print_help(stderr, argv[0]);
-			throw std::invalid_argument{""};
+			STORED_throw(std::invalid_argument{""});
 		}
 	}
 
 	if(!args.client.empty() && !args.server.empty()) {
 		log("Cannot be both client and server\n");
-		throw std::invalid_argument{""};
+		STORED_throw(std::invalid_argument{""});
 	}
 
 	if(args.client.empty() && args.server.empty()) {
 		log("Must be either client or server\n");
-		throw std::invalid_argument{""};
+		STORED_throw(std::invalid_argument{""});
 	}
 
 	return args;
@@ -209,7 +209,7 @@ public:
 		if((errno = m_debugLayer.lastError())) {
 			log("Cannot initialize ZMQ for debugging, got error %d; %s\n", errno,
 			    zmq_strerror(errno));
-			throw std::runtime_error{"ZMQ initialization failed"};
+			STORED_throw(std::runtime_error{"ZMQ initialization failed"});
 		}
 
 		m_id = "lossy_sync";
@@ -266,14 +266,14 @@ public:
 		if((errno = m_zmqLayer.lastError())) {
 			log("Cannot initialize ZMQ for sync, got error %d; %s\n", errno,
 			    zmq_strerror(errno));
-			throw std::runtime_error{"ZMQ initialization failed"};
+			STORED_throw(std::runtime_error{"ZMQ initialization failed"});
 		}
 
 		int linger = 0;
 		if(zmq_setsockopt(m_zmqLayer.socket(), ZMQ_LINGER, &linger, sizeof(linger)) == -1) {
 			log("Cannot set ZMQ_LINGER, got error %d; %s\n", errno,
 			    zmq_strerror(errno));
-			throw std::runtime_error{"ZMQ setsockopt failed"};
+			STORED_throw(std::runtime_error{"ZMQ setsockopt failed"});
 		}
 
 		if(verbose)
@@ -421,7 +421,7 @@ protected:
 				auto dt = now - m_idleUpSince;
 				if(dt > std::chrono::milliseconds(DisconnectTimeout_ms)) {
 					log("No upstream activity, disconnecting\n");
-					throw disconnected{};
+					STORED_throw(disconnected{});
 				}
 			} else {
 				m_idleUpSince = now;
@@ -447,7 +447,7 @@ protected:
 		switch(event) {
 		case stored::ArqLayer::EventEncodeBufferOverflow:
 			log("ARQ encode buffer overflow\n");
-			throw disconnected{};
+			STORED_throw(disconnected{});
 		case stored::ArqLayer::EventReconnect:
 			log("ARQ reconnect event\n");
 			break;
@@ -494,12 +494,12 @@ static void run(Arguments const& args, ExampleSync& store, DebugStack& debugStac
 	stored::Poller poller;
 	if((errno = poller.add(debugStack.pollable()))) {
 		perror("Cannot add pollable");
-		throw std::runtime_error{"Poller add failed"};
+		STORED_throw(std::runtime_error{"Poller add failed"});
 	}
 
 	if((errno = poller.add(syncStack->pollable()))) {
 		perror("Cannot add pollable");
-		throw std::runtime_error{"Poller add failed"};
+		STORED_throw(std::runtime_error{"Poller add failed"});
 	}
 
 	try {
@@ -523,7 +523,7 @@ static void run(Arguments const& args, ExampleSync& store, DebugStack& debugStac
 			now = std::chrono::steady_clock::now();
 		}
 
-		throw;
+		STORED_rethrow;
 	}
 }
 
@@ -556,7 +556,9 @@ int main(int argc, char** argv)
 	} catch(std::invalid_argument&) {
 		return 1;
 	} catch(std::exception& e) {
+#ifdef STORED_cpp_exceptions
 		log("Error: %s\n", e.what());
+#endif
 		return 2;
 	} catch(...) {
 		log("Unknown error\n");

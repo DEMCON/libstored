@@ -764,7 +764,7 @@ void ArqLayer::event(ArqLayer::Event e)
 			break;
 		case EventEncodeBufferOverflow:
 			// Cannot handle this.
-			throw std::bad_alloc();
+			STORED_throw(std::bad_alloc());
 		}
 	}
 }
@@ -1995,7 +1995,7 @@ void impl::Loopback1::reserve(size_t capacity)
 	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory, cppcoreguidelines-no-malloc)
 	void* p = realloc(m_buffer, capacity);
 	if(unlikely(!p))
-		throw std::bad_alloc();
+		STORED_throw(std::bad_alloc());
 
 	m_buffer = static_cast<char*>(p);
 	m_capacity = capacity;
@@ -3368,11 +3368,7 @@ NamedPipeLayer::NamedPipeLayer(
 			// Oops, revert the handler and accept SIGPIPEs.
 			if(signal(SIGPIPE, oldh) == SIG_ERR) {
 				// Really oops... Now we broke something.
-#    ifdef STORED_cpp_exceptions
-				throw std::runtime_error("Cannot restore SIGPIPE handler");
-#    else
-				std::terminate();
-#    endif
+				STORED_throw(std::runtime_error("Cannot restore SIGPIPE handler"));
 			}
 		}
 
