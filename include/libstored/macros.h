@@ -264,19 +264,6 @@ typedef SSIZE_T ssize_t;
 
 #if defined(STORED_cplusplus)
 // All C++
-#  if !defined(STORED_cpp_exceptions) && defined(__cpp_exceptions)
-#    define STORED_cpp_exceptions __cpp_exceptions
-#  endif
-#  if !defined(STORED_cpp_exceptions)
-#    define try	       if(true)
-#    define catch(...) if(false)
-#    define throw      std::terminate(), (void)
-#  endif
-
-#  if !defined(STORED_cpp_rtti) && defined(__cpp_rtti)
-#    define STORED_cpp_rtti __cpp_rtti
-#  endif
-
 #  if STORED_cplusplus < 201103L // < C++11
 #    ifndef STORED_COMPILER_MSVC
 #      ifndef constexpr
@@ -292,11 +279,7 @@ typedef SSIZE_T ssize_t;
 #	define nullptr NULL
 #      endif
 #      ifndef noexcept
-#	ifdef STORED_cpp_exceptions
-#	  define noexcept throw()
-#	else
-#	  define noexcept
-#	endif
+#	define noexcept throw()
 #      endif
 #    endif
 #    ifndef is_default
@@ -342,7 +325,28 @@ typedef SSIZE_T ssize_t;
 #      endif
 #    endif
 #  endif
-#endif
+
+#  if !defined(STORED_cpp_exceptions) && defined(__cpp_exceptions)
+#    define STORED_cpp_exceptions __cpp_exceptions
+#  endif
+#  if !defined(STORED_cpp_exceptions)
+#    define try	       if_constexpr(true)
+#    define catch(...) if_constexpr(false)
+#    define STORED_throw(e)                               \
+      do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
+	(void)fprintf(stderr, "Exception: %s\n", #e);     \
+	std::terminate();                                 \
+      } while(0)
+#    define STORED_rethrow std::terminate()
+#  else
+#    define STORED_throw(e) throw e
+#    define STORED_rethrow  throw
+#  endif
+
+#  if !defined(STORED_cpp_rtti) && defined(__cpp_rtti)
+#    define STORED_cpp_rtti __cpp_rtti
+#  endif
+#endif // STORED_cplusplus
 
 #ifndef STORED_thread_local
 #  if defined(STORED_OS_BAREMETAL) || defined(STORED_OS_GENERIC)

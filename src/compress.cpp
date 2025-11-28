@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -7,8 +7,8 @@
 
 #ifdef STORED_HAVE_HEATSHRINK
 extern "C" {
-#	include <heatshrink_decoder.h>
-#	include <heatshrink_encoder.h>
+#  include <heatshrink_decoder.h>
+#  include <heatshrink_encoder.h>
 }
 
 /*!
@@ -19,7 +19,7 @@ static heatshrink_encoder& encoder_(void* e)
 	stored_assert(e);
 	return *static_cast<heatshrink_encoder*>(e);
 }
-#	define encoder() (encoder_(m_encoder)) // NOLINT(cppcoreguidelines-macro-usage)
+#  define encoder() (encoder_(m_encoder)) // NOLINT(cppcoreguidelines-macro-usage)
 
 /*!
  * \brief Helper to get a \c heatshrink_decoder reference from \c CompressLayer::m_decoder.
@@ -29,7 +29,7 @@ static heatshrink_decoder& decoder_(void* d)
 	stored_assert(d);
 	return *static_cast<heatshrink_decoder*>(d);
 }
-#	define decoder() (decoder_(m_decoder)) // NOLINT(cppcoreguidelines-macro-usage)
+#  define decoder() (decoder_(m_decoder)) // NOLINT(cppcoreguidelines-macro-usage)
 
 namespace stored {
 
@@ -65,13 +65,8 @@ void CompressLayer::decode(void* buffer, size_t len)
 
 	if(unlikely(!m_decoder)) {
 		m_decoder = heatshrink_decoder_alloc(DecodeInputBuffer, Window, Lookahead);
-		if(!m_decoder) {
-#	ifdef STORED_cpp_exceptions
-			throw std::bad_alloc();
-#	else
-			std::terminate();
-#	endif
-		}
+		if(!m_decoder)
+			STORED_throw(std::bad_alloc());
 	}
 
 	m_state |= (uint8_t)FlagDecoding;
@@ -133,13 +128,8 @@ void CompressLayer::encode(void const* buffer, size_t len, bool last)
 
 	if(unlikely(!m_encoder)) {
 		m_encoder = heatshrink_encoder_alloc(Window, Lookahead);
-		if(!m_encoder) {
-#	ifdef STORED_cpp_exceptions
-			throw std::bad_alloc();
-#	else
-			std::terminate();
-#	endif
-		}
+		if(!m_encoder)
+			STORED_throw(std::bad_alloc());
 	}
 
 	m_state |= (uint8_t)FlagEncoding;

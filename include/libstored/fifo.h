@@ -16,6 +16,7 @@
 #    include <array>
 #    include <atomic>
 #    include <cstring>
+#    include <exception>
 #    include <functional>
 #    include <iterator>
 #    include <new>
@@ -241,7 +242,8 @@ public:
 
 	BufferView subview(size_t offset, size_t len) const
 	{
-		return BufferView{*m_b, absolute((pointer)offset), absolute((pointer)(offset + len))};
+		return BufferView{
+			*m_b, absolute((pointer)offset), absolute((pointer)(offset + len))};
 	}
 
 	BufferView subview(size_t offset) const
@@ -985,11 +987,7 @@ public:
 
 		if(unlikely(Capacity > 0 && message.size() + partial > Capacity)) {
 			// Will never fit.
-#    ifdef STORED_cpp_exceptions
-			throw std::bad_alloc();
-#    else
-			std::terminate();
-#    endif
+			STORED_throw(std::bad_alloc());
 		}
 
 		if(wp == rp && partial == 0) {

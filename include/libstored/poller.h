@@ -795,15 +795,10 @@ protected:
 		switch(errno) {
 		case 0:
 			break;
-#    ifdef STORED_cpp_exceptions
 		case ENOMEM:
-			throw std::bad_alloc();
+			STORED_throw(std::bad_alloc());
 		default:
-			throw std::runtime_error("");
-#    else
-		default:
-			std::terminate();
-#    endif
+			STORED_throw(std::runtime_error(""));
 		}
 	}
 

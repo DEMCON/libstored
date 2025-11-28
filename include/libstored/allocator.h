@@ -1,6 +1,6 @@
 #ifndef LIBSTORED_ALLOCATOR_H
 #define LIBSTORED_ALLOCATOR_H
-// SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -67,26 +67,26 @@ static inline void deallocate(T* p, size_t n = 1) noexcept
  * \param T the type of the class for which the operators are to be defined
  */
 // cppcheck-suppress-macro duplInheritedMember
-#  define STORED_CLASS_NEW_DELETE(T)                                          \
-  public:                                                                     \
-	  void* operator new(std::size_t n)                                   \
-	  {                                                                   \
-		  STORED_UNUSED(n)                                            \
-		  stored_assert(n == sizeof(T));                              \
-		  return ::stored::allocate<T>();                             \
-	  }                                                                   \
-	  void* operator new(std::size_t n, void* ptr) /* NOLINT */           \
-	  {                                                                   \
-		  STORED_UNUSED(n)                                            \
-		  stored_assert(n == sizeof(T));                              \
-		  return ptr;                                                 \
-	  }                                                                   \
-	  void operator delete(void* ptr)                                     \
-	  {                                                                   \
-		  ::stored::deallocate<T>(static_cast<T*>(ptr)); /* NOLINT */ \
-	  }                                                                   \
-                                                                              \
-  private:
+#  define STORED_CLASS_NEW_DELETE(T)                              \
+    public:                                                       \
+    void* operator new(std::size_t n)                             \
+    {                                                             \
+      STORED_UNUSED(n)                                            \
+      stored_assert(n == sizeof(T));                              \
+      return ::stored::allocate<T>();                             \
+    }                                                             \
+    void* operator new(std::size_t n, void* ptr) /* NOLINT */     \
+    {                                                             \
+      STORED_UNUSED(n)                                            \
+      stored_assert(n == sizeof(T));                              \
+      return ptr;                                                 \
+    }                                                             \
+    void operator delete(void* ptr)                               \
+    {                                                             \
+      ::stored::deallocate<T>(static_cast<T*>(ptr)); /* NOLINT */ \
+    }                                                             \
+                                                                  \
+    private:
 
 /*!
  * \brief Wrapper for Config::Allocator::type::deallocate() after destroying the given object.
@@ -188,11 +188,7 @@ protected:
 
 		R operator()(typename CallableArgType<Args>::type... /*args*/) const final
 		{
-#    ifdef STORED_cpp_exceptions
-			throw std::bad_function_call();
-#    else
-			std::terminate();
-#    endif
+			STORED_throw(std::bad_function_call());
 		}
 
 		// NOLINTNEXTLINE(hicpp-explicit-conversions)
@@ -339,9 +335,7 @@ protected:
 					m_w = w;
 				} catch(...) {
 					cleanup(w);
-#    ifdef STORED_cpp_exceptions
-					throw;
-#    endif
+					STORED_rethrow;
 				}
 			}
 			return *this;
@@ -436,9 +430,7 @@ public:
 				c.get().clone(m_buffer.data());
 			} catch(...) {
 				construct<Reset>();
-#    ifdef STORED_cpp_exceptions
-				throw;
-#    endif
+				STORED_rethrow;
 			}
 		}
 		return *this;
@@ -515,9 +507,7 @@ protected:
 		} catch(...) {
 			// Make sure we always have a valid instance in the buffer.
 			construct<Reset>();
-#    ifdef STORED_cpp_exceptions
-			throw;
-#    endif
+			STORED_rethrow;
 		}
 	}
 

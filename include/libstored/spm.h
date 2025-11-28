@@ -1,6 +1,6 @@
 #ifndef LIBSTORED_SPM_H
 #define LIBSTORED_SPM_H
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -312,12 +312,8 @@ private:
 				m_old.push_back(m_buffer);
 			} catch(...) {
 				deallocate<char>(p, size + chunkHeader);
-#  ifdef STORED_cpp_exceptions
 				// cppcheck-suppress rethrowNoCurrentException
-				throw;
-#  else
-				std::terminate();
-#  endif
+				STORED_rethrow;
 			}
 		}
 
@@ -530,11 +526,7 @@ public:
 
 		if(unlikely(m_total + alloc_size + padding < m_total)) {
 			// Wrap around -> overflow.
-#  ifdef STORED_cpp_exceptions
-			throw std::bad_alloc();
-#  else
-			std::terminate();
-#  endif
+			STORED_throw(std::bad_alloc());
 		}
 
 		size_t bs = bufferSize();
