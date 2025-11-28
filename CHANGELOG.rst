@@ -25,6 +25,7 @@ Added
 `````
 
 - Operations such as ``-=`` and ``++`` for store variables in C++.
+- YAML export of store meta-data.
 
 Changed
 ```````
