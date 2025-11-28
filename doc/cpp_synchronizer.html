@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Synchronizer &mdash; libstored 2.0.0 documentation</title>
+  <title>Synchronizer &mdash; libstored 2.1.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../_static/documentation_options.js?v=abebb04e"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -630,9 +630,21 @@ versions are defined for symmetry.</p>
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored14SyncConnection12disconnectedEv">
+<span id="_CPPv3N6stored14SyncConnection12disconnectedEv"></span><span id="_CPPv2N6stored14SyncConnection12disconnectedEv"></span><span id="stored::SyncConnection::disconnected"></span><span class="target" id="classstored_1_1_sync_connection_1a2072256171b8400d1c5a0303ca8de52c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">disconnected</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored14SyncConnection12disconnectedEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Disconnected notification (bottom-up). </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored14SyncConnection4dropER12StoreJournal">
 <span id="_CPPv3N6stored14SyncConnection4dropER12StoreJournal"></span><span id="_CPPv2N6stored14SyncConnection4dropER12StoreJournal"></span><span id="stored::SyncConnection::drop__StoreJournalR"></span><span class="target" id="classstored_1_1_sync_connection_1aef30c6c866b2d5bd3b696e49c830a203"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">drop</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal"><span class="n"><span class="pre">StoreJournal</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">store</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored14SyncConnection4dropER12StoreJournal" title="Link to this definition"></a><br /></dt>
 <dd><p>Deregister a given store. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored14SyncConnection11isConnectedER12StoreJournal">
+<span id="_CPPv3NK6stored14SyncConnection11isConnectedER12StoreJournal"></span><span id="_CPPv2NK6stored14SyncConnection11isConnectedER12StoreJournal"></span><span id="stored::SyncConnection::isConnected__StoreJournalRC"></span><span class="target" id="classstored_1_1_sync_connection_1aefd96ca204c8a0e0d1835129c9d5dcaf"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isConnected</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal"><span class="n"><span class="pre">StoreJournal</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">store</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6stored14SyncConnection11isConnectedER12StoreJournal" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns if the given store is currently connected over this connection. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -721,6 +733,7 @@ public:
 </pre></div>
 </div>
 <p>Now, <code class="docutils literal notranslate"><span class="pre">ActualStore</span></code> inherits from <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_synchronizable"><span class="std std-ref"><span class="pre">Synchronizable</span></span></a></code>, which inherits from <code class="docutils literal notranslate"><span class="pre">MyStoreBase</span></code>. However, <code class="docutils literal notranslate"><span class="pre">ActualStore</span></code> is still used as the final implementation. </p>
+<p>Subclassed by ExampleSync</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
@@ -885,7 +898,7 @@ public:
 <dt class="sig sig-object cpp" id="_CPPv4N6stored12Synchronizer7connectER13ProtocolLayer">
 <span id="_CPPv3N6stored12Synchronizer7connectER13ProtocolLayer"></span><span id="_CPPv2N6stored12Synchronizer7connectER13ProtocolLayer"></span><span id="stored::Synchronizer::connect__ProtocolLayerR"></span><span class="target" id="classstored_1_1_synchronizer_1a5063688c2d1641b4a49cc59efb8486da"></span><a class="reference internal" href="#_CPPv4N6stored14SyncConnectionE" title="stored::SyncConnection"><span class="n"><span class="pre">SyncConnection</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">connect</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">connection</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored12Synchronizer7connectER13ProtocolLayer" title="Link to this definition"></a><br /></dt>
 <dd><p>Connect the given connection to this <a class="reference internal" href="#classstored_1_1_synchronizer"><span class="std std-ref">Synchronizer</span></a>. </p>
-<p>A <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a> is instantiated on top of the given protocol stack. This <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">SyncConnection</span></a> is the OSI Application layer of the synchronization prococol.</p>
+<p>A <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a> is instantiated on top of the given protocol stack. This <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">SyncConnection</span></a> is the OSI Application layer of the synchronization protocol.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>the <a class="reference internal" href="#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a>, which is valid until <a class="reference internal" href="#classstored_1_1_synchronizer_1a5c8a59faccb30c08910551500d08ad75"><span class="std std-ref">disconnect()</span></a> is called </p>
@@ -907,14 +920,22 @@ public:
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored12Synchronizer11isConnectedER12StoreJournalR14SyncConnection">
+<span id="_CPPv3NK6stored12Synchronizer11isConnectedER12StoreJournalR14SyncConnection"></span><span id="_CPPv2NK6stored12Synchronizer11isConnectedER12StoreJournalR14SyncConnection"></span><span id="stored::Synchronizer::isConnected__StoreJournalR.SyncConnectionRC"></span><span class="target" id="classstored_1_1_synchronizer_1a7db2c462b890b301ae9174aaac4ee989"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isConnected</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal"><span class="n"><span class="pre">StoreJournal</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">j</span></span>, <a class="reference internal" href="#_CPPv4N6stored14SyncConnectionE" title="stored::SyncConnection"><span class="n"><span class="pre">SyncConnection</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">connection</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6stored12Synchronizer11isConnectedER12StoreJournalR14SyncConnection" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns if the given store is currently connected over the given connection. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored12Synchronizer15isSynchronizingER12StoreJournal">
 <span id="_CPPv3NK6stored12Synchronizer15isSynchronizingER12StoreJournal"></span><span id="_CPPv2NK6stored12Synchronizer15isSynchronizingER12StoreJournal"></span><span id="stored::Synchronizer::isSynchronizing__StoreJournalRC"></span><span class="target" id="classstored_1_1_synchronizer_1adbcaf3052a055128cb786d621c9d18c0"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isSynchronizing</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal"><span class="n"><span class="pre">StoreJournal</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">j</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6stored12Synchronizer15isSynchronizingER12StoreJournal" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Returns if the given store is registered for synchronization over any connection. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6stored12Synchronizer15isSynchronizingER12StoreJournalR14SyncConnection">
 <span id="_CPPv3NK6stored12Synchronizer15isSynchronizingER12StoreJournalR14SyncConnection"></span><span id="_CPPv2NK6stored12Synchronizer15isSynchronizingER12StoreJournalR14SyncConnection"></span><span id="stored::Synchronizer::isSynchronizing__StoreJournalR.SyncConnectionRC"></span><span class="target" id="classstored_1_1_synchronizer_1a5d4dd69d96ce0c318873a0d0d3723280"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isSynchronizing</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored12StoreJournalE" title="stored::StoreJournal"><span class="n"><span class="pre">StoreJournal</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">j</span></span>, <a class="reference internal" href="#_CPPv4N6stored14SyncConnectionE" title="stored::SyncConnection"><span class="n"><span class="pre">SyncConnection</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">notOverConnection</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6stored12Synchronizer15isSynchronizingER12StoreJournalR14SyncConnection" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Returns if the given store is registered for synchronization over any connection, except the given one. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN6stored12Synchronizer3mapEvR14SynchronizableI5StoreE">

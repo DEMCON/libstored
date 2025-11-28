@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; libstored 2.0.0 documentation</title>
+  <title>Index &mdash; libstored 2.1.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=51b770b3"></script>
+      <script src="_static/documentation_options.js?v=abebb04e"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -496,6 +496,8 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored8ArqLayer11didTransmitEv">stored::ArqLayer::didTransmit (C++ function)</a>
 </li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ArqLayer12disconnectedEv">stored::ArqLayer::disconnected (C++ function)</a>
+</li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ArqLayer6encodeEPKv6size_tb">stored::ArqLayer::encode (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ArqLayer5EventE">stored::ArqLayer::Event (C++ enum)</a>
@@ -513,6 +515,8 @@
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ArqLayer16EventCallbackArgE">stored::ArqLayer::EventCallbackArg (C++ type)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ArqLayer5flushEv">stored::ArqLayer::flush (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored8ArqLayer11isConnectedEv">stored::ArqLayer::isConnected (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ArqLayer9keepAliveEv">stored::ArqLayer::keepAlive (C++ function)</a>
 </li>
@@ -562,13 +566,15 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11BufferLayer11BufferLayerE6size_tP13ProtocolLayerP13ProtocolLayer">stored::BufferLayer::BufferLayer (C++ function)</a>
 </li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11BufferLayer9connectedEv">stored::BufferLayer::connected (C++ function)</a>
+</li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11BufferLayer6encodeEPKv6size_tb">stored::BufferLayer::encode (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11BufferLayer5resetEv">stored::BufferLayer::reset (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11BufferLayerD0Ev">stored::BufferLayer::~BufferLayer (C++ function)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4I000EN6stored13CallbackLayerE">stored::CallbackLayer (C++ class)</a>
+      <li><a href="doc/cpp_protocol.html#_CPPv4I0000EN6stored13CallbackLayerE">stored::CallbackLayer (C++ class)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CallbackLayer4baseE">stored::CallbackLayer::base (C++ type)</a>
 </li>
@@ -577,6 +583,8 @@
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CallbackLayer9connectedEv">stored::CallbackLayer::connected (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CallbackLayer6decodeEPv6size_t">stored::CallbackLayer::decode (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CallbackLayer12disconnectedEv">stored::CallbackLayer::disconnected (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13CallbackLayer6encodeEPKv6size_tb">stored::CallbackLayer::encode (C++ function)</a>
 </li>
@@ -630,6 +638,8 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10Crc16Layer6decodeEPv6size_t">stored::Crc16Layer::decode (C++ function)</a>
 </li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10Crc16Layer12disconnectedEv">stored::Crc16Layer::disconnected (C++ function)</a>
+</li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10Crc16Layer6encodeEPKv6size_tb">stored::Crc16Layer::encode (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored10Crc16Layer3mtuEv">stored::Crc16Layer::mtu (C++ function)</a>
@@ -654,6 +664,8 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10Crc32Layer6decodeEPv6size_t">stored::Crc32Layer::decode (C++ function)</a>
 </li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10Crc32Layer12disconnectedEv">stored::Crc32Layer::disconnected (C++ function)</a>
+</li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored10Crc32Layer6encodeEPKv6size_tb">stored::Crc32Layer::encode (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored10Crc32Layer3mtuEv">stored::Crc32Layer::mtu (C++ function)</a>
@@ -675,6 +687,8 @@
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9Crc8Layer9Crc8LayerEP13ProtocolLayerP13ProtocolLayer">stored::Crc8Layer::Crc8Layer (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9Crc8Layer6decodeEPv6size_t">stored::Crc8Layer::decode (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9Crc8Layer12disconnectedEv">stored::Crc8Layer::disconnected (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9Crc8Layer6encodeEPKv6size_tb">stored::Crc8Layer::encode (C++ function)</a>
 </li>
@@ -2568,8 +2582,6 @@
 </li>
       <li><a href="doc/example_7_protocol.html#_CPPv4N6stored22ExampleProtocolObjects3MTUE">stored::ExampleProtocolObjects::MTU (C++ member)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="doc/example_3_scope.html#_CPPv4N6stored12ExampleScopeE">stored::ExampleScope (C++ class)</a>
 </li>
       <li><a href="doc/example_3_scope.html#_CPPv4N6stored12ExampleScope12ExampleScopeEv">stored::ExampleScope::ExampleScope (C++ function)</a>
@@ -2580,6 +2592,8 @@
 </li>
       <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBase6__anon10BufferSizeE">stored::ExampleScopeBase::__anon::BufferSize (C++ enumerator)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBase6__anon13FunctionCountE">stored::ExampleScopeBase::__anon::FunctionCount (C++ enumerator)</a>
 </li>
       <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBase6__anon11ObjectCountE">stored::ExampleScopeBase::__anon::ObjectCount (C++ enumerator)</a>
@@ -3656,7 +3670,7 @@
 </li>
       <li><a href="doc/cpp_pipes.html#_CPPv4N6stored5pipes9Triggered8type_outE">stored::pipes::Triggered::type_out (C++ type)</a>
 </li>
-      <li><a href="doc/cpp_poller.html#_CPPv4I0EN6stored8pollableE16PollableCallbackINSt5decayI1FE4typeEERR1FRKN8Pollable6EventsEPv">stored::pollable (C++ function)</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableE6SOCKETRKN8Pollable6EventsEPv">[1]</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableEN16PollableCallbackIE6f_typeERKN8Pollable6EventsEPv">[2]</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableEPvRKN8Pollable6EventsEPv">[3]</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableER15PolledFileLayerRKN8Pollable6EventsEPv">[4]</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableER8ZmqLayerRKN8Pollable6EventsEPv">[5]</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableEiRKN8Pollable6EventsEPv">[6]</a>
+      <li><a href="doc/cpp_poller.html#_CPPv4I0EN6stored8pollableE16PollableCallbackINSt5decayI1FE4typeEERR1FRKN8Pollable6EventsEPv">stored::pollable (C++ function)</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableE6SOCKETRKN8Pollable6EventsEPv">[1]</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableEN16PollableCallbackIE6f_typeERKN8Pollable6EventsEPv">[2]</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableEPvRKN8Pollable6EventsEPv">[3]</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableER12ZmqBaseLayerRKN8Pollable6EventsEPv">[4]</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableER15PolledFileLayerRKN8Pollable6EventsEPv">[5]</a>, <a href="doc/cpp_poller.html#_CPPv4N6stored8pollableEiRKN8Pollable6EventsEPv">[6]</a>
 </li>
       <li><a href="doc/cpp_poller.html#_CPPv4N6stored8PollableE">stored::Pollable (C++ struct)</a>
 </li>
@@ -3734,7 +3748,7 @@
 </li>
       <li><a href="doc/cpp_poller.html#_CPPv4N6stored16PollableZmqLayer5layerE">stored::PollableZmqLayer::layer (C++ member)</a>
 </li>
-      <li><a href="doc/cpp_poller.html#_CPPv4N6stored16PollableZmqLayer16PollableZmqLayerER8ZmqLayerRK6EventsPv">stored::PollableZmqLayer::PollableZmqLayer (C++ function)</a>
+      <li><a href="doc/cpp_poller.html#_CPPv4N6stored16PollableZmqLayer16PollableZmqLayerER12ZmqBaseLayerRK6EventsPv">stored::PollableZmqLayer::PollableZmqLayer (C++ function)</a>
 </li>
       <li><a href="doc/cpp_poller.html#_CPPv4N6stored17PollableZmqSocketE">stored::PollableZmqSocket (C++ class)</a>
 </li>
@@ -3801,6 +3815,8 @@
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13ProtocolLayer9connectedEv">stored::ProtocolLayer::connected (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13ProtocolLayer6decodeEPv6size_t">stored::ProtocolLayer::decode (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13ProtocolLayer12disconnectedEv">stored::ProtocolLayer::disconnected (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored13ProtocolLayer4downEv">stored::ProtocolLayer::down (C++ function)</a>
 </li>
@@ -3987,6 +4003,8 @@
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored17SegmentationLayer14ContinueMarkerE">stored::SegmentationLayer::ContinueMarker (C++ member)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored17SegmentationLayer6decodeEPv6size_t">stored::SegmentationLayer::decode (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored17SegmentationLayer12disconnectedEv">stored::SegmentationLayer::disconnected (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored17SegmentationLayer6encodeEPKv6size_tb">stored::SegmentationLayer::encode (C++ function)</a>
 </li>
@@ -4236,11 +4254,15 @@
 </li>
       <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored14SyncConnection6decodeEPv6size_t">stored::SyncConnection::decode (C++ function)</a>
 </li>
+      <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored14SyncConnection12disconnectedEv">stored::SyncConnection::disconnected (C++ function)</a>
+</li>
       <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored14SyncConnection4dropER12StoreJournal">stored::SyncConnection::drop (C++ function)</a>
 </li>
       <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored14SyncConnection5HelloE">stored::SyncConnection::Hello (C++ member)</a>
 </li>
       <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored14SyncConnection2IdE">stored::SyncConnection::Id (C++ type)</a>
+</li>
+      <li><a href="doc/cpp_synchronizer.html#_CPPv4NK6stored14SyncConnection11isConnectedER12StoreJournal">stored::SyncConnection::isConnected (C++ function)</a>
 </li>
       <li><a href="doc/cpp_synchronizer.html#_CPPv4NK6stored14SyncConnection15isSynchronizingER12StoreJournal">stored::SyncConnection::isSynchronizing (C++ function)</a>
 </li>
@@ -4308,6 +4330,8 @@
 </li>
       <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored12Synchronizer12encodeBufferEv">stored::Synchronizer::encodeBuffer (C++ function)</a>
 </li>
+      <li><a href="doc/cpp_synchronizer.html#_CPPv4NK6stored12Synchronizer11isConnectedER12StoreJournalR14SyncConnection">stored::Synchronizer::isConnected (C++ function)</a>
+</li>
       <li><a href="doc/cpp_synchronizer.html#_CPPv4NK6stored12Synchronizer15isSynchronizingER12StoreJournal">stored::Synchronizer::isSynchronizing (C++ function)</a>, <a href="doc/cpp_synchronizer.html#_CPPv4NK6stored12Synchronizer15isSynchronizingER12StoreJournalR14SyncConnection">[1]</a>
 </li>
       <li><a href="doc/cpp_synchronizer.html#_CPPv4I0EN6stored12Synchronizer3mapEvR14SynchronizableI5StoreE">stored::Synchronizer::map (C++ function)</a>
@@ -4324,14 +4348,6 @@
 </li>
       <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored12SynchronizerD0Ev">stored::Synchronizer::~Synchronizer (C++ function)</a>
 </li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored12SyncZmqLayerE">stored::SyncZmqLayer (C++ class)</a>
-</li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored12SyncZmqLayer4baseE">stored::SyncZmqLayer::base (C++ type)</a>
-</li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored12SyncZmqLayer12SyncZmqLayerEPvPKcbP13ProtocolLayerP13ProtocolLayer">stored::SyncZmqLayer::SyncZmqLayer (C++ function)</a>
-</li>
-      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored12SyncZmqLayerD0Ev">stored::SyncZmqLayer::~SyncZmqLayer (C++ function)</a>
-</li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayerE">stored::TerminalLayer (C++ class)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayer6__anonE">stored::TerminalLayer::__anon (C++ enum)</a>
@@ -4341,6 +4357,8 @@
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayer4baseE">stored::TerminalLayer::base (C++ type)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayer6decodeEPv6size_t">stored::TerminalLayer::decode (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayer12disconnectedEv">stored::TerminalLayer::disconnected (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored13TerminalLayer6encodeEPKv6size_tb">stored::TerminalLayer::encode (C++ function)</a>
 </li>
@@ -4535,6 +4553,34 @@
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9XsimLayer9XsimLayerEPKcP13ProtocolLayerP13ProtocolLayer">stored::XsimLayer::XsimLayer (C++ function)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored9XsimLayerD0Ev">stored::XsimLayer::~XsimLayer (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored12ZmqBaseLayerE">stored::ZmqBaseLayer (C++ class)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored12ZmqBaseLayer4baseE">stored::ZmqBaseLayer::base (C++ type)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored12ZmqBaseLayer7contextEv">stored::ZmqBaseLayer::context (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored12ZmqBaseLayer6encodeEPKv6size_tb">stored::ZmqBaseLayer::encode (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored12ZmqBaseLayer2fdEv">stored::ZmqBaseLayer::fd (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored12ZmqBaseLayer7fd_typeE">stored::ZmqBaseLayer::fd_type (C++ type)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored12ZmqBaseLayer4recvEl">stored::ZmqBaseLayer::recv (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4NK6stored12ZmqBaseLayer6socketEv">stored::ZmqBaseLayer::socket (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored12ZmqBaseLayer12ZmqBaseLayerEPviP13ProtocolLayerP13ProtocolLayer">stored::ZmqBaseLayer::ZmqBaseLayer (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored12ZmqBaseLayerD0Ev">stored::ZmqBaseLayer::~ZmqBaseLayer (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ZmqLayerE">stored::ZmqLayer (C++ class)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ZmqLayer4baseE">stored::ZmqLayer::base (C++ type)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ZmqLayer8ZmqLayerEPvPKcbP13ProtocolLayerP13ProtocolLayer">stored::ZmqLayer::ZmqLayer (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored8ZmqLayerD0Ev">stored::ZmqLayer::~ZmqLayer (C++ function)</a>
 </li>
       <li><a href="doc/example_zmqserver.html#_CPPv4I0EN6stored18ZmqServerStoreBaseE">stored::ZmqServerStoreBase (C++ class)</a>
 </li>

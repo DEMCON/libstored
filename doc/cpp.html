@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>C++ &mdash; libstored 2.0.0 documentation</title>
+  <title>C++ &mdash; libstored 2.1.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../_static/documentation_options.js?v=abebb04e"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -925,11 +925,11 @@ your application.</p>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablezmqlayer">stored::PollableZmqLayer</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_poller.html#_CPPv4N6stored16PollableZmqLayerE"><code class="docutils literal notranslate"><span class="pre">stored::PollableZmqLayer</span></code></a><ul>
-<li class="toctree-l5"><a class="reference internal" href="cpp_poller.html#_CPPv4N6stored16PollableZmqLayer16PollableZmqLayerER8ZmqLayerRK6EventsPv"><code class="docutils literal notranslate"><span class="pre">PollableZmqLayer()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="cpp_poller.html#_CPPv4N6stored16PollableZmqLayer16PollableZmqLayerER12ZmqBaseLayerRK6EventsPv"><code class="docutils literal notranslate"><span class="pre">PollableZmqLayer()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_poller.html#_CPPv4N6stored16PollableZmqLayer5layerE"><code class="docutils literal notranslate"><span class="pre">layer</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="cpp_poller.html#_CPPv4N6stored8pollableER8ZmqLayerRKN8Pollable6EventsEPv"><code class="docutils literal notranslate"><span class="pre">pollable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_poller.html#_CPPv4N6stored8pollableER12ZmqBaseLayerRKN8Pollable6EventsEPv"><code class="docutils literal notranslate"><span class="pre">pollable()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_poller.html#stored-pollablezmqsocket">stored::PollableZmqSocket</a><ul>
@@ -990,6 +990,7 @@ your application.</p>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored11BufferLayer4baseE"><code class="docutils literal notranslate"><span class="pre">base</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored11BufferLayer11BufferLayerE6size_tP13ProtocolLayerP13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">BufferLayer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored11BufferLayerD0Ev"><code class="docutils literal notranslate"><span class="pre">~BufferLayer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored11BufferLayer9connectedEv"><code class="docutils literal notranslate"><span class="pre">connected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored11BufferLayer6encodeEPKv6size_tb"><code class="docutils literal notranslate"><span class="pre">encode()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored11BufferLayer5resetEv"><code class="docutils literal notranslate"><span class="pre">reset()</span></code></a></li>
 </ul>
@@ -997,13 +998,14 @@ your application.</p>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-callbacklayer">stored::CallbackLayer</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cpp_protocol.html#_CPPv4I000EN6stored13CallbackLayerE"><code class="docutils literal notranslate"><span class="pre">stored::CallbackLayer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cpp_protocol.html#_CPPv4I0000EN6stored13CallbackLayerE"><code class="docutils literal notranslate"><span class="pre">stored::CallbackLayer</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayer4baseE"><code class="docutils literal notranslate"><span class="pre">base</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayer13CallbackLayerERR13CallbackLayer"><code class="docutils literal notranslate"><span class="pre">CallbackLayer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayer13CallbackLayerERK13CallbackLayer"><code class="docutils literal notranslate"><span class="pre">CallbackLayer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayerD0Ev"><code class="docutils literal notranslate"><span class="pre">~CallbackLayer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayer9connectedEv"><code class="docutils literal notranslate"><span class="pre">connected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayer6decodeEPv6size_t"><code class="docutils literal notranslate"><span class="pre">decode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayer12disconnectedEv"><code class="docutils literal notranslate"><span class="pre">disconnected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayer6encodeEPKv6size_tb"><code class="docutils literal notranslate"><span class="pre">encode()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayeraSERR13CallbackLayer"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13CallbackLayeraSERK13CallbackLayer"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
@@ -1044,6 +1046,7 @@ your application.</p>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored9Crc8Layer9Crc8LayerEP13ProtocolLayerP13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">Crc8Layer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored9Crc8LayerD0Ev"><code class="docutils literal notranslate"><span class="pre">~Crc8Layer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored9Crc8Layer6decodeEPv6size_t"><code class="docutils literal notranslate"><span class="pre">decode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored9Crc8Layer12disconnectedEv"><code class="docutils literal notranslate"><span class="pre">disconnected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored9Crc8Layer6encodeEPKv6size_tb"><code class="docutils literal notranslate"><span class="pre">encode()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored9Crc8Layer3mtuEv"><code class="docutils literal notranslate"><span class="pre">mtu()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored9Crc8Layer5resetEv"><code class="docutils literal notranslate"><span class="pre">reset()</span></code></a></li>
@@ -1062,6 +1065,7 @@ your application.</p>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored10Crc16Layer10Crc16LayerEP13ProtocolLayerP13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">Crc16Layer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored10Crc16LayerD0Ev"><code class="docutils literal notranslate"><span class="pre">~Crc16Layer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored10Crc16Layer6decodeEPv6size_t"><code class="docutils literal notranslate"><span class="pre">decode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored10Crc16Layer12disconnectedEv"><code class="docutils literal notranslate"><span class="pre">disconnected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored10Crc16Layer6encodeEPKv6size_tb"><code class="docutils literal notranslate"><span class="pre">encode()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored10Crc16Layer3mtuEv"><code class="docutils literal notranslate"><span class="pre">mtu()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored10Crc16Layer5resetEv"><code class="docutils literal notranslate"><span class="pre">reset()</span></code></a></li>
@@ -1081,6 +1085,7 @@ your application.</p>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored10Crc32Layer10Crc32LayerEP13ProtocolLayerP13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">Crc32Layer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored10Crc32LayerD0Ev"><code class="docutils literal notranslate"><span class="pre">~Crc32Layer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored10Crc32Layer6decodeEPv6size_t"><code class="docutils literal notranslate"><span class="pre">decode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored10Crc32Layer12disconnectedEv"><code class="docutils literal notranslate"><span class="pre">disconnected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored10Crc32Layer6encodeEPKv6size_tb"><code class="docutils literal notranslate"><span class="pre">encode()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored10Crc32Layer3mtuEv"><code class="docutils literal notranslate"><span class="pre">mtu()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored10Crc32Layer5resetEv"><code class="docutils literal notranslate"><span class="pre">reset()</span></code></a></li>
@@ -1258,6 +1263,7 @@ your application.</p>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored17SegmentationLayer17SegmentationLayerE6size_tP13ProtocolLayerP13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">SegmentationLayer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored17SegmentationLayerD0Ev"><code class="docutils literal notranslate"><span class="pre">~SegmentationLayer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored17SegmentationLayer6decodeEPv6size_t"><code class="docutils literal notranslate"><span class="pre">decode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored17SegmentationLayer12disconnectedEv"><code class="docutils literal notranslate"><span class="pre">disconnected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored17SegmentationLayer6encodeEPKv6size_tb"><code class="docutils literal notranslate"><span class="pre">encode()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored17SegmentationLayer8lowerMtuEv"><code class="docutils literal notranslate"><span class="pre">lowerMtu()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored17SegmentationLayer3mtuEv"><code class="docutils literal notranslate"><span class="pre">mtu()</span></code></a></li>
@@ -1302,15 +1308,7 @@ your application.</p>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-synczmqlayer">stored::SyncZmqLayer</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored12SyncZmqLayerE"><code class="docutils literal notranslate"><span class="pre">stored::SyncZmqLayer</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored12SyncZmqLayer4baseE"><code class="docutils literal notranslate"><span class="pre">base</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored12SyncZmqLayer12SyncZmqLayerEPvPKcbP13ProtocolLayerP13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">SyncZmqLayer()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored12SyncZmqLayerD0Ev"><code class="docutils literal notranslate"><span class="pre">~SyncZmqLayer()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-synczmqlayer">stored::SyncZmqLayer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-terminallayer">stored::TerminalLayer</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13TerminalLayerE"><code class="docutils literal notranslate"><span class="pre">stored::TerminalLayer</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13TerminalLayer6__anonE"><code class="docutils literal notranslate"><span class="pre">__anon</span></code></a><ul>
@@ -1323,6 +1321,7 @@ your application.</p>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13TerminalLayer13TerminalLayerEP13ProtocolLayerP13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">TerminalLayer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13TerminalLayerD0Ev"><code class="docutils literal notranslate"><span class="pre">~TerminalLayer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13TerminalLayer6decodeEPv6size_t"><code class="docutils literal notranslate"><span class="pre">decode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13TerminalLayer12disconnectedEv"><code class="docutils literal notranslate"><span class="pre">disconnected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13TerminalLayer6encodeEPKv6size_tb"><code class="docutils literal notranslate"><span class="pre">encode()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored13TerminalLayer3mtuEv"><code class="docutils literal notranslate"><span class="pre">mtu()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13TerminalLayer14nonDebugEncodeEPKv6size_t"><code class="docutils literal notranslate"><span class="pre">nonDebugEncode()</span></code></a></li>
@@ -1350,6 +1349,30 @@ your application.</p>
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-zmqbaselayer">stored::ZmqBaseLayer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored12ZmqBaseLayerE"><code class="docutils literal notranslate"><span class="pre">stored::ZmqBaseLayer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored12ZmqBaseLayer4baseE"><code class="docutils literal notranslate"><span class="pre">base</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored12ZmqBaseLayer7fd_typeE"><code class="docutils literal notranslate"><span class="pre">fd_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored12ZmqBaseLayer12ZmqBaseLayerEPviP13ProtocolLayerP13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">ZmqBaseLayer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored12ZmqBaseLayerD0Ev"><code class="docutils literal notranslate"><span class="pre">~ZmqBaseLayer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored12ZmqBaseLayer7contextEv"><code class="docutils literal notranslate"><span class="pre">context()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored12ZmqBaseLayer6encodeEPKv6size_tb"><code class="docutils literal notranslate"><span class="pre">encode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored12ZmqBaseLayer2fdEv"><code class="docutils literal notranslate"><span class="pre">fd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored12ZmqBaseLayer4recvEl"><code class="docutils literal notranslate"><span class="pre">recv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored12ZmqBaseLayer6socketEv"><code class="docutils literal notranslate"><span class="pre">socket()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#stored-zmqlayer">stored::ZmqLayer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ZmqLayerE"><code class="docutils literal notranslate"><span class="pre">stored::ZmqLayer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ZmqLayer4baseE"><code class="docutils literal notranslate"><span class="pre">base</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ZmqLayer8ZmqLayerEPvPKcbP13ProtocolLayerP13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">ZmqLayer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ZmqLayerD0Ev"><code class="docutils literal notranslate"><span class="pre">~ZmqLayer()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_protocol.html#abstract-classes">Abstract classes</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cpp_protocol.html#stored-arqlayer">stored::ArqLayer</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ArqLayerE"><code class="docutils literal notranslate"><span class="pre">stored::ArqLayer</span></code></a><ul>
@@ -1372,8 +1395,10 @@ your application.</p>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ArqLayer9connectedEv"><code class="docutils literal notranslate"><span class="pre">connected()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ArqLayer6decodeEPv6size_t"><code class="docutils literal notranslate"><span class="pre">decode()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored8ArqLayer11didTransmitEv"><code class="docutils literal notranslate"><span class="pre">didTransmit()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ArqLayer12disconnectedEv"><code class="docutils literal notranslate"><span class="pre">disconnected()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ArqLayer6encodeEPKv6size_tb"><code class="docutils literal notranslate"><span class="pre">encode()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ArqLayer5flushEv"><code class="docutils literal notranslate"><span class="pre">flush()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored8ArqLayer11isConnectedEv"><code class="docutils literal notranslate"><span class="pre">isConnected()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ArqLayer9keepAliveEv"><code class="docutils literal notranslate"><span class="pre">keepAlive()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored8ArqLayer3mtuEv"><code class="docutils literal notranslate"><span class="pre">mtu()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored8ArqLayer5resetEv"><code class="docutils literal notranslate"><span class="pre">reset()</span></code></a></li>
@@ -1415,10 +1440,11 @@ your application.</p>
 <li class="toctree-l4"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerE"><code class="docutils literal notranslate"><span class="pre">stored::ProtocolLayer</span></code></a><ul>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer13ProtocolLayerEP13ProtocolLayerP13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayerD0Ev"><code class="docutils literal notranslate"><span class="pre">~ProtocolLayer()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer6bottomEv"><code class="docutils literal notranslate"><span class="pre">bottom()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored13ProtocolLayer6bottomEv"><code class="docutils literal notranslate"><span class="pre">bottom()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer6bottomEv"><code class="docutils literal notranslate"><span class="pre">bottom()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer9connectedEv"><code class="docutils literal notranslate"><span class="pre">connected()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer6decodeEPv6size_t"><code class="docutils literal notranslate"><span class="pre">decode()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer12disconnectedEv"><code class="docutils literal notranslate"><span class="pre">disconnected()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored13ProtocolLayer4downEv"><code class="docutils literal notranslate"><span class="pre">down()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer6encodeEv"><code class="docutils literal notranslate"><span class="pre">encode()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer6encodeEPKv6size_tb"><code class="docutils literal notranslate"><span class="pre">encode()</span></code></a></li>
@@ -1429,8 +1455,8 @@ your application.</p>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer20setPurgeableResponseEb"><code class="docutils literal notranslate"><span class="pre">setPurgeableResponse()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer5setUpEP13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">setUp()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer5stackER13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">stack()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer3topEv"><code class="docutils literal notranslate"><span class="pre">top()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored13ProtocolLayer3topEv"><code class="docutils literal notranslate"><span class="pre">top()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer3topEv"><code class="docutils literal notranslate"><span class="pre">top()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4NK6stored13ProtocolLayer2upEv"><code class="docutils literal notranslate"><span class="pre">up()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="cpp_protocol.html#_CPPv4N6stored13ProtocolLayer4wrapER13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">wrap()</span></code></a></li>
 </ul>
@@ -1512,7 +1538,9 @@ your application.</p>
 <li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4N6stored14SyncConnection14SyncConnectionER12SynchronizerR13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">SyncConnection()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4N6stored14SyncConnectionD0Ev"><code class="docutils literal notranslate"><span class="pre">~SyncConnection()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4N6stored14SyncConnection6decodeEPv6size_t"><code class="docutils literal notranslate"><span class="pre">decode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4N6stored14SyncConnection12disconnectedEv"><code class="docutils literal notranslate"><span class="pre">disconnected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4N6stored14SyncConnection4dropER12StoreJournal"><code class="docutils literal notranslate"><span class="pre">drop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4NK6stored14SyncConnection11isConnectedER12StoreJournal"><code class="docutils literal notranslate"><span class="pre">isConnected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4NK6stored14SyncConnection15isSynchronizingER12StoreJournal"><code class="docutils literal notranslate"><span class="pre">isSynchronizing()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4N6stored14SyncConnection7processER12StoreJournalPv"><code class="docutils literal notranslate"><span class="pre">process()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4N6stored14SyncConnection5resetEv"><code class="docutils literal notranslate"><span class="pre">reset()</span></code></a></li>
@@ -1566,6 +1594,7 @@ your application.</p>
 <li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4N6stored12Synchronizer7connectER13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">connect()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4N6stored12Synchronizer10disconnectER13ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">disconnect()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4N6stored12Synchronizer12encodeBufferEv"><code class="docutils literal notranslate"><span class="pre">encodeBuffer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4NK6stored12Synchronizer11isConnectedER12StoreJournalR14SyncConnection"><code class="docutils literal notranslate"><span class="pre">isConnected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4NK6stored12Synchronizer15isSynchronizingER12StoreJournal"><code class="docutils literal notranslate"><span class="pre">isSynchronizing()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4NK6stored12Synchronizer15isSynchronizingER12StoreJournalR14SyncConnection"><code class="docutils literal notranslate"><span class="pre">isSynchronizing()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cpp_synchronizer.html#_CPPv4I0EN6stored12Synchronizer3mapEvR14SynchronizableI5StoreE"><code class="docutils literal notranslate"><span class="pre">map()</span></code></a></li>
