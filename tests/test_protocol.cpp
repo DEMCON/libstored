@@ -12,11 +12,11 @@
 #include <fcntl.h>
 #include <thread>
 
-#define DECODE(stack, str)                              \
-	do {                                            \
-		char msg_[] = "" str;                   \
-		(stack).decode(msg_, sizeof(msg_) - 1); \
-	} while(0)
+#define DECODE(stack, str)                  \
+  do {                                      \
+    char msg_[] = "" str;                   \
+    (stack).decode(msg_, sizeof(msg_) - 1); \
+  } while(0)
 
 namespace {
 
@@ -912,7 +912,9 @@ TEST(ArqLayer, Retransmit)
 	top.encode(" 1", 2);
 	EXPECT_EQ(bottom.encoded().at(0), "\x01 1");
 
-	top.encode(" 2", 2); // triggers retransmit of 1
+	top.encode(" 2", 2); // Does not retransmit.
+	EXPECT_EQ(bottom.encoded().size(), 1);
+	l.keepAlive(); // triggers retransmit of 1
 	EXPECT_EQ(bottom.encoded().at(1), "\x01 1");
 
 	top.flush();
@@ -1023,6 +1025,7 @@ TEST(ArqLayer, Reconnect)
 	EXPECT_EQ(bottom.encoded().at(2), "\x80\x40");
 
 	top.encode(" 3", 2);
+	l.keepAlive();
 	EXPECT_EQ(bottom.encoded().at(3), "\x40"); // retransmit
 
 	DECODE(bottom, "\x40");
@@ -1030,25 +1033,27 @@ TEST(ArqLayer, Reconnect)
 
 	// Separate ack/reset does not fully reconnect; expect reset.
 	DECODE(bottom, "\xc0");
-	EXPECT_EQ(bottom.encoded().at(5), "\x01 3");
+	l.keepAlive(); // nop, no retransmit after reset
+	EXPECT_EQ(bottom.encoded().at(5), "\x41");
 	DECODE(bottom, "\x40");
 	EXPECT_EQ(bottom.encoded().at(6), "\x80\x40"); // full reset again
 
 	// In same message, reconnection completes.
 	DECODE(bottom, "\xc0\x40");
-	EXPECT_EQ(bottom.encoded().at(7), "\x80\x01 3");
+	EXPECT_EQ(bottom.encoded().at(7), "\x80");
 	DECODE(bottom, "\x81");
 
 	top.encode(" 4", 2);
-	EXPECT_EQ(bottom.encoded().at(8), "\x02 4");
-	DECODE(bottom, "\x82");
+	EXPECT_EQ(bottom.encoded().at(8), "\x01 4");
+	DECODE(bottom, "\x81");
 
 	top.encode(" 5", 2);
-	EXPECT_EQ(bottom.encoded().at(9), "\x03 5");
+	EXPECT_EQ(bottom.encoded().at(9), "\x02 5");
 	DECODE(bottom, "\x40");
 	EXPECT_EQ(bottom.encoded().at(10), "\x80\x40");
 	DECODE(bottom, "\x80");
-	EXPECT_EQ(bottom.encoded().at(11), "\x01 5");
+	l.keepAlive();
+	EXPECT_EQ(bottom.encoded().at(11), "\x41");
 }
 
 TEST(ArqLayer, Reconnect2)
@@ -1060,6 +1065,9 @@ TEST(ArqLayer, Reconnect2)
 	la.stack(a);
 	LoggingLayer lb;
 	lb.stack(b);
+
+	// Complete handshake.
+	a.keepAlive();
 
 	la.encode(" 1", 2);
 	EXPECT_EQ(lb.decoded().at(0), " 1");
