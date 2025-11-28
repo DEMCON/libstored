@@ -463,6 +463,7 @@ public:
 #  endif
 	virtual size_t mtu() const override;
 	virtual void reset() override;
+	virtual void disconnected() override;
 
 	virtual void nonDebugEncode(void const* buffer, size_t len);
 
@@ -519,6 +520,7 @@ public:
 	size_t mtu() const final;
 	size_t lowerMtu() const;
 	virtual void reset() override;
+	virtual void disconnected() override;
 
 private:
 	size_t m_mtu;
@@ -587,7 +589,7 @@ public:
 
 	enum STORED_ANONYMOUS {
 		/*! \brief Number of successive retransmits before the event is emitted. */
-		RetransmitCallbackThreshold = 10,
+		RetransmitCallbackThreshold = 16,
 	};
 
 	explicit ArqLayer(
@@ -731,7 +733,7 @@ private:
 
 /*!
  * \brief A layer that performs Automatic Repeat Request operations on messages for
- * #stored::Debugger.
+ *        #stored::Debugger.
  *
  * Only apply this layer on #stored::Debugger, as it assumes a REQ/REP
  * mechanism. For a general purpose ARQ, use #stored::ArqLayer.
@@ -739,7 +741,7 @@ private:
  * This layer allows messages that are lost, to be retransmitted on both
  * the request and response side. The implementation assumes that lost
  * message is possible, but rare. It optimizes on the normal case that
- * message arrive.  Retransmits may be relatively expensive.
+ * messages arrive.  Retransmits may be relatively expensive.
  *
  * Messages must be either lost or arrive correctly. Make sure to do
  * checksumming in the layer below.  Moreover, you might want the
@@ -783,13 +785,13 @@ private:
  * The application has limited buffering. So, neither the request nor the
  * full response may be buffered for (partial) retransmission. Therefore,
  * it may be the case that when the response was lost, the request is
- * reexecuted. It is up to the buffer size as specified in DebugArqLayer's
+ * re-executed. It is up to the buffer size as specified in DebugArqLayer's
  * constructor and stored::Debugger to determine when it is safe or
- * required to reexected upon every retransmit. For example, writes are not
- * reexecuted, as a write may have unexpected side-effects, while it is
- * safe to reexecute a read of a normal variable. When the directory is
+ * required to re-executed upon every retransmit. For example, writes are not
+ * re-executed, as a write may have unexpected side-effects, while it is
+ * safe to re-execute a read of a normal variable. When the directory is
  * requested, the response is often too long to buffer, and the response is
- * constant, so it is not buffered either and just reexecuted. Note that if
+ * constant, so it is not buffered either and just re-executed. Note that if
  * the buffer is too small, reading from a stream (s command) will do a
  * destructive read, but this data may be lost if the response is lost.
  * Configure the stream size and DebugArqLayer's buffer appropriate if that is
@@ -799,7 +801,7 @@ private:
  * numbers more often. Upon retransmission of the same data, the same
  * sequence numbers are used, just like the retransmission of the request.
  * However, if the data may have been changed, as the response was not
- * buffered and the request was reexecuted, the reset flag is set of the
+ * buffered and the request was re-executed, the reset flag is set of the
  * first response message, while it has a new sequence number. The client
  * should accept this new sequence number and discard all previously
  * collected response messages.
@@ -900,6 +902,7 @@ public:
 
 	virtual size_t mtu() const override;
 	virtual void reset() override;
+	virtual void disconnected() override;
 
 protected:
 	static uint8_t compute(uint8_t input, uint8_t crc = init);
@@ -932,6 +935,7 @@ public:
 
 	virtual size_t mtu() const override;
 	virtual void reset() override;
+	virtual void disconnected() override;
 
 protected:
 	static uint16_t compute(uint8_t input, uint16_t crc = init);
@@ -968,6 +972,7 @@ public:
 
 	virtual size_t mtu() const override;
 	virtual void reset() override;
+	virtual void disconnected() override;
 
 protected:
 	static uint32_t compute(uint8_t input, uint32_t crc = init);
@@ -1000,6 +1005,10 @@ public:
 #  endif
 
 	virtual void reset() override;
+	virtual void connected() override;
+
+protected:
+	void allocate();
 
 private:
 	size_t m_size;
@@ -1365,6 +1374,8 @@ public:
 
 	void encode(void const* buffer, size_t len, bool last = true) override final;
 	void reset() override final;
+	void connected() override final;
+	void disconnected() override final;
 	void reserve(size_t capacity);
 
 private:

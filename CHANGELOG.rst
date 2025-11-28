@@ -25,8 +25,13 @@ Added
 `````
 
 - Operations such as ``-=`` and ``++`` for store variables in C++.
+
+Changed
+```````
+
 - Don't auto-retransmit on encode by the ``stored::ArqLayer``. Only retransmit
   on ``keepAlive()``.
+- Improve reconnection behavior on protocol layers.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v2.0.0...HEAD
 
