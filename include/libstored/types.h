@@ -386,7 +386,7 @@ struct fromType {
       template <                                                                    \
 	      typename U = T,                                                       \
 	      typename std::enable_if<Type::isInt(toType<U>::type), int>::type = 0> \
-      U const operator opop(int) noexcept                                           \
+      U operator opop(int) noexcept /* NOLINT(cert-dcl21-cpp) */                    \
       {                                                                             \
 	U x = get();                                                                \
 	set(x op 1);                                                                \
@@ -416,7 +416,7 @@ struct fromType {
 	return *this op## = 1;                                    \
       }                                                           \
                                                                   \
-      T const operator opop(int) noexcept                         \
+      T operator opop(int) noexcept /* NOLINT(cert-dcl21-cpp) */  \
       {                                                           \
 	stored_assert(Type::isInt(toType<T>::type));              \
 	T x = get();                                              \
