@@ -280,7 +280,7 @@ this:</p>
 </pre></div>
 </div>
 <p>The output timing is exemplified below.</p>
-<img alt="../_images/wavedrom-c9ffa38a-f541-4c29-bacc-48f4a74e5ed9.svg" src="../_images/wavedrom-c9ffa38a-f541-4c29-bacc-48f4a74e5ed9.svg" />
+<img alt="../_images/wavedrom-c3477455-a137-4a68-bb67-6e9f4adfe53b.svg" src="../_images/wavedrom-c3477455-a137-4a68-bb67-6e9f4adfe53b.svg" />
 <p>During reset, the initial value is set at the output, 1 in this example.
 When the value is written, via <code class="docutils literal notranslate"><span class="pre">var_in</span></code>, the AXI interface, or via the
 Synchronizer, <code class="docutils literal notranslate"><span class="pre">value</span></code> is updated and <code class="docutils literal notranslate"><span class="pre">updated</span></code> is flagged for one
@@ -317,7 +317,7 @@ this:</p>
 </pre></div>
 </div>
 <p>When <code class="docutils literal notranslate"><span class="pre">we</span></code> is high, the <code class="docutils literal notranslate"><span class="pre">value</span></code> is written to the store.</p>
-<img alt="../_images/wavedrom-c57b7856-fc5f-4fc4-a7e0-09b78187baaf.svg" src="../_images/wavedrom-c57b7856-fc5f-4fc4-a7e0-09b78187baaf.svg" />
+<img alt="../_images/wavedrom-c441adcd-e48b-4ae6-a5d1-5584f51d67b8.svg" src="../_images/wavedrom-c441adcd-e48b-4ae6-a5d1-5584f51d67b8.svg" />
 <p>In this example, the variable is set to 1 in the second cycle.  Consider
 the case that a microcontroller and the FPGA synchronize a store.  If a
 variable should be read-only for the microcontroller, <code class="docutils literal notranslate"><span class="pre">we</span></code> can be tied
@@ -436,7 +436,7 @@ layer in the stack.</p>
 </dd>
 </dl>
 <p>Passing messages follows this scheme, which is resembles the AXI4-Stream Protocol:</p>
-<img alt="../_images/wavedrom-d7447034-ce81-446c-b79f-3ee9d3ee66db.svg" src="../_images/wavedrom-d7447034-ce81-446c-b79f-3ee9d3ee66db.svg" />
+<img alt="../_images/wavedrom-5fd6c5ea-86a9-444b-a7d3-b45736a6129d.svg" src="../_images/wavedrom-5fd6c5ea-86a9-444b-a7d3-b45736a6129d.svg" />
 <p><code class="docutils literal notranslate"><span class="pre">data</span></code> is accepted when <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code> are high at the same
 clock edge.  In the example above, this happens at edge 2, 3, 6, 9, and 10.
 There is no order or dependency in <code class="docutils literal notranslate"><span class="pre">valid</span></code> and <code class="docutils literal notranslate"><span class="pre">accept</span></code>; both can be
@@ -763,7 +763,7 @@ Only available in simulation.</p>
 </pre></div>
 </div>
 <p>Example that drops a tail of length 1:</p>
-<img alt="../_images/wavedrom-9186b439-81f1-4500-83db-f3c3f420be95.svg" src="../_images/wavedrom-9186b439-81f1-4500-83db-f3c3f420be95.svg" />
+<img alt="../_images/wavedrom-182aea60-181a-4449-ae7c-eec835ed605c.svg" src="../_images/wavedrom-182aea60-181a-4449-ae7c-eec835ed605c.svg" />
 <p>Note that the precise latency from <code class="docutils literal notranslate"><span class="pre">data_in</span></code> to <code class="docutils literal notranslate"><span class="pre">data_out</span></code> is
 unspecified.</p>
 <dl class="simple">
@@ -846,9 +846,9 @@ This is effectively a FIFO of size 1.</p>
 </pre></div>
 </div>
 <p>Example to drop and commit pushed data:</p>
-<img alt="../_images/wavedrom-296d11a7-71e6-424d-9036-4ae0d4cae19a.svg" src="../_images/wavedrom-296d11a7-71e6-424d-9036-4ae0d4cae19a.svg" />
+<img alt="../_images/wavedrom-e5d681f6-0cb4-4f7e-858b-1da337beda14.svg" src="../_images/wavedrom-e5d681f6-0cb4-4f7e-858b-1da337beda14.svg" />
 <p>Example to drop and commit popped data having a FIFO size of 4:</p>
-<img alt="../_images/wavedrom-395d0248-3d51-464c-acfb-5ce81c553735.svg" src="../_images/wavedrom-395d0248-3d51-464c-acfb-5ce81c553735.svg" />
+<img alt="../_images/wavedrom-62f04d63-15c9-49e3-95a8-477106e9ddd5.svg" src="../_images/wavedrom-62f04d63-15c9-49e3-95a8-477106e9ddd5.svg" />
 <dl class="simple">
 <dt>WIDTH<span class="classifier">positive</span></dt><dd><p>Data width.</p>
 </dd>
