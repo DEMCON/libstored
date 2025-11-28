@@ -4,14 +4,14 @@
 
 #include <getopt_mini.h>
 
-#if !defined(__linux__) && !defined(__APPLE__)
+#if !defined(__linux__) && !defined(__APPLE__) && !defined(__MINGW32__) && !defined(__MINGW64__)
 
 #  include <stddef.h>
 
 int opterr = 1;
 int optopt = 0;
 int optind = 1;
-char* optarg = nullptr;
+char* optarg = NULL;
 
 // flawfinder: ignore
 int getopt(int argc, char* const* argv, char const* options)

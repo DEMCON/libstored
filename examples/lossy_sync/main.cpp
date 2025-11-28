@@ -10,6 +10,7 @@
 
 #include "ExampleSync.h"
 
+#include <array>
 #include <chrono>
 #include <cstdarg>
 #include <cstdlib>
@@ -36,16 +37,19 @@ enum {
 
 static std::function<void(char const*)> logger_callback;
 
+// flawfinder: ignore
 __attribute__((format(printf, 1, 0))) static void logv(char const* format, va_list args)
 {
-	static char msg[1024];
-	vsnprintf(msg, sizeof(msg), format, args);
-	fputs(msg, stderr);
+	static std::array<char, 1024> msg;
+	// flawfinder: ignore
+	vsnprintf(msg.data(), msg.size(), format, args);
+	fputs(msg.data(), stderr);
 
 	if(logger_callback)
-		logger_callback(msg);
+		logger_callback(msg.data());
 }
 
+// flawfinder: ignore
 __attribute__((format(printf, 1, 2))) static void log(char const* format, ...)
 {
 	va_list args;
@@ -534,6 +538,7 @@ int main(int argc, char** argv)
 #else
 	setvbuf(stdout, nullptr, _IOLBF, 0);
 #endif
+	// flawfinder: ignore
 	srand((unsigned int)time(nullptr));
 
 	try {

@@ -374,11 +374,11 @@ struct fromType {
 	return *this;                                                               \
       }
 
-#    define STORED_VARIABLE_MEMBER_ARITH_OPOP(Class, T, op)                         \
+#    define STORED_VARIABLE_MEMBER_ARITH_OPOP(Class, T, op, opop)                   \
       template <                                                                    \
 	      typename U = T,                                                       \
 	      typename std::enable_if<Type::isInt(toType<U>::type), int>::type = 0> \
-      Class& operator op##op() noexcept                                             \
+      Class& operator opop() noexcept                                               \
       {                                                                             \
 	return *this op## = 1;                                                      \
       }                                                                             \
@@ -386,7 +386,7 @@ struct fromType {
       template <                                                                    \
 	      typename U = T,                                                       \
 	      typename std::enable_if<Type::isInt(toType<U>::type), int>::type = 0> \
-      U const operator op##op(int) noexcept                                         \
+      U const operator opop(int) noexcept                                           \
       {                                                                             \
 	U x = get();                                                                \
 	set(x op 1);                                                                \
@@ -409,35 +409,35 @@ struct fromType {
 	return *this;                                        \
       }
 
-#    define STORED_VARIABLE_MEMBER_ARITH_OPOP(Class, T, op) \
-      Class& operator op##op() noexcept                     \
-      {                                                     \
-	stored_assert(Type::isInt(toType<T>::type));        \
-	return *this op## = 1;                              \
-      }                                                     \
-                                                            \
-      T const operator op##op(int) noexcept                 \
-      {                                                     \
-	stored_assert(Type::isInt(toType<T>::type));        \
-	T x = get();                                        \
-	set(x op 1);                                        \
-	return x;                                           \
+#    define STORED_VARIABLE_MEMBER_ARITH_OPOP(Class, T, op, opop) \
+      Class& operator opop() noexcept                             \
+      {                                                           \
+	stored_assert(Type::isInt(toType<T>::type));              \
+	return *this op## = 1;                                    \
+      }                                                           \
+                                                                  \
+      T const operator opop(int) noexcept                         \
+      {                                                           \
+	stored_assert(Type::isInt(toType<T>::type));              \
+	T x = get();                                              \
+	set(x op 1);                                              \
+	return x;                                                 \
       }
 #  endif // < C++11
 
-#  define STORED_VARIABLE_MEMBER_ARITH_OPS(Class, T) \
-    STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, +)     \
-    STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, -)     \
-    STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, *)     \
-    STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, /)     \
-    STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, %)     \
-    STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, &)  \
-    STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, |)  \
-    STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, ^)  \
-    STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, <<) \
-    STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, >>) \
-    STORED_VARIABLE_MEMBER_ARITH_OPOP(Class, T, +)   \
-    STORED_VARIABLE_MEMBER_ARITH_OPOP(Class, T, -)
+#  define STORED_VARIABLE_MEMBER_ARITH_OPS(Class, T)   \
+    STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, +)       \
+    STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, -)       \
+    STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, *)       \
+    STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, /)       \
+    STORED_VARIABLE_MEMBER_ARITH_OP(Class, T, %)       \
+    STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, &)    \
+    STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, |)    \
+    STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, ^)    \
+    STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, <<)   \
+    STORED_VARIABLE_MEMBER_ARITH_BITOP(Class, T, >>)   \
+    STORED_VARIABLE_MEMBER_ARITH_OPOP(Class, T, +, ++) \
+    STORED_VARIABLE_MEMBER_ARITH_OPOP(Class, T, -, --)
 
 template <typename Container = void>
 class Variant;

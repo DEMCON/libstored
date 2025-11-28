@@ -4,7 +4,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__MINGW32__) || defined(__MINGW64__)
 // Just use glibc's one.
 #  include <unistd.h>
 #else // !POSIX
