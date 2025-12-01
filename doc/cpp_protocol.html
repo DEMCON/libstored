@@ -116,6 +116,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6stored8LoopbackE"><code class="docutils literal notranslate"><span class="pre">stored::Loopback</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#stored-muxlayer">stored::MuxLayer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6stored8MuxLayerE"><code class="docutils literal notranslate"><span class="pre">stored::MuxLayer</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#stored-namedpipelayer">stored::NamedPipeLayer</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6stored14NamedPipeLayerE"><code class="docutils literal notranslate"><span class="pre">stored::NamedPipeLayer</span></code></a></li>
 </ul>
@@ -261,7 +265,7 @@ towards the hardware, and <a class="reference internal" href="#_CPPv4N6stored13P
 messages from the hardware up.</p>
 <p>The inheritance of the layers is shown below.</p>
 <p class="plantuml">
-<img src="../_images/plantuml-99b630759908ae02e9726741b88fb30692ffb4f0.svg" alt="abstract ProtocolLayer
+<img src="../_images/plantuml-c55ad1150dec7d6fc4edf7a17fdc33f7d65e4fe2.svg" alt="abstract ProtocolLayer
 ProtocolLayer &lt;|-- AsciiEscapeLayer
 ProtocolLayer &lt;|-- TerminalLayer
 AsciiEscapeLayer -[hidden]--&gt; TerminalLayer
@@ -275,6 +279,7 @@ ProtocolLayer &lt;|-- BufferLayer
 ProtocolLayer &lt;|-- PrintLayer
 ProtocolLayer &lt;|-- IdleCheckLayer
 ProtocolLayer &lt;|-- CallbackLayer
+ProtocolLayer &lt;|-- MuxLayer
 
 abstract ArqLayer
 SegmentationLayer -[hidden]--&gt; ArqLayer
@@ -1541,6 +1546,163 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 </dd></dl>
 
 </section>
+<section id="stored-muxlayer">
+<h2>stored::MuxLayer<a class="headerlink" href="#stored-muxlayer" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayerE">
+<span id="_CPPv3N6stored8MuxLayerE"></span><span id="_CPPv2N6stored8MuxLayerE"></span><span id="stored::MuxLayer"></span><span class="target" id="classstored_1_1_mux_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MuxLayer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><a class="headerlink" href="#_CPPv4N6stored8MuxLayerE" title="Link to this definition"></a><br /></dt>
+<dd><p>A that multiplexes between protocol stacks. </p>
+<p>Channel data is prefixed by a one-byte channel identifier. These channels can be split by the receiver to separate stacks. Channel ID 0 is used for the stack above the <a class="reference internal" href="#classstored_1_1_mux_layer"><span class="std std-ref">MuxLayer</span></a> itself.</p>
+<p>One can use this layer to multiplex different protocols or logging output over the same physical channel. In case a lossless channel is used, the following stack could be used:</p>
+<p>channel 0:<ul class="simple">
+<li><p><a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">Debugger</span></a></p></li>
+<li><p><a class="reference internal" href="#classstored_1_1_segmentation_layer"><span class="std std-ref">SegmentationLayer</span></a></p></li>
+<li><p><a class="reference internal" href="#classstored_1_1_ascii_escape_layer"><span class="std std-ref">AsciiEscapeLayer</span></a></p></li>
+<li><p><a class="reference internal" href="#classstored_1_1_terminal_layer"><span class="std std-ref">TerminalLayer</span></a></p></li>
+</ul>
+</p>
+<p>channel 1:<ul class="simple">
+<li><p><a class="reference internal" href="#classstored_1_1_print_layer"><span class="std std-ref">PrintLayer</span></a></p></li>
+<li><p><a class="reference internal" href="#classstored_1_1_mux_layer"><span class="std std-ref">MuxLayer</span></a></p></li>
+<li><p>some lossless transport layer</p></li>
+</ul>
+</p>
+<p>In this case, the <a class="reference internal" href="#classstored_1_1_mux_layer"><span class="std std-ref">MuxLayer</span></a> passes through a stream of bytes, so framing is required in the channel 0 stack. The bytes of channel 1 are just printed for logging.</p>
+<p>When having a lossy channel, add an <a class="reference internal" href="#classstored_1_1_arq_layer"><span class="std std-ref">ArqLayer</span></a> below the <a class="reference internal" href="#classstored_1_1_mux_layer"><span class="std std-ref">MuxLayer</span></a>.</p>
+<p>channel 0<ul class="simple">
+<li><p><a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">Debugger</span></a></p></li>
+</ul>
+</p>
+<p>channel 1<ul class="simple">
+<li><p><a class="reference internal" href="#classstored_1_1_print_layer"><span class="std std-ref">PrintLayer</span></a></p></li>
+<li><p><a class="reference internal" href="#classstored_1_1_mux_layer"><span class="std std-ref">MuxLayer</span></a></p></li>
+<li><p><a class="reference internal" href="#classstored_1_1_segmentation_layer"><span class="std std-ref">SegmentationLayer</span></a></p></li>
+<li><p><a class="reference internal" href="#classstored_1_1_crc32_layer"><span class="std std-ref">Crc32Layer</span></a></p></li>
+<li><p><a class="reference internal" href="#classstored_1_1_arq_layer"><span class="std std-ref">ArqLayer</span></a></p></li>
+<li><p><a class="reference internal" href="#classstored_1_1_ascii_escape_layer"><span class="std std-ref">AsciiEscapeLayer</span></a></p></li>
+<li><p><a class="reference internal" href="#classstored_1_1_terminal_layer"><span class="std std-ref">TerminalLayer</span></a></p></li>
+<li><p>some lossy transport layer</p></li>
+</ul>
+</p>
+<p>Now, the framing is done below the <a class="reference internal" href="#classstored_1_1_arq_layer"><span class="std std-ref">ArqLayer</span></a>, so all <code class="docutils literal notranslate"><a class="reference internal" href="#classstored_1_1_mux_layer_1a10486dea383c5b3b90400f1bfed75a40"><span class="std std-ref"><span class="pre">decode()</span></span></a><span class="pre">s</span></code> get full frames above the <a class="reference internal" href="#classstored_1_1_mux_layer"><span class="std std-ref">MuxLayer</span></a>. Therefore, no framing is required in channel 0. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayer4baseE">
+<span id="_CPPv3N6stored8MuxLayer4baseE"></span><span id="_CPPv2N6stored8MuxLayer4baseE"></span><span id="stored::MuxLayer::base"></span><span class="target" id="classstored_1_1_mux_layer_1a1ed58f37222c6e1cd38ab7298c568539"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored8MuxLayer4baseE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayer9ChannelIdE">
+<span id="_CPPv3N6stored8MuxLayer9ChannelIdE"></span><span id="_CPPv2N6stored8MuxLayer9ChannelIdE"></span><span id="stored::MuxLayer::ChannelId"></span><span class="target" id="classstored_1_1_mux_layer_1abf4ac970a532d6d71e8dc06fd26f5850"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ChannelId</span></span></span><a class="headerlink" href="#_CPPv4N6stored8MuxLayer9ChannelIdE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayer8MuxLayerEP13ProtocolLayerP13ProtocolLayer">
+<span id="_CPPv3N6stored8MuxLayer8MuxLayerEP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored8MuxLayer8MuxLayerEP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::MuxLayer::MuxLayer__ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_mux_layer_1a39e0871039108f8331f67ed827081ffa"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MuxLayer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8MuxLayer8MuxLayerEP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
+<dd><p>Ctor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayer8MuxLayerENSt16initializer_listINSt17reference_wrapperI13ProtocolLayerEEEE">
+<span id="_CPPv3N6stored8MuxLayer8MuxLayerENSt16initializer_listINSt17reference_wrapperI13ProtocolLayerEEEE"></span><span id="_CPPv2N6stored8MuxLayer8MuxLayerENSt16initializer_listINSt17reference_wrapperI13ProtocolLayerEEEE"></span><span id="stored::MuxLayer::MuxLayer__std::initializer_list:std::reference_wrapper:ProtocolLayer::"></span><span class="target" id="classstored_1_1_mux_layer_1a7b36aa7928d7c809c39055c02021b4f3"></span><span class="sig-name descname"><span class="n"><span class="pre">MuxLayer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">reference_wrapper</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">layers</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8MuxLayer8MuxLayerENSt16initializer_listINSt17reference_wrapperI13ProtocolLayerEEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Ctor with full mapping. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayerD0Ev">
+<span id="_CPPv3N6stored8MuxLayerD0Ev"></span><span id="_CPPv2N6stored8MuxLayerD0Ev"></span><span id="stored::MuxLayer::~MuxLayer"></span><span class="target" id="classstored_1_1_mux_layer_1ab3489d3c1b2adbdc3dda598c18825ec8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~MuxLayer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored8MuxLayerD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Dtor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayer9connectedEv">
+<span id="_CPPv3N6stored8MuxLayer9connectedEv"></span><span id="_CPPv2N6stored8MuxLayer9connectedEv"></span><span id="stored::MuxLayer::connected"></span><span class="target" id="classstored_1_1_mux_layer_1a1ad28f7d94e20845be417620f50537ef"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">connected</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored8MuxLayer9connectedEv" title="Link to this definition"></a><br /></dt>
+<dd><p>(Re)connected notification (bottom-up). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayer6decodeEPv6size_t">
+<span id="_CPPv3N6stored8MuxLayer6decodeEPv6size_t"></span><span id="_CPPv2N6stored8MuxLayer6decodeEPv6size_t"></span><span id="stored::MuxLayer::decode__voidP.s"></span><span class="target" id="classstored_1_1_mux_layer_1a10486dea383c5b3b90400f1bfed75a40"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">decode</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored8MuxLayer6decodeEPv6size_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Decode a frame and forward the decoded frame to the upper layer. </p>
+<p>The given buffer may be decoded in-place. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayer12disconnectedEv">
+<span id="_CPPv3N6stored8MuxLayer12disconnectedEv"></span><span id="_CPPv2N6stored8MuxLayer12disconnectedEv"></span><span id="stored::MuxLayer::disconnected"></span><span class="target" id="classstored_1_1_mux_layer_1aaccecb58ce7c43be80dd1632b71fb061"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">disconnected</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored8MuxLayer12disconnectedEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Disconnected notification (bottom-up). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayer6encodeEPKv6size_tb">
+<span id="_CPPv3N6stored8MuxLayer6encodeEPKv6size_tb"></span><span id="_CPPv2N6stored8MuxLayer6encodeEPKv6size_tb"></span><span id="stored::MuxLayer::encode__voidCP.s.b"></span><span class="target" id="classstored_1_1_mux_layer_1a9a64188e330a63d408f5d5956156a728"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">encode</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">last</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored8MuxLayer6encodeEPKv6size_tb" title="Link to this definition"></a><br /></dt>
+<dd><p>Encode a (partial) frame and forward it to the lower layer. </p>
+<p>The given buffer will not be modified. A new buffer is allocated when required. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayer3mapE9ChannelIdR13ProtocolLayer">
+<span id="_CPPv3N6stored8MuxLayer3mapE9ChannelIdR13ProtocolLayer"></span><span id="_CPPv2N6stored8MuxLayer3mapE9ChannelIdR13ProtocolLayer"></span><span id="stored::MuxLayer::map__ChannelId.ProtocolLayerR"></span><span class="target" id="classstored_1_1_mux_layer_1a3949b2e3dca790da2600a9d7f38c800e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">map</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored8MuxLayer9ChannelIdE" title="stored::MuxLayer::ChannelId"><span class="n"><span class="pre">ChannelId</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">channel</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">layer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8MuxLayer3mapE9ChannelIdR13ProtocolLayer" title="Link to this definition"></a><br /></dt>
+<dd><p>Map a channel ID to the given protocol stack. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayer3mapENSt16initializer_listINSt17reference_wrapperI13ProtocolLayerEEEE">
+<span id="_CPPv3N6stored8MuxLayer3mapENSt16initializer_listINSt17reference_wrapperI13ProtocolLayerEEEE"></span><span id="_CPPv2N6stored8MuxLayer3mapENSt16initializer_listINSt17reference_wrapperI13ProtocolLayerEEEE"></span><span id="stored::MuxLayer::map__std::initializer_list:std::reference_wrapper:ProtocolLayer::"></span><span class="target" id="classstored_1_1_mux_layer_1a3b6db0ebb100e461f4be025b375ff8b2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">map</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">reference_wrapper</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">layers</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8MuxLayer3mapENSt16initializer_listINSt17reference_wrapperI13ProtocolLayerEEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Map all channels at once. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6stored8MuxLayer3mtuEv">
+<span id="_CPPv3NK6stored8MuxLayer3mtuEv"></span><span id="_CPPv2NK6stored8MuxLayer3mtuEv"></span><span id="stored::MuxLayer::mtuC"></span><span class="target" id="classstored_1_1_mux_layer_1a2c80873371e4a617e2bca966853d5610"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mtu</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6stored8MuxLayer3mtuEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the maximum amount of data to be put in one message that is encoded. </p>
+<p>If there is a MTU applicable to the physical transport (like a CAN bus), override this method to reflect that value. Layers on top will decrease the MTU when there protocol adds headers, for example.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the number of bytes, or 0 for infinity </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayer5resetEv">
+<span id="_CPPv3N6stored8MuxLayer5resetEv"></span><span id="_CPPv2N6stored8MuxLayer5resetEv"></span><span id="stored::MuxLayer::reset"></span><span class="target" id="classstored_1_1_mux_layer_1a640818fc34a39019e0b8520e1723a58b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored8MuxLayer5resetEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Reset the stack (top-down), and drop all messages. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayer5unmapEv">
+<span id="_CPPv3N6stored8MuxLayer5unmapEv"></span><span id="_CPPv2N6stored8MuxLayer5unmapEv"></span><span id="stored::MuxLayer::unmap"></span><span class="target" id="classstored_1_1_mux_layer_1a86674f545f06f2bc94a77588b79f717f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">unmap</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8MuxLayer5unmapEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Unmap all channels. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayer5unmapE9ChannelId">
+<span id="_CPPv3N6stored8MuxLayer5unmapE9ChannelId"></span><span id="_CPPv2N6stored8MuxLayer5unmapE9ChannelId"></span><span id="stored::MuxLayer::unmap__ChannelId"></span><span class="target" id="classstored_1_1_mux_layer_1ae681d675d016ab659e7b478f4254fee7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">unmap</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6stored8MuxLayer9ChannelIdE" title="stored::MuxLayer::ChannelId"><span class="n"><span class="pre">ChannelId</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">channel</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8MuxLayer5unmapE9ChannelId" title="Link to this definition"></a><br /></dt>
+<dd><p>Remove a channel mapping. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayer3EscE">
+<span id="_CPPv3N6stored8MuxLayer3EscE"></span><span id="_CPPv2N6stored8MuxLayer3EscE"></span><span id="stored::MuxLayer::Esc__cC"></span><span class="target" id="classstored_1_1_mux_layer_1a0c523ec58eda9925b01bd2d64ad72403"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Esc</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="sc"><span class="pre">'\x10'</span></span><a class="headerlink" href="#_CPPv4N6stored8MuxLayer3EscE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8MuxLayer6RepeatE">
+<span id="_CPPv3N6stored8MuxLayer6RepeatE"></span><span id="_CPPv2N6stored8MuxLayer6RepeatE"></span><span id="stored::MuxLayer::Repeat__cC"></span><span class="target" id="classstored_1_1_mux_layer_1a835eb8432162b2e67deb36642b49d46f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Repeat</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="sc"><span class="pre">'\x15'</span></span><a class="headerlink" href="#_CPPv4N6stored8MuxLayer6RepeatE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
 <section id="stored-namedpipelayer">
 <h2>stored::NamedPipeLayer<a class="headerlink" href="#stored-namedpipelayer" title="Link to this heading"></a></h2>
 <dl class="cpp class">
@@ -2460,7 +2622,8 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dt class="sig sig-object cpp" id="_CPPv4N6stored8ArqLayer9keepAliveEv">
 <span id="_CPPv3N6stored8ArqLayer9keepAliveEv"></span><span id="_CPPv2N6stored8ArqLayer9keepAliveEv"></span><span id="stored::ArqLayer::keepAlive"></span><span class="target" id="classstored_1_1_arq_layer_1ab1d2c6282a3ecad2e561ddb517421b09"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">keepAlive</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8ArqLayer9keepAliveEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Send a keep-alive packet to check the connection. </p>
-<p>It actually retransmits the message that is currently processed (waiting for an ack), or sends a dummy message in case the encode queue is empty. Either way, <a class="reference internal" href="#classstored_1_1_arq_layer_1a7fc718f8b8c05aef735e2c861535eabc"><span class="std std-ref">retransmits()</span></a> and the <a class="reference internal" href="#classstored_1_1_arq_layer_1a1d3b18fc5b159e527b087385ac961e52a67b425c96fa51d033359fbea7f1c344a"><span class="std std-ref">EventRetransmit</span></a> can be used afterwards to determine the quality of the link. </p>
+<p>It actually retransmits the message that is currently processed (waiting for an ack), or sends a dummy message in case the encode queue is empty. Either way, <a class="reference internal" href="#classstored_1_1_arq_layer_1a7fc718f8b8c05aef735e2c861535eabc"><span class="std std-ref">retransmits()</span></a> and the <a class="reference internal" href="#classstored_1_1_arq_layer_1a1d3b18fc5b159e527b087385ac961e52a67b425c96fa51d033359fbea7f1c344a"><span class="std std-ref">EventRetransmit</span></a> can be used afterwards to determine the quality of the link.</p>
+<p>If you want just only retransmits without sending a keep-alive when there is nothing to send, use <a class="reference internal" href="#classstored_1_1_arq_layer_1a46f604dfcd977eac46b7f6c60adf8241"><span class="std std-ref">process()</span></a> instead. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -2471,6 +2634,19 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>the number of bytes, or 0 for infinity </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored8ArqLayer7processEv">
+<span id="_CPPv3N6stored8ArqLayer7processEv"></span><span id="_CPPv2N6stored8ArqLayer7processEv"></span><span id="stored::ArqLayer::process"></span><span class="target" id="classstored_1_1_arq_layer_1a46f604dfcd977eac46b7f6c60adf8241"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">process</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored8ArqLayer7processEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Process queued messages. </p>
+<p>Call this function at a regular interval to retransmit messages, when necessary. When no messages are queued, this function does nothing.</p>
+<p>To send out keep-alive messages, use <a class="reference internal" href="#classstored_1_1_arq_layer_1ab1d2c6282a3ecad2e561ddb517421b09"><span class="std std-ref">keepAlive()</span></a>. A common pattern would be to call this function relatively often (e.g., every 100 ms), and <a class="reference internal" href="#classstored_1_1_arq_layer_1ab1d2c6282a3ecad2e561ddb517421b09"><span class="std std-ref">keepAlive()</span></a> less often (e.g., every 1 second).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>EAGAIN when there was nothing to process, 0 when something was sent out, or an <code class="docutils literal notranslate"><span class="pre">errno</span></code> otherwise. </p>
 </dd>
 </dl>
 </dd></dl>
@@ -2647,7 +2823,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dd><p>Protocol layer base class. </p>
 <p>A layer is usually part of the protocol stack. Bytes are decoded and forwarded to the layer above this one, and the layer above sends bytes for encoding down. Moreover, <a class="reference internal" href="#classstored_1_1_protocol_layer_1a357b029311be09df61e019682a848ab5"><span class="std std-ref">decode()</span></a> is the inverse of <a class="reference internal" href="#classstored_1_1_protocol_layer_1a66c24cec6a17c44fac68213d358a5aa8"><span class="std std-ref">encode()</span></a>. It is wise to stick to this concept, even though the interface of this class allows more irregular structures, such that decoding and encoding take a different path through the protocol layers.</p>
 <p>The implementation of this class does nothing except forwarding bytes. Override <a class="reference internal" href="#classstored_1_1_protocol_layer_1a66c24cec6a17c44fac68213d358a5aa8"><span class="std std-ref">encode()</span></a> and <a class="reference internal" href="#classstored_1_1_protocol_layer_1a357b029311be09df61e019682a848ab5"><span class="std std-ref">decode()</span></a> in a subclass. </p>
-<p>Subclassed by stored::Stream&lt; false &gt;, LossyChannel, PrintfPhysical, <a class="reference internal" href="#classstored_1_1_arq_layer"><span class="std std-ref">stored::ArqLayer</span></a>, <a class="reference internal" href="#classstored_1_1_ascii_escape_layer"><span class="std std-ref">stored::AsciiEscapeLayer</span></a>, <a class="reference internal" href="#classstored_1_1_buffer_layer"><span class="std std-ref">stored::BufferLayer</span></a>, <a class="reference internal" href="#classstored_1_1_callback_layer"><span class="std std-ref">stored::CallbackLayer&lt; Up, Down, Connected, Disconnected &gt;</span></a>, <a class="reference internal" href="#classstored_1_1_compress_layer"><span class="std std-ref">stored::CompressLayer</span></a>, <a class="reference internal" href="#classstored_1_1_crc16_layer"><span class="std std-ref">stored::Crc16Layer</span></a>, <a class="reference internal" href="#classstored_1_1_crc32_layer"><span class="std std-ref">stored::Crc32Layer</span></a>, <a class="reference internal" href="#classstored_1_1_crc8_layer"><span class="std std-ref">stored::Crc8Layer</span></a>, <a class="reference internal" href="#classstored_1_1_debug_arq_layer"><span class="std std-ref">stored::DebugArqLayer</span></a>, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>, stored::FrameMerger, <a class="reference internal" href="#classstored_1_1_idle_check_layer"><span class="std std-ref">stored::IdleCheckLayer</span></a>, stored::LossyLayer, <a class="reference internal" href="#classstored_1_1_polled_layer"><span class="std std-ref">stored::PolledLayer</span></a>, <a class="reference internal" href="#classstored_1_1_print_layer"><span class="std std-ref">stored::PrintLayer</span></a>, <a class="reference internal" href="#classstored_1_1_segmentation_layer"><span class="std std-ref">stored::SegmentationLayer</span></a>, stored::Stream&lt; Compress &gt;, stored::Stream&lt; true &gt;, <a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a>, <a class="reference internal" href="#classstored_1_1_terminal_layer"><span class="std std-ref">stored::TerminalLayer</span></a>, stored::XsimLayer::DecodeCallback, stored::impl::Loopback1</p>
+<p>Subclassed by stored::Stream&lt; false &gt;, LossyChannel, PrintfPhysical, <a class="reference internal" href="#classstored_1_1_arq_layer"><span class="std std-ref">stored::ArqLayer</span></a>, <a class="reference internal" href="#classstored_1_1_ascii_escape_layer"><span class="std std-ref">stored::AsciiEscapeLayer</span></a>, <a class="reference internal" href="#classstored_1_1_buffer_layer"><span class="std std-ref">stored::BufferLayer</span></a>, <a class="reference internal" href="#classstored_1_1_callback_layer"><span class="std std-ref">stored::CallbackLayer&lt; Up, Down, Connected, Disconnected &gt;</span></a>, <a class="reference internal" href="#classstored_1_1_compress_layer"><span class="std std-ref">stored::CompressLayer</span></a>, <a class="reference internal" href="#classstored_1_1_crc16_layer"><span class="std std-ref">stored::Crc16Layer</span></a>, <a class="reference internal" href="#classstored_1_1_crc32_layer"><span class="std std-ref">stored::Crc32Layer</span></a>, <a class="reference internal" href="#classstored_1_1_crc8_layer"><span class="std std-ref">stored::Crc8Layer</span></a>, <a class="reference internal" href="#classstored_1_1_debug_arq_layer"><span class="std std-ref">stored::DebugArqLayer</span></a>, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>, stored::FrameMerger, <a class="reference internal" href="#classstored_1_1_idle_check_layer"><span class="std std-ref">stored::IdleCheckLayer</span></a>, stored::LossyLayer, <a class="reference internal" href="#classstored_1_1_mux_layer"><span class="std std-ref">stored::MuxLayer</span></a>, stored::MuxLayer::Channel, <a class="reference internal" href="#classstored_1_1_polled_layer"><span class="std std-ref">stored::PolledLayer</span></a>, <a class="reference internal" href="#classstored_1_1_print_layer"><span class="std std-ref">stored::PrintLayer</span></a>, <a class="reference internal" href="#classstored_1_1_segmentation_layer"><span class="std std-ref">stored::SegmentationLayer</span></a>, stored::Stream&lt; Compress &gt;, stored::Stream&lt; true &gt;, <a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a>, <a class="reference internal" href="#classstored_1_1_terminal_layer"><span class="std std-ref">stored::TerminalLayer</span></a>, stored::XsimLayer::DecodeCallback, stored::impl::Loopback1</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">

@@ -93,6 +93,7 @@ The inheritance of the layers is shown below.
    ProtocolLayer <|-- PrintLayer
    ProtocolLayer <|-- IdleCheckLayer
    ProtocolLayer <|-- CallbackLayer
+   ProtocolLayer <|-- MuxLayer
 
    abstract ArqLayer
    SegmentationLayer -[hidden]--> ArqLayer
@@ -207,6 +208,11 @@ stored::Loopback
 ----------------
 
 .. doxygenclass:: stored::Loopback
+
+stored::MuxLayer
+----------------
+
+.. doxygenclass:: stored::MuxLayer
 
 stored::NamedPipeLayer
 ----------------------
