@@ -795,6 +795,82 @@ TEST(Crc16Layer, Decode)
 	EXPECT_EQ(ll.decoded().size(), 0);
 }
 
+TEST(Crc32Layer, Encode)
+{
+	stored::Crc32Layer l;
+	LoggingLayer ll;
+	ll.wrap(l);
+
+	ll.encoded().clear();
+	l.encode();
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0)[0], '\x00');
+	EXPECT_EQ(ll.encoded().at(0)[1], '\x00');
+	EXPECT_EQ(ll.encoded().at(0)[2], '\x00');
+	EXPECT_EQ(ll.encoded().at(0)[3], '\x00');
+
+	ll.encoded().clear();
+	l.encode("1", 1);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "1\x83\xDC\xEF\xB7");
+
+	ll.encoded().clear();
+	l.encode("12", 2);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "12OSD\xCD");
+
+	ll.encoded().clear();
+	l.encode("123", 3);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "123\x88Hc\xD2");
+
+	ll.encoded().clear();
+	l.encode("1234", 4);
+	EXPECT_EQ(ll.encoded().size(), 1);
+	EXPECT_EQ(ll.encoded().at(0), "1234\x9B\xE3\xE0\xA3");
+}
+
+TEST(Crc32Layer, Decode)
+{
+	LoggingLayer ll;
+	stored::Crc32Layer l;
+	l.wrap(ll);
+
+	ll.decoded().clear();
+	DECODE(l, "\0\0\0\0");
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "");
+
+	ll.decoded().clear();
+	DECODE(l, "1\x83\xDC\xEF\xB7");
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "1");
+
+	ll.decoded().clear();
+	DECODE(l, "12OSD\xCD");
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "12");
+
+	ll.decoded().clear();
+	DECODE(l, "123\x88Hc\xD2");
+	EXPECT_EQ(ll.decoded().size(), 1);
+	EXPECT_EQ(ll.decoded().at(0), "123");
+
+	ll.decoded().clear();
+	DECODE(l, "1234\x9B\xE3\xE0\xA3");
+	EXPECT_EQ(ll.decoded().size(), 1);
+
+	ll.decoded().clear();
+	DECODE(l, "123\x9B\xE3\xE0\xA3");
+	EXPECT_EQ(ll.decoded().size(), 0);
+
+	ll.decoded().clear();
+	DECODE(l,
+	       "\x00"
+	       "1234\x9B\xE3\xE0\xA3");
+	EXPECT_EQ(ll.decoded().size(), 0);
+}
+
 TEST(BufferLayer, Encode)
 {
 	stored::BufferLayer l(4);
