@@ -2161,7 +2161,7 @@ void MuxLayer::decode(void* buffer, size_t len)
 	while(in < len) {
 		uint8_t b = buffer_[in++];
 
-		if(m_decodingEsc) {
+		if(unlikely(m_decodingEsc)) {
 			m_decodingEsc = false;
 			if(b == Esc) {
 				// Escaped escape byte.
@@ -2173,21 +2173,23 @@ void MuxLayer::decode(void* buffer, size_t len)
 			} else {
 				// Switch channel.
 				decode_(buffer_ + out_start, out_end - out_start);
-				out_start = out_end;
+				out_start = out_end = in;
 				m_decodingChannel = channel(b);
 			}
 		} else {
-			if(b == Esc) {
+			if(unlikely(b == Esc)) {
 				// Escape byte.
 				m_decodingEsc = true;
 			} else {
 				// Normal byte.
-				buffer_[out_end++] = b;
+				size_t i = out_end++;
+				if(unlikely(out_end != in))
+					buffer_[i] = b;
 			}
 		}
 	}
 
-	if(out_end > out_start)
+	if(likely(out_end > out_start))
 		decode_(buffer_ + out_start, out_end - out_start);
 }
 
