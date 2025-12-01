@@ -283,6 +283,13 @@ public:
 		if(verbose)
 			wrap<stored::PrintLayer>(stdout, "sync");
 
+		// Add another channel to send pings.
+		auto mux = wrap<stored::MuxLayer>();
+		auto ch1_print = alloc<stored::PrintLayer>(stdout, "chan");
+		m_ch1 = alloc<stored::ProtocolLayer>();
+		m_ch1->wrap(*ch1_print);
+		mux.get()->map(1, *m_ch1);
+
 		// We don't want to do ARQ on large messages, so we segment them to some
 		// appropriate size.
 		wrap<stored::SegmentationLayer>(32U);
@@ -319,12 +326,12 @@ public:
 			wrap<stored::PrintLayer>(stdout, "raw");
 
 		// Connect to I/O.
-		m_zmqLayer.wrap(*m_layers.back());
+		m_zmqLayer.wrap(*m_stack.back());
 
 		// Register the store...
 		m_synchronizer.map(store);
 		// ...and the protocol stack.
-		m_synchronizer.connect(**m_layers.begin());
+		m_synchronizer.connect(**m_stack.begin());
 
 		// There we go!
 		auto now = std::chrono::steady_clock::now();
@@ -336,7 +343,7 @@ public:
 				     : store.client_heartbeat.variable();
 
 		if(!server) {
-			m_synchronizer.syncFrom(store, *m_layers.front());
+			m_synchronizer.syncFrom(store, *m_stack.front());
 			m_connected = true;
 			m_arq->keepAlive();
 		}
@@ -367,15 +374,24 @@ public:
 
 protected:
 	template <typename T, typename... Args>
+	std::shared_ptr<T> alloc(Args&&... args)
+	{
+		auto* p = new T{std::forward<Args>(args)...};
+		std::shared_ptr<T> layer{p};
+		m_layers.emplace_back(layer);
+		return layer;
+	}
+
+	template <typename T, typename... Args>
 	std::shared_ptr<T> wrap(Args&&... args)
 	{
 		auto* p = new T{std::forward<Args>(args)...};
 		std::shared_ptr<T> layer{p};
 
-		if(!m_layers.empty())
-			layer->wrap(*m_layers.back());
+		if(!m_stack.empty())
+			layer->wrap(*m_stack.back());
 
-		m_layers.emplace_back(layer);
+		m_stack.emplace_back(layer);
 		return layer;
 	}
 
@@ -442,7 +458,10 @@ protected:
 		auto dt = now - m_lastHeartbeat;
 		if(dt >= std::chrono::milliseconds(HeartbeatInterval_ms)) {
 			m_lastHeartbeat = now;
-			m_heartbeat++;
+			auto h = m_heartbeat++;
+			char buf[32];
+			snprintf(buf, sizeof(buf), "ping %u", h);
+			m_ch1->encode(buf, strlen(buf), true);
 		}
 	}
 
@@ -467,7 +486,9 @@ private:
 	stored::Synchronizer m_synchronizer;
 	std::shared_ptr<stored::ArqLayer> m_arq;
 	std::shared_ptr<stored::IdleCheckLayer> m_idle;
+	std::shared_ptr<stored::ProtocolLayer> m_ch1;
 	std::list<std::shared_ptr<stored::ProtocolLayer>> m_layers;
+	std::list<std::shared_ptr<stored::ProtocolLayer>> m_stack;
 	stored::ZmqLayer m_zmqLayer;
 	stored::PollableZmqSocket m_pollable{m_zmqLayer.socket(), stored::Pollable::PollIn};
 	std::chrono::time_point<std::chrono::steady_clock> m_idleUpSince;

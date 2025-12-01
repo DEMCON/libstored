@@ -1960,7 +1960,6 @@ void LossyLayer::ber(float ber)
  */
 MuxLayer::MuxLayer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
-	, m_channels()
 	, m_encodingChannel(Repeat)
 	, m_decodingChannel()
 	, m_decodingEsc()
@@ -1991,8 +1990,8 @@ void MuxLayer::map(std::initializer_list<std::reference_wrapper<ProtocolLayer>> 
 {
 	unmap();
 
-	char channel = 0;
-	for(auto& l : layers) {
+	ChannelId channel = 0;
+	for(auto const& l : layers) {
 		map(channel++, l.get()); // Channel 0 for all layers.
 	}
 }
@@ -2082,6 +2081,7 @@ void MuxLayer::unmap(ChannelId channel)
 
 	m_channels[(size_t)i] = nullptr;
 	c->disconnected();
+	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 	delete c;
 }
 
@@ -2090,7 +2090,7 @@ void MuxLayer::unmap(ChannelId channel)
  */
 void MuxLayer::unmap()
 {
-	for(ChannelId c = 0; c < m_channels.size() + 2; c++)
+	for(ChannelId c = 0; (size_t)c < m_channels.size() + 2; c++)
 		unmap(c);
 }
 
@@ -2108,6 +2108,7 @@ void MuxLayer::reset()
 
 void MuxLayer::connected()
 {
+	m_encodingChannel = Repeat;
 	base::connected();
 
 	for(size_t i = 0; i < m_channels.size(); i++) {
@@ -2119,6 +2120,8 @@ void MuxLayer::connected()
 
 void MuxLayer::disconnected()
 {
+	m_encodingChannel = Repeat;
+	m_decodingChannel = nullptr;
 	base::disconnected();
 
 	for(size_t i = 0; i < m_channels.size(); i++) {
@@ -2204,8 +2207,7 @@ void MuxLayer::encode_(ChannelId channel, void const* buffer, size_t len, bool l
 		// Find next escape byte.
 		size_t c = i;
 		for(; c < len; c++) {
-			uint8_t b = ((uint8_t const*)buffer)[c];
-			if((char)b == Esc)
+			if(buffer_[c] == Esc)
 				break;
 		}
 

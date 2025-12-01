@@ -1417,7 +1417,7 @@ public:
 	virtual ~MuxLayer() override;
 
 #  if STORED_cplusplus >= 201103L
-	explicit MuxLayer(std::initializer_list<std::reference_wrapper<ProtocolLayer>> layers);
+	MuxLayer(std::initializer_list<std::reference_wrapper<ProtocolLayer>> layers);
 	void map(std::initializer_list<std::reference_wrapper<ProtocolLayer>> layers);
 #  endif // C++11
 
