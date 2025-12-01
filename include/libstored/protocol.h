@@ -610,6 +610,7 @@ public:
 	virtual void disconnected() override;
 	bool isConnected() const;
 	void keepAlive();
+	int process();
 
 	enum Event {
 		/*!

@@ -22,11 +22,27 @@
 #include <getopt_mini.h>
 
 enum {
+	// Interval in between polling of the sockets.
 	PollInterval_ms = 100,
+
+	// Interval to check if the Synchronizers need to send out updates to the other party.
 	SyncInterval_ms = PollInterval_ms * 5,
-	IdleTimeout_ms = SyncInterval_ms,
-	DisconnectTimeout_ms = IdleTimeout_ms * 10,
+
+	// Interval to retransmit unacknowledged packets over the lossy line.
+	// Do this more often than SyncInterval_ms to avoid delays.
+	RetransmitInterval_ms = PollInterval_ms * 3,
+
+	// Timeout value to send out a keep-alive packet.
+	// In this application, this should not be needed, as synchronization is faster.
+	IdleTimeout_ms = SyncInterval_ms * 2,
+
+	// Timeout until we give up on the connection.
+	DisconnectTimeout_ms = IdleTimeout_ms * 5,
+
+	// Update the heartbeat value in the store.
 	HeartbeatInterval_ms = 1000,
+
+	// Delay before trying to reconnect after a disconnection.
 	ReconnectDelay_ms = DisconnectTimeout_ms + IdleTimeout_ms * 2,
 };
 
@@ -337,6 +353,7 @@ public:
 		auto now = std::chrono::steady_clock::now();
 		m_idleUpSince = now;
 		m_idleDownSince = now;
+		m_lastRetransmit = now;
 		m_lastSync = now;
 		m_lastHeartbeat = now;
 		m_heartbeat = server ? store.server_heartbeat.variable()
@@ -361,6 +378,7 @@ public:
 		recv();
 		doSync(now);
 		checkRetransmit(now);
+		checkIdle(now);
 		checkDisconnect(now);
 		doHeartbeat(now);
 
@@ -420,6 +438,26 @@ protected:
 
 	void checkRetransmit(std::chrono::time_point<std::chrono::steady_clock> const& now)
 	{
+		// Check if we need to retransmit messages that have not been acked yet.
+
+		if(!connected())
+			return;
+
+		if(m_idle->idleDown()) {
+			auto dt = now - m_lastRetransmit;
+			if(dt > std::chrono::milliseconds(RetransmitInterval_ms)) {
+				m_arq->process();
+				m_lastRetransmit = now;
+			}
+		} else {
+			m_lastRetransmit = now;
+		}
+	}
+
+	void checkIdle(std::chrono::time_point<std::chrono::steady_clock> const& now)
+	{
+		// Check if we need to send out a keep-alive message once in a while.
+
 		if(!connected())
 			return;
 
@@ -493,6 +531,7 @@ private:
 	stored::PollableZmqSocket m_pollable{m_zmqLayer.socket(), stored::Pollable::PollIn};
 	std::chrono::time_point<std::chrono::steady_clock> m_idleUpSince;
 	std::chrono::time_point<std::chrono::steady_clock> m_idleDownSince;
+	std::chrono::time_point<std::chrono::steady_clock> m_lastRetransmit;
 	std::chrono::time_point<std::chrono::steady_clock> m_lastSync;
 	std::chrono::time_point<std::chrono::steady_clock> m_lastHeartbeat;
 	stored::Variable<uint32_t, ExampleSync> m_heartbeat;
