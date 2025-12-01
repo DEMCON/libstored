@@ -1361,6 +1361,110 @@ make_callback(Up&& up, Down&& down, Connected&& connected, Disconnected&& discon
 }
 #  endif // C++11
 
+/*!
+ * \brief A that multiplexes between protocol stacks.
+ *
+ * Channel data is prefixed by a one-byte channel identifier. These channels can be split by the
+ * receiver to separate stacks.  Channel ID 0 is used for the stack above the MuxLayer itself.
+ *
+ * One can use this layer to multiplex different protocols or logging output over the same physical
+ * channel.  In case a lossless channel is used, the following stack could be used:
+ *
+ * channel 0:
+ * - Debugger
+ * - SegmentationLayer
+ * - AsciiEscapeLayer
+ * - TerminalLayer
+ *
+ * channel 1:
+ * - PrintLayer
+ *
+ * - MuxLayer
+ * - some lossless transport layer
+ *
+ * In this case, the MuxLayer passes through a stream of bytes, so framing is required in the
+ * channel 0 stack. The bytes of channel 1 are just printed for logging.
+ *
+ * When having a lossy channel, add an ArqLayer below the MuxLayer.
+ *
+ * channel 0
+ * - Debugger
+ *
+ * channel 1
+ * - PrintLayer
+ *
+ * - MuxLayer
+ * - SegmentationLayer
+ * - Crc32Layer
+ * - ArqLayer
+ * - AsciiEscapeLayer
+ * - TerminalLayer
+ * - some lossy transport layer
+ *
+ * Now, the framing is done below the ArqLayer, so all \c decode()s get full frames above the
+ * MuxLayer.  Therefore, no framing is required in channel 0.
+ */
+class MuxLayer : public ProtocolLayer {
+	STORED_CLASS_NOCOPY(MuxLayer)
+public:
+	typedef ProtocolLayer base;
+	typedef uint8_t ChannelId;
+
+	static char const Esc = '\x10';	   // DLE
+	static char const Repeat = '\x15'; // NAK
+
+	explicit MuxLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+	virtual ~MuxLayer() override;
+
+#  if STORED_cplusplus >= 201103L
+	explicit MuxLayer(std::initializer_list<std::reference_wrapper<ProtocolLayer>> layers);
+	void map(std::initializer_list<std::reference_wrapper<ProtocolLayer>> layers);
+#  endif // C++11
+
+	void map(ChannelId channel, ProtocolLayer& layer);
+	void unmap(ChannelId channel);
+	void unmap();
+
+	virtual void decode(void* buffer, size_t len) override;
+	virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#  ifndef DOXYGEN
+	using base::encode;
+#  endif
+	virtual void reset() override;
+	virtual void connected() override;
+	virtual void disconnected() override;
+	virtual size_t mtu() const override;
+
+protected:
+	void decode_(void* buffer, size_t len);
+	void encode_(ChannelId channel, void const* buffer, size_t len, bool last = true);
+
+	class Channel final : public ProtocolLayer {
+		STORED_CLASS_NOCOPY(Channel)
+	public:
+		typedef ProtocolLayer base;
+		Channel(MuxLayer& mux, ChannelId channel, ProtocolLayer& up);
+		virtual ~Channel() override is_default
+
+		virtual void encode(void const* buffer, size_t len, bool last = true) override;
+		virtual size_t mtu() const override;
+
+	private:
+		MuxLayer* m_mux;
+		ChannelId m_channel;
+	};
+
+private:
+	ssize_t channelIndex(ChannelId id) const;
+	ProtocolLayer* channel(ChannelId id);
+
+private:
+	Vector<Channel*>::type m_channels;
+	ChannelId m_encodingChannel;
+	ProtocolLayer* m_decodingChannel;
+	bool m_decodingEsc;
+};
+
 namespace impl {
 class Loopback1 final : public ProtocolLayer {
 	STORED_CLASS_NOCOPY(Loopback1)
