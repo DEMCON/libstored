@@ -2010,9 +2010,9 @@ void MuxLayer::map(std::initializer_list<std::reference_wrapper<ProtocolLayer>> 
 {
 	unmap();
 
-	ChannelId channel = 0;
+	ChannelId c = 0;
 	for(auto const& l : layers) {
-		map(channel++, l.get()); // Channel 0 for all layers.
+		map(c++, l.get()); // Channel 0 for all layers.
 	}
 }
 #endif // C++11
@@ -2024,7 +2024,7 @@ ssize_t MuxLayer::channelIndex(ChannelId id) const
 {
 	static_assert(Esc < Repeat, "");
 
-	if(id <= 0)
+	if(id == 0)
 		return -1;
 	if(id < Esc)
 		return (ssize_t)(id - 1);
