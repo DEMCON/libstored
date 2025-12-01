@@ -820,7 +820,7 @@ class Crc32Layer(ProtocolLayer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._crc = crcmod.mkCrcFun(0x104c11db7, 0xffffffff, True, 0xffffffff)
+        self._crc = crcmod.mkCrcFun(0x104c11db7, 0, True, 0xffffffff)
 
     async def encode(self, data: ProtocolLayer.Packet) -> None:
         if isinstance(data, str):

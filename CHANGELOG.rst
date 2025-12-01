@@ -34,6 +34,11 @@ Changed
   on ``keepAlive()``.
 - Improve reconnection behavior on protocol layers.
 
+Fixed
+`````
+
+- Init value of CRC32 in Python ``libstored.protocol.Crc32Layer``.
+
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v2.0.0...HEAD
 
 
