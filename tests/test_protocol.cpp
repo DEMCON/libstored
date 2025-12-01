@@ -1444,4 +1444,66 @@ TEST(TerminalLayer, Decode)
 	EXPECT_EQ(ll.decoded().at(0), "flowers");
 }
 
+TEST(MuxLayer, Encode)
+{
+	LoggingLayer ch0;
+	LoggingLayer ch1;
+	LoggingLayer ch2;
+
+	stored::MuxLayer l{{ch0, ch1, ch2}};
+	LoggingLayer ll;
+	ll.wrap(l);
+
+	ch0.encode(" ch0", 4);
+	EXPECT_EQ(ll.encoded().at(0), std::string("\x10\x00 ch0", 6));
+
+	ch0.encode("abc", 3);
+	EXPECT_EQ(ll.encoded().at(1), "abc");
+
+	ch1.encode(" ch1", 4);
+	EXPECT_EQ(ll.encoded().at(2), "\x10\x01 ch1");
+
+	ch2.encode(" ch\x10 2", 6);
+	EXPECT_EQ(ll.encoded().at(3), "\x10\x02 ch\x10\x10 2");
+}
+
+TEST(MuxLayer, Decode)
+{
+	LoggingLayer ch0;
+	LoggingLayer ch1;
+	LoggingLayer ch2;
+
+	stored::MuxLayer l{{ch0, ch1, ch2}};
+
+	DECODE(l, "ch?");
+	EXPECT_EQ(ch0.decoded().size(), 0);
+
+	DECODE(l, "\x10\x00 ch0");
+	EXPECT_EQ(ch0.decoded().at(0), " ch0");
+
+	DECODE(l, "ch0");
+	EXPECT_EQ(ch0.decoded().at(1), "ch0");
+
+	DECODE(l, "\x10\x01 ch1");
+	EXPECT_EQ(ch1.decoded().at(0), " ch1");
+
+	DECODE(l, "\x10\x02 ch2");
+	EXPECT_EQ(ch2.decoded().at(0), " ch2");
+
+	DECODE(l, "ch\x10\x10 2");
+	EXPECT_EQ(ch2.decoded().at(1), "ch\x10 2");
+
+	DECODE(l, "\x10\x01 1\x10");
+	EXPECT_EQ(ch1.decoded().at(1), " 1");
+	DECODE(l, "\x02 2");
+	EXPECT_EQ(ch2.decoded().at(2), " 2");
+
+	DECODE(l, "\x10\x00 0\x10\x15 1");
+	EXPECT_EQ(ch0.decoded().at(2), " 0 1");
+
+	DECODE(l, "\x10\x03 ch?");
+	EXPECT_EQ(ch0.decoded().size(), 3);
+}
+
+
 } // namespace

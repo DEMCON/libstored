@@ -1952,6 +1952,310 @@ void LossyLayer::ber(float ber)
 
 
 //////////////////////////////
+// MuxLayer
+//
+
+/*!
+ * \brief Ctor.
+ */
+MuxLayer::MuxLayer(ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_channels()
+	, m_encodingChannel(Repeat)
+	, m_decodingChannel()
+	, m_decodingEsc()
+{}
+
+/*!
+ * \brief Dtor.
+ */
+MuxLayer::~MuxLayer()
+{
+	unmap();
+}
+
+#if STORED_cplusplus >= 201103L
+/*!
+ * \brief Ctor with full mapping.
+ */
+MuxLayer::MuxLayer(std::initializer_list<std::reference_wrapper<ProtocolLayer>> layers)
+	: MuxLayer()
+{
+	map(layers);
+}
+
+/*!
+ * \brief Map all channels at once.
+ */
+void MuxLayer::map(std::initializer_list<std::reference_wrapper<ProtocolLayer>> layers)
+{
+	unmap();
+
+	char channel = 0;
+	for(auto& l : layers) {
+		map(channel++, l.get()); // Channel 0 for all layers.
+	}
+}
+#endif // C++11
+
+/*!
+ * \brief Returns the Channel index in #m_channels, or -1 when invalid.
+ */
+ssize_t MuxLayer::channelIndex(ChannelId id) const
+{
+	static_assert(Esc < Repeat);
+
+	if(id <= 0)
+		return -1;
+	if(id < Esc)
+		return (ssize_t)(id - 1);
+	if(id == Esc)
+		return -1;
+	if(id < Repeat)
+		return (ssize_t)(id - 2);
+	if(id == Repeat)
+		return -1;
+
+	return (ssize_t)(id - 3);
+}
+
+/*!
+ * \brief Returns the protocol stack for the given channel.
+ */
+ProtocolLayer* MuxLayer::channel(ChannelId id)
+{
+	if(id == 0)
+		return this;
+
+	ssize_t i = channelIndex(id);
+	if(i < 0 || (size_t)i >= m_channels.size())
+		return nullptr;
+
+	return m_channels[(size_t)i];
+}
+
+/*!
+ * \brief Map a channel ID to the given protocol stack.
+ */
+void MuxLayer::map(ChannelId channel, ProtocolLayer& layer)
+{
+	stored_assert(channel != Esc && channel != Repeat);
+
+	if(channel == 0) {
+		wrap(layer);
+		return;
+	}
+
+	ssize_t i = channelIndex(channel);
+	stored_assert(i >= 0);
+
+	unmap(channel);
+
+	if((size_t)i >= m_channels.size())
+		m_channels.resize((size_t)i + 1, nullptr);
+
+	// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+	Channel* c = new Channel(*this, channel, layer);
+	m_channels[(size_t)i] = c;
+}
+
+/*!
+ * \brief Remove a channel mapping.
+ */
+void MuxLayer::unmap(ChannelId channel)
+{
+	if(channel == 0) {
+		if(up() && up()->down() == this)
+			up()->setDown();
+
+		setUp(nullptr);
+		return;
+	}
+
+	ssize_t i = channelIndex(channel);
+	if(i < 0 || (size_t)i >= m_channels.size())
+		return;
+
+	Channel* c = m_channels[(size_t)i];
+	if(!c)
+		return;
+
+	m_channels[(size_t)i] = nullptr;
+	c->disconnected();
+	delete c;
+}
+
+/*!
+ * \brief Unmap all channels.
+ */
+void MuxLayer::unmap()
+{
+	for(ChannelId c = 0; c < m_channels.size() + 2; c++)
+		unmap(c);
+}
+
+void MuxLayer::encode(void const* buffer, size_t len, bool last)
+{
+	encode_(0, buffer, len, last);
+}
+
+void MuxLayer::reset()
+{
+	m_encodingChannel = Repeat;
+	m_decodingChannel = nullptr;
+	base::reset();
+}
+
+void MuxLayer::connected()
+{
+	base::connected();
+
+	for(size_t i = 0; i < m_channels.size(); i++) {
+		Channel* c = m_channels[i];
+		if(c)
+			c->connected();
+	}
+}
+
+void MuxLayer::disconnected()
+{
+	base::disconnected();
+
+	for(size_t i = 0; i < m_channels.size(); i++) {
+		Channel* c = m_channels[i];
+		if(c)
+			c->disconnected();
+	}
+}
+
+void MuxLayer::decode(void* buffer, size_t len)
+{
+	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
+	size_t out_start = 0;
+	size_t out_end = 0;
+	size_t in = 0;
+
+	while(in < len) {
+		uint8_t b = buffer_[in++];
+
+		if(m_decodingEsc) {
+			m_decodingEsc = false;
+			if(b == Esc) {
+				// Escaped escape byte.
+				buffer_[out_end++] = Esc;
+			} else if(b == Repeat) {
+				// Just a control command in between.
+				// Repeat channel id on next encode.
+				m_encodingChannel = Repeat;
+			} else {
+				// Switch channel.
+				decode_(buffer_ + out_start, out_end - out_start);
+				out_start = out_end;
+				m_decodingChannel = channel(b);
+			}
+		} else {
+			if(b == Esc) {
+				// Escape byte.
+				m_decodingEsc = true;
+			} else {
+				// Normal byte.
+				buffer_[out_end++] = b;
+			}
+		}
+	}
+
+	if(out_end > out_start)
+		decode_(buffer_ + out_start, out_end - out_start);
+}
+
+/*!
+ * \brief Forward decoded data.
+ */
+void MuxLayer::decode_(void* buffer, size_t len)
+{
+	if(!buffer || len == 0)
+		return;
+
+	if(m_decodingChannel == this)
+		base::decode(buffer, len);
+	else if(m_decodingChannel)
+		m_decodingChannel->decode(buffer, len);
+}
+
+/*!
+ * \brief Encode data for a given channel.
+ */
+void MuxLayer::encode_(ChannelId channel, void const* buffer, size_t len, bool last)
+{
+	if(channel == Repeat)
+		return;
+
+	if(channel != m_encodingChannel) {
+		uint8_t buf[2] = {Esc, channel};
+		base::encode(buf, sizeof(buf), false);
+		m_encodingChannel = channel;
+	}
+
+	char const* buffer_ = static_cast<char const*>(buffer);
+	size_t i = 0;
+	bool enc_last = false;
+
+	while(i < len) {
+		// Find next escape byte.
+		size_t c = i;
+		for(; c < len; c++) {
+			uint8_t b = ((uint8_t const*)buffer)[c];
+			if((char)b == Esc)
+				break;
+		}
+
+		if(c == len)
+			// No escapes in the rest of the buffer.
+			break;
+
+		// Found an escape byte at position c. Repeat escape byte.
+		base::encode(buffer_ + i, c - i + 1, false);
+		enc_last = c == len && last;
+		base::encode(buffer_ + c, 1, enc_last);
+		i = c + 1;
+	}
+
+	if(!enc_last && (i < len || last))
+		base::encode(buffer_ + i, len - i, last);
+}
+
+size_t MuxLayer::mtu() const
+{
+	size_t mtu = base::mtu();
+	if(mtu == 0U)
+		return 0U;
+	if(mtu <= 2U)
+		return 1U;
+	return std::max<size_t>(1U, (mtu - 2U) / 2U);
+}
+
+MuxLayer::Channel::Channel(MuxLayer& mux, ChannelId channel, ProtocolLayer& up)
+	: m_mux(&mux)
+	, m_channel(channel)
+{
+	wrap(up);
+}
+
+void MuxLayer::Channel::encode(void const* buffer, size_t len, bool last)
+{
+	stored_assert(m_mux);
+	m_mux->encode_(m_channel, buffer, len, last);
+}
+
+size_t MuxLayer::Channel::mtu() const
+{
+	stored_assert(m_mux);
+	return m_mux->mtu();
+}
+
+
+
+//////////////////////////////
 // Loopback
 //
 

@@ -26,6 +26,7 @@ Added
 
 - Operations such as ``-=`` and ``++`` for store variables in C++.
 - YAML export of store meta-data.
+- ``stored::MuxLayer`` to multiplex multiple protocol layers over a single connection.
 
 Changed
 ```````
