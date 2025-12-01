@@ -497,9 +497,12 @@ protected:
 		if(dt >= std::chrono::milliseconds(HeartbeatInterval_ms)) {
 			m_lastHeartbeat = now;
 			auto h = m_heartbeat++;
-			char buf[32];
-			snprintf(buf, sizeof(buf), "ping %u", h);
-			m_ch1->encode(buf, strlen(buf), true);
+
+			if(connected()) {
+				char buf[32];
+				snprintf(buf, sizeof(buf), "ping %u", h);
+				m_ch1->encode(buf, strlen(buf), true);
+			}
 		}
 	}
 
