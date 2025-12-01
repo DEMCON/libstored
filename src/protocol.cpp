@@ -836,12 +836,32 @@ bool ArqLayer::isConnected() const
 }
 
 /*!
+ * \brief Process queued messages.
+ *
+ * Call this function at a regular interval to retransmit messages, when necessary.
+ * When no messages are queued, this function does nothing.
+ *
+ * To send out keep-alive messages, use #keepAlive().  A common pattern would be to call this
+ * function relatively often (e.g., every 100 ms), and #keepAlive() less often (e.g., every 1
+ * second).
+ *
+ * \return EAGAIN when there was nothing to process, 0 when something was sent out, or an \c errno
+ *         otherwise.
+ */
+int ArqLayer::process()
+{
+	return transmit() ? 0 : EAGAIN;
+}
+
+/*!
  * \brief Send a keep-alive packet to check the connection.
  *
- * It actually retransmits the message that is currently processed (waiting for
- * an ack), or sends a dummy message in case the encode queue is empty. Either
- * way, #retransmits() and the #EventRetransmit can be used afterwards to
- * determine the quality of the link.
+ * It actually retransmits the message that is currently processed (waiting for an ack), or sends a
+ * dummy message in case the encode queue is empty. Either way, #retransmits() and the
+ * #EventRetransmit can be used afterwards to determine the quality of the link.
+ *
+ * If you want just only retransmits without sending a keep-alive when there is nothing to send, use
+ * #process() instead.
  */
 void ArqLayer::keepAlive()
 {
