@@ -2022,7 +2022,7 @@ void MuxLayer::map(std::initializer_list<std::reference_wrapper<ProtocolLayer>> 
  */
 ssize_t MuxLayer::channelIndex(ChannelId id) const
 {
-	static_assert(Esc < Repeat);
+	static_assert(Esc < Repeat, "");
 
 	if(id <= 0)
 		return -1;
