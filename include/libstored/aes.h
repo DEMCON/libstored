@@ -38,8 +38,9 @@ public:
 	enum { KeySize = 32, BlockSize = 16 };
 
 protected:
-	Aes256BaseLayer(
-		void const* key, ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+	explicit Aes256BaseLayer(
+		void const* key = nullptr, ProtocolLayer* up = nullptr,
+		ProtocolLayer* down = nullptr);
 	virtual ~Aes256BaseLayer() override is_default
 
 public:
@@ -49,7 +50,6 @@ public:
 	using base::encode;
 #    endif
 
-	virtual size_t mtu() const override;
 	virtual bool flush() override;
 	virtual void reset() override;
 	virtual void connected() override;
@@ -75,10 +75,12 @@ protected:
 	 * \param len the length of \p buffer
 	 * \return 0 on success, otherwise an errno
 	 *
-	 * This function is expected to call \c base::decode() with the decrypted data, without the
+	 * This function is expected to call #decodeDecrypted() with the decrypted data, without the
 	 * padding bytes.  In-place decryption is allowed.
 	 */
 	virtual int decrypt(uint8_t* buffer, size_t len) noexcept = 0;
+
+	void decodeDecrypted(void* buffer, size_t len);
 
 	/*!
 	 * \brief Encrypt data in \p buffer.
@@ -87,10 +89,12 @@ protected:
 	 * \param last whether this is the last block of data
 	 * \return 0 on success, otherwise an errno
 	 *
-	 * This function is expected to call \c base::encode() with the encrypted data.  In-place
+	 * This function is expected to call #encodeEncrypted() with the encrypted data.  In-place
 	 * encryption is not allowed.
 	 */
 	virtual int encrypt(uint8_t const* buffer, size_t len, bool last) noexcept = 0;
+
+	void encodeEncrypted(void const* buffer, size_t len, bool last = true);
 
 private:
 	uint8_t m_key[KeySize];
@@ -124,7 +128,9 @@ class Aes256Layer : public Aes256BaseLayer {
 public:
 	typedef Aes256BaseLayer base;
 
-	Aes256Layer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+	explicit Aes256Layer(
+		void const* key = nullptr, ProtocolLayer* up = nullptr,
+		ProtocolLayer* down = nullptr);
 	virtual ~Aes256Layer() override;
 
 protected:

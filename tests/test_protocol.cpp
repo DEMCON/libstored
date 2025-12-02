@@ -1519,8 +1519,7 @@ TEST(Aes256Layer, EncodeDecode)
 	stored::PrintLayer p;
 	p.wrap(a);
 
-	stored::Aes256Layer b;
-	b.setKey((uint8_t const*)key.data());
+	stored::Aes256Layer b((uint8_t const*)key.data());
 	LoggingLayer lb;
 	lb.stack(b);
 
