@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
+#include "libstored/aes.h"
 #include "libstored/compress.h"
 #include "libstored/fifo.h"
 #include "libstored/protocol.h"
@@ -1505,5 +1506,31 @@ TEST(MuxLayer, Decode)
 	EXPECT_EQ(ch0.decoded().size(), 3);
 }
 
+TEST(Aes256Layer, EncodeDecode)
+{
+	std::string key = "some very secure key of 32 bytes";
+	ASSERT_EQ(key.size(), stored::Aes256Layer::KeySize);
+
+	stored::Aes256Layer a;
+	a.setKey((uint8_t const*)key.data());
+	LoggingLayer la;
+	la.stack(a);
+
+	stored::PrintLayer p;
+	p.wrap(a);
+
+	stored::Aes256Layer b;
+	b.setKey((uint8_t const*)key.data());
+	LoggingLayer lb;
+	lb.stack(b);
+
+	stored::Loopback l(p, b);
+
+	la.encode("1", 1);
+	EXPECT_EQ(lb.decoded().at(0), "1");
+
+	lb.encode("2", 1);
+	EXPECT_EQ(la.decoded().at(0), "2");
+}
 
 } // namespace

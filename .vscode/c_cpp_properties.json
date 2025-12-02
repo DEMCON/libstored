@@ -1,13 +1,26 @@
 {
+	"env": {
+		"includePath": [
+			"${workspaceFolder}/include",
+			"${workspaceFolder}/dist/*/build/*-extern-prefix/src/**",
+			"${workspaceFolder}/examples/**",
+			"${workspaceFolder}/tests/**"
+		],
+		"defines": [
+			"STORED_HAVE_ZMQ",
+			"STORED_HAVE_AES",
+			"STORED_HAVE_HEATSHRINK",
+			"AES256"
+		]
+	},
 	"configurations": [
 		{
 			"name": "Linux",
 			"includePath": [
-				"${workspaceFolder}/include",
-				"${workspaceFolder}/**"
+				"${env:includePath}"
 			],
 			"defines": [
-				"STORED_HAVE_ZMQ"
+				"${env:defines}"
 			],
 			"compilerPath": "/usr/bin/clang",
 			"cStandard": "c17",
@@ -17,11 +30,10 @@
 		{
 			"name": "Win32",
 			"includePath": [
-				"${workspaceFolder}/include",
-				"${workspaceFolder}/**"
+				"${env:includePath}"
 			],
 			"defines": [
-				"STORED_HAVE_ZMQ"
+				"${env:defines}"
 			],
 			"cStandard": "c17",
 			"cppStandard": "c++17"
@@ -29,11 +41,10 @@
 		{
 			"name": "Mac",
 			"includePath": [
-				"${workspaceFolder}/include",
-				"${workspaceFolder}/**"
+				"${env:includePath}"
 			],
 			"defines": [
-				"STORED_HAVE_ZMQ"
+				"${env:defines}"
 			],
 			"compilerPath": "/usr/bin/clang",
 			"cStandard": "c17",

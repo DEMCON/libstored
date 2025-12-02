@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -47,6 +47,7 @@ endif()
 
 include(${LIBSTORED_STORES_CMAKE_PATH}/libstored.cmake OPTIONAL)
 include(${LIBSTORED_STORES_CMAKE_PATH}/heatshrink.cmake OPTIONAL)
+include(${LIBSTORED_STORES_CMAKE_PATH}/tinyaes.cmake OPTIONAL)
 find_package(Zth)
 
 file(GLOB _stores ${LIBSTORED_STORES_CMAKE_PATH}/*Store.cmake)

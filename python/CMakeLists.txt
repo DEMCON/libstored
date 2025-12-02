@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -49,6 +49,7 @@ set(package_data_
     cmake/FindLibstored.cmake.tmpl
     cmake/LibstoredStoresConfig.cmake.in
     cmake/libstored.cmake
+    dist/common/FindTinyAES.cmake
     dist/common/FindHeatshrink.cmake
     dist/common/FindZeroMQ.cmake
     dist/common/FindZth.cmake

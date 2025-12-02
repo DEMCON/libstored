@@ -1,10 +1,12 @@
 #ifndef LIBSTORED_STORED_H
 #define LIBSTORED_STORED_H
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
 #include <libstored/macros.h>
+
+#include <libstored/aes.h>
 #include <libstored/allocator.h>
 #include <libstored/components.h>
 #include <libstored/compress.h>

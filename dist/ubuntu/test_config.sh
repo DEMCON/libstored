@@ -38,6 +38,8 @@ config Release nodev C++14 test
 config Release nodev C++17 test
 config Debug nodev noheatshrink test
 config Release noheatshrink test
+config Debug nodev noaes test
+config Release noaes test
 config Debug nodev noexamples test
 config Release nodev noexamples test
 config Debug nodev san zth test

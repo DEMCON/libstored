@@ -160,6 +160,12 @@ if(LIBSTORED_HAVE_ZTH)
 	find_package(Zth REQUIRED)
 endif()
 
+option(LIBSTORED_HAVE_AES "Use AES" ON)
+
+if(LIBSTORED_HAVE_AES)
+	find_package(TinyAES REQUIRED)
+endif()
+
 set(LIBSTORED_CLANG_TIDY_DEFAULT OFF)
 
 if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")

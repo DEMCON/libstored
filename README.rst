@@ -216,8 +216,8 @@ device.  However, once you implemented this data transport, you can access the
 store, and observe and manipulate it using an Embedded Debugger (PC) client.
 Moreover, the protocol supports arbitrary streams (like stdout) from the
 application to the client, and has high-speed tracing of store variables. These
-streams are optionally heatshrink_ compressed.  libstored provides Python
-classes for your custom scripts, a CLI and GUI interface.
+streams are optionally heatshrink_ compressed, and AES-256 encrypted via tiny-AES-c_.
+libstored provides Python classes for your custom scripts, a CLI and GUI interface.
 
 Your application can have one store with one debugging interface, but also
 multiple stores with one debugging interface, or one store with multiple
@@ -457,7 +457,7 @@ generate stuff for you.  This is how to integrate it in your project:
 
    Before including ``libstored``, you can specify several options (see
    ``cmake/libstored.cmake``), such as enabling ASan or clang-tidy.
-   Especially the library dependencies (ZeroMQ, Zth, heatshrink) are
+   Especially the library dependencies (ZeroMQ, Zth, heatshrink, tiny-AES-c) are
    relevant to consider.  For example, to enable ZeroMQ:
 
    .. code:: cmake
@@ -514,7 +514,7 @@ approach.  In that case:
 3. In your project, call ``find_package(Libstored)``, while having the
    generated ``FindLibstored.cmake`` in your ``CMAKE_MODULE_PATH``.
 
-   ``Libstored`` accepts ``ZeroMQ``, ``Zth``, ``Heatshrink`` as ``COMPONENTS``.
+   ``Libstored`` accepts ``ZeroMQ``, ``Zth``, ``Heatshrink``, and ``AES`` as ``COMPONENTS``.
    Setting these enables integration of these libraries with libstored. When
    possible, they are taken from your host system, or built from source.  If you
    want more control over these libraries, you can also use the mechanism
@@ -540,6 +540,7 @@ License, v. 2.0, as specified in LICENSE. This project complies to `REUSE`_.
 .. _documentation: https://demcon.github.io/libstored
 .. _8_sync: https://github.com/DEMCON/libstored/tree/main/examples/8_sync
 .. _heatshrink: https://github.com/atomicobject/heatshrink
+.. _tiny-AES-c: https://github.com/kokke/tiny-AES-c
 .. _Kst: https://kst-plot.kde.org/
 .. _python: https://github.com/DEMCON/libstored/tree/main/python
 .. _REUSE: https://reuse.software/

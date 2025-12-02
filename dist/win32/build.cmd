@@ -118,6 +118,22 @@ if %1 == nozmq (
 	set cmake_opts=%cmake_opts% -DLIBSTORED_HAVE_LIBZMQ=OFF
 	goto next_param
 )
+if %1 == heatshrink (
+	set cmake_opts=%cmake_opts% -DLIBSTORED_HAVE_HEATSHRINK=ON
+	goto next_param
+)
+if %1 == noheatshrink (
+	set cmake_opts=%cmake_opts% -DLIBSTORED_HAVE_HEATSHRINK=OFF
+	goto next_param
+)
+if %1 == aes (
+	set cmake_opts=%cmake_opts% -DLIBSTORED_HAVE_AES=ON
+	goto next_param
+)
+if %1 == noaes (
+	set cmake_opts=%cmake_opts% -DLIBSTORED_HAVE_AES=OFF
+	goto next_param
+)
 if %1 == zth (
 	set cmake_opts=%cmake_opts% -DLIBSTORED_HAVE_ZTH=ON
 	goto next_param
@@ -209,18 +225,22 @@ exit /b 0
 echo Usage: %0 [^<opt^>...] [--] [^<other cmake arguments^>]
 echo.
 echo where opt is:
-echo   Debug RelWithDebInfo Release
-echo         Set CMAKE_BUILD_TYPE to this value
-echo   gcc   Use gcc instead of default compiler
-echo   C++98 C++03 C++11 C++14 C++17 C++20
-echo         Set the C++ standard
-echo   conf  Configure only, don't build
-echo   dev   Enable development-related options
-echo   test  Enable building and running tests
-echo   zmq   Enable ZeroMQ integration
-echo   nozmq Disable ZeroMQ integration
-echo   zth   Enable Zth integration
-echo   clean Do a clean build
+echo   Debug         RelWithDebInfo Release
+echo                 Set CMAKE_BUILD_TYPE to this value
+echo   gcc           Use gcc instead of default compiler
+echo   C++98         C++03 C++11 C++14 C++17 C++20
+echo                 Set the C++ standard
+echo   conf          Configure only, don't build
+echo   dev           Enable development-related options
+echo   test          Enable building and running tests
+echo   zmq           Enable ZeroMQ integration
+echo   nozmq         Disable ZeroMQ integration
+echo   heatshrink    Enable Heatshrink integration
+echo   noheatshrink  Disable Heatshrink integration
+echo   aes           Enable TinyAES integration
+echo   noaes         Disable TinyAES integration
+echo   zth           Enable Zth integration
+echo   clean         Do a clean build
 popd
 exit /b 2
 goto silent_error
