@@ -2356,7 +2356,9 @@ void impl::Loopback1::encode(void const* buffer, size_t len, bool last)
 Loopback::Loopback(ProtocolLayer& a, ProtocolLayer& b)
 	: m_a2b(a, b)
 	, m_b2a(b, a)
-{}
+{
+	a.connected();
+}
 
 /*!
  * \brief Reserve heap memory to assemble partial messages.

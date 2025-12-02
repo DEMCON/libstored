@@ -37,7 +37,8 @@ Aes256BaseLayer::Aes256BaseLayer(void const* key, ProtocolLayer* up, ProtocolLay
 	, m_seed((unsigned int)(uintptr_t)this ^ (unsigned int)time(nullptr))
 #  endif // STORED_OS_POSIX
 {
-	setKey(key);
+	if(key)
+		setKey(key);
 }
 
 bool Aes256BaseLayer::flush()
@@ -72,7 +73,6 @@ void Aes256BaseLayer::connected()
 {
 	m_state = StateConnected;
 	m_lastError = 0;
-	m_bufferLen = 0;
 }
 
 void Aes256BaseLayer::disconnected()
@@ -86,15 +86,15 @@ void Aes256BaseLayer::decode(void* buffer, size_t len)
 {
 	uint8_t* buf = static_cast<uint8_t*>(buffer);
 
+again:
 	switch(m_state) {
 	case StateDisconnected:
 		// Ignore data.
 		return;
 	case StateConnected:
-connected:
-		sendIV();
 		m_state = StateAwaitIV;
-		STORED_FALLTHROUGH
+		sendIV();
+		goto again;
 	case StateAwaitIV:
 		// Expect IV.
 		if(len != BlockSize + 1 || buf[0] != CmdReset) {
@@ -112,7 +112,7 @@ connected:
 
 		m_state = StateReady;
 		base::connected();
-		STORED_FALLTHROUGH
+		break;
 	case StateReady:
 	case StateEncoding: {
 		// Decrypt data.
@@ -123,7 +123,7 @@ connected:
 		if(len == BlockSize + 1 && buf[0] == CmdReset) {
 			// Re-initialization.
 			m_state = StateConnected;
-			goto connected;
+			goto again;
 		}
 		if(len % BlockSize != 0) {
 			// Invalid block.
@@ -133,7 +133,7 @@ connected:
 			return;
 		}
 
-		if((m_lastError = decrypt(buf + 1, len - 1)) != 0) {
+		if((m_lastError = decrypt(buf, len)) != 0) {
 			// Decryption error.
 			m_state = StateDisconnected;
 			base::disconnected();
@@ -147,16 +147,33 @@ connected:
 	}
 }
 
+/*!
+ * \brief Pass decrypted data upstream.
+ */
+void Aes256BaseLayer::decodeDecrypted(void* buffer, size_t len)
+{
+	base::decode(buffer, len);
+}
+
+/*!
+ * \brief Pass encrypted data downstream.
+ */
+void Aes256BaseLayer::encodeEncrypted(void const* buffer, size_t len, bool last)
+{
+	base::encode(buffer, len, last);
+}
+
 void Aes256BaseLayer::encode(void const* buffer, size_t len, bool last)
 {
+again:
 	switch(m_state) {
 	case StateDisconnected:
 		// Ignore data.
 		return;
 	case StateConnected:
-		sendIV();
 		m_state = StateAwaitIV;
-		STORED_FALLTHROUGH
+		sendIV();
+		goto again;
 	case StateAwaitIV:
 		// Can't send data before IV exchange.
 		m_lastError = EINVAL;
@@ -250,6 +267,8 @@ void Aes256BaseLayer::sendIV() noexcept
  */
 void Aes256BaseLayer::setKey(void const* key)
 {
+	stored_assert(key);
+
 	memcpy(m_key, key, KeySize);
 
 	switch(m_state) {
@@ -302,6 +321,63 @@ void Aes256BaseLayer::fillRandom(uint8_t* buffer, size_t len) noexcept
 #  endif
 
 static_assert(Aes256Layer::KeySize == AES_KEYLEN, "");
+
+Aes256Layer::Aes256Layer(void const* key, ProtocolLayer* up, ProtocolLayer* down)
+	: base(key, up, down)
+	, m_ctx_enc()
+	, m_ctx_dec()
+{
+	m_ctx_enc = new struct AES_ctx;
+	m_ctx_dec = new struct AES_ctx;
+}
+
+Aes256Layer::~Aes256Layer()
+{
+	delete static_cast<struct AES_ctx*>(m_ctx_enc);
+	delete static_cast<struct AES_ctx*>(m_ctx_dec);
+}
+
+int Aes256Layer::init(uint8_t const* key, uint8_t const* iv_enc, uint8_t const* iv_dec) noexcept
+{
+	AES_init_ctx_iv(static_cast<struct AES_ctx*>(m_ctx_enc), key, iv_enc);
+	AES_init_ctx_iv(static_cast<struct AES_ctx*>(m_ctx_dec), key, iv_dec);
+	return 0;
+}
+
+int Aes256Layer::decrypt(uint8_t* buffer, size_t len) noexcept
+{
+	if(!len)
+		return 0;
+
+	stored_assert(len % BlockSize == 0);
+	stored_assert(buffer);
+	AES_CTR_xcrypt_buffer(static_cast<struct AES_ctx*>(m_ctx_dec), buffer, len);
+
+	size_t padding = buffer[len - 1];
+	if(padding >= len)
+		return 0;
+
+	decodeDecrypted(buffer, len - padding);
+	return 0;
+}
+
+int Aes256Layer::encrypt(uint8_t const* buffer, size_t len, bool last) noexcept
+{
+	stored_assert(!len || buffer);
+	stored_assert(len % BlockSize == 0);
+
+	uint8_t buf[BlockSize];
+	for(size_t offset = 0; offset < len; offset += BlockSize) {
+		memcpy(buf, buffer + offset, BlockSize);
+		AES_CTR_xcrypt_buffer(static_cast<struct AES_ctx*>(m_ctx_enc), buf, BlockSize);
+		encodeEncrypted(buf, BlockSize, false);
+	}
+
+	if(last)
+		encodeEncrypted(nullptr, 0, last);
+
+	return 0;
+}
 
 } // namespace stored
 #else  // !STORED_HAVE_AES
