@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: CC0-1.0
 
@@ -2083,6 +2083,7 @@ PREDEFINED             = DOXYGEN \
 			 _DEBUG \
 			 STORED_HAVE_ZMQ \
 			 STORED_HAVE_HEATSHRINK \
+			 STORED_HAVE_AES \
 			 STORED_DRAFT_API \
 			 zth_fiber= \
 			 UNUSED(x)= \

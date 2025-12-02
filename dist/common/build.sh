@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# SPDX-FileCopyrightText: 2020-2024 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -18,19 +18,25 @@ trap gotErr ERR
 function show_help {
 	echo -e "Usage: $0 [<opt>...] [--] [<other cmake arguments>]\n"
 	echo "where opt is:"
-	echo "  Debug RelWithDebInfo Release"
-	echo "        Set CMAKE_BUILD_TYPE to this value"
-	echo "  C++98 C++03 C++11 C++14 C++17 C++20"
-	echo "        Set the C++ standard"
-	echo "  conf  Configure only, don't build"
-	echo "  dev   Enable development-related options"
-	echo "  test  Enable building and running tests"
-	echo "  zmq   Enable ZeroMQ integration"
-	echo "  nozmq Disable ZeroMQ integration"
-	echo "  zth   Enable Zth integration"
-	echo "  fuzz  Enable fuzzing with AFL++"
-	echo "  gcov  Enable gcov/lcov"
-	echo "  clean Do a clean build"
+	echo "  Debug         RelWithDebInfo Release"
+	echo "                Set CMAKE_BUILD_TYPE to this value"
+	echo "  C++98         C++03 C++11 C++14 C++17 C++20"
+	echo "                Set the C++ standard"
+	echo "  conf          Configure only, don't build"
+	echo "  dev           Enable development-related options"
+	echo "  test          Enable building and running tests"
+	echo "  zmq           Enable ZeroMQ integration"
+	echo "  nozmq         Disable ZeroMQ integration"
+	echo "  heatshrink    Enable Heatshrink integration"
+	echo "  noheatshrink  Disable Heatshrink integration"
+	echo "  aes           Enable TinyAES integration"
+	echo "  noaes         Disable TinyAES integration"
+	echo "  san           Enable sanitizers"
+	echo "  nosan         Disable sanitizers"
+	echo "  zth           Enable Zth integration"
+	echo "  fuzz          Enable fuzzing with AFL++"
+	echo "  gcov          Enable gcov/lcov"
+	echo "  clean         Do a clean build"
 	exit 2
 }
 
@@ -99,6 +105,10 @@ while [[ ! -z ${1:-} ]]; do
 			cmake_opts="${cmake_opts} -DLIBSTORED_HAVE_HEATSHRINK=ON";;
 		noheatshrink)
 			cmake_opts="${cmake_opts} -DLIBSTORED_HAVE_HEATSHRINK=OFF";;
+		aes)
+			cmake_opts="${cmake_opts} -DLIBSTORED_HAVE_AES=ON";;
+		noaes)
+			cmake_opts="${cmake_opts} -DLIBSTORED_HAVE_AES=OFF";;
 		san)
 			cmake_opts="${cmake_opts} -DLIBSTORED_ENABLE_ASAN=ON -DLIBSTORED_ENABLE_LSAN=ON -DLIBSTORED_ENABLE_UBSAN=ON";;
 		nosan)

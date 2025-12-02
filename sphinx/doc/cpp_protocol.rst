@@ -94,6 +94,7 @@ The inheritance of the layers is shown below.
    ProtocolLayer <|-- IdleCheckLayer
    ProtocolLayer <|-- CallbackLayer
    ProtocolLayer <|-- MuxLayer
+   ProtocolLayer <|-- Aes256Layer
 
    abstract ArqLayer
    SegmentationLayer -[hidden]--> ArqLayer
@@ -133,6 +134,11 @@ The inheritance of the layers is shown below.
    class Loopback
    FifoLoopback --> FifoLoopback1
 
+
+stored::Aes256Layer
+-------------------
+
+.. doxygenclass:: stored::Aes256Layer
 
 stored::AsciiEscapeLayer
 ------------------------

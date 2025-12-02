@@ -34,6 +34,10 @@ option(LIBSTORED_HAVE_LIBZMQ "Use libzmq" OFF)
 # from source.
 option(LIBSTORED_HAVE_ZTH "Use Zth" OFF)
 
+# When enabled, TinyAES is used for AES-256 CTR. It is searched via find_package(TinyAES).  When
+# provided by the system, make sure it is configured for AES-256 CTR mode.
+option(LIBSTORED_HAVE_AES "Use AES-256 CTR from TinyAES" OFF)
+
 # ##################################################################################################
 # Prepare environment
 
@@ -198,6 +202,7 @@ Relationship: SPDXRef-compiler BUILD_DEPENDENCY_OF SPDXRef-libstored
 		${LIBSTORED_SOURCE_DIR}/include/stored
 		${LIBSTORED_SOURCE_DIR}/include/stored.h
 		${LIBSTORED_SOURCE_DIR}/include/stored_config.h
+		${LIBSTORED_SOURCE_DIR}/include/libstored/aes.h
 		${LIBSTORED_SOURCE_DIR}/include/libstored/allocator.h
 		${LIBSTORED_SOURCE_DIR}/include/libstored/compress.h
 		${LIBSTORED_SOURCE_DIR}/include/libstored/config.h
@@ -212,6 +217,7 @@ Relationship: SPDXRef-compiler BUILD_DEPENDENCY_OF SPDXRef-libstored
 		${LIBSTORED_SOURCE_DIR}/include/libstored/util.h
 		${LIBSTORED_SOURCE_DIR}/include/libstored/version.h
 		${LIBSTORED_SOURCE_DIR}/include/libstored/zmq.h
+		${LIBSTORED_SOURCE_DIR}/src/aes.cpp
 		${LIBSTORED_SOURCE_DIR}/src/compress.cpp
 		${LIBSTORED_SOURCE_DIR}/src/directory.cpp
 		${LIBSTORED_SOURCE_DIR}/src/debugger.cpp
@@ -442,6 +448,46 @@ Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-heatshrink
 		)
 	endif()
 
+	if(LIBSTORED_HAVE_AES)
+		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_AES=1)
+		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC tinyaes)
+
+		set(_fields)
+
+		if("${TinyAES_VERSION}" STREQUAL "")
+			set(_fields
+			    "${_fields}
+PackageVersion: preinstalled
+PackageDownloadLocation: NOASSERTION
+ExternalRef: PACKAGE-MANAGER purl pkg:github/kokke/tiny-AES-c"
+			)
+		else()
+			set(_fields
+			    "${_fields}
+PackageVersion: ${TinyAES_VERSION}
+PackageDownloadLocation: https://github.com/kokke/tiny-AES-c/commit/${TinyAES_VERSION}
+ExternalRef: PACKAGE-MANAGER purl pkg:github/kokke/tiny-AES-c@${TinyAES_VERSION}"
+			)
+		endif()
+
+		file(
+			APPEND "${LIBSTORED_LIB_SBOM_CMAKE}"
+			"
+			file(APPEND \"${LIBSTORED_LIB_DESTINATION}/doc/sbom.spdx\" \"
+PackageName: TinyAES
+SPDXID: SPDXRef-TinyAES${_fields}
+PackageHomePage: https://github.com/kokke/tiny-AES-c
+FilesAnalyzed: false
+PackageLicenseConcluded: Unlicense
+PackageLicenseDeclared: Unlicense
+PackageSummary: <text>This is a small and portable implementation of the AES ECB, CTR and CBC encryption algorithms written in C.</text>
+PrimaryPackagePurpose: LIBRARY
+Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-TinyAES
+\")
+			"
+		)
+	endif()
+
 	set(DO_CLANG_TIDY "")
 
 	if(${CMAKE_VERSION} VERSION_GREATER "3.6.0")
@@ -621,12 +667,13 @@ function(libstored_copy_dlls target)
 	if(WIN32)
 		get_target_property(target_type ${target} TYPE)
 		get_property(LIBSTORED_RUNTIME_LIBS GLOBAL PROPERTY LIBSTORED_RUNTIME_LIBS)
-		if(target_type STREQUAL "EXECUTABLE" AND NOT "${LIBSTORED_RUNTIME_LIBS}" STREQUAL "")
+		if(target_type STREQUAL "EXECUTABLE" AND NOT "${LIBSTORED_RUNTIME_LIBS}" STREQUAL
+							 ""
+		)
 			add_custom_command(
 				TARGET ${target}
 				PRE_LINK
-				COMMAND
-					${CMAKE_COMMAND} -E copy ${LIBSTORED_RUNTIME_LIBS}
+				COMMAND ${CMAKE_COMMAND} -E copy ${LIBSTORED_RUNTIME_LIBS}
 					$<TARGET_FILE_DIR:${target}>/
 				VERBATIM
 			)
