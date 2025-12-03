@@ -6,12 +6,14 @@
 
 #ifdef STORED_HAVE_AES
 
+#  include <new>
+
 extern "C" {
 #  include <aes.h>
 } // extern "C"
 
 #  ifdef STORED_OS_POSIX
-#    include <time.h>
+#    include <ctime>
 #  endif // STORED_OS_POSIX
 
 
@@ -26,35 +28,32 @@ namespace stored {
 Aes256BaseLayer::Aes256BaseLayer(void const* key, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_key()
-	, m_iv_enc()
-	, m_iv_dec()
 	, m_buffer()
 	, m_bufferLen()
-	, m_state(StateDisconnected)
+	, m_encState(EncStateDisconnected)
+	, m_decState(DecStateDisconnected)
 	, m_lastError(ENOTCONN)
 #  ifdef STORED_OS_POSIX
 	// NOLINTNEXTLINE
 	, m_seed((unsigned int)(uintptr_t)this ^ (unsigned int)time(nullptr))
 #  endif // STORED_OS_POSIX
 {
-	if(key)
-		setKey(key);
+	setKey(key);
 }
 
 bool Aes256BaseLayer::flush()
 {
 	bool res = false;
 
-	switch(m_state) {
-	case StateConnected:
+	switch(m_encState) {
+	case EncStateConnected:
+		m_encState = EncStateReady;
 		sendIV();
 		res = true;
-		m_state = StateAwaitIV;
-		break;
-	case StateDisconnected:
-	case StateAwaitIV:
-	case StateReady:
-	case StateEncoding:
+		STORED_FALLTHROUGH
+	case EncStateDisconnected:
+	case EncStateReady:
+	case EncStateEncoding:
 	default:;
 		// Nothing to do.
 	}
@@ -64,79 +63,72 @@ bool Aes256BaseLayer::flush()
 
 void Aes256BaseLayer::reset()
 {
-	m_state = StateDisconnected;
+	m_encState = EncStateDisconnected;
+	m_decState = DecStateDisconnected;
 	m_lastError = ENOTCONN;
 	base::reset();
 }
 
 void Aes256BaseLayer::connected()
 {
-	m_state = StateConnected;
+	m_encState = EncStateConnected;
+	if(m_decState == DecStateDisconnected)
+		m_decState = DecStateConnected;
 	m_lastError = 0;
+	base::connected();
 }
 
 void Aes256BaseLayer::disconnected()
 {
-	m_state = StateDisconnected;
-	m_lastError = ENOTCONN;
+	m_encState = EncStateDisconnected;
+	m_decState = DecStateDisconnected;
+	if(!m_lastError)
+		m_lastError = ENOTCONN;
 	base::disconnected();
+}
+
+int Aes256BaseLayer::lastError() const noexcept
+{
+	return m_lastError;
 }
 
 void Aes256BaseLayer::decode(void* buffer, size_t len)
 {
 	uint8_t* buf = static_cast<uint8_t*>(buffer);
 
-again:
-	switch(m_state) {
-	case StateDisconnected:
+	switch(m_decState) {
+	case DecStateDisconnected:
 		// Ignore data.
 		return;
-	case StateConnected:
-		m_state = StateAwaitIV;
-		sendIV();
-		goto again;
-	case StateAwaitIV:
-		// Expect IV.
-		if(len != BlockSize + 1 || buf[0] != CmdReset) {
-			// Invalid command.
-			m_lastError = EINVAL;
-			return;
-		}
-
-		memcpy(m_iv_dec, buf + 1, BlockSize);
-		if((m_lastError = init(m_key, m_iv_enc, m_iv_dec)) != 0) {
-			// Initialization error.
-			m_state = StateDisconnected;
-			return;
-		}
-
-		m_state = StateReady;
-		base::connected();
-		break;
-	case StateReady:
-	case StateEncoding: {
+	case DecStateConnected:
+	case DecStateReady: {
 		// Decrypt data.
 		if(len == 0) {
 			// Nothing to do.
 			return;
 		}
 		if(len == BlockSize + 1 && buf[0] == CmdReset) {
-			// Re-initialization.
-			m_state = StateConnected;
-			goto again;
+			// Got IV for decryption.
+			m_lastError = initDecrypt(m_key, buf + 1);
+			if(m_lastError) {
+				// Initialization error.
+				disconnected();
+				return;
+			}
+			m_decState = DecStateReady;
+			return;
 		}
-		if(len % BlockSize != 0) {
+		if(m_decState != DecStateReady || len % BlockSize != 0) {
 			// Invalid block.
 			m_lastError = EINVAL;
-			m_state = StateDisconnected;
-			base::disconnected();
+			disconnected();
 			return;
 		}
 
-		if((m_lastError = decrypt(buf, len)) != 0) {
+		m_lastError = decrypt(buf, len);
+		if(m_lastError) {
 			// Decryption error.
-			m_state = StateDisconnected;
-			base::disconnected();
+			disconnected();
 			return;
 		}
 
@@ -166,35 +158,31 @@ void Aes256BaseLayer::encodeEncrypted(void const* buffer, size_t len, bool last)
 void Aes256BaseLayer::encode(void const* buffer, size_t len, bool last)
 {
 again:
-	switch(m_state) {
-	case StateDisconnected:
+	switch(m_encState) {
+	case EncStateDisconnected:
 		// Ignore data.
 		return;
-	case StateConnected:
-		m_state = StateAwaitIV;
+	case EncStateConnected:
+		m_encState = EncStateReady;
 		sendIV();
 		goto again;
-	case StateAwaitIV:
-		// Can't send data before IV exchange.
-		m_lastError = EINVAL;
-		return;
-	case StateReady: {
+	case EncStateReady: {
 		// Encrypt data.
 		if(len == 0) {
 			// Nothing to do.
 			return;
 		}
 
-		m_state = StateEncoding;
+		m_encState = EncStateEncoding;
 		m_bufferLen = 0;
 		STORED_FALLTHROUGH
 	}
-	case StateEncoding: {
+	case EncStateEncoding: {
 		uint8_t const* buffer_ = static_cast<uint8_t const*>(buffer);
 		int res = 0;
 		while(len && !res) {
 			if(likely(m_bufferLen == 0)) {
-				size_t chunk = len & ~(BlockSize - 1);
+				size_t chunk = len & ~((size_t)BlockSize - 1U);
 				if(likely(chunk)) {
 					// Full chunks to encrypt directly.
 					res = encrypt(buffer_, chunk, false);
@@ -228,20 +216,21 @@ again:
 			// Add PKCS#7 padding.
 			size_t padding = BlockSize - m_bufferLen % BlockSize;
 			for(size_t i = m_bufferLen; i < BlockSize; ++i)
+				// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
 				m_buffer[i] = static_cast<uint8_t>(padding);
 
 			res = encrypt(m_buffer, BlockSize, true);
-			m_state = StateReady;
+			m_encState = EncStateReady;
 		}
 
 		if(res) {
 			// Encryption error.
 			m_lastError = res;
-			m_state = StateDisconnected;
-			base::disconnected();
 
 			if(last)
 				base::encode(nullptr, 0, true);
+
+			disconnected();
 		}
 		break;
 	}
@@ -254,38 +243,41 @@ again:
  */
 void Aes256BaseLayer::sendIV() noexcept
 {
-	fillRandom(m_iv_enc, BlockSize);
-	uint8_t cmd = (uint8_t)CmdReset;
-	base::encode(&cmd, 1, false);
-	base::encode(m_iv_enc, BlockSize, true);
+	uint8_t buf[BlockSize + 1];
+	buf[0] = (uint8_t)CmdReset;
+	fillRandom(buf + 1, BlockSize);
+
+	m_lastError = initEncrypt(m_key, buf + 1);
+	if(m_lastError) {
+		// Initialization error.
+		disconnected();
+		return;
+	}
+
+	base::encode(buf, sizeof(buf), true);
 }
 
 /*!
  * \brief Set the pre-shared key.
  *
- * Terminates the current connection if any.
+ * Make sure to switch the key at the same time on both sides.
  */
-void Aes256BaseLayer::setKey(void const* key)
+void Aes256BaseLayer::setKey(void const* key) noexcept
 {
-	stored_assert(key);
+	if(!key)
+		memset(m_key, 0, KeySize);
+	else
+		memcpy(m_key, key, KeySize);
 
-	memcpy(m_key, key, KeySize);
-
-	switch(m_state) {
-	case StateDisconnected:
+	switch(m_encState) {
+	case EncStateDisconnected:
 		// Nothing to do.
 		break;
-	case StateReady:
-	case StateEncoding:
-		m_state = StateDisconnected;
-		base::disconnected();
-		STORED_FALLTHROUGH
-	case StateConnected:
-	case StateAwaitIV:
+	case EncStateConnected:
+	case EncStateReady:
+	case EncStateEncoding:
 	default:
-		sendIV();
-		m_state = StateAwaitIV;
-		break;
+		m_encState = EncStateConnected;
 	}
 }
 
@@ -327,8 +319,17 @@ Aes256Layer::Aes256Layer(void const* key, ProtocolLayer* up, ProtocolLayer* down
 	, m_ctx_enc()
 	, m_ctx_dec()
 {
+	// NOLINTNEXTLINE
 	m_ctx_enc = new struct AES_ctx;
-	m_ctx_dec = new struct AES_ctx;
+
+	try {
+		// NOLINTNEXTLINE
+		m_ctx_dec = new struct AES_ctx;
+	} catch(...) {
+		delete static_cast<struct AES_ctx*>(m_ctx_enc);
+		m_ctx_enc = nullptr;
+		STORED_rethrow;
+	}
 }
 
 Aes256Layer::~Aes256Layer()
@@ -337,10 +338,17 @@ Aes256Layer::~Aes256Layer()
 	delete static_cast<struct AES_ctx*>(m_ctx_dec);
 }
 
-int Aes256Layer::init(uint8_t const* key, uint8_t const* iv_enc, uint8_t const* iv_dec) noexcept
+int Aes256Layer::initEncrypt(uint8_t const* key, uint8_t const* iv) noexcept
 {
-	AES_init_ctx_iv(static_cast<struct AES_ctx*>(m_ctx_enc), key, iv_enc);
-	AES_init_ctx_iv(static_cast<struct AES_ctx*>(m_ctx_dec), key, iv_dec);
+	struct AES_ctx* ctx = static_cast<struct AES_ctx*>(m_ctx_enc);
+	AES_init_ctx_iv(ctx, key, iv);
+	return 0;
+}
+
+int Aes256Layer::initDecrypt(uint8_t const* key, uint8_t const* iv) noexcept
+{
+	struct AES_ctx* ctx = static_cast<struct AES_ctx*>(m_ctx_dec);
+	AES_init_ctx_iv(ctx, key, iv);
 	return 0;
 }
 
@@ -354,6 +362,10 @@ int Aes256Layer::decrypt(uint8_t* buffer, size_t len) noexcept
 	AES_CTR_xcrypt_buffer(static_cast<struct AES_ctx*>(m_ctx_dec), buffer, len);
 
 	size_t padding = buffer[len - 1];
+	if(padding == 0 || padding > BlockSize)
+		// Invalid padding.
+		return EINVAL;
+
 	if(padding >= len)
 		return 0;
 
@@ -367,14 +379,11 @@ int Aes256Layer::encrypt(uint8_t const* buffer, size_t len, bool last) noexcept
 	stored_assert(len % BlockSize == 0);
 
 	uint8_t buf[BlockSize];
-	for(size_t offset = 0; offset < len; offset += BlockSize) {
-		memcpy(buf, buffer + offset, BlockSize);
+	for(; len; len -= BlockSize, buffer += BlockSize) {
+		memcpy(buf, buffer, BlockSize);
 		AES_CTR_xcrypt_buffer(static_cast<struct AES_ctx*>(m_ctx_enc), buf, BlockSize);
-		encodeEncrypted(buf, BlockSize, false);
+		encodeEncrypted(buf, BlockSize, last && len == BlockSize);
 	}
-
-	if(last)
-		encodeEncrypted(nullptr, 0, last);
 
 	return 0;
 }

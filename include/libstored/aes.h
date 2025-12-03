@@ -41,9 +41,10 @@ protected:
 	explicit Aes256BaseLayer(
 		void const* key = nullptr, ProtocolLayer* up = nullptr,
 		ProtocolLayer* down = nullptr);
-	virtual ~Aes256BaseLayer() override is_default
 
 public:
+	virtual ~Aes256BaseLayer() override is_default
+
 	virtual void decode(void* buffer, size_t len) override;
 	virtual void encode(void const* buffer, size_t len, bool last = true) override;
 #    ifndef DOXYGEN
@@ -56,18 +57,23 @@ public:
 	virtual void disconnected() override;
 	int lastError() const noexcept;
 
-	void setKey(void const* key);
+	void setKey(void const* key) noexcept;
 	void fillRandom(uint8_t* buffer, size_t len) noexcept;
 
 protected:
 	void sendIV() noexcept;
 
 	/*!
-	 * \brief Low-level initialization.
+	 * \brief Low-level initialization for #encrypt().
 	 * \return 0 on success, otherwise an errno
 	 */
-	virtual int
-	init(uint8_t const* key, uint8_t const* iv_enc, uint8_t const* iv_dec) noexcept = 0;
+	virtual int initEncrypt(uint8_t const* key, uint8_t const* iv) noexcept = 0;
+
+	/*!
+	 * \brief Low-level initialization for #decrypt().
+	 * \return 0 on success, otherwise an errno
+	 */
+	virtual int initDecrypt(uint8_t const* key, uint8_t const* iv) noexcept = 0;
 
 	/*!
 	 * \brief Decrypt data in \p buffer.
@@ -98,19 +104,32 @@ protected:
 
 private:
 	uint8_t m_key[KeySize];
-	uint8_t m_iv_enc[BlockSize];
-	uint8_t m_iv_dec[BlockSize];
 	uint8_t m_buffer[BlockSize];
 	size_t m_bufferLen;
 
-	enum State {
-		StateDisconnected,
-		StateConnected,
-		StateAwaitIV,
-		StateReady,
-		StateEncoding,
+	enum EncState
+#    if STORED_cplusplus >= 201103L
+		: uint8_t
+#    endif
+	{
+		EncStateDisconnected,
+		EncStateConnected,
+		EncStateReady,
+		EncStateEncoding,
 	};
-	State m_state;
+	EncState m_encState;
+
+	enum DecState
+#    if STORED_cplusplus >= 201103L
+		: uint8_t
+#    endif
+	{
+		DecStateDisconnected,
+		DecStateConnected,
+		DecStateReady,
+	};
+	DecState m_decState;
+
 	int m_lastError;
 #    ifdef STORED_OS_POSIX
 	unsigned int m_seed;
@@ -134,8 +153,8 @@ public:
 	virtual ~Aes256Layer() override;
 
 protected:
-	virtual int
-	init(uint8_t const* key, uint8_t const* iv_enc, uint8_t const* iv_dec) noexcept override;
+	virtual int initEncrypt(uint8_t const* key, uint8_t const* iv) noexcept override;
+	virtual int initDecrypt(uint8_t const* key, uint8_t const* iv) noexcept override;
 	virtual int decrypt(uint8_t* buffer, size_t len) noexcept override;
 	virtual int encrypt(uint8_t const* buffer, size_t len, bool last) noexcept override;
 

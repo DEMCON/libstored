@@ -236,7 +236,7 @@ stored::SegmentationLayer
 .. doxygenclass:: stored::SegmentationLayer
 
 stored::SerialLayer
--------------------------
+-------------------
 
 .. doxygenclass:: stored::SerialLayer
 
@@ -248,7 +248,7 @@ stored::StdioLayer
 stored::SyncZmqLayer
 --------------------
 
-.. doxygenclass:: stored::SyncZmqLayer
+It is a typedef for ``stored::ZmqLayer``.
 
 stored::TerminalLayer
 ---------------------
@@ -256,7 +256,7 @@ stored::TerminalLayer
 .. doxygenclass:: stored::TerminalLayer
 
 stored::XsimLayer
------------------------
+-----------------
 
 .. doxygenclass:: stored::XsimLayer
 
@@ -266,7 +266,7 @@ stored::ZmqBaseLayer
 .. doxygenclass:: stored::ZmqBaseLayer
 
 stored::ZmqLayer
---------------------
+----------------
 
 .. doxygenclass:: stored::ZmqLayer
 
