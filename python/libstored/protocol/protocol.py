@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import asyncio
 import crcmod
+import Crypto.Cipher.AES
 import inspect
 import logging
 import struct
@@ -1105,6 +1106,39 @@ class MuxLayer(ProtocolLayer):
 
 
 
+class Aes256Layer(ProtocolLayer):
+    '''
+    A ProtocolLayer that adds AES-256 encryption/decryption.
+    '''
+
+    name = 'aes256'
+
+    def __init__(self, key : bytes | str | None=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if key is None:
+            raise ValueError('Key file or binary string must be provided for Aes256Layer')
+
+        if isinstance(key, str):
+            with open(key, 'rb') as f:
+                key = f.read()
+        if len(key) != 32:
+            raise ValueError('Key must be 32 bytes for AES-256')
+
+        self._key = key
+        self._encrypt = None
+        self._decrypt = None
+
+    async def encode(self, data : ProtocolLayer.Packet) -> None:
+        # Placeholder for actual encryption logic
+        await super().encode(data)
+
+    async def decode(self, data : ProtocolLayer.Packet) -> None:
+        # Placeholder for actual decryption logic
+        await super().decode(data)
+
+
+
 layer_types : list[typing.Type[ProtocolLayer]] = [
     AsciiEscapeLayer,
     TerminalLayer,
@@ -1118,6 +1152,7 @@ layer_types : list[typing.Type[ProtocolLayer]] = [
     LoopbackLayer,
     RawLayer,
     MuxLayer,
+    Aes256Layer,
 ]
 
 def register_layer_type(layer_type : typing.Type[ProtocolLayer]) -> None:
