@@ -127,7 +127,7 @@ static void print_help(FILE* out, char const* progname)
 {
 	fprintf(out,
 		"Usage: %s [-h] [-v] [-p <port>] {-s <endpoint>|-c <endpoint>} [-b <BER>] [-e "
-		"<key>]\n",
+		"<key file>]\n",
 		progname);
 	fprintf(out, "where\n");
 	fprintf(out, "  -h   Show this help message.\n");
@@ -138,7 +138,9 @@ static void print_help(FILE* out, char const* progname)
 		stored::DebugZmqLayer::DefaultPort);
 	fprintf(out, "  -v   Verbose output of sync connections.\n");
 	fprintf(out, "  -b   Bit error rate (BER) for lossy channel. Default: 0\n");
-	fprintf(out, "  -e   Encrypt communication with specified AES-256 key.\n");
+	fprintf(out,
+		"  -e   Encrypt communication with the %zu-byte AES-256 key, read from the file.\n",
+		(size_t)stored::Aes256Layer::KeySize);
 }
 
 struct Arguments {
@@ -191,10 +193,25 @@ static Arguments parse_arguments(int argc, char** argv)
 				STORED_throw(std::invalid_argument{e.what()});
 			}
 			break;
-		case 'e':
-			args.key = optarg;
+		case 'e': {
+			FILE* f = fopen(optarg, "rb");
 			args.key.resize(stored::Aes256Layer::KeySize);
+
+			if(!f) {
+				log("Cannot open key file '%s'; %s\n", optarg, strerror(errno));
+				STORED_throw(std::invalid_argument{"Cannot open key file"});
+			}
+
+			if(fread(&args.key[0], stored::Aes256Layer::KeySize, 1, f) != 1) {
+				log("Cannot read key file '%s'; %s\n", optarg, strerror(errno));
+				fclose(f);
+				STORED_throw(std::invalid_argument{"Cannot read key file"});
+			}
+
+			fclose(f);
+			log("Read AES-256 key from '%s'\n", optarg);
 			break;
+		}
 		case 'h':
 			print_help(stdout, argv[0]);
 			STORED_throw(exit_now());
