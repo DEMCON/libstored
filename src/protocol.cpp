@@ -358,14 +358,29 @@ size_t TerminalLayer::mtu() const
 SegmentationLayer::SegmentationLayer(size_t mtu, ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
 	, m_mtu(mtu)
+	, m_lowerMtu()
 	, m_encoded()
-{}
+{
+	lowerMtu();
+}
 
 void SegmentationLayer::reset()
 {
 	m_decode.clear();
 	m_encoded = 0;
 	base::reset();
+}
+
+void SegmentationLayer::connected()
+{
+	m_lowerMtu = lowerMtu();
+	if(m_lowerMtu == 0)
+		m_lowerMtu = std::numeric_limits<size_t>::max();
+	else if(m_lowerMtu == 1)
+		m_lowerMtu = 2;
+
+	m_encoded = 0;
+	base::connected();
 }
 
 void SegmentationLayer::disconnected()
@@ -423,14 +438,10 @@ void SegmentationLayer::encode(void const* buffer, size_t len, bool last)
 {
 	char const* buffer_ = static_cast<char const*>(buffer);
 
-	size_t mtu = lowerMtu();
-	if(mtu == 0)
-		mtu = std::numeric_limits<size_t>::max();
-	else if(mtu == 1)
-		mtu = 2;
+	stored_assert(m_lowerMtu > m_encoded);
 
 	while(len) {
-		size_t remaining = mtu - m_encoded - 1;
+		size_t remaining = m_lowerMtu - m_encoded - 1;
 		size_t chunk = std::min(len, remaining);
 
 		if(chunk) {
