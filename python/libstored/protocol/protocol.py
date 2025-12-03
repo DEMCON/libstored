@@ -7,6 +7,8 @@ from __future__ import annotations
 import asyncio
 import crcmod
 import Crypto.Cipher.AES
+import Crypto.Random
+import Crypto.Util.Padding
 import inspect
 import logging
 import struct
@@ -1115,13 +1117,19 @@ class Aes256Layer(ProtocolLayer):
 
     def __init__(self, key : bytes | str | None=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._encrypt = None
+        self._decrypt = None
 
         if key is None:
             raise ValueError('Key file or binary string must be provided for Aes256Layer')
 
+        self.set_key(key)
+
+    def set_key(self, key : bytes | str) -> None:
         if isinstance(key, str):
             with open(key, 'rb') as f:
                 key = f.read()
+
         if len(key) != 32:
             raise ValueError('Key must be 32 bytes for AES-256')
 
@@ -1130,12 +1138,56 @@ class Aes256Layer(ProtocolLayer):
         self._decrypt = None
 
     async def encode(self, data : ProtocolLayer.Packet) -> None:
-        # Placeholder for actual encryption logic
+        if isinstance(data, str):
+            data = data.encode()
+        elif isinstance(data, memoryview):
+            data = data.cast('B')
+
+        if self._encrypt is None:
+            await self._send_iv()
+
+        assert self._encrypt is not None
+        data = Crypto.Util.Padding.pad(data, 16)
+        data = self._encrypt.encrypt(data)
         await super().encode(data)
 
     async def decode(self, data : ProtocolLayer.Packet) -> None:
-        # Placeholder for actual decryption logic
+        if isinstance(data, str):
+            data = data.encode()
+        elif isinstance(data, memoryview):
+            data = data.cast('B')
+
+        if len(data) == 17 and data[0:1] == b'R':
+            # Received IV for decryption
+            iv = data[1:17]
+            self._decrypt = Crypto.Cipher.AES.new(self._key, Crypto.Cipher.AES.MODE_CTR, iv)
+            self.logger.debug('Received IV for decryption')
+            return
+
+        if self._decrypt is None:
+            self.logger.debug('Got data before IV, waiting for IV')
+            self._decrypt = None
+            return
+
+        if len(data) % 16 != 0:
+            self.logger.debug('Data length not multiple of 16, dropped')
+            self._decrypt = None
+            return
+
+        data = self._decrypt.decrypt(data)
+        try:
+            data = Crypto.Util.Padding.unpad(data, 16)
+        except ValueError:
+            self.logger.debug('Invalid padding, dropped')
+            self._decrypt = None
+            return
+
         await super().decode(data)
+
+    async def _send_iv(self) -> None:
+        iv = Crypto.Random.get_random_bytes(16)
+        self._encrypt = Crypto.Cipher.AES.new(self._key, Crypto.Cipher.AES.MODE_CTR, iv)
+        await super().encode(b'R' + iv)
 
 
 
