@@ -10,6 +10,7 @@ jinja2
 matplotlib
 natsort
 platformdirs
+pycryptodome
 pyserial >= 3.1
 pyzmq
 textx
