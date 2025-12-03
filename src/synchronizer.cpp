@@ -848,7 +848,12 @@ void SyncConnection::disconnected()
 {
 	dropNonSources();
 	base::disconnected();
+}
+
+void SyncConnection::connected()
+{
 	helloAgain();
+	base::connected();
 }
 
 /*!

@@ -125,7 +125,9 @@ private:
 
 static void print_help(FILE* out, char const* progname)
 {
-	fprintf(out, "Usage: %s [-h] [-v] [-p <port>] {-s <endpoint>|-c <endpoint>} [-b <BER>]\n",
+	fprintf(out,
+		"Usage: %s [-h] [-v] [-p <port>] {-s <endpoint>|-c <endpoint>} [-b <BER>] [-e "
+		"<key>]\n",
 		progname);
 	fprintf(out, "where\n");
 	fprintf(out, "  -h   Show this help message.\n");
@@ -136,6 +138,7 @@ static void print_help(FILE* out, char const* progname)
 		stored::DebugZmqLayer::DefaultPort);
 	fprintf(out, "  -v   Verbose output of sync connections.\n");
 	fprintf(out, "  -b   Bit error rate (BER) for lossy channel. Default: 0\n");
+	fprintf(out, "  -e   Encrypt communication with specified AES-256 key.\n");
 }
 
 struct Arguments {
@@ -143,6 +146,7 @@ struct Arguments {
 	int debug_port = stored::DebugZmqLayer::DefaultPort;
 	std::string client;
 	std::string server;
+	std::string key;
 	float ber = 0;
 };
 
@@ -154,7 +158,7 @@ static Arguments parse_arguments(int argc, char** argv)
 
 	int c;
 	// flawfinder: ignore
-	while((c = getopt(argc, argv, "hs:c:p:vb:")) != -1) {
+	while((c = getopt(argc, argv, "hs:c:p:vb:e:")) != -1) {
 		switch(c) {
 		case 'p':
 			try {
@@ -186,6 +190,10 @@ static Arguments parse_arguments(int argc, char** argv)
 			} catch(std::exception& e) {
 				STORED_throw(std::invalid_argument{e.what()});
 			}
+			break;
+		case 'e':
+			args.key = optarg;
+			args.key.resize(stored::Aes256Layer::KeySize);
 			break;
 		case 'h':
 			print_help(stdout, argv[0]);
@@ -280,7 +288,8 @@ class SyncStack {
 	STORED_CLASS_NOCOPY(SyncStack)
 public:
 	explicit SyncStack(
-		ExampleSync& store, char const* endpoint, bool server, bool verbose, float ber = 0)
+		ExampleSync& store, char const* endpoint, bool server, bool verbose = false,
+		float ber = 0, char const* key = nullptr)
 		: m_zmqLayer(nullptr, endpoint, server)
 	{
 		if((errno = m_zmqLayer.lastError())) {
@@ -305,6 +314,10 @@ public:
 		m_ch1 = alloc<stored::ProtocolLayer>();
 		m_ch1->wrap(*ch1_print);
 		mux.get()->map(1, *m_ch1);
+
+		if(key)
+			// Encrypt communication.
+			wrap<stored::Aes256Layer>(key);
 
 		// We don't want to do ARQ on large messages, so we segment them to some
 		// appropriate size.
@@ -552,10 +565,13 @@ static void run(Arguments const& args, ExampleSync& store, DebugStack& debugStac
 	std::unique_ptr<SyncStack> syncStack;
 
 	if(!args.client.empty()) {
-		syncStack.reset(new SyncStack{store, args.client.c_str(), false, args.verbose});
+		syncStack.reset(new SyncStack{
+			store, args.client.c_str(), false, args.verbose, 0,
+			args.key.empty() ? nullptr : args.key.c_str()});
 	} else if(!args.server.empty()) {
-		syncStack.reset(
-			new SyncStack{store, args.server.c_str(), true, args.verbose, args.ber});
+		syncStack.reset(new SyncStack{
+			store, args.server.c_str(), true, args.verbose, args.ber,
+			args.key.empty() ? nullptr : args.key.c_str()});
 	}
 
 	stored::Poller poller;

@@ -1516,8 +1516,13 @@ TEST(Aes256Layer, EncodeDecode)
 	LoggingLayer la;
 	la.stack(a);
 
+#if 0
+	// Print encrypted messages.
 	stored::PrintLayer p;
 	p.wrap(a);
+#else
+	auto& p = a;
+#endif
 
 	stored::Aes256Layer b((uint8_t const*)key.data());
 	LoggingLayer lb;
@@ -1525,11 +1530,54 @@ TEST(Aes256Layer, EncodeDecode)
 
 	stored::Loopback l(p, b);
 
+	// Normal encode/decode.
 	la.encode("1", 1);
 	EXPECT_EQ(lb.decoded().at(0), "1");
+	EXPECT_EQ(a.lastError(), 0);
+	EXPECT_EQ(b.lastError(), 0);
 
 	lb.encode("2", 1);
 	EXPECT_EQ(la.decoded().at(0), "2");
+
+	la.encode("3", 1);
+	EXPECT_EQ(lb.decoded().at(1), "3");
+
+	la.encode("0123456789abcdef", 16);
+	EXPECT_EQ(lb.decoded().at(2), "0123456789abcdef");
+
+	la.encode("0123456789abcdef0", 17);
+	EXPECT_EQ(lb.decoded().at(3), "0123456789abcdef0");
+
+	lb.encode("xyz", 3);
+	EXPECT_EQ(la.decoded().at(1), "xyz");
+	EXPECT_EQ(a.lastError(), 0);
+	EXPECT_EQ(b.lastError(), 0);
+
+	// Reconnect.
+	la.clear();
+	lb.clear();
+	a.connected();
+	b.connected();
+
+	la.encode("abc", 3);
+	EXPECT_EQ(lb.decoded().at(0), "abc");
+	EXPECT_EQ(a.lastError(), 0);
+	EXPECT_EQ(b.lastError(), 0);
+
+	lb.encode("def", 3);
+	EXPECT_EQ(la.decoded().at(0), "def");
+
+	// Change key.
+	key = "another secure key of 32 bytes  ";
+	ASSERT_EQ(key.size(), stored::Aes256Layer::KeySize);
+	a.setKey((uint8_t const*)key.data());
+	b.setKey((uint8_t const*)key.data());
+
+	la.encode("ghij", 4);
+	EXPECT_EQ(lb.decoded().at(1), "ghij");
+
+	lb.encode("klmn", 4);
+	EXPECT_EQ(la.decoded().at(1), "klmn");
 }
 
 } // namespace

@@ -560,6 +560,7 @@ public:
 
 	virtual void reset() override;
 	virtual void disconnected() override;
+	virtual void connected() override;
 
 protected:
 	Id nextId();
