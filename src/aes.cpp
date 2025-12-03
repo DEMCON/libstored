@@ -71,6 +71,15 @@ void Aes256BaseLayer::reset()
 
 void Aes256BaseLayer::connected()
 {
+	size_t mtu = this->mtu();
+	if(mtu < BlockSize + 1) {
+		// MTU too small.
+		m_lastError = EMSGSIZE;
+		if(m_encState != EncStateDisconnected || m_decState != DecStateDisconnected)
+			disconnected();
+		return;
+	}
+
 	m_encState = EncStateConnected;
 	if(m_decState == DecStateDisconnected)
 		m_decState = DecStateConnected;

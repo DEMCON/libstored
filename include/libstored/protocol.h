@@ -520,10 +520,12 @@ public:
 	size_t mtu() const final;
 	size_t lowerMtu() const;
 	virtual void reset() override;
+	virtual void connected() override;
 	virtual void disconnected() override;
 
 private:
 	size_t m_mtu;
+	size_t m_lowerMtu;
 	Vector<char>::type m_decode;
 	size_t m_encoded;
 };
