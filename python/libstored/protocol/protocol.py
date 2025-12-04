@@ -1111,6 +1111,13 @@ class MuxLayer(ProtocolLayer):
 class Aes256Layer(ProtocolLayer):
     '''
     A ProtocolLayer that adds AES-256 encryption/decryption.
+
+    The unified mode allows using the same cipher state for encryption and decryption, which uses a
+    single key stream for all data.
+
+    A specific mode is the reqrep mode, which is a unified mode, but changes the IV for every
+    request/reply pair.  This is useful for a ZeroMQ REQ/REP pattern, where the server may handle
+    multiple clients simultaneously, which does not allow having a single cipher state.
     '''
 
     name = 'aes256'
@@ -1158,9 +1165,27 @@ class Aes256Layer(ProtocolLayer):
         Set unified mode.
         '''
 
-        if self._reqrep:
-            return
+        self._unified = enable
+        self._encrypt = None
+        if enable:
+            self._decrypt = None
+        else:
+            self._reqrep = False
 
+    @property
+    def reqrep(self) -> bool:
+        '''
+        Return if reqrep mode is enabled.
+        '''
+        return self._reqrep
+
+    @reqrep.setter
+    def reqrep(self, enable : bool=True) -> None:
+        '''
+        Set reqrep mode.
+        '''
+
+        self._reqrep = enable
         self._unified = enable
         self._encrypt = None
         if enable:
@@ -1172,13 +1197,15 @@ class Aes256Layer(ProtocolLayer):
         elif isinstance(data, memoryview):
             data = data.cast('B')
 
-        prefix = None
-        if self._encrypt is None:
-            prefix = self._iv(self.unified)
-
-        assert self._encrypt is not None
         data = Crypto.Util.Padding.pad(data, 16)
+
+        prefix = None
+        if self._encrypt is None or self.reqrep:
+            prefix = self._iv(self.unified)
+            assert self._encrypt is not None
+
         data = self._encrypt.encrypt(data)
+
         if prefix is not None:
             data = prefix + data
         await super().encode(data)
@@ -1198,10 +1225,12 @@ class Aes256Layer(ProtocolLayer):
                 self._decrypt = cypher
                 self._encrypt = cypher
                 self._unified = True
+                self._reqrep = False
             elif data[0:1] == b'B':
                 self.logger.debug('Received IV for decryption')
                 self._decrypt = cypher
                 self._unified = False
+                self._reqrep = False
             else:
                 self.logger.debug('Invalid IV prefix')
                 self._decrypt = None
@@ -1235,11 +1264,11 @@ class Aes256Layer(ProtocolLayer):
 
     def _iv(self, unified : bool) -> bytes:
         iv = Crypto.Random.get_random_bytes(16)
-        cipher = Crypto.Cipher.AES.new(self._key, Crypto.Cipher.AES.MODE_CTR, nonce=b'', initial_value=iv)
-        cipher.nonce
-        self._encrypt = cipher
+        # Make sure not to wrap around the counter soon.
+        iv = bytes([iv[0] & 0x0f]) + iv[1:]
+        self._encrypt = Crypto.Cipher.AES.new(self._key, Crypto.Cipher.AES.MODE_CTR, nonce=b'', initial_value=iv)
         if unified:
-            self._decrypt = cipher
+            self._decrypt = self._encrypt
             return b'U' + iv
         else:
             return b'B' + iv

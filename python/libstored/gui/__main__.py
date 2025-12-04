@@ -1260,7 +1260,7 @@ def main():
 
     stack = None
     if args.encrypted:
-        stack = lprot.Aes256Layer(args.encrypted, unified=True)
+        stack = lprot.Aes256Layer(args.encrypted, reqrep=True)
         logger.info(f'Enable AES-256 encryption with key file {args.encrypted}')
 
     client = laio_zmq.ZmqClient(host=args.server, port=args.port, multi=args.multi, use_state='gui', stack=stack)

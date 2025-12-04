@@ -262,6 +262,8 @@ void Aes256BaseLayer::sendIV(bool unified, bool last) noexcept
 	uint8_t buf[BlockSize + 1];
 	buf[0] = (uint8_t)(unified ? CmdUnified : CmdBidirectional);
 	fillRandom(buf + 1, BlockSize);
+	// Make sure not to wrap around the counter soon.
+	buf[1] = (uint8_t)(buf[1] & 0x0fU);
 
 	m_lastError = unified ? initUnified(m_key, buf + 1) : initEncrypt(m_key, buf + 1);
 	if(m_lastError) {
