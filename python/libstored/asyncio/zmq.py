@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 from __future__ import annotations
+import logging
 
 import aiofiles
 import asyncio
@@ -1308,6 +1309,7 @@ class ZmqClient(Work):
     def __init__(self, host : str='localhost', port : int=lprot.default_port,
                 multi : bool=False, timeout : float | None=None, context : None | zmq.asyncio.Context=None,
                 t : str | None = None, use_state : str | None=None,
+                stack : str | lprot.ProtocolLayer | None=None,
                 *args, **kwargs):
 
         super().__init__(*args, **kwargs)
@@ -1322,6 +1324,18 @@ class ZmqClient(Work):
         self._t0 : float = 0
         self._timestamp_to_time = lambda t: float(t)
         self._use_state = use_state
+
+        if isinstance(stack, str):
+            self._stack = lprot.build_stack(stack)
+        elif isinstance(stack, lprot.ProtocolLayer):
+            self._stack = stack
+        else:
+            self._stack = lprot.ProtocolLayer()
+        self._stack_encoded : bytearray | None = None
+        self._stack_decoded : bytearray | None = None
+        self._stack.up = self._stack_up
+        self._stack.down = self._stack_down
+
 
         self._reset()
 
@@ -1666,16 +1680,65 @@ class ZmqClient(Work):
         finally:
             self._req_task = None
 
+    def _stack_clear(self) -> None:
+        self._stack_encoded = None
+        self._stack_decoded = None
+
+    def _stack_up(self, data : lprot.ProtocolLayer.Packet) -> None:
+        if isinstance(data, str):
+            data = data.encode()
+        elif isinstance(data, memoryview):
+            data = data.cast('B')
+
+        if self._stack_decoded is None:
+            self._stack_decoded = bytearray(data)
+        else:
+            self._stack_decoded.extend(data)
+
+    def _stack_down(self, data : lprot.ProtocolLayer.Packet) -> None:
+        if isinstance(data, str):
+            data = data.encode()
+        elif isinstance(data, memoryview):
+            data = data.cast('B')
+
+        if self._stack_encoded is None:
+            self._stack_encoded = bytearray(data)
+        else:
+            self._stack_encoded.extend(data)
+
     async def _req(self, msg : bytes) -> bytes:
         if not self.is_connected():
             raise lexc.InvalidState('Not connected')
 
         assert self._socket is not None
-        self.logger.debug('req %s', msg)
-        await self._socket.send(msg)
+
+        self._stack_clear()
+        await self._stack.encode(msg)
+        if self._stack_encoded is None:
+            raise lexc.OperationFailed('Stack did not produce data')
+
+        if self.logger.getEffectiveLevel() <= logging.DEBUG:
+            if self._stack_encoded != msg:
+                self.logger.debug('req %s -> %s', msg, bytes(self._stack_encoded))
+            else:
+                self.logger.debug('req %s', msg)
+
+        await self._socket.send(self._stack_encoded)
+
         rep = b''.join(await self._socket.recv_multipart())
-        self.logger.debug('rep %s', rep)
-        return rep
+        await self._stack.decode(rep)
+        if rep and self._stack_decoded is None:
+            raise lexc.InvalidResponse('Stack did not decode data')
+
+        decoded = bytes(self._stack_decoded) if self._stack_decoded is not None else b''
+
+        if self.logger.getEffectiveLevel() <= logging.DEBUG:
+            if self._stack_decoded != rep:
+                self.logger.debug('rep %s <- %s', decoded, rep)
+            else:
+                self.logger.debug('rep %s', decoded)
+
+        return decoded
 
 
 

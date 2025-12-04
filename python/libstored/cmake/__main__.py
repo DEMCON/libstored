@@ -52,9 +52,9 @@ def main():
             description='Generator for find_package(Libstored) in CMake',
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('-v', dest='verbose', default=0, help='enable verbose output', action='count')
+    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-v', '--verbose', dest='verbose', default=0, help='enable verbose output', action='count')
     parser.add_argument('-D', dest='define', metavar='key[=value]', default=[], nargs=1, action='append', help='CMake defines')
-    parser.add_argument('-V', action='version', version=__version__)
     parser.add_argument('filename', default='FindLibstored.cmake', nargs='?',
             type=str, help='Output filename')
     args = parser.parse_args()
