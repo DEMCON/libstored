@@ -32,6 +32,7 @@ Aes256BaseLayer::Aes256BaseLayer(void const* key, ProtocolLayer* up, ProtocolLay
 	, m_bufferLen()
 	, m_encState(EncStateDisconnected)
 	, m_decState(DecStateDisconnected)
+	, m_unified()
 	, m_lastError(ENOTCONN)
 #  ifdef STORED_OS_POSIX
 	// NOLINTNEXTLINE
@@ -39,26 +40,6 @@ Aes256BaseLayer::Aes256BaseLayer(void const* key, ProtocolLayer* up, ProtocolLay
 #  endif // STORED_OS_POSIX
 {
 	setKey(key);
-}
-
-bool Aes256BaseLayer::flush()
-{
-	bool res = false;
-
-	switch(m_encState) {
-	case EncStateConnected:
-		m_encState = EncStateReady;
-		sendIV();
-		res = true;
-		STORED_FALLTHROUGH
-	case EncStateDisconnected:
-	case EncStateReady:
-	case EncStateEncoding:
-	default:;
-		// Nothing to do.
-	}
-
-	return base::flush() || res;
 }
 
 void Aes256BaseLayer::reset()
@@ -103,8 +84,9 @@ int Aes256BaseLayer::lastError() const noexcept
 
 void Aes256BaseLayer::decode(void* buffer, size_t len)
 {
-	uint8_t* buf = static_cast<uint8_t*>(buffer);
+	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 
+again:
 	switch(m_decState) {
 	case DecStateDisconnected:
 		// Ignore data.
@@ -116,16 +98,35 @@ void Aes256BaseLayer::decode(void* buffer, size_t len)
 			// Nothing to do.
 			return;
 		}
-		if(len == BlockSize + 1 && buf[0] == CmdReset) {
+		if(len > BlockSize && len % BlockSize == 1) {
 			// Got IV for decryption.
-			m_lastError = initDecrypt(m_key, buf + 1);
+			switch(buffer_[0]) {
+			case CmdBidirectional:
+				if(unified())
+					unified(false);
+				m_lastError = initDecrypt(m_key, buffer_ + 1);
+				break;
+			case CmdUnified:
+				m_unified = true;
+				if(m_encState == EncStateConnected)
+					m_encState = EncStateReady;
+				m_lastError = initUnified(m_key, buffer_ + 1);
+				break;
+			default:
+				// Invalid command.
+				m_lastError = EINVAL;
+			}
+
 			if(m_lastError) {
 				// Initialization error.
 				disconnected();
 				return;
 			}
+
 			m_decState = DecStateReady;
-			return;
+			buffer_ += BlockSize + 1;
+			len -= BlockSize + 1;
+			goto again;
 		}
 		if(m_decState != DecStateReady || len % BlockSize != 0) {
 			// Invalid block.
@@ -134,7 +135,7 @@ void Aes256BaseLayer::decode(void* buffer, size_t len)
 			return;
 		}
 
-		m_lastError = decrypt(buf, len);
+		m_lastError = decrypt(buffer_, len, unified());
 		if(m_lastError) {
 			// Decryption error.
 			disconnected();
@@ -173,7 +174,13 @@ again:
 		return;
 	case EncStateConnected:
 		m_encState = EncStateReady;
-		sendIV();
+		if(unified()) {
+			if(m_decState == DecStateConnected)
+				m_decState = DecStateReady;
+			sendIV(true, false);
+		} else {
+			sendIV(false, false);
+		}
 		goto again;
 	case EncStateReady: {
 		// Encrypt data.
@@ -194,7 +201,7 @@ again:
 				size_t chunk = len & ~((size_t)BlockSize - 1U);
 				if(likely(chunk)) {
 					// Full chunks to encrypt directly.
-					res = encrypt(buffer_, chunk, false);
+					res = encrypt(buffer_, chunk, false, unified());
 					len -= chunk;
 					buffer_ += chunk;
 					continue;
@@ -212,7 +219,7 @@ again:
 			buffer_ += copy;
 			if(m_bufferLen == BlockSize) {
 				// Encrypt full buffer.
-				res = encrypt(m_buffer, BlockSize, false);
+				res = encrypt(m_buffer, BlockSize, false, unified());
 				m_bufferLen = 0;
 				continue;
 			}
@@ -228,7 +235,7 @@ again:
 				// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
 				m_buffer[i] = static_cast<uint8_t>(padding);
 
-			res = encrypt(m_buffer, BlockSize, true);
+			res = encrypt(m_buffer, BlockSize, true, unified());
 			m_encState = EncStateReady;
 		}
 
@@ -250,20 +257,20 @@ again:
 /*!
  * \brief Send out the initialization vector for encryption (so for decryption by the peer).
  */
-void Aes256BaseLayer::sendIV() noexcept
+void Aes256BaseLayer::sendIV(bool unified, bool last) noexcept
 {
 	uint8_t buf[BlockSize + 1];
-	buf[0] = (uint8_t)CmdReset;
+	buf[0] = (uint8_t)(unified ? CmdUnified : CmdBidirectional);
 	fillRandom(buf + 1, BlockSize);
 
-	m_lastError = initEncrypt(m_key, buf + 1);
+	m_lastError = unified ? initUnified(m_key, buf + 1) : initEncrypt(m_key, buf + 1);
 	if(m_lastError) {
 		// Initialization error.
 		disconnected();
 		return;
 	}
 
-	base::encode(buf, sizeof(buf), true);
+	base::encode(buf, sizeof(buf), last);
 }
 
 /*!
@@ -278,16 +285,30 @@ void Aes256BaseLayer::setKey(void const* key) noexcept
 	else
 		memcpy(m_key, key, KeySize);
 
-	switch(m_encState) {
-	case EncStateDisconnected:
-		// Nothing to do.
-		break;
-	case EncStateConnected:
-	case EncStateReady:
-	case EncStateEncoding:
-	default:
+	if(m_encState != EncStateDisconnected)
 		m_encState = EncStateConnected;
-	}
+	if(unified() && m_decState != DecStateDisconnected)
+		m_decState = DecStateConnected;
+}
+
+/*!
+ * \brief Configure unified mode.
+ */
+void Aes256BaseLayer::unified(bool enable) noexcept
+{
+	m_unified = enable;
+
+	stored_assert(m_encState != EncStateEncoding);
+
+	if(m_encState != EncStateDisconnected)
+		m_encState = EncStateConnected;
+	if(m_decState != DecStateDisconnected)
+		m_decState = DecStateConnected;
+}
+
+bool Aes256BaseLayer::unified() const noexcept
+{
+	return m_unified;
 }
 
 /*!
@@ -361,14 +382,29 @@ int Aes256Layer::initDecrypt(uint8_t const* key, uint8_t const* iv) noexcept
 	return 0;
 }
 
-int Aes256Layer::decrypt(uint8_t* buffer, size_t len) noexcept
+int Aes256Layer::initUnified(uint8_t const* key, uint8_t const* iv) noexcept
+{
+	struct AES_ctx* ctx = static_cast<struct AES_ctx*>(m_ctx_uni);
+	AES_init_ctx_iv(ctx, key, iv);
+	return 0;
+}
+
+int Aes256Layer::updateUnified(uint8_t const* iv) noexcept
+{
+	struct AES_ctx* ctx = static_cast<struct AES_ctx*>(m_ctx_uni);
+	AES_ctx_set_iv(ctx, iv);
+	return 0;
+}
+
+int Aes256Layer::decrypt(uint8_t* buffer, size_t len, bool unified) noexcept
 {
 	if(!len)
 		return 0;
 
 	stored_assert(len % BlockSize == 0);
 	stored_assert(buffer);
-	AES_CTR_xcrypt_buffer(static_cast<struct AES_ctx*>(m_ctx_dec), buffer, len);
+	AES_CTR_xcrypt_buffer(
+		static_cast<struct AES_ctx*>(unified ? m_ctx_uni : m_ctx_dec), buffer, len);
 
 	size_t padding = buffer[len - 1];
 	if(padding == 0 || padding > BlockSize)
@@ -382,7 +418,7 @@ int Aes256Layer::decrypt(uint8_t* buffer, size_t len) noexcept
 	return 0;
 }
 
-int Aes256Layer::encrypt(uint8_t const* buffer, size_t len, bool last) noexcept
+int Aes256Layer::encrypt(uint8_t const* buffer, size_t len, bool last, bool unified) noexcept
 {
 	stored_assert(!len || buffer);
 	stored_assert(len % BlockSize == 0);
@@ -390,7 +426,9 @@ int Aes256Layer::encrypt(uint8_t const* buffer, size_t len, bool last) noexcept
 	uint8_t buf[BlockSize];
 	for(; len; len -= BlockSize, buffer += BlockSize) {
 		memcpy(buf, buffer, BlockSize);
-		AES_CTR_xcrypt_buffer(static_cast<struct AES_ctx*>(m_ctx_enc), buf, BlockSize);
+		AES_CTR_xcrypt_buffer(
+			static_cast<struct AES_ctx*>(unified ? m_ctx_uni : m_ctx_enc), buf,
+			BlockSize);
 		encodeEncrypted(buf, BlockSize, last && len == BlockSize);
 	}
 

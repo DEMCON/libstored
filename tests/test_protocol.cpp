@@ -1578,6 +1578,14 @@ TEST(Aes256Layer, EncodeDecode)
 
 	lb.encode("klmn", 4);
 	EXPECT_EQ(la.decoded().at(1), "klmn");
+
+	// Set unified.
+	a.unified(true);
+	la.encode("op", 2);
+	EXPECT_EQ(lb.decoded().at(2), "op");
+
+	lb.encode("qr", 2);
+	EXPECT_EQ(la.decoded().at(2), "qr");
 }
 
 } // namespace

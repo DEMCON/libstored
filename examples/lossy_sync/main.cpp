@@ -248,7 +248,8 @@ class disconnected : public std::exception {};
 class DebugStack {
 	STORED_CLASS_NOCOPY(DebugStack)
 public:
-	explicit DebugStack(ExampleSync& store, int port, char const* name = nullptr)
+	explicit DebugStack(
+		ExampleSync& store, int port, char const* name = nullptr, char const* key = nullptr)
 		: m_debugLayer{nullptr, port}
 	{
 		if((errno = m_debugLayer.lastError())) {
@@ -263,7 +264,16 @@ public:
 		m_debugger.setIdentification(m_id.c_str());
 
 		m_debugger.map(store);
-		m_debugLayer.wrap(m_debugger);
+
+		if(key) {
+			// Encrypted debug channel.
+			m_aes.reset(new stored::Aes256Layer{key});
+			m_aes->wrap(m_debugger);
+			m_debugLayer.wrap(*m_aes);
+		} else {
+			m_debugLayer.wrap(m_debugger);
+		}
+
 		logger_callback = [&](char const* msg) { m_debugger.stream('l', msg); };
 	}
 
@@ -295,6 +305,7 @@ private:
 	std::string m_id;
 	stored::Debugger m_debugger;
 	stored::DebugZmqLayer m_debugLayer;
+	std::unique_ptr<stored::Aes256Layer> m_aes;
 	stored::PollableZmqSocket m_pollable{m_debugLayer.socket(), stored::Pollable::PollIn};
 };
 
@@ -642,7 +653,8 @@ int main(int argc, char** argv)
 
 		ExampleSync store;
 		DebugStack debugStack{
-			store, args.debug_port, args.client.empty() ? "server" : "client"};
+			store, args.debug_port, args.client.empty() ? "server" : "client",
+			args.key.empty() ? nullptr : args.key.c_str()};
 
 		while(true) {
 			try {
