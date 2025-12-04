@@ -27,7 +27,12 @@ Added
 - Operations such as ``-=`` and ``++`` for store variables in C++.
 - YAML export of store meta-data.
 - ``stored::MuxLayer`` to multiplex multiple protocol layers over a single connection.
-- ``stored::Aes256Layer`` for encrypted communication using AES-256 CTR.
+- ``stored::Aes256Layer`` and ``libstored.protocol.Aes256Layer`` for encrypted communication using
+  AES-256 CTR.
+- Allow adding a protocol layer stack to ``ZmqClient`` on top of the ZeroMQ socket.  If putting
+  the ``Aes256Layer`` in the stack, encrypted debug communication is enabled with the target.
+- ``lossy_sync`` example that shows how to use the Synchronizer over a lossy protocol, and how to
+  use encryption in both the Synchronizer and Debugger stacks.
 
 Changed
 ```````

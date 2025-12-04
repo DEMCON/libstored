@@ -18,7 +18,7 @@ from .. import protocol as lprot
 async def async_main(args : argparse.Namespace):
     stack = None
     if args.encrypted:
-        stack = lprot.Aes256Layer(args.encrypted, unified=True)
+        stack = lprot.Aes256Layer(args.encrypted, reqrep=True)
 
     async with ZmqClient(args.server, args.port, multi=True, stack=stack) as client:
         prefix = '>  '

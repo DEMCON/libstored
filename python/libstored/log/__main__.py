@@ -24,7 +24,7 @@ async def async_main(args : argparse.Namespace) -> int:
 
     stack = None
     if args.encrypted:
-        stack = lprot.Aes256Layer(args.encrypted, unified=True)
+        stack = lprot.Aes256Layer(args.encrypted, reqrep=True)
 
     async with ZmqClient(args.server, args.port, multi=args.multi, stack=stack) as client:
         objs = []
