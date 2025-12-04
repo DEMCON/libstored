@@ -16,11 +16,11 @@ from ..asyncio.worker import AsyncioWorker, run_sync
 def main():
     parser = argparse.ArgumentParser(description='stdin/stdout wrapper to ZMQ server',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter, prog=__package__)
-    parser.add_argument('-V', action='version', version=__version__)
-    parser.add_argument('-l', dest='listen', type=str, default='*', help='listen address')
-    parser.add_argument('-p', dest='port', type=int, default=lprot.default_port, help='port')
-    parser.add_argument('-S', dest='stack', type=str, default='ascii,pubterm,stdin', help='protocol stack')
-    parser.add_argument('-v', dest='verbose', default=0, help='Enable verbose output', action='count')
+    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-l', '--listen', dest='listen', type=str, default='*', help='listen address')
+    parser.add_argument('-p', '--port', dest='port', type=int, default=lprot.default_port, help='port')
+    parser.add_argument('-S', '--stack', dest='stack', type=str, default='ascii,pubterm,stdin', help='protocol stack')
+    parser.add_argument('-v', '--verbose', dest='verbose', default=0, help='Enable verbose output', action='count')
     parser.add_argument('command')
     parser.add_argument('args', nargs='*')
 

@@ -16,15 +16,15 @@ from ..asyncio.worker import AsyncioWorker, run_sync
 def main():
     parser = argparse.ArgumentParser(description='serial wrapper to ZMQ server',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter, prog=__package__)
-    parser.add_argument('-V', action='version', version=__version__)
-    parser.add_argument('-l', dest='zmqlisten', type=str, default='*', help='ZMQ listen address')
-    parser.add_argument('-p', dest='zmqport', type=int, default=lprot.default_port, help='ZMQ port')
+    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-l', '--listen', dest='zmqlisten', type=str, default='*', help='ZMQ listen address')
+    parser.add_argument('-p', '--port', dest='zmqport', type=int, default=lprot.default_port, help='ZMQ port')
     parser.add_argument('port', help='serial port')
     parser.add_argument('baud', nargs='?', type=int, default=115200, help='baud rate')
-    parser.add_argument('-r', dest='rtscts', default=False, help='RTS/CTS flow control', action='store_true')
-    parser.add_argument('-x', dest='xonxoff', default=False, help='XON/XOFF flow control', action='store_true')
-    parser.add_argument('-v', dest='verbose', default=0, help='Enable verbose output', action='count')
-    parser.add_argument('-S', dest='stack', type=str, default='ascii,pubterm,stdin', help='protocol stack')
+    parser.add_argument('-r', '--rtscts', dest='rtscts', default=False, help='RTS/CTS flow control', action='store_true')
+    parser.add_argument('-x', '--xonxoff', dest='xonxoff', default=False, help='XON/XOFF flow control', action='store_true')
+    parser.add_argument('-v', '--verbose', dest='verbose', default=0, help='Enable verbose output', action='count')
+    parser.add_argument('-S', '--stack', dest='stack', type=str, default='ascii,pubterm,stdin', help='protocol stack')
 
     args = parser.parse_args()
 
