@@ -682,7 +682,7 @@ class ScrollableFrame(ttk.Frame):
         return "break"
 
     @staticmethod
-    def _children(widget : tk.Widget) -> set[tk.Widget]:
+    def _children(widget : tk.BaseWidget) -> set[tk.BaseWidget]:
         return set(widget.winfo_children()).union(*(ScrollableFrame._children(w) for w in widget.winfo_children()))
 
     def bind_scroll(self):
@@ -1212,20 +1212,25 @@ class GUIClient(laio_tk.AsyncApp):
 #
 
 def main():
-    parser = argparse.ArgumentParser(prog=__package__, description='ZMQ GUI client', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-V', action='version', version=__version__)
-    parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
-    parser.add_argument('-p', dest='port', type=int, default=lprot.default_port, help='port')
-    parser.add_argument('-v', dest='verbose', default=0, help='Enable verbose output', action='count')
-    parser.add_argument('-m', dest='multi', default=False,
+    parser = argparse.ArgumentParser(prog=__package__, description='ZMQ GUI client',
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-s', '--server', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
+    parser.add_argument('-p', '--port', dest='port', type=int, default=lprot.default_port, help='port')
+    parser.add_argument('-v', '--verbose', dest='verbose', default=0, help='Enable verbose output', action='count')
+    parser.add_argument('-m', '--multi', dest='multi', default=False,
         help='Enable multi-mode; allow multiple simultaneous connections to the same target, ' +
             'but it is less efficient.', action='store_true')
-    parser.add_argument('-c', dest='clear_state', default=False, help='Clear previously saved state', action='store_true')
-    parser.add_argument('-D', dest='deadlock', default=0, nargs='?', help='Enable deadlock checks after x seconds', type=float, const=10.0)
-    parser.add_argument('-f', dest='csv', default=None, nargs='?',
+    parser.add_argument('-c', '--clearstate', dest='clear_state', default=False,
+        help='Clear previously saved state', action='store_true')
+    parser.add_argument('-D', '--deadlock', dest='deadlock', default=0, nargs='?',
+        help='Enable deadlock checks after x seconds', type=float, const=10.0)
+    parser.add_argument('-f', '--csv', dest='csv', default=None, nargs='?',
         help='Log auto-refreshed data to csv file. ' +
             'The file is truncated upon startup and when the set of auto-refreshed objects change. ' +
             'The file name may include strftime() format codes.', const='log.csv')
+    parser.add_argument('-e', '--encrypt', dest='encrypted', type=str, default=None,
+        help='Enable AES-256 CTR encryption with the given pre-shared key file', metavar='file')
 
     args = parser.parse_args()
 
@@ -1233,6 +1238,8 @@ def main():
         'format': '[%(asctime)s.%(msecs)03d] %(levelname)s %(name)s (%(threadName)s): %(message)s',
         'datefmt': '%H:%M:%S',
     }
+
+    logger = logging.getLogger(__package__)
 
     if args.verbose == 0:
         logging_config['level'] = logging.WARNING
@@ -1243,7 +1250,7 @@ def main():
 
     logging.basicConfig(**logging_config)
     if args.deadlock > 0:
-        logging.getLogger().info(f'Enable deadlock checks after {args.deadlock} seconds')
+        logger.info(f'Enable deadlock checks after {args.deadlock} seconds')
         lexc.DeadlockChecker.default_timeout_s = args.deadlock
 
     csv = None
@@ -1251,7 +1258,12 @@ def main():
         assert isinstance(args.csv, str)
         csv = laio_csv.CsvExport(laio_csv.generate_filename(args.csv))
 
-    client = laio_zmq.ZmqClient(host=args.server, port=args.port, multi=args.multi, use_state='gui')
+    stack = None
+    if args.encrypted:
+        stack = lprot.Aes256Layer(args.encrypted, unified=True)
+        logger.info(f'Enable AES-256 encryption with key file {args.encrypted}')
+
+    client = laio_zmq.ZmqClient(host=args.server, port=args.port, multi=args.multi, use_state='gui', stack=stack)
     GUIClient.run(worker=client.worker, client=client, clear_state=args.clear_state, csv=csv)
 
 if __name__ == '__main__':

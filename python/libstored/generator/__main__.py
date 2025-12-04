@@ -209,7 +209,7 @@ def pyliteral(x):
         return f'int({x})'
     else:
         return repr(x)
-    
+
 def pyinit(o):
     if o.init is None:
         return None
@@ -249,7 +249,7 @@ def yamlstring(s):
     """
     if s is None:
         return 'null'
-    
+
     if isinstance(s, str):
         # Escape backslashes and quotes inside the string
         esc = s.replace('\\', '\\\\').replace('"', '\\"')
@@ -510,10 +510,10 @@ def generate_cmake(libprefix, model_files, output_dir):
 
 def main():
     parser = argparse.ArgumentParser(description='Store generator', prog=__package__)
-    parser.add_argument('-V', action='version', version=__version__)
-    parser.add_argument('-p', type=str, help='libstored prefix for cmake library target')
-    parser.add_argument('-b', help='generate for big-endian device (default=little)', action='store_true')
-    parser.add_argument('-v', dest='verbose', default=0, help='Enable verbose output', action='count')
+    parser.add_argument('-V', '--version',action='version', version=__version__)
+    parser.add_argument('-p', '--prefix', type=str, help='libstored prefix for cmake library target')
+    parser.add_argument('-b', '--big', help='generate for big-endian device (default=little)', action='store_true')
+    parser.add_argument('-v', '--verbose', dest='verbose', default=0, help='Enable verbose output', action='count')
     parser.add_argument('store_file', type=str, nargs='+', help='store description to parse')
     parser.add_argument('output_dir', type=str, help='output directory for generated files')
 
@@ -530,9 +530,9 @@ def main():
     logger = logging.getLogger('libstored')
 
     for f in args.store_file:
-        generate_store(f, args.output_dir, not args.b)
+        generate_store(f, args.output_dir, not args.big)
 
-    generate_cmake(args.p, args.store_file, args.output_dir)
+    generate_cmake(args.prefix, args.store_file, args.output_dir)
 
 if __name__ == '__main__':
     main()

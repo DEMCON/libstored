@@ -1115,10 +1115,12 @@ class Aes256Layer(ProtocolLayer):
 
     name = 'aes256'
 
-    def __init__(self, key : bytes | str | None=None, *args, **kwargs):
+    def __init__(self, key : bytes | str | None=None, *args, unified : bool=False, reqrep : bool=False, **kwargs):
         super().__init__(*args, **kwargs)
         self._encrypt = None
         self._decrypt = None
+        self._reqrep : bool = reqrep
+        self._unified : bool = unified or reqrep
 
         if key is None:
             raise ValueError('Key file or binary string must be provided for Aes256Layer')
@@ -1126,6 +1128,12 @@ class Aes256Layer(ProtocolLayer):
         self.set_key(key)
 
     def set_key(self, key : bytes | str) -> None:
+        '''
+        Change the AES-256 key.
+
+        The argument can be either a 32 byte binary string, or a filename containing the key.
+        '''
+
         if isinstance(key, str):
             with open(key, 'rb') as f:
                 key = f.read()
@@ -1137,18 +1145,42 @@ class Aes256Layer(ProtocolLayer):
         self._encrypt = None
         self._decrypt = None
 
+    @property
+    def unified(self) -> bool:
+        '''
+        Return if unified mode is enabled.
+        '''
+        return self._unified or self._reqrep
+
+    @unified.setter
+    def unified(self, enable : bool=True) -> None:
+        '''
+        Set unified mode.
+        '''
+
+        if self._reqrep:
+            return
+
+        self._unified = enable
+        self._encrypt = None
+        if enable:
+            self._decrypt = None
+
     async def encode(self, data : ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
         elif isinstance(data, memoryview):
             data = data.cast('B')
 
+        prefix = None
         if self._encrypt is None:
-            await self._send_iv()
+            prefix = self._iv(self.unified)
 
         assert self._encrypt is not None
         data = Crypto.Util.Padding.pad(data, 16)
         data = self._encrypt.encrypt(data)
+        if prefix is not None:
+            data = prefix + data
         await super().encode(data)
 
     async def decode(self, data : ProtocolLayer.Packet) -> None:
@@ -1157,12 +1189,24 @@ class Aes256Layer(ProtocolLayer):
         elif isinstance(data, memoryview):
             data = data.cast('B')
 
-        if len(data) == 17 and data[0:1] == b'R':
+        if len(data) > 16 and len(data) % 16 == 1:
             # Received IV for decryption
             iv = data[1:17]
-            self._decrypt = Crypto.Cipher.AES.new(self._key, Crypto.Cipher.AES.MODE_CTR, iv)
-            self.logger.debug('Received IV for decryption')
-            return
+            cypher = Crypto.Cipher.AES.new(self._key, Crypto.Cipher.AES.MODE_CTR, nonce=b'', initial_value=iv)
+            if data[0:1] == b'U':
+                self.logger.debug('Received IV for unified operation')
+                self._decrypt = cypher
+                self._encrypt = cypher
+                self._unified = True
+            elif data[0:1] == b'B':
+                self.logger.debug('Received IV for decryption')
+                self._decrypt = cypher
+                self._unified = False
+            else:
+                self.logger.debug('Invalid IV prefix')
+                self._decrypt = None
+
+            data = data[17:]
 
         if self._decrypt is None:
             self.logger.debug('Got data before IV, waiting for IV')
@@ -1174,7 +1218,12 @@ class Aes256Layer(ProtocolLayer):
             self._decrypt = None
             return
 
-        data = self._decrypt.decrypt(data)
+        if self.unified:
+            # Encryption is the same as decryption for AES, but the API does not allow mixing the calls.
+            data = self._decrypt.encrypt(data)
+        else:
+            data = self._decrypt.decrypt(data)
+
         try:
             data = Crypto.Util.Padding.unpad(data, 16)
         except ValueError:
@@ -1184,10 +1233,16 @@ class Aes256Layer(ProtocolLayer):
 
         await super().decode(data)
 
-    async def _send_iv(self) -> None:
+    def _iv(self, unified : bool) -> bytes:
         iv = Crypto.Random.get_random_bytes(16)
-        self._encrypt = Crypto.Cipher.AES.new(self._key, Crypto.Cipher.AES.MODE_CTR, iv)
-        await super().encode(b'R' + iv)
+        cipher = Crypto.Cipher.AES.new(self._key, Crypto.Cipher.AES.MODE_CTR, nonce=b'', initial_value=iv)
+        cipher.nonce
+        self._encrypt = cipher
+        if unified:
+            self._decrypt = cipher
+            return b'U' + iv
+        else:
+            return b'B' + iv
 
 
 

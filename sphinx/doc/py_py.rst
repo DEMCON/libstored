@@ -22,6 +22,8 @@ Protocol layers
    :members:
    :undoc-members:
 
+.. autoclass:: libstored.protocol.Aes256Layer
+
 .. autoclass:: libstored.protocol.AsciiEscapeLayer
 
 .. autoclass:: libstored.protocol.TerminalLayer

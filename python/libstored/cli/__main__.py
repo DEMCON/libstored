@@ -16,7 +16,11 @@ from .. import protocol as lprot
 
 @run_sync
 async def async_main(args : argparse.Namespace):
-    async with ZmqClient(args.server, args.port, multi=True) as client:
+    stack = None
+    if args.encrypted:
+        stack = lprot.Aes256Layer(args.encrypted, unified=True)
+
+    async with ZmqClient(args.server, args.port, multi=True, stack=stack) as client:
         prefix = '>  '
         await aiofiles.stdout.write(prefix)
         await aiofiles.stdout.flush()
@@ -29,10 +33,12 @@ async def async_main(args : argparse.Namespace):
 
 def main():
     parser = argparse.ArgumentParser(description='ZMQ command line client', prog=__package__)
-    parser.add_argument('-V', action='version', version=__version__)
-    parser.add_argument('-s', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
-    parser.add_argument('-p', dest='port', type=int, default=lprot.default_port, help='port')
-    parser.add_argument('-v', dest='verbose', default=0, help='Enable verbose output', action='count')
+    parser.add_argument('-V', '--version', action='version', version=__version__)
+    parser.add_argument('-s', '--server', dest='server', type=str, default='localhost', help='ZMQ server to connect to')
+    parser.add_argument('-p', '--port', dest='port', type=int, default=lprot.default_port, help='port')
+    parser.add_argument('-v', '--verbose', dest='verbose', default=0, help='Enable verbose output', action='count')
+    parser.add_argument('-e', '--encrypt', dest='encrypted', type=str, default=None,
+        help='Enable AES-256 CTR encryption with the given pre-shared key file', metavar='file')
 
     args = parser.parse_args()
 
