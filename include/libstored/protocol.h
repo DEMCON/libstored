@@ -957,7 +957,11 @@ class Crc32Layer : public ProtocolLayer {
 public:
 	typedef ProtocolLayer base;
 
-	enum STORED_ANONYMOUS {
+	enum STORED_ANONYMOUS
+#  if STORED_cplusplus >= 201103L
+		: uint32_t
+#  endif
+	{
 		polynomial = 0x04c11db7,
 		init = 0xffffffff,
 		final_xor = 0xffffffff

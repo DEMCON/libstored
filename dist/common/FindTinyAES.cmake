@@ -45,11 +45,6 @@ set_source_files_properties(${tinyaes_src} PROPERTIES GENERATED 1)
 
 if(MSVC)
 	target_compile_options(tinyaes PRIVATE /W1)
-	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		target_compile_options(tinyaes PUBLIC /MTd)
-	else()
-		target_compile_options(tinyaes PUBLIC /MT)
-	endif()
 endif()
 
 target_include_directories(

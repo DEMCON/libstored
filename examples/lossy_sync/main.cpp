@@ -8,6 +8,8 @@
  *        channel.
  */
 
+#define _CRT_SECURE_NO_WARNINGS 1
+
 #include "ExampleSync.h"
 
 #include <array>
@@ -196,12 +198,13 @@ static Arguments parse_arguments(int argc, char** argv)
 		case 'e': {
 			// flawfinder: ignore
 			FILE* f = fopen(optarg, "rb");
-			args.key.resize(stored::Aes256Layer::KeySize);
 
 			if(!f) {
 				log("Cannot open key file '%s'; %s\n", optarg, strerror(errno));
 				STORED_throw(std::invalid_argument{"Cannot open key file"});
 			}
+
+			args.key.resize(stored::Aes256Layer::KeySize);
 
 			if(fread(&args.key[0], stored::Aes256Layer::KeySize, 1, f) != 1) {
 				log("Cannot read key file '%s'; %s\n", optarg, strerror(errno));
