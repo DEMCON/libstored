@@ -18,6 +18,7 @@ set do_build=1
 set support_test=1
 set do_test=
 set msvc=1
+set config=
 
 :parse_param
 
@@ -35,14 +36,17 @@ if %1 == --help (
 )
 if %1 == Debug (
 	set cmake_opts=%cmake_opts% -DCMAKE_BUILD_TYPE=%1
+	set config=--config %1
 	goto next_param
 )
 if %1 == RelWithDebInfo (
 	set cmake_opts=%cmake_opts% -DCMAKE_BUILD_TYPE=%1
+	set config=--config %1
 	goto next_param
 )
 if %1 == Release (
 	set cmake_opts=%cmake_opts% -DCMAKE_BUILD_TYPE=%1
+	set config=--config %1
 	goto next_param
 )
 if %1 == msvc (
@@ -201,18 +205,18 @@ if errorlevel 1 goto error
 
 if not "%do_build%" == "1" goto done
 
-cmake --build . %par%
+cmake --build . %config% %par%
 if errorlevel 1 goto error
-cmake --build . --target install %par%
+cmake --build . %config% --target install %par%
 if errorlevel 1 goto error
 
 if not "%do_test%" == "1" goto done
 set CTEST_OUTPUT_ON_FAILURE=1
 if %msvc% == 1 (
-	cmake --build . --target RUN_TESTS
+	cmake --build . %config% --target RUN_TESTS
 	if errorlevel 1 goto error
 ) else (
-	cmake --build . --target test
+	cmake --build . %config% --target test
 	if errorlevel 1 goto error
 )
 
