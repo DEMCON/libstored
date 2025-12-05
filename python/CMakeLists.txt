@@ -67,6 +67,7 @@ set(package_data_
     fpga/rtl/variable.vhd
     fpga/tb/tb_pkg.vhd
     fpga/vivado/vivado.tcl.tmpl
+    include/libstored/aes.h
     include/libstored/allocator.h
     include/libstored/components.h
     include/libstored/compress.h
@@ -89,6 +90,7 @@ set(package_data_
     include/stored.h
     include/stored_config.h
     include/stored
+    src/aes.cpp
     src/compress.cpp
     src/debugger.cpp
     src/directory.cpp
