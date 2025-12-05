@@ -94,6 +94,7 @@ The inheritance of the layers is shown below.
    ProtocolLayer <|-- IdleCheckLayer
    ProtocolLayer <|-- CallbackLayer
    ProtocolLayer <|-- MuxLayer
+   ProtocolLayer <|-- Aes256Layer
 
    abstract ArqLayer
    SegmentationLayer -[hidden]--> ArqLayer
@@ -133,6 +134,11 @@ The inheritance of the layers is shown below.
    class Loopback
    FifoLoopback --> FifoLoopback1
 
+
+stored::Aes256Layer
+-------------------
+
+.. doxygenclass:: stored::Aes256Layer
 
 stored::AsciiEscapeLayer
 ------------------------
@@ -230,7 +236,7 @@ stored::SegmentationLayer
 .. doxygenclass:: stored::SegmentationLayer
 
 stored::SerialLayer
--------------------------
+-------------------
 
 .. doxygenclass:: stored::SerialLayer
 
@@ -242,7 +248,7 @@ stored::StdioLayer
 stored::SyncZmqLayer
 --------------------
 
-.. doxygenclass:: stored::SyncZmqLayer
+It is a typedef for ``stored::ZmqLayer``.
 
 stored::TerminalLayer
 ---------------------
@@ -250,7 +256,7 @@ stored::TerminalLayer
 .. doxygenclass:: stored::TerminalLayer
 
 stored::XsimLayer
------------------------
+-----------------
 
 .. doxygenclass:: stored::XsimLayer
 
@@ -260,7 +266,7 @@ stored::ZmqBaseLayer
 .. doxygenclass:: stored::ZmqBaseLayer
 
 stored::ZmqLayer
---------------------
+----------------
 
 .. doxygenclass:: stored::ZmqLayer
 

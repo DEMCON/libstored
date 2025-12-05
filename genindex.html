@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; libstored 2.1.0-alpha documentation</title>
+  <title>Index &mdash; libstored 2.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=abebb04e"></script>
+      <script src="_static/documentation_options.js?v=20623aea"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -107,6 +107,8 @@
       <li><a href="doc/py_py.html#libstored.ZmqClient.acquire_macro">acquire_macro() (libstored.ZmqClient method)</a>
 </li>
       <li><a href="doc/py_py.html#libstored.protocol.ProtocolLayer.activity">activity() (libstored.protocol.ProtocolLayer method)</a>
+</li>
+      <li><a href="doc/py_py.html#libstored.protocol.Aes256Layer">Aes256Layer (class in libstored.protocol)</a>
 </li>
       <li><a href="doc/py_py.html#libstored.ZmqClient.alias">alias() (libstored.ZmqClient method)</a>
 </li>
@@ -429,6 +431,18 @@
       <li><a href="doc/py_py.html#libstored.protocol.StdinLayer">StdinLayer (class in libstored.protocol)</a>
 </li>
       <li><a href="doc/py_py.html#libstored.protocol.StdioLayer">StdioLayer (class in libstored.protocol)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11Aes256LayerE">stored::Aes256Layer (C++ class)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11Aes256Layer11Aes256LayerEPKvP13ProtocolLayerP13ProtocolLayer">stored::Aes256Layer::Aes256Layer (C++ function)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11Aes256Layer4baseE">stored::Aes256Layer::base (C++ type)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11Aes256Layer9m_ctx_encE">stored::Aes256Layer::m_ctx_enc (C++ member)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11Aes256Layer9m_ctx_uniE">stored::Aes256Layer::m_ctx_uni (C++ member)</a>
+</li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored11Aes256LayerD0Ev">stored::Aes256Layer::~Aes256Layer (C++ function)</a>
 </li>
       <li><a href="doc/cpp_components.html#_CPPv4I0_y0EN6stored9AmplifierE">stored::Amplifier (C++ class)</a>
 </li>
@@ -2604,12 +2618,12 @@
 </li>
       <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBase12bufferToTypeEPKv">stored::ExampleScopeBase::bufferToType (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="doc/example_3_scope.html#_CPPv4N6stored16ExampleScopeBase4findEPKc6size_t">stored::ExampleScopeBase::find (C++ function)</a>
 </li>
       <li><a href="doc/example_3_scope.html#_CPPv4I0EN6stored16ExampleScopeBase12freeFunctionE12FreeFunctionI1T14ImplementationEPKc6size_t">stored::ExampleScopeBase::freeFunction (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="doc/example_3_scope.html#_CPPv4I0EN6stored16ExampleScopeBase12freeVariableE12FreeVariableI1T14ImplementationEPKc6size_t">stored::ExampleScopeBase::freeVariable (C++ function)</a>
 </li>
       <li><a href="doc/example_3_scope.html#_CPPv4I0EN6stored16ExampleScopeBase8functionE8FunctionI1T14ImplementationEPKc6size_t">stored::ExampleScopeBase::function (C++ function)</a>
@@ -4032,6 +4046,8 @@
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored17SegmentationLayer4baseE">stored::SegmentationLayer::base (C++ type)</a>
 </li>
+      <li><a href="doc/cpp_protocol.html#_CPPv4N6stored17SegmentationLayer9connectedEv">stored::SegmentationLayer::connected (C++ function)</a>
+</li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored17SegmentationLayer14ContinueMarkerE">stored::SegmentationLayer::ContinueMarker (C++ member)</a>
 </li>
       <li><a href="doc/cpp_protocol.html#_CPPv4N6stored17SegmentationLayer6decodeEPv6size_t">stored::SegmentationLayer::decode (C++ function)</a>
@@ -4283,6 +4299,8 @@
       <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored14SyncConnection4baseE">stored::SyncConnection::base (C++ type)</a>
 </li>
       <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored14SyncConnection3ByeE">stored::SyncConnection::Bye (C++ member)</a>
+</li>
+      <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored14SyncConnection9connectedEv">stored::SyncConnection::connected (C++ function)</a>
 </li>
       <li><a href="doc/cpp_synchronizer.html#_CPPv4N6stored14SyncConnection6decodeEPv6size_t">stored::SyncConnection::decode (C++ function)</a>
 </li>

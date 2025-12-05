@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Protocol &mdash; libstored 2.1.0-alpha documentation</title>
+  <title>Protocol &mdash; libstored 2.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=abebb04e"></script>
+      <script src="../_static/documentation_options.js?v=20623aea"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -56,6 +56,10 @@
 <li class="toctree-l2"><a class="reference internal" href="cpp_pipes.html">Pipes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_poller.html">Poller</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#stored-aes256layer">stored::Aes256Layer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6stored11Aes256LayerE"><code class="docutils literal notranslate"><span class="pre">stored::Aes256Layer</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#stored-asciiescapelayer">stored::AsciiEscapeLayer</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6stored16AsciiEscapeLayerE"><code class="docutils literal notranslate"><span class="pre">stored::AsciiEscapeLayer</span></code></a></li>
 </ul>
@@ -265,7 +269,7 @@ towards the hardware, and <a class="reference internal" href="#_CPPv4N6stored13P
 messages from the hardware up.</p>
 <p>The inheritance of the layers is shown below.</p>
 <p class="plantuml">
-<img src="../_images/plantuml-c55ad1150dec7d6fc4edf7a17fdc33f7d65e4fe2.svg" alt="abstract ProtocolLayer
+<img src="../_images/plantuml-2daaea0a1705d40c91555ce0f9367ec3a58d0ca2.svg" alt="abstract ProtocolLayer
 ProtocolLayer &lt;|-- AsciiEscapeLayer
 ProtocolLayer &lt;|-- TerminalLayer
 AsciiEscapeLayer -[hidden]--&gt; TerminalLayer
@@ -280,6 +284,7 @@ ProtocolLayer &lt;|-- PrintLayer
 ProtocolLayer &lt;|-- IdleCheckLayer
 ProtocolLayer &lt;|-- CallbackLayer
 ProtocolLayer &lt;|-- MuxLayer
+ProtocolLayer &lt;|-- Aes256Layer
 
 abstract ArqLayer
 SegmentationLayer -[hidden]--&gt; ArqLayer
@@ -318,6 +323,50 @@ ZmqBaseLayer &lt;|-- ZmqLayer
 
 class Loopback
 FifoLoopback --&gt; FifoLoopback1"/></p>
+<section id="stored-aes256layer">
+<h2>stored::Aes256Layer<a class="headerlink" href="#stored-aes256layer" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11Aes256LayerE">
+<span id="_CPPv3N6stored11Aes256LayerE"></span><span id="_CPPv2N6stored11Aes256LayerE"></span><span id="stored::Aes256Layer"></span><span class="target" id="classstored_1_1_aes256_layer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Aes256Layer</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">stored</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Aes256BaseLayer</span></span><a class="headerlink" href="#_CPPv4N6stored11Aes256LayerE" title="Link to this definition"></a><br /></dt>
+<dd><p>A protocol layer that encrypts data using AES-256 in CTR mode using tiny-AES-c. </p>
+<p>This is a software implementation of AES-256. You may want to provide a hardware-accelerated layer, if your platform supports that. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11Aes256Layer4baseE">
+<span id="_CPPv3N6stored11Aes256Layer4baseE"></span><span id="_CPPv2N6stored11Aes256Layer4baseE"></span><span id="stored::Aes256Layer::base"></span><span class="target" id="classstored_1_1_aes256_layer_1af7a52c9e1bd377dcff95b8510536a254"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">Aes256BaseLayer</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">base</span></span></span><a class="headerlink" href="#_CPPv4N6stored11Aes256Layer4baseE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11Aes256Layer11Aes256LayerEPKvP13ProtocolLayerP13ProtocolLayer">
+<span id="_CPPv3N6stored11Aes256Layer11Aes256LayerEPKvP13ProtocolLayerP13ProtocolLayer"></span><span id="_CPPv2N6stored11Aes256Layer11Aes256LayerEPKvP13ProtocolLayerP13ProtocolLayer"></span><span id="stored::Aes256Layer::Aes256Layer__voidCP.ProtocolLayerP.ProtocolLayerP"></span><span class="target" id="classstored_1_1_aes256_layer_1a729bbdce01c389a606ec9faddc5dc1c5"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Aes256Layer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">key</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">up</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span>, <a class="reference internal" href="#_CPPv4N6stored13ProtocolLayerE" title="stored::ProtocolLayer"><span class="n"><span class="pre">ProtocolLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">down</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6stored11Aes256Layer11Aes256LayerEPKvP13ProtocolLayerP13ProtocolLayer" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11Aes256LayerD0Ev">
+<span id="_CPPv3N6stored11Aes256LayerD0Ev"></span><span id="_CPPv2N6stored11Aes256LayerD0Ev"></span><span id="stored::Aes256Layer::~Aes256Layer"></span><span class="target" id="classstored_1_1_aes256_layer_1abeab2f26c0c19d1491e2b448d0736bab"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Aes256Layer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored11Aes256LayerD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11Aes256Layer9m_ctx_encE">
+<span id="_CPPv3N6stored11Aes256Layer9m_ctx_encE"></span><span id="_CPPv2N6stored11Aes256Layer9m_ctx_encE"></span><span id="stored::Aes256Layer::m_ctx_enc__voidP"></span><span class="target" id="classstored_1_1_aes256_layer_1a8254eaaee31badf0d14292fb935b6857"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">m_ctx_enc</span></span></span><a class="headerlink" href="#_CPPv4N6stored11Aes256Layer9m_ctx_encE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored11Aes256Layer9m_ctx_uniE">
+<span id="_CPPv3N6stored11Aes256Layer9m_ctx_uniE"></span><span id="_CPPv2N6stored11Aes256Layer9m_ctx_uniE"></span><span id="stored::Aes256Layer::m_ctx_uni__voidP"></span><span class="target" id="classstored_1_1_aes256_layer_1aab9805211ecd5ce4a47452359fdcb8f4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">m_ctx_uni</span></span></span><a class="headerlink" href="#_CPPv4N6stored11Aes256Layer9m_ctx_uniE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
 <section id="stored-asciiescapelayer">
 <h2>stored::AsciiEscapeLayer<a class="headerlink" href="#stored-asciiescapelayer" title="Link to this heading"></a></h2>
 <dl class="cpp class">
@@ -833,21 +882,21 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp enum">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc32Layer6__anonE">
-<span id="_CPPv3N6stored10Crc32Layer6__anonE"></span><span id="_CPPv2N6stored10Crc32Layer6__anonE"></span><span class="target" id="classstored_1_1_crc32_layer_1a34ca5f0526bf32e6f485583994390afe"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__anon</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer6__anonE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored10Crc32Layer6__anonE"></span><span id="_CPPv2N6stored10Crc32Layer6__anonE"></span><span class="target" id="classstored_1_1_crc32_layer_1a6095ed4484cf196f256d8745a45390c2"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__anon</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer6__anonE" title="Link to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc32Layer6__anon10polynomialE">
-<span id="_CPPv3N6stored10Crc32Layer6__anon10polynomialE"></span><span id="_CPPv2N6stored10Crc32Layer6__anon10polynomialE"></span><span class="target" id="classstored_1_1_crc32_layer_1a34ca5f0526bf32e6f485583994390afea64770ce26de94f8cb7af676b23dc5e0b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">polynomial</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer6__anon10polynomialE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored10Crc32Layer6__anon10polynomialE"></span><span id="_CPPv2N6stored10Crc32Layer6__anon10polynomialE"></span><span class="target" id="classstored_1_1_crc32_layer_1a6095ed4484cf196f256d8745a45390c2a64770ce26de94f8cb7af676b23dc5e0b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">polynomial</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer6__anon10polynomialE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc32Layer6__anon4initE">
-<span id="_CPPv3N6stored10Crc32Layer6__anon4initE"></span><span id="_CPPv2N6stored10Crc32Layer6__anon4initE"></span><span class="target" id="classstored_1_1_crc32_layer_1a34ca5f0526bf32e6f485583994390afea94f07193ba71c092180a47867aae74de"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer6__anon4initE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored10Crc32Layer6__anon4initE"></span><span id="_CPPv2N6stored10Crc32Layer6__anon4initE"></span><span class="target" id="classstored_1_1_crc32_layer_1a6095ed4484cf196f256d8745a45390c2a94f07193ba71c092180a47867aae74de"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer6__anon4initE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored10Crc32Layer6__anon9final_xorE">
-<span id="_CPPv3N6stored10Crc32Layer6__anon9final_xorE"></span><span id="_CPPv2N6stored10Crc32Layer6__anon9final_xorE"></span><span class="target" id="classstored_1_1_crc32_layer_1a34ca5f0526bf32e6f485583994390afea389ad169f5aa0241f46c6aeda8686261"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">final_xor</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer6__anon9final_xorE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N6stored10Crc32Layer6__anon9final_xorE"></span><span id="_CPPv2N6stored10Crc32Layer6__anon9final_xorE"></span><span class="target" id="classstored_1_1_crc32_layer_1a6095ed4484cf196f256d8745a45390c2a389ad169f5aa0241f46c6aeda8686261"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">final_xor</span></span></span><a class="headerlink" href="#_CPPv4N6stored10Crc32Layer6__anon9final_xorE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1931,6 +1980,12 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6stored17SegmentationLayer9connectedEv">
+<span id="_CPPv3N6stored17SegmentationLayer9connectedEv"></span><span id="_CPPv2N6stored17SegmentationLayer9connectedEv"></span><span id="stored::SegmentationLayer::connected"></span><span class="target" id="classstored_1_1_segmentation_layer_1a0a1db0d45195fdcc8a3ed881ac55e6af"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">connected</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored17SegmentationLayer9connectedEv" title="Link to this definition"></a><br /></dt>
+<dd><p>(Re)connected notification (bottom-up). </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6stored17SegmentationLayer6decodeEPv6size_t">
 <span id="_CPPv3N6stored17SegmentationLayer6decodeEPv6size_t"></span><span id="_CPPv2N6stored17SegmentationLayer6decodeEPv6size_t"></span><span id="stored::SegmentationLayer::decode__voidP.s"></span><span class="target" id="classstored_1_1_segmentation_layer_1adee6ee8d098ff67655b36c1ab269d490"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">decode</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6stored17SegmentationLayer6decodeEPv6size_t" title="Link to this definition"></a><br /></dt>
 <dd><p>Decode a frame and forward the decoded frame to the upper layer. </p>
@@ -2129,10 +2184,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 </section>
 <section id="stored-synczmqlayer">
 <h2>stored::SyncZmqLayer<a class="headerlink" href="#stored-synczmqlayer" title="Link to this heading"></a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenclass: Cannot find class “stored::SyncZmqLayer” in doxygen xml output for project “doxygen” from directory: /home/runner/work/libstored/libstored/dist/ubuntu/build/sphinx/doxygen/xml/</p>
-</div>
+<p>It is a typedef for <code class="docutils literal notranslate"><span class="pre">stored::ZmqLayer</span></code>.</p>
 </section>
 <section id="stored-terminallayer">
 <h2>stored::TerminalLayer<a class="headerlink" href="#stored-terminallayer" title="Link to this heading"></a></h2>
@@ -2823,7 +2875,7 @@ FifoLoopback --&gt; FifoLoopback1"/></p>
 <dd><p>Protocol layer base class. </p>
 <p>A layer is usually part of the protocol stack. Bytes are decoded and forwarded to the layer above this one, and the layer above sends bytes for encoding down. Moreover, <a class="reference internal" href="#classstored_1_1_protocol_layer_1a357b029311be09df61e019682a848ab5"><span class="std std-ref">decode()</span></a> is the inverse of <a class="reference internal" href="#classstored_1_1_protocol_layer_1a66c24cec6a17c44fac68213d358a5aa8"><span class="std std-ref">encode()</span></a>. It is wise to stick to this concept, even though the interface of this class allows more irregular structures, such that decoding and encoding take a different path through the protocol layers.</p>
 <p>The implementation of this class does nothing except forwarding bytes. Override <a class="reference internal" href="#classstored_1_1_protocol_layer_1a66c24cec6a17c44fac68213d358a5aa8"><span class="std std-ref">encode()</span></a> and <a class="reference internal" href="#classstored_1_1_protocol_layer_1a357b029311be09df61e019682a848ab5"><span class="std std-ref">decode()</span></a> in a subclass. </p>
-<p>Subclassed by stored::Stream&lt; false &gt;, LossyChannel, PrintfPhysical, <a class="reference internal" href="#classstored_1_1_arq_layer"><span class="std std-ref">stored::ArqLayer</span></a>, <a class="reference internal" href="#classstored_1_1_ascii_escape_layer"><span class="std std-ref">stored::AsciiEscapeLayer</span></a>, <a class="reference internal" href="#classstored_1_1_buffer_layer"><span class="std std-ref">stored::BufferLayer</span></a>, <a class="reference internal" href="#classstored_1_1_callback_layer"><span class="std std-ref">stored::CallbackLayer&lt; Up, Down, Connected, Disconnected &gt;</span></a>, <a class="reference internal" href="#classstored_1_1_compress_layer"><span class="std std-ref">stored::CompressLayer</span></a>, <a class="reference internal" href="#classstored_1_1_crc16_layer"><span class="std std-ref">stored::Crc16Layer</span></a>, <a class="reference internal" href="#classstored_1_1_crc32_layer"><span class="std std-ref">stored::Crc32Layer</span></a>, <a class="reference internal" href="#classstored_1_1_crc8_layer"><span class="std std-ref">stored::Crc8Layer</span></a>, <a class="reference internal" href="#classstored_1_1_debug_arq_layer"><span class="std std-ref">stored::DebugArqLayer</span></a>, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>, stored::FrameMerger, <a class="reference internal" href="#classstored_1_1_idle_check_layer"><span class="std std-ref">stored::IdleCheckLayer</span></a>, stored::LossyLayer, <a class="reference internal" href="#classstored_1_1_mux_layer"><span class="std std-ref">stored::MuxLayer</span></a>, stored::MuxLayer::Channel, <a class="reference internal" href="#classstored_1_1_polled_layer"><span class="std std-ref">stored::PolledLayer</span></a>, <a class="reference internal" href="#classstored_1_1_print_layer"><span class="std std-ref">stored::PrintLayer</span></a>, <a class="reference internal" href="#classstored_1_1_segmentation_layer"><span class="std std-ref">stored::SegmentationLayer</span></a>, stored::Stream&lt; Compress &gt;, stored::Stream&lt; true &gt;, <a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a>, <a class="reference internal" href="#classstored_1_1_terminal_layer"><span class="std std-ref">stored::TerminalLayer</span></a>, stored::XsimLayer::DecodeCallback, stored::impl::Loopback1</p>
+<p>Subclassed by stored::Stream&lt; false &gt;, LossyChannel, PrintfPhysical, stored::Aes256BaseLayer, <a class="reference internal" href="#classstored_1_1_arq_layer"><span class="std std-ref">stored::ArqLayer</span></a>, <a class="reference internal" href="#classstored_1_1_ascii_escape_layer"><span class="std std-ref">stored::AsciiEscapeLayer</span></a>, <a class="reference internal" href="#classstored_1_1_buffer_layer"><span class="std std-ref">stored::BufferLayer</span></a>, <a class="reference internal" href="#classstored_1_1_callback_layer"><span class="std std-ref">stored::CallbackLayer&lt; Up, Down, Connected, Disconnected &gt;</span></a>, <a class="reference internal" href="#classstored_1_1_compress_layer"><span class="std std-ref">stored::CompressLayer</span></a>, <a class="reference internal" href="#classstored_1_1_crc16_layer"><span class="std std-ref">stored::Crc16Layer</span></a>, <a class="reference internal" href="#classstored_1_1_crc32_layer"><span class="std std-ref">stored::Crc32Layer</span></a>, <a class="reference internal" href="#classstored_1_1_crc8_layer"><span class="std std-ref">stored::Crc8Layer</span></a>, <a class="reference internal" href="#classstored_1_1_debug_arq_layer"><span class="std std-ref">stored::DebugArqLayer</span></a>, <a class="reference internal" href="cpp_debugger.html#classstored_1_1_debugger"><span class="std std-ref">stored::Debugger</span></a>, stored::FrameMerger, <a class="reference internal" href="#classstored_1_1_idle_check_layer"><span class="std std-ref">stored::IdleCheckLayer</span></a>, stored::LossyLayer, <a class="reference internal" href="#classstored_1_1_mux_layer"><span class="std std-ref">stored::MuxLayer</span></a>, stored::MuxLayer::Channel, <a class="reference internal" href="#classstored_1_1_polled_layer"><span class="std std-ref">stored::PolledLayer</span></a>, <a class="reference internal" href="#classstored_1_1_print_layer"><span class="std std-ref">stored::PrintLayer</span></a>, <a class="reference internal" href="#classstored_1_1_segmentation_layer"><span class="std std-ref">stored::SegmentationLayer</span></a>, stored::Stream&lt; Compress &gt;, stored::Stream&lt; true &gt;, <a class="reference internal" href="cpp_synchronizer.html#classstored_1_1_sync_connection"><span class="std std-ref">stored::SyncConnection</span></a>, <a class="reference internal" href="#classstored_1_1_terminal_layer"><span class="std std-ref">stored::TerminalLayer</span></a>, stored::XsimLayer::DecodeCallback, stored::impl::Loopback1</p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">

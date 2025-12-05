@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>libstored &mdash; libstored 2.1.0-alpha documentation</title>
+  <title>libstored &mdash; libstored 2.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=abebb04e"></script>
+      <script src="../_static/documentation_options.js?v=20623aea"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -299,8 +299,8 @@ device.  However, once you implemented this data transport, you can access the
 store, and observe and manipulate it using an Embedded Debugger (PC) client.
 Moreover, the protocol supports arbitrary streams (like stdout) from the
 application to the client, and has high-speed tracing of store variables. These
-streams are optionally <a class="reference external" href="https://github.com/atomicobject/heatshrink">heatshrink</a> compressed.  libstored provides Python
-classes for your custom scripts, a CLI and GUI interface.</p>
+streams are optionally <a class="reference external" href="https://github.com/atomicobject/heatshrink">heatshrink</a> compressed, and AES-256 encrypted via <a class="reference external" href="https://github.com/kokke/tiny-AES-c">tiny-AES-c</a>.
+libstored provides Python classes for your custom scripts, a CLI and GUI interface.</p>
 <p>Your application can have one store with one debugging interface, but also
 multiple stores with one debugging interface, or one store with multiple
 debugging interfaces – any combination is possible.</p>
@@ -513,7 +513,7 @@ all dependencies.</p></li>
 </div>
 <p>Before including <code class="docutils literal notranslate"><span class="pre">libstored</span></code>, you can specify several options (see
 <code class="docutils literal notranslate"><span class="pre">cmake/libstored.cmake</span></code>), such as enabling ASan or clang-tidy.
-Especially the library dependencies (ZeroMQ, Zth, heatshrink) are
+Especially the library dependencies (ZeroMQ, Zth, heatshrink, tiny-AES-c) are
 relevant to consider.  For example, to enable ZeroMQ:</p>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">list</span><span class="p">(</span><span class="s">APPEND</span><span class="w"> </span><span class="s">CMAKE_MODULE_PATH</span><span class="w"> </span><span class="s">extern/libstored/dist/common</span><span class="p">)</span>
 <span class="nb">find_package</span><span class="p">(</span><span class="s">ZeroMQ</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
@@ -565,7 +565,7 @@ approach.  In that case:</p>
 <li><p>Run <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">libstored.cmake</span></code> to generate a <code class="docutils literal notranslate"><span class="pre">FindLibstored.cmake</span></code>.</p></li>
 <li><p>In your project, call <code class="docutils literal notranslate"><span class="pre">find_package(Libstored)</span></code>, while having the
 generated <code class="docutils literal notranslate"><span class="pre">FindLibstored.cmake</span></code> in your <code class="docutils literal notranslate"><span class="pre">CMAKE_MODULE_PATH</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">Libstored</span></code> accepts <code class="docutils literal notranslate"><span class="pre">ZeroMQ</span></code>, <code class="docutils literal notranslate"><span class="pre">Zth</span></code>, <code class="docutils literal notranslate"><span class="pre">Heatshrink</span></code> as <code class="docutils literal notranslate"><span class="pre">COMPONENTS</span></code>.
+<p><code class="docutils literal notranslate"><span class="pre">Libstored</span></code> accepts <code class="docutils literal notranslate"><span class="pre">ZeroMQ</span></code>, <code class="docutils literal notranslate"><span class="pre">Zth</span></code>, <code class="docutils literal notranslate"><span class="pre">Heatshrink</span></code>, and <code class="docutils literal notranslate"><span class="pre">AES</span></code> as <code class="docutils literal notranslate"><span class="pre">COMPONENTS</span></code>.
 Setting these enables integration of these libraries with libstored. When
 possible, they are taken from your host system, or built from source.  If you
 want more control over these libraries, you can also use the mechanism
