@@ -409,7 +409,7 @@ Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-libzmq
 		target_compile_definitions(
 			${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_HEATSHRINK=1
 		)
-		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC heatshrink)
+		target_link_libraries(${LIBSTORED_LIB_TARGET} PRIVATE heatshrink)
 
 		set(_fields)
 
@@ -450,7 +450,7 @@ Relationship: SPDXRef-libstored DEPENDS_ON SPDXRef-heatshrink
 
 	if(LIBSTORED_HAVE_AES)
 		target_compile_definitions(${LIBSTORED_LIB_TARGET} PUBLIC -DSTORED_HAVE_AES=1)
-		target_link_libraries(${LIBSTORED_LIB_TARGET} PUBLIC tinyaes)
+		target_link_libraries(${LIBSTORED_LIB_TARGET} PRIVATE tinyaes)
 
 		set(_fields)
 
