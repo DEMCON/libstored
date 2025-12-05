@@ -50,11 +50,6 @@ set_source_files_properties(${heatshrink_src} PROPERTIES GENERATED 1)
 
 if(MSVC)
 	target_compile_options(heatshrink PRIVATE /W1)
-	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		target_compile_options(heatshrink PUBLIC /MTd)
-	else()
-		target_compile_options(heatshrink PUBLIC /MT)
-	endif()
 endif()
 
 target_include_directories(
