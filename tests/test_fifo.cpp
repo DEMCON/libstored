@@ -48,27 +48,27 @@ TEST(Fifo, UnboundedFifo)
 	f.push_back(1);
 	EXPECT_FALSE(f.empty());
 	EXPECT_FALSE(f.full());
-	EXPECT_EQ(f.size(), 1u);
-	EXPECT_EQ(f.front(), 1u);
+	EXPECT_EQ(f.size(), 1U);
+	EXPECT_EQ(f.front(), 1);
 	EXPECT_EQ_VIEW(f);
 
 	f.push_back(2);
-	EXPECT_EQ(f.size(), 2u);
-	EXPECT_EQ(f.front(), 1u);
+	EXPECT_EQ(f.size(), 2U);
+	EXPECT_EQ(f.front(), 1);
 	EXPECT_EQ_VIEW(f);
 
 	f.push_back(3);
 	f.push_back(4);
-	EXPECT_EQ(f.size(), 4u);
+	EXPECT_EQ(f.size(), 4U);
 	EXPECT_EQ_VIEW(f);
 
 	f.pop_front();
-	EXPECT_EQ(f.front(), 2u);
+	EXPECT_EQ(f.front(), 2);
 	EXPECT_EQ_VIEW(f);
 
 	f.push_back(5);
 	// Not empty, should still be growing.
-	EXPECT_EQ(f.size(), 5u);
+	EXPECT_EQ(f.size(), 5U);
 	EXPECT_EQ_VIEW(f);
 
 	f.pop_front();
@@ -82,8 +82,8 @@ TEST(Fifo, UnboundedFifo)
 	f.push_back(7);
 	f.push_back(8);
 	// Restarted at beginning of buffer.
-	EXPECT_EQ(f.size(), 5u);
-	EXPECT_EQ(f.front(), 6u);
+	EXPECT_EQ(f.size(), 5U);
+	EXPECT_EQ(f.front(), 6);
 	EXPECT_EQ_VIEW(f);
 }
 
@@ -94,45 +94,45 @@ TEST(Fifo, BoundedFifo)
 	EXPECT_TRUE(f.bounded());
 	EXPECT_TRUE(f.empty());
 	EXPECT_FALSE(f.full());
-	EXPECT_LE(f.size(), 5u);
+	EXPECT_LE(f.size(), 5U);
 	EXPECT_EQ_VIEW(f);
 
 	f.push_back(1);
 	EXPECT_FALSE(f.empty());
 	EXPECT_FALSE(f.full());
-	EXPECT_LE(f.size(), 5u);
-	EXPECT_EQ(f.front(), 1u);
+	EXPECT_LE(f.size(), 5U);
+	EXPECT_EQ(f.front(), 1);
 	EXPECT_EQ_VIEW(f);
 
 	f.push_back(2);
-	EXPECT_LE(f.size(), 5u);
-	EXPECT_EQ(f.front(), 1u);
+	EXPECT_LE(f.size(), 5U);
+	EXPECT_EQ(f.front(), 1);
 	EXPECT_EQ_VIEW(f);
 
 	f.push_back(3);
 	f.push_back(4);
 	EXPECT_TRUE(f.full());
-	EXPECT_LE(f.size(), 5u);
+	EXPECT_LE(f.size(), 5U);
 	EXPECT_EQ_VIEW(f);
 
 	f.pop_front();
 	EXPECT_FALSE(f.full());
-	EXPECT_EQ(f.front(), 2u);
+	EXPECT_EQ(f.front(), 2);
 	EXPECT_EQ_VIEW(f);
 
 	f.push_back(5);
 	EXPECT_TRUE(f.full());
-	EXPECT_LE(f.size(), 5u);
+	EXPECT_LE(f.size(), 5U);
 	EXPECT_EQ_VIEW(f);
 
 	f.pop_front();
-	EXPECT_EQ(f.front(), 3u);
+	EXPECT_EQ(f.front(), 3);
 	EXPECT_EQ_VIEW(f);
 	f.pop_front();
-	EXPECT_EQ(f.front(), 4u);
+	EXPECT_EQ(f.front(), 4);
 	EXPECT_EQ_VIEW(f);
 	f.pop_front();
-	EXPECT_EQ(f.front(), 5u);
+	EXPECT_EQ(f.front(), 5);
 	EXPECT_EQ_VIEW(f);
 	f.pop_front();
 	EXPECT_TRUE(f.empty());
@@ -158,9 +158,9 @@ TEST(Fifo, IterateFifo)
 	}
 
 	// Should stop at the content when the iterator was created.
-	EXPECT_EQ(f.front(), 11u);
+	EXPECT_EQ(f.front(), 11);
 	f.pop_front();
-	EXPECT_EQ(f.front(), 12u);
+	EXPECT_EQ(f.front(), 12);
 	f.pop_front();
 	EXPECT_TRUE(f.empty());
 }
@@ -181,14 +181,14 @@ TEST(Fifo, UnboundedMessageFifo)
 	EXPECT_TRUE(f.empty());
 	EXPECT_TRUE(f.push_back("abc", 3));
 	EXPECT_FALSE(f.empty());
-	EXPECT_EQ(f.available(), 1u);
-	EXPECT_EQ(f.size(), 3u);
+	EXPECT_EQ(f.available(), 1U);
+	EXPECT_EQ(f.size(), 3U);
 
 	EXPECT_EQ_MSG(f.front(), "abc");
 
 	EXPECT_TRUE(f.push_back("defg", 4));
-	EXPECT_EQ(f.available(), 2u);
-	EXPECT_EQ(f.size(), 7u);
+	EXPECT_EQ(f.available(), 2U);
+	EXPECT_EQ(f.size(), 7U);
 	EXPECT_EQ_MSG(f.front(), "abc");
 	f.pop_front();
 	EXPECT_EQ_MSG(f.front(), "defg");
@@ -199,7 +199,7 @@ TEST(Fifo, UnboundedMessageFifo)
 	EXPECT_TRUE(f.push_back(stored::MessageView{"hi", 2}));
 	EXPECT_EQ_MSG(f.front(), "hi");
 	EXPECT_FALSE(f.empty());
-	EXPECT_EQ(f.size(), 7u);
+	EXPECT_EQ(f.size(), 7U);
 
 	EXPECT_TRUE(f.append_back("jk", 2));
 	EXPECT_EQ_MSG(f.front(), "hi");
@@ -218,16 +218,16 @@ TEST(Fifo, BoundedMessageFifo)
 	stored::MessageFifo<16, 4> f;
 
 	EXPECT_TRUE(f.bounded());
-	EXPECT_EQ(f.space(), 15u);
+	EXPECT_EQ(f.space(), 15U);
 	EXPECT_FALSE(f.full());
-	EXPECT_EQ(f.push_back({{"abc", 3}, {"defg", 4}, {"ghijk", 5}, {"lmn", 3}}), 4u);
-	EXPECT_EQ(f.space(), 0u);
+	EXPECT_EQ(f.push_back({{"abc", 3}, {"defg", 4}, {"ghijk", 5}, {"lmn", 3}}), 4U);
+	EXPECT_EQ(f.space(), 0U);
 	// Does not fit
 	EXPECT_FALSE(f.push_back({"h", 1}));
 
 	EXPECT_EQ_MSG(f.front(), "abc");
 	f.pop_front();
-	EXPECT_EQ(f.space(), 2u);
+	EXPECT_EQ(f.space(), 2U);
 
 	// Too long message.
 	EXPECT_FALSE(f.push_back({"hijl", 4}));

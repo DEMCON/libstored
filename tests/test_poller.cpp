@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -52,13 +52,13 @@ TEST(Poller, PollableZmqSocket)
 	EXPECT_EQ(poller.add(preq), 0);
 
 	auto const* res = &poller.poll(0);
-	EXPECT_EQ(res->size(), 0);
+	EXPECT_EQ(res->size(), 0U);
 	EXPECT_EQ(errno, EAGAIN);
 
 	zmq_send(req, "Hi", 2, 0);
 
 	res = &poller.poll(0);
-	ASSERT_EQ(res->size(), 1);
+	ASSERT_EQ(res->size(), 1U);
 	EXPECT_EQ(res->at(0)->revents, stored::Pollable::PollIn + 0);
 
 	zmq_close(req);

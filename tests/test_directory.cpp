@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -113,7 +113,7 @@ TEST(Directory, List)
 	});
 
 	// We should find something.
-	EXPECT_GT(names.size(), 10);
+	EXPECT_GT(names.size(), 10U);
 
 	// Check a few names.
 	EXPECT_TRUE(std::find(names.begin(), names.end(), "/default int8") != names.end());
@@ -131,12 +131,12 @@ TEST(Directory, List)
 TEST(Directory, Constexpr)
 {
 #ifdef STORED_COMPILER_GCC
-#	pragma GCC diagnostic push
-#	pragma GCC diagnostic ignored "-Waddress"
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Waddress"
 #endif
 	static_assert(stored::TestStoreData::shortDirectory() != nullptr, "");
 #ifdef STORED_COMPILER_GCC
-#	pragma GCC diagnostic pop
+#  pragma GCC diagnostic pop
 #endif
 
 	constexpr auto v =

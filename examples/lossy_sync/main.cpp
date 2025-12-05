@@ -194,6 +194,7 @@ static Arguments parse_arguments(int argc, char** argv)
 			}
 			break;
 		case 'e': {
+			// flawfinder: ignore
 			FILE* f = fopen(optarg, "rb");
 			args.key.resize(stored::Aes256Layer::KeySize);
 
@@ -540,6 +541,7 @@ protected:
 			auto h = m_heartbeat++;
 
 			if(connected()) {
+				// flawfinder: ignore
 				char buf[32];
 				snprintf(buf, sizeof(buf), "ping %u", h);
 				m_ch1->encode(buf, strlen(buf), true);

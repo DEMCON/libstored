@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -96,8 +96,8 @@ TEST(Function, WriteOnly)
 {
 	FunctionTestStore store;
 	char buffer[] = "hi all!";
-	EXPECT_EQ(store.f_write_only.get(buffer, sizeof(buffer)), 0);
-	EXPECT_EQ(store.f_write_only.set(buffer, strlen(buffer)), 4u);
+	EXPECT_EQ(store.f_write_only.get(buffer, sizeof(buffer)), 0U);
+	EXPECT_EQ(store.f_write_only.set(buffer, strlen(buffer)), 4U);
 }
 
 TEST(Function, FreeFunction)
