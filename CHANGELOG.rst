@@ -24,6 +24,18 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 Added
 `````
 
+...
+
+.. _Unreleased: https://github.com/DEMCON/libstored/compare/v2.1.0...HEAD
+
+
+
+`2.1.0`_ - 2025-12-05
+---------------------
+
+Added
+`````
+
 - Operations such as ``-=`` and ``++`` for store variables in C++.
 - YAML export of store meta-data.
 - ``stored::MuxLayer`` to multiplex multiple protocol layers over a single connection.
@@ -46,7 +58,7 @@ Fixed
 
 - Init value of CRC32 in Python ``libstored.protocol.Crc32Layer``.
 
-.. _Unreleased: https://github.com/DEMCON/libstored/compare/v2.0.0...HEAD
+.. _2.1.0: https://github.com/DEMCON/libstored/releases/tag/v2.1.0
 
 
 
