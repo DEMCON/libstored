@@ -4,6 +4,12 @@
 
 if(MSVC)
 	add_compile_options(/Wall /WX)
+
+	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		add_compile_options(/MTd)
+	else()
+		add_compile_options(/MT)
+	endif()
 else()
 	add_compile_options(
 		-Wall
