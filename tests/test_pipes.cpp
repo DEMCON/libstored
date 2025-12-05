@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -656,8 +656,8 @@ TEST(Pipes, IndexMap)
 
 	auto p4 = Entry<size_t>{} >> Map({10L, 20L, 30L, 40L}, comp{}) >> Cap{};
 
-	EXPECT_EQ(p4.entry_cast(29L), 2);
-	EXPECT_EQ(p4.entry_cast(25L), 0);
+	EXPECT_EQ(p4.entry_cast(29L), 2U);
+	EXPECT_EQ(p4.entry_cast(25L), 0U);
 }
 
 TEST(Pipes, OrderedMap)
@@ -795,13 +795,13 @@ TEST(Pipes, Ref)
 
 	auto& p1 = Entry<double>{} >> Ref{};
 	p1.inject(0);
-	EXPECT_EQ(gc.size(), 1);
+	EXPECT_EQ(gc.size(), 1U);
 	gc.destroy();
 
 	Group g;
 	Entry<double>{} >> Ref{g};
-	EXPECT_EQ(gc.size(), 0);
-	EXPECT_EQ(g.size(), 1);
+	EXPECT_EQ(gc.size(), 0U);
+	EXPECT_EQ(g.size(), 1U);
 	g.destroy();
 
 	int cnt = 0;
@@ -815,7 +815,7 @@ TEST(Pipes, Ref)
 	2 >> p3;
 	EXPECT_EQ(cnt, 4);
 
-	EXPECT_EQ(gc.size(), 2);
+	EXPECT_EQ(gc.size(), 2U);
 }
 
 } // namespace

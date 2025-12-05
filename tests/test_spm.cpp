@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -11,14 +11,14 @@ TEST(ScrachPad, Alloc)
 {
 	stored::ScratchPad<> spm;
 
-	EXPECT_EQ(spm.chunks(), 0);
-	EXPECT_EQ(spm.size(), 0);
-	EXPECT_EQ(spm.max(), 0);
+	EXPECT_EQ(spm.chunks(), 0U);
+	EXPECT_EQ(spm.size(), 0U);
+	EXPECT_EQ(spm.max(), 0U);
 
 	// First chunk alloc.
 	void** a = spm.alloc<void*>();
 	EXPECT_NE(a, nullptr);
-	EXPECT_EQ(spm.chunks(), 1);
+	EXPECT_EQ(spm.chunks(), 1U);
 	EXPECT_EQ(spm.size(), sizeof(void*));
 	EXPECT_EQ(spm.max(), sizeof(void*));
 	EXPECT_GE(spm.capacity(), sizeof(void*));
@@ -27,9 +27,9 @@ TEST(ScrachPad, Alloc)
 	void** b = spm.alloc<void*>();
 	EXPECT_NE(b, nullptr);
 	EXPECT_NE(a, b);
-	EXPECT_EQ(spm.size(), sizeof(void*) * 2);
-	EXPECT_EQ(spm.max(), sizeof(void*) * 2);
-	EXPECT_GE(spm.capacity(), sizeof(void*) * 2);
+	EXPECT_EQ(spm.size(), sizeof(void*) * 2U);
+	EXPECT_EQ(spm.max(), sizeof(void*) * 2U);
+	EXPECT_GE(spm.capacity(), sizeof(void*) * 2U);
 
 	// Random allocs.
 	EXPECT_NE(spm.alloc<void*>(10), nullptr);
@@ -51,9 +51,9 @@ TEST(ScratchPad, Reset)
 
 	// Empty reset.
 	spm.reset();
-	EXPECT_EQ(spm.chunks(), 0);
-	EXPECT_EQ(spm.size(), 0);
-	EXPECT_EQ(spm.max(), 0);
+	EXPECT_EQ(spm.chunks(), 0U);
+	EXPECT_EQ(spm.size(), 0U);
+	EXPECT_EQ(spm.max(), 0U);
 
 	// First chunk reset.
 	int* i = spm.alloc<int>();
@@ -61,8 +61,8 @@ TEST(ScratchPad, Reset)
 	*i = 42;
 	spm.reset();
 	spmInfo(spm);
-	EXPECT_EQ(spm.chunks(), 1);
-	EXPECT_EQ(spm.size(), 0);
+	EXPECT_EQ(spm.chunks(), 1U);
+	EXPECT_EQ(spm.size(), 0U);
 	EXPECT_EQ(spm.max(), sizeof(int));
 
 	// Force an additional chunk.
@@ -73,11 +73,11 @@ TEST(ScratchPad, Reset)
 	size_t total = spm.size();
 	spmInfo(spm);
 	EXPECT_NE(p, nullptr);
-	EXPECT_EQ(spm.chunks(), 2);
+	EXPECT_EQ(spm.chunks(), 2U);
 	spm.reset();
 	spmInfo(spm);
-	EXPECT_EQ(spm.chunks(), 1);
-	EXPECT_EQ(spm.size(), 0);
+	EXPECT_EQ(spm.chunks(), 1U);
+	EXPECT_EQ(spm.size(), 0U);
 	EXPECT_GE(spm.capacity(), total);
 }
 
@@ -93,8 +93,8 @@ TEST(ScratchPad, Alignment)
 	// Add padding bytes for int
 	int* i = spm.alloc<int>();
 	EXPECT_NE(i, nullptr);
-	EXPECT_EQ((uintptr_t)i & (sizeof(int) - 1), 0);
-	EXPECT_EQ(spm.size(), sizeof(int) * 2);
+	EXPECT_EQ((uintptr_t)i & (sizeof(int) - 1), 0U);
+	EXPECT_EQ(spm.size(), sizeof(int) * 2U);
 
 	// Another few bytes
 	c = spm.alloc<char>();
@@ -107,7 +107,7 @@ TEST(ScratchPad, Alignment)
 	// More padding for double
 	double* d = spm.alloc<double>();
 	EXPECT_NE(d, nullptr);
-	EXPECT_EQ((uintptr_t)d & (sizeof(double) - 1), 0);
+	EXPECT_EQ((uintptr_t)d & (sizeof(double) - 1), 0U);
 	EXPECT_EQ(spm.size(), sizeof(int) * 2 + sizeof(void*) + sizeof(double));
 }
 
@@ -118,29 +118,29 @@ TEST(ScratchPad, Snapshot)
 
 	auto c = spm.alloc<char>();
 	EXPECT_NE(c, nullptr);
-	EXPECT_EQ(spm.size(), 1);
+	EXPECT_EQ(spm.size(), 1U);
 
 	// Rollback within same chunk.
 	auto s1 = spm.snapshot();
 	c = spm.alloc<char>();
 	EXPECT_NE(c, nullptr);
-	EXPECT_EQ(spm.size(), 2);
+	EXPECT_EQ(spm.size(), 2U);
 	s1.rollback();
-	EXPECT_EQ(spm.size(), 1);
+	EXPECT_EQ(spm.size(), 1U);
 
 	auto d = spm.alloc<double>();
 	EXPECT_NE(d, nullptr);
 	EXPECT_EQ(spm.size(), sizeof(void*) + sizeof(double));
 	s1.rollback();
-	EXPECT_EQ(spm.size(), 1);
+	EXPECT_EQ(spm.size(), 1U);
 
 	// Rollback to previous chunk.
 	c = spm.alloc<char>(spm.capacity() - spm.size() + 1);
 	EXPECT_NE(c, nullptr);
-	EXPECT_EQ(spm.chunks(), 2);
+	EXPECT_EQ(spm.chunks(), 2U);
 	s1.rollback();
-	EXPECT_EQ(spm.size(), 1);
-	EXPECT_EQ(spm.chunks(), 1);
+	EXPECT_EQ(spm.size(), 1U);
+	EXPECT_EQ(spm.chunks(), 1U);
 }
 
 TEST(ScratchPad, Shrink)
@@ -160,16 +160,16 @@ TEST(ScratchPad, Shrink)
 
 	auto c = spm.alloc<char>(spm.capacity() + 1);
 	EXPECT_NE(c, nullptr);
-	EXPECT_EQ(spm.chunks(), 2);
+	EXPECT_EQ(spm.chunks(), 2U);
 	s.rollback();
 	s.reset();
-	EXPECT_EQ(spm.chunks(), 1);
+	EXPECT_EQ(spm.chunks(), 1U);
 
 	spm.reset();
-	EXPECT_EQ(spm.chunks(), 1);
+	EXPECT_EQ(spm.chunks(), 1U);
 	spm.shrink_to_fit();
-	EXPECT_EQ(spm.chunks(), 0);
-	EXPECT_EQ(spm.capacity(), 0);
+	EXPECT_EQ(spm.chunks(), 0U);
+	EXPECT_EQ(spm.capacity(), 0U);
 }
 
 TEST(ScratchPad, Stress)

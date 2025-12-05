@@ -24,7 +24,7 @@ TEST(Debugger, Capabilities)
 	ll.wrap(d);
 
 	DECODE(d, "?");
-	EXPECT_GT(ll.encoded().at(0).size(), 1);
+	EXPECT_GT(ll.encoded().at(0).size(), 1U);
 }
 
 TEST(Debugger, Identification)
@@ -97,7 +97,7 @@ TEST(Debugger, List)
 	d.list([&](char const* name, stored::DebugVariant&) { names.push_back(name); });
 
 	// We should find something.
-	EXPECT_GT(names.size(), 10);
+	EXPECT_GT(names.size(), 10U);
 
 	// Check a few names.
 	EXPECT_TRUE(std::find(names.begin(), names.end(), "/default int8") != names.end());
@@ -152,7 +152,7 @@ TEST(Debugger, ListMulti)
 	d.list([&](char const* name, stored::DebugVariant&) { names.push_back(name); });
 
 	// We should find something.
-	EXPECT_GT(names.size(), 10);
+	EXPECT_GT(names.size(), 10U);
 
 	// Check a few names.
 	EXPECT_TRUE(std::find(names.begin(), names.end(), "/first/default int8") != names.end());
@@ -307,15 +307,15 @@ TEST(Debugger, WriteMem)
 	LoggingLayer ll;
 	ll.wrap(d);
 
-	uint32_t i = 0x12345678;
+	uint32_t i = 0x12345678U;
 	char buf[32];
 	snprintf(buf, sizeof(buf), "W%" PRIxPTR " abcdef01", (uintptr_t)&i);
 	d.decode(buf, strlen(buf));
 	EXPECT_EQ(ll.encoded().at(0), "!");
 #ifdef STORED_LITTLE_ENDIAN
-	EXPECT_EQ(i, 0x01efcdab);
+	EXPECT_EQ(i, 0x01efcdabU);
 #else
-	EXPECT_EQ(i, 0xabcdef01);
+	EXPECT_EQ(i, 0xabcdef01U);
 #endif
 }
 

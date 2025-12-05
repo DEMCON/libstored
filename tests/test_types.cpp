@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -8,12 +8,12 @@
 #include "gtest/gtest.h"
 
 #ifdef STORED_OS_WINDOWS
-#	include <malloc.h>
-#	ifndef alloca
-#		define alloca(s) _malloca(s)
-#	endif
+#  include <malloc.h>
+#  ifndef alloca
+#    define alloca(s) _malloca(s)
+#  endif
 #else
-#	include <alloca.h>
+#  include <alloca.h>
 #endif
 
 namespace {
@@ -55,47 +55,47 @@ TEST(Types, Int64)
 TEST(Types, Uint8)
 {
 	stored::TestStore store;
-	EXPECT_EQ(store.default_uint8.get(), 0);
-	store.default_uint8 = 42;
-	EXPECT_EQ(store.default_uint8.get(), 42);
+	EXPECT_EQ(store.default_uint8.get(), 0U);
+	store.default_uint8 = 42U;
+	EXPECT_EQ(store.default_uint8.get(), 42U);
 }
 
 TEST(Types, Uint16)
 {
 	stored::TestStore store;
-	EXPECT_EQ(store.default_uint16.get(), 0);
-	store.default_uint16 = 0x1234;
-	EXPECT_EQ(store.default_uint16.get(), 0x1234);
+	EXPECT_EQ(store.default_uint16.get(), 0U);
+	store.default_uint16 = 0x1234U;
+	EXPECT_EQ(store.default_uint16.get(), 0x1234U);
 }
 
 TEST(Types, Uint32)
 {
 	stored::TestStore store;
-	EXPECT_EQ(store.default_uint32.get(), 0);
-	store.default_uint32 = 0x8abcdef0;
-	EXPECT_EQ(store.default_uint32.get(), 0x8abcdef0);
+	EXPECT_EQ(store.default_uint32.get(), 0U);
+	store.default_uint32 = 0x8abcdef0U;
+	EXPECT_EQ(store.default_uint32.get(), 0x8abcdef0U);
 }
 
 TEST(Types, Uint64)
 {
 	stored::TestStore store;
-	EXPECT_EQ(store.default_uint64.get(), 0);
-	store.default_uint64 = 0xf123456789abcdefull;
-	EXPECT_EQ(store.default_uint64.get(), 0xf123456789abcdefull);
+	EXPECT_EQ(store.default_uint64.get(), 0ULL);
+	store.default_uint64 = 0xf123456789abcdefULL;
+	EXPECT_EQ(store.default_uint64.get(), 0xf123456789abcdefULL);
 }
 
 TEST(Types, Float)
 {
 	stored::TestStore store;
-	EXPECT_EQ(store.default_float.get(), 0);
-	store.default_float = 3.14f;
-	EXPECT_FLOAT_EQ(store.default_float.get(), 3.14f);
+	EXPECT_EQ(store.default_float.get(), 0.F);
+	store.default_float = 3.14F;
+	EXPECT_FLOAT_EQ(store.default_float.get(), 3.14F);
 }
 
 TEST(Types, Double)
 {
 	stored::TestStore store;
-	EXPECT_EQ(store.default_double.get(), 0);
+	EXPECT_EQ(store.default_double.get(), 0.);
 	store.default_double = 3.14;
 	EXPECT_DOUBLE_EQ(store.default_double.get(), 3.14);
 }
@@ -150,7 +150,7 @@ TEST(Types, String)
 	memset(buffer1, 0, s + 1);
 	char* buffer2 = (char*)alloca(s + 1);
 	memset(buffer2, 0, s + 1);
-	EXPECT_EQ(store.default_string.get(buffer2, s), 0);
+	EXPECT_EQ(store.default_string.get(buffer2, s), 0U);
 
 	for(size_t i = 0; i < s + 1; i++)
 		buffer1[i] = 'a';
@@ -166,8 +166,8 @@ TEST(Types, String)
 
 	ASSERT_TRUE(s >= 4);
 	memcpy(buffer1, "a\0b\0", 4);
-	EXPECT_EQ(store.default_string.set(buffer1, s), 1);
-	EXPECT_EQ(store.default_string.get(buffer2, s), 1);
+	EXPECT_EQ(store.default_string.set(buffer1, s), 1U);
+	EXPECT_EQ(store.default_string.get(buffer2, s), 1U);
 }
 
 TEST(Types, FreeVariable)
@@ -179,10 +179,10 @@ TEST(Types, FreeVariable)
 
 	auto v = f.apply(store);
 	v = 10;
-	EXPECT_EQ(store.default_uint8.get(), 10);
+	EXPECT_EQ(store.default_uint8.get(), 10U);
 
-	store.default_uint8 = 11;
-	EXPECT_EQ(v.get(), 11);
+	store.default_uint8 = 11U;
+	EXPECT_EQ(v.get(), 11U);
 }
 
 } // namespace

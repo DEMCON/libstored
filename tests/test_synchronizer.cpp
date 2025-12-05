@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2023 Jochem Rutgers
+// SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
 //
 // SPDX-License-Identifier: MPL-2.0
 
@@ -25,20 +25,20 @@ namespace {
 
 TEST(Synchronizer, Endianness)
 {
-	EXPECT_EQ(stored::swap_endian<uint8_t>(1), 1);
-	EXPECT_EQ(stored::swap_endian<uint16_t>(0x1234), 0x3412);
-	EXPECT_EQ(stored::swap_endian<uint32_t>(0x12345678), 0x78563412);
+	EXPECT_EQ(stored::swap_endian<uint8_t>(1), 1U);
+	EXPECT_EQ(stored::swap_endian<uint16_t>(0x1234), 0x3412U);
+	EXPECT_EQ(stored::swap_endian<uint32_t>(0x12345678), 0x78563412U);
 
 	uint8_t b[] = {1, 2, 3};
 	stored::swap_endian_<3>(b);
-	EXPECT_EQ(b[0], 3);
-	EXPECT_EQ(b[1], 2);
-	EXPECT_EQ(b[2], 1);
+	EXPECT_EQ(b[0], 3U);
+	EXPECT_EQ(b[1], 2U);
+	EXPECT_EQ(b[2], 1U);
 
 	stored::swap_endian(b, 2);
-	EXPECT_EQ(b[0], 2);
-	EXPECT_EQ(b[1], 3);
-	EXPECT_EQ(b[2], 1);
+	EXPECT_EQ(b[0], 2U);
+	EXPECT_EQ(b[1], 3U);
+	EXPECT_EQ(b[2], 1U);
 }
 
 TEST(Synchronizer, Instantiate)
@@ -66,7 +66,7 @@ TEST(Synchronizer, ShortSeq)
 {
 	TestJournal j("123", nullptr, 0u);
 
-	EXPECT_EQ(j.seq(), 1);
+	EXPECT_EQ(j.seq(), 1U);
 
 	j.changed(1, 0);
 	EXPECT_TRUE(j.hasChanged(1, 1));
@@ -74,29 +74,29 @@ TEST(Synchronizer, ShortSeq)
 	for(int i = 1; i < 50; i++)
 		j.bumpSeq(true);
 
-	EXPECT_EQ(j.seq(), 50);
+	EXPECT_EQ(j.seq(), 50U);
 	EXPECT_FALSE(j.hasChanged(1, 2));
 
-	EXPECT_EQ(j.toShort(50), 50);
-	EXPECT_EQ(j.toShort(49), 49);
-	EXPECT_EQ(j.toShort(1), 1);
+	EXPECT_EQ(j.toShort(50), 50U);
+	EXPECT_EQ(j.toShort(49), 49U);
+	EXPECT_EQ(j.toShort(1), 1U);
 
-	EXPECT_EQ(j.toLong(50), 50);
-	EXPECT_EQ(j.toLong(49), 49);
-	EXPECT_EQ(j.toLong(1), 1);
+	EXPECT_EQ(j.toLong(50), 50U);
+	EXPECT_EQ(j.toLong(49), 49U);
+	EXPECT_EQ(j.toLong(1), 1U);
 
 	for(int i = 0; i < 0x10000; i++)
 		j.bumpSeq(true);
 
-	EXPECT_EQ(j.toShort(0x10032), 50);
-	EXPECT_EQ(j.toShort(0x10031), 49);
-	EXPECT_EQ(j.toShort(0x10001), 1);
-	EXPECT_EQ(j.toShort(51), 51);
+	EXPECT_EQ(j.toShort(0x10032), 50U);
+	EXPECT_EQ(j.toShort(0x10031), 49U);
+	EXPECT_EQ(j.toShort(0x10001), 1U);
+	EXPECT_EQ(j.toShort(51), 51U);
 
-	EXPECT_EQ(j.toLong(51), 51);
-	EXPECT_EQ(j.toLong(50), 0x10032);
-	EXPECT_EQ(j.toLong(49), 0x10031);
-	EXPECT_EQ(j.toLong(1), 0x10001);
+	EXPECT_EQ(j.toLong(51), 51U);
+	EXPECT_EQ(j.toLong(50), 0x10032U);
+	EXPECT_EQ(j.toLong(49), 0x10031U);
+	EXPECT_EQ(j.toLong(1), 0x10001U);
 
 	EXPECT_TRUE(j.hasChanged(
 		1, j.seq() - TestJournal::ShortSeqWindow + TestJournal::SeqLowerMargin));
@@ -113,7 +113,7 @@ TEST(Synchronizer, Changes)
 
 	size_t c = 0;
 	store.journal().iterateChanged(0, [&](stored::StoreJournal::Key) { c++; });
-	EXPECT_EQ(c, 0);
+	EXPECT_EQ(c, 0U);
 
 	stored::StoreJournal::Key key_u8 = (stored::StoreJournal::Key)u8.key();
 	EXPECT_FALSE(store.journal().hasChanged(key_u8, now));
@@ -123,7 +123,7 @@ TEST(Synchronizer, Changes)
 
 	c = 0;
 	store.journal().iterateChanged(0, [&](stored::StoreJournal::Key) { c++; });
-	EXPECT_EQ(c, 1);
+	EXPECT_EQ(c, 1U);
 
 	now = store.journal().seq();
 	store.default_uint8 = 2;
@@ -144,29 +144,29 @@ TEST(Synchronizer, Changes)
 
 	c = 0;
 	store.journal().iterateChanged(0, [&](stored::StoreJournal::Key) { c++; });
-	EXPECT_EQ(c, 2);
+	EXPECT_EQ(c, 2U);
 }
 
-#define EXPECT_SYNCED(store1, store2)                                      \
-	do {                                                               \
-		auto _map1 = (store1).map();                               \
-		auto _map2 = (store2).map();                               \
-		for(auto& _o : _map1)                                      \
-			EXPECT_EQ(_o.second.get(), _map2[_o.first].get()); \
-	} while(0)
+#define EXPECT_SYNCED(store1, store2)                    \
+  do {                                                   \
+    auto _map1 = (store1).map();                         \
+    auto _map2 = (store2).map();                         \
+    for(auto& _o : _map1)                                \
+      EXPECT_EQ(_o.second.get(), _map2[_o.first].get()); \
+  } while(0)
 
-#define EXPECT_NOT_SYNCED(store1, store2)                              \
-	do {                                                           \
-		auto _map1 = (store1).map();                           \
-		auto _map2 = (store2).map();                           \
-		bool _synced = true;                                   \
-		for(auto& _o : _map1)                                  \
-			if(_o.second.get() != _map2[_o.first].get()) { \
-				_synced = false;                       \
-				break;                                 \
-			}                                              \
-		EXPECT_FALSE(_synced);                                 \
-	} while(0)
+#define EXPECT_NOT_SYNCED(store1, store2)            \
+  do {                                               \
+    auto _map1 = (store1).map();                     \
+    auto _map2 = (store2).map();                     \
+    bool _synced = true;                             \
+    for(auto& _o : _map1)                            \
+      if(_o.second.get() != _map2[_o.first].get()) { \
+	_synced = false;                             \
+	break;                                       \
+      }                                              \
+    EXPECT_FALSE(_synced);                           \
+  } while(0)
 
 TEST(Synchronizer, Sync2)
 {

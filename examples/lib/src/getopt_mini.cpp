@@ -61,4 +61,6 @@ int getopt(int argc, char* const* argv, char const* options)
 	return optopt;
 }
 
-#endif // !POSIX
+#else  // POSIX
+char dummy_char_to_make_getopt_mini_cpp_non_empty; // NOLINT
+#endif // POSIX

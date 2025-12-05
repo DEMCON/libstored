@@ -344,13 +344,15 @@ void Aes256BaseLayer::fillRandom(uint8_t* buffer, size_t len) noexcept
 #    error "CTR not defined in aes.h"
 #  endif
 
-static_assert(Aes256Layer::KeySize == AES_KEYLEN, "");
-
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 Aes256Layer::Aes256Layer(void const* key, ProtocolLayer* up, ProtocolLayer* down)
 	: base(key, up, down)
 	, m_ctx_enc()
 	, m_ctx_dec()
 {
+	static_assert(Aes256Layer::KeySize == AES_KEYLEN, "");
+	static_assert(Aes256Layer::BlockSize == AES_BLOCKLEN, "");
+
 	// NOLINTNEXTLINE
 	m_ctx_enc = new struct AES_ctx;
 
