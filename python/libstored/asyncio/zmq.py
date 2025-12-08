@@ -1487,6 +1487,7 @@ class ZmqClient(Work):
                     await self.req(f'm{m}')
 
         self.connected.trigger()
+        await self._stack.connected()
 
         if not default_state:
             await self.restore_state()
@@ -1555,6 +1556,7 @@ class ZmqClient(Work):
 
         self.logger.debug('disconnect')
         self.disconnecting.trigger()
+        await self._stack.disconnected()
 
         await self.save_state()
         self._socket = None
@@ -1581,12 +1583,13 @@ class ZmqClient(Work):
 
     @Work.run_sync
     async def close(self):
-        '''Alias for disconnect().'''
+        '''Disconnect and release resources.'''
         await self.disconnect()
+        await self._stack.close()
 
     def __del__(self):
-        if self.is_connected():
-            self.disconnect(sync=True)
+        if self.is_connected() or not self._stack.is_closed():
+            self.close(sync=True)
 
     def sync(self) -> SyncZmqClient:
         s = SyncZmqClient(self)
@@ -1597,15 +1600,15 @@ class ZmqClient(Work):
         return self.sync()
 
     def __exit__(self, *args):
-        if self.is_connected():
-            self.disconnect(sync=True)
+        if self.is_connected() or not self._stack.is_closed():
+            self.close(sync=True)
 
     async def __aenter__(self):
         await self.connect()
         return self
 
     async def __aexit__(self, *args):
-        await self.disconnect()
+        await self.close()
 
 
 

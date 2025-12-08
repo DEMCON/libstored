@@ -56,14 +56,15 @@ class ProtocolLayer:
 
     def __init__(self, *args, **kwargs):
         self._closed : bool = False
+        self._connected : bool = True
 
         super().__init__(*args, **kwargs)
         self.logger = logging.getLogger(self.__class__.__name__)
 
         self._down : ProtocolLayer | None = None
         self._up : ProtocolLayer | None = None
-        self._down_callback : ProtocolLayer.AsyncCallback = callback_factory(None)
-        self._up_callback : ProtocolLayer.AsyncCallback = callback_factory(None)
+        self._encode_callback : ProtocolLayer.AsyncCallback = callback_factory(None)
+        self._decode_callback : ProtocolLayer.AsyncCallback = callback_factory(None)
         self._activity : float = 0
         self._async_except_hook = callback_factory(self.default_async_except_hook)
 
@@ -83,7 +84,7 @@ class ProtocolLayer:
         '''
         Set a callback to be called when data is received from the lower layer.
         '''
-        self._up_callback = callback_factory(cb)
+        self._decode_callback = callback_factory(cb)
 
     @property
     def down(self) -> ProtocolLayer | None:
@@ -94,7 +95,32 @@ class ProtocolLayer:
         '''
         Set a callback to be called when data is received from the upper layer.
         '''
-        self._down_callback = callback_factory(cb)
+        self._encode_callback = callback_factory(cb)
+
+    async def connected(self) -> None:
+        '''
+        Called when the connection is (re)connected.
+        '''
+        self._connected = True
+        if self.up is not None:
+            await self.up.connected()
+
+    async def disconnected(self) -> None:
+        '''
+        Called when the connection is disconnected.
+        '''
+        if not self.is_connected():
+            return
+
+        self._connected = False
+        if self.up is not None:
+            await self.up.disconnected()
+
+    def is_connected(self) -> bool:
+        '''
+        Return whether the connection is currently connected.
+        '''
+        return self._connected
 
     async def encode(self, data : ProtocolLayer.Packet) -> None:
         '''
@@ -102,7 +128,7 @@ class ProtocolLayer:
         '''
         self.activity()
 
-        await self._down_callback(data)
+        await self._encode_callback(data)
 
         if self.down is not None:
             await self.down.encode(data)
@@ -113,7 +139,7 @@ class ProtocolLayer:
         '''
         self.activity()
 
-        await self._up_callback(data)
+        await self._decode_callback(data)
 
         if self.up is not None:
             await self.up.decode(data)
@@ -155,13 +181,26 @@ class ProtocolLayer:
     async def close(self) -> None:
         '''
         Close the layer and release resources.
+
+        Closing cannot be undone.
         '''
+        if self._closed:
+            return
+
+        await self.disconnected()
+
         self._closed = True
         if self.down is not None:
             try:
                 await self.down.close()
             except BaseException as e:
                 self.logger.warning(f'Exception while closing: {e}')
+
+    def is_closed(self) -> bool:
+        '''
+        Return whether the layer is closed.
+        '''
+        return self._closed
 
     async def __aenter__(self):
         return self
@@ -363,6 +402,10 @@ class TerminalLayer(ProtocolLayer):
                     self._inMsg = False
                     await super().decode(msg)
 
+    async def disconnected(self) -> None:
+        self._inMsg = False
+        await super().disconnected()
+
     @property
     def mtu(self) -> int | None:
         m = super().mtu
@@ -490,6 +533,10 @@ class RepReqCheckLayer(ProtocolLayer):
         self._req = False
         await super().decode(data)
 
+    async def disconnected(self) -> None:
+        await super().disconnected()
+        self._req = False
+
 
 
 class SegmentationLayer(ProtocolLayer):
@@ -550,6 +597,10 @@ class SegmentationLayer(ProtocolLayer):
         '''
         self._buffer = bytearray()
         await super().timeout()
+
+    async def disconnected(self) -> None:
+        await super().disconnected()
+        self._buffer = bytearray()
 
 
 
@@ -694,6 +745,10 @@ class DebugArqLayer(ProtocolLayer):
     def reset(self) -> None:
         self._reset = True
         self._request = []
+
+    async def connected(self) -> None:
+        self.reset()
+        await super().connected()
 
     async def retransmit(self) -> None:
         self.logger.debug('retransmit')
@@ -893,6 +948,14 @@ class ProtocolStack(ProtocolLayer):
             self.logger.warning(f'Exception while closing: {e}')
 
         await super().close()
+
+    async def connected(self) -> None:
+        await self._layers[-1].connected()
+        await super().connected()
+
+    async def disconnected(self) -> None:
+        await self._layers[-1].disconnected()
+        await super().disconnected()
 
     @property
     def mtu(self) -> int | None:
@@ -1106,6 +1169,15 @@ class MuxLayer(ProtocolLayer):
         self._prev = None
         await super().timeout()
 
+    async def connected(self) -> None:
+        self._prev = None
+        await super().connected()
+
+    async def disconnected(self) -> None:
+        self._decoding = None
+        self._decoding_esc = False
+        await super().disconnected()
+
 
 
 class Aes256Layer(ProtocolLayer):
@@ -1272,6 +1344,11 @@ class Aes256Layer(ProtocolLayer):
             return b'U' + iv
         else:
             return b'B' + iv
+
+    async def connected(self) -> None:
+        self._encrypt = None
+        self._decrypt = None
+        await super().connected()
 
 
 
