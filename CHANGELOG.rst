@@ -26,6 +26,11 @@ Added
 
 ...
 
+Fixed
+`````
+
+- ``ZmqClient`` assertion during cleanup
+
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v2.1.0...HEAD
 
 

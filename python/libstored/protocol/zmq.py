@@ -61,12 +61,15 @@ class ZmqSocketBase(lprot.ProtocolLayer):
             raise RuntimeError('ZMQ socket is closed')
         return self._socket
 
-    def mark_open(self) -> None:
+    async def mark_open(self) -> None:
+        if self.open:
+            return
         self._open = True
+        await self.connected()
 
     @property
     def open(self) -> bool:
-        return self._open
+        return self._open and self.is_connected()
 
     async def _recv_task(self) -> None:
         try:
@@ -78,7 +81,7 @@ class ZmqSocketBase(lprot.ProtocolLayer):
                 x = b''.join(await socket.recv_multipart())
                 if self.logger.getEffectiveLevel() <= logging.DEBUG:
                     self.logger.debug(f'recv {x}')
-                self.mark_open()
+                await self.mark_open()
                 await self._handle_recv(x)
         except asyncio.CancelledError:
             pass
@@ -105,10 +108,9 @@ class ZmqSocketBase(lprot.ProtocolLayer):
             self._socket.close()
             self._socket = None
 
-        self.disconnected()
         await super().close()
 
-    def _check_sent(self) -> None:
+    async def _check_sent(self) -> None:
         if self._timeout_s is None:
             t = None
         else:
@@ -129,14 +131,15 @@ class ZmqSocketBase(lprot.ProtocolLayer):
 
             if self.open:
                 self.logger.info('connection timed out')
-                self.disconnected()
+                await self.disconnected()
             return
 
-    def disconnected(self) -> None:
+    async def disconnected(self) -> None:
         self._open = False
         for f, _ in self._sent:
             f.cancel()
         self._sent = []
+        await super().disconnected()
 
     async def _send(self, data : lprot.ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
@@ -144,7 +147,7 @@ class ZmqSocketBase(lprot.ProtocolLayer):
         elif isinstance(data, memoryview):
             data = data.cast('B')
 
-        self._check_sent()
+        await self._check_sent()
 
         if self.open:
             if self.logger.getEffectiveLevel() <= logging.DEBUG:
@@ -210,7 +213,7 @@ class ZmqSocketClient(ZmqSocketBase):
 
     async def _recv_init(self) -> None:
         # Indicate that we are connected.
-        self.mark_open()
+        await self.mark_open()
         await self._send(b'')
 
     async def encode(self, data : lprot.ProtocolLayer.Packet) -> None:
@@ -315,8 +318,8 @@ class ZmqServer(ZmqSocketServer):
         self._req = False
         await super().decode(data)
 
-    def disconnected(self) -> None:
-        super().disconnected()
+    async def disconnected(self) -> None:
+        await super().disconnected()
         self._req = False
 
 lprot.register_layer_type(ZmqServer)
