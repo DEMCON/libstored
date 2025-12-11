@@ -141,7 +141,9 @@ typedef SSIZE_T ssize_t;
 // Platform
 //
 
-#ifdef __ZEPHYR__
+#if defined(STORED_OS_BAREMETAL) || defined(STORED_OS_GENERIC)
+// Accept pre-defined setup.
+#elif defined(__ZEPHYR__)
 #  define STORED_OS_BAREMETAL 1
 #  include <zephyr/toolchain.h>
 // By default, turn off; picolibc does not provide it by default.
