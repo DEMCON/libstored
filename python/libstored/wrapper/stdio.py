@@ -43,7 +43,7 @@ def main():
                 stack = lprot.build_stack(
                     ','.join([
                         f'zmq={args.listen}:{args.port}',
-                        'repreqcheck',
+                        'reqrepcheck',
                         re.sub(r'\bpubterm\b(,|$)', f'pubterm={args.listen}:{args.port+1}\\1', args.stack)])
                     )
 
