@@ -96,6 +96,8 @@ class StdioLayer(lprot.ProtocolLayer):
 
     def __init__(self, cmd, *args, **kwargs):
         super().__init__(*args)
+        self.logger.debug(f"Starting process: {cmd}")
+
         self._process = subprocess.Popen(
             args=cmd,
             stdin=subprocess.PIPE,
@@ -127,7 +129,17 @@ class StdioLayer(lprot.ProtocolLayer):
         if self._process.stdout is None or self._process.stdout.closed:
             raise RuntimeError("Process has no stdout anymore")
 
-        x = self._process.stdout.read1(4096)  # type: ignore
+        x = b""
+        try:
+            x = self._process.stdout.read1(4096)  # type: ignore
+        except BaseException:
+            pass
+
+        if x is None or x == b"":
+            if self._process.poll() is not None:
+                self._process.stdout.close()
+                raise RuntimeError("Process has terminated")
+
         self.logger.debug("received %s", x)
         return x
 
@@ -177,6 +189,10 @@ class StdioLayer(lprot.ProtocolLayer):
                     ret = self._process.poll()
                     if ret is not None:
                         self.logger.error(f"Process terminated with exit code {ret}")
+                        if self._process.stdin is not None:
+                            self._process.stdin.close()
+                        if self._process.stdout is not None:
+                            self._process.stdout.close()
                         if asyncio.iscoroutinefunction(f):
                             await f(ret)
                         else:
@@ -211,7 +227,6 @@ class StdioLayer(lprot.ProtocolLayer):
                 os.killpg(os.getpgid(self._process.pid), signal.SIGTERM)
             except ProcessLookupError:
                 pass
-        self._process.terminate()
 
         if self._reader_task is not None:
             self._reader_task.cancel()
@@ -233,6 +248,7 @@ class StdioLayer(lprot.ProtocolLayer):
                 pass
             self._check_task = None
 
+        self._process.terminate()
         await super().close()
 
 
