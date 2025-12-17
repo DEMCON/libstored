@@ -11,12 +11,13 @@ import typing
 from . import worker as laio_worker
 from .. import exceptions as lexc
 
+
 class Event:
     logger = logging.getLogger(__name__)
 
-    def __init__(self, event_name : str | None=None, *args, **kwargs):
+    def __init__(self, event_name: str | None = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._callbacks : typing.Dict[typing.Hashable, typing.Callable] = {}
+        self._callbacks: typing.Dict[typing.Hashable, typing.Callable] = {}
         self._key = 0
         self._queued = None
         self._paused = False
@@ -24,12 +25,18 @@ class Event:
         self._lock = lexc.DeadlockChecker(threading.RLock())
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}({self._event_name})' if self._event_name is not None else super().__repr__()
+        return (
+            f"{self.__class__.__name__}({self._event_name})"
+            if self._event_name is not None
+            else super().__repr__()
+        )
 
     def __str__(self) -> str:
         return self._event_name if self._event_name is not None else super().__str__()
 
-    def register(self, callback : typing.Callable, id : typing.Hashable | None=None) -> typing.Hashable:
+    def register(
+        self, callback: typing.Callable, id: typing.Hashable | None = None
+    ) -> typing.Hashable:
         with self._lock:
             if id is not None and id in self._callbacks:
                 raise KeyError(f"Callback with id {id} already registered")
@@ -42,7 +49,7 @@ class Event:
             self._callbacks[id] = callback
             return id
 
-    def unregister(self, id : typing.Hashable):
+    def unregister(self, id: typing.Hashable):
         c = []
         with self._lock:
             if id in self._callbacks:
@@ -74,7 +81,7 @@ class Event:
         return self._paused
 
     def trigger(self, *args, **kwargs):
-        self.logger.debug('trigger %s', repr(self))
+        self.logger.debug("trigger %s", repr(self))
 
         callbacks = []
         with self._lock:
@@ -95,7 +102,7 @@ class Event:
                 else:
                     callback(*bound.args, **bound.kwargs)
             except Exception as e:
-                self.logger.exception(f'Exception in {repr(self)} callback: {e}')
+                self.logger.exception(f"Exception in {repr(self)} callback: {e}")
 
     def __call__(self, *args, **kwargs):
         self.trigger(*args, **kwargs)
@@ -118,11 +125,16 @@ class Event:
         finally:
             self.unregister(key)
 
+
 class ValueWrapper(Event):
-    def __init__(self, type : typing.Type,
-                 get : typing.Callable[[], typing.Any] | None = None,
-                 set : typing.Callable[[typing.Any], None] | None = None,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        type: typing.Type,
+        get: typing.Callable[[], typing.Any] | None = None,
+        set: typing.Callable[[typing.Any], None] | None = None,
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self._type = type
         self._get = get
@@ -140,7 +152,7 @@ class ValueWrapper(Event):
         return x
 
     @value.setter
-    def value(self, value : typing.Any):
+    def value(self, value: typing.Any):
         if self._set is None:
             raise AttributeError("not writable")
         if value is not None and not isinstance(value, self.type):
@@ -150,10 +162,10 @@ class ValueWrapper(Event):
     def get(self) -> typing.Any:
         return self.value
 
-    def set(self, value : typing.Any):
+    def set(self, value: typing.Any):
         self.value = value
 
-    def trigger(self, value : typing.Any = None):
+    def trigger(self, value: typing.Any = None):
         if value is not None and not isinstance(value, self.type):
             raise TypeError(f"expected {self.type}, got {type(value)}")
         super().trigger(value if value is not None else self.value)
@@ -171,8 +183,9 @@ class ValueWrapper(Event):
     def __str__(self) -> str:
         return str(self.value)
 
+
 class Value(ValueWrapper):
-    def __init__(self, type : typing.Type, initial : typing.Any=None, *args, **kwargs):
+    def __init__(self, type: typing.Type, initial: typing.Any = None, *args, **kwargs):
         super().__init__(type, self._get, self._set, *args, **kwargs)
         if initial is not None and not isinstance(initial, type):
             raise TypeError(f"expected {type}, got {type(initial)}")
@@ -181,13 +194,14 @@ class Value(ValueWrapper):
     def _get(self) -> typing.Any:
         return self._value
 
-    def _set(self, value : typing.Any):
+    def _set(self, value: typing.Any):
         if self._value != value:
             self._value = value
             self.trigger()
 
+
 class AsyncioRateLimit(laio_worker.Work, Event):
-    '''
+    """
     Event that can be triggered, but not more often than a specified minimum interval.
 
     If triggered more often, only the last trigger arguments are used, and the event
@@ -195,9 +209,11 @@ class AsyncioRateLimit(laio_worker.Work, Event):
 
     The trigger() method is thread-safe.
     The timer callback is executed in the worker's event loop.
-    '''
+    """
 
-    def __init__(self, Hz : float | None=None, min_interval_s : float | None=None, *args, **kwargs):
+    def __init__(
+        self, Hz: float | None = None, min_interval_s: float | None = None, *args, **kwargs
+    ):
         super().__init__(*args, **kwargs)
 
         if Hz is not None and min_interval_s is not None:
@@ -212,10 +228,10 @@ class AsyncioRateLimit(laio_worker.Work, Event):
         assert min_interval_s is not None
         self._min_interval_s = max(0, min_interval_s)
         self._last_trigger = 0.0
-        self._timer : asyncio.TimerHandle | None = None
-        self._args : tuple[tuple, dict] = ((), {})
+        self._timer: asyncio.TimerHandle | None = None
+        self._args: tuple[tuple, dict] = ((), {})
 
-    def unregister(self, id : typing.Hashable):
+    def unregister(self, id: typing.Hashable):
         super().unregister(id)
         if len(self) == 0 and self._timer is not None:
             self._timer.cancel()

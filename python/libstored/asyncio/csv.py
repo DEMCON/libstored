@@ -17,25 +17,49 @@ from typing import overload
 from . import worker as laio_worker
 from . import zmq as laio_zmq
 
-@overload
-def generate_filename(filename : str | None=None, *,
-                      add_timestamp : bool=False, ext : str='.csv', now : time.struct_time | float | None=None,
-                      unique : bool=False) -> str: ...
-@overload
-def generate_filename(*, base : str,
-                      add_timestamp : bool=False, ext : str='.csv', now : time.struct_time | float | None=None,
-                      unique : bool=False) -> str: ...
-@overload
-def generate_filename(filename : list[str] | str | None=None, *, base : list[str] | str | None=None,
-                      add_timestamp : bool=False, ext : list[str] | str='.csv', now : time.struct_time | float | None=None,
-                      unique : bool=False) -> str | list[str]: ...
 
-def generate_filename(filename : list[str] | str | None=None, *, base : list[str] | str | None=None,
-                      add_timestamp : bool=False, ext : list[str] | str='.csv', now : time.struct_time | float | None=None,
-                      unique : bool=False) -> str | list[str]:
+@overload
+def generate_filename(
+    filename: str | None = None,
+    *,
+    add_timestamp: bool = False,
+    ext: str = ".csv",
+    now: time.struct_time | float | None = None,
+    unique: bool = False,
+) -> str: ...
+@overload
+def generate_filename(
+    *,
+    base: str,
+    add_timestamp: bool = False,
+    ext: str = ".csv",
+    now: time.struct_time | float | None = None,
+    unique: bool = False,
+) -> str: ...
+@overload
+def generate_filename(
+    filename: list[str] | str | None = None,
+    *,
+    base: list[str] | str | None = None,
+    add_timestamp: bool = False,
+    ext: list[str] | str = ".csv",
+    now: time.struct_time | float | None = None,
+    unique: bool = False,
+) -> str | list[str]: ...
+
+
+def generate_filename(
+    filename: list[str] | str | None = None,
+    *,
+    base: list[str] | str | None = None,
+    add_timestamp: bool = False,
+    ext: list[str] | str = ".csv",
+    now: time.struct_time | float | None = None,
+    unique: bool = False,
+) -> str | list[str]:
 
     if filename is None and base is None:
-        raise ValueError('Specify filename and/or base')
+        raise ValueError("Specify filename and/or base")
 
     return_list = False
 
@@ -84,7 +108,7 @@ def generate_filename(filename : list[str] | str | None=None, *, base : list[str
     # Append timestamps to the generated bases.
     if add_timestamp:
         for i in range(0, len(names)):
-            names[i] = (names[i][0] + '_%Y%m%dT%H%M%S%z', names[i][1])
+            names[i] = (names[i][0] + "_%Y%m%dT%H%M%S%z", names[i][1])
 
     # Time-format collected bases.
     for i in range(0, len(names)):
@@ -94,7 +118,7 @@ def generate_filename(filename : list[str] | str | None=None, *, base : list[str
     if unique:
         for i in range(0, len(names)):
             suffix_nr = 1
-            suffix = ''
+            suffix = ""
             n = names[i][0] + names[i][1]
             while True:
                 # Check if the file already exists.
@@ -115,7 +139,7 @@ def generate_filename(filename : list[str] | str | None=None, *, base : list[str
 
                 # Pick another suffix and retry.
                 suffix_nr += 1
-                suffix = f'_{suffix_nr}'
+                suffix = f"_{suffix_nr}"
                 n = names[i][0] + suffix + names[i][1]
 
     # Combine bases/exts.
@@ -129,15 +153,23 @@ def generate_filename(filename : list[str] | str | None=None, *, base : list[str
     else:
         return names
 
-class CsvExport(laio_worker.Work):
-    '''
-    asyncio csv exporter via AsyncioWorker.
-    '''
 
-    def __init__(self, filename : str = 'out.csv', *,
-                 auto_write : float | None=None, write_on_change : bool=True, auto_flush : float | None=1.0,
-                 worker : laio_worker.AsyncioWorker | None=None, logger : logging.Logger | None=None,
-                 **fmtargs):
+class CsvExport(laio_worker.Work):
+    """
+    asyncio csv exporter via AsyncioWorker.
+    """
+
+    def __init__(
+        self,
+        filename: str = "out.csv",
+        *,
+        auto_write: float | None = None,
+        write_on_change: bool = True,
+        auto_flush: float | None = 1.0,
+        worker: laio_worker.AsyncioWorker | None = None,
+        logger: logging.Logger | None = None,
+        **fmtargs,
+    ):
         super().__init__(worker=worker, logger=logger)
 
         self._out = io.StringIO()
@@ -145,19 +177,19 @@ class CsvExport(laio_worker.Work):
         self._filename = filename
         self._file_context = None
         self._file = None
-        self._objs : dict[laio_zmq.Object, typing.Any] = {}
-        self._t_last : float = 0
-        self._t_update : float = 0
-        self._coalesced : tuple[float, list[typing.Any]] = (0.0, [])
+        self._objs: dict[laio_zmq.Object, typing.Any] = {}
+        self._t_last: float = 0
+        self._t_update: float = 0
+        self._coalesced: tuple[float, list[typing.Any]] = (0.0, [])
         self._write_sem = asyncio.BoundedSemaphore(1)
 
-        self._auto_write_task : typing.Optional[asyncio.Task[None]] = None
-        self._auto_write : float | None = auto_write
+        self._auto_write_task: typing.Optional[asyncio.Task[None]] = None
+        self._auto_write: float | None = auto_write
 
-        self._write_on_change_task : typing.Optional[asyncio.Task[None]] = None
+        self._write_on_change_task: typing.Optional[asyncio.Task[None]] = None
         self._write_on_change = write_on_change and auto_write is None
 
-        self._auto_flush_task : typing.Optional[asyncio.Task[None]] = None
+        self._auto_flush_task: typing.Optional[asyncio.Task[None]] = None
         self._auto_flush = auto_flush
 
     @property
@@ -165,20 +197,22 @@ class CsvExport(laio_worker.Work):
         return self._file is not None
 
     @property
-    def file(self): # -> some aiofile type
+    def file(self):  # -> some aiofile type
         if not self.opened:
-            raise RuntimeError('File not opened')
+            raise RuntimeError("File not opened")
         assert self._file is not None
         return self._file
 
     @overload
     async def open(self) -> None: ...
     @overload
-    def open(self, *, block : typing.Literal[False]) -> asyncio.Future[bool]: ...
+    def open(self, *, block: typing.Literal[False]) -> asyncio.Future[bool]: ...
     @overload
-    def open(self, *, sync : typing.Literal[True]) -> bool: ...
+    def open(self, *, sync: typing.Literal[True]) -> bool: ...
     @overload
-    def open(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[bool]: ...
+    def open(
+        self, *, block: typing.Literal[False], sync: typing.Literal[True]
+    ) -> concurrent.futures.Future[bool]: ...
 
     @laio_worker.Work.run_sync
     @laio_worker.Work.locked
@@ -189,21 +223,21 @@ class CsvExport(laio_worker.Work):
         assert self.lock.has_lock()
 
         if self.opened:
-            raise RuntimeError('File already opened')
+            raise RuntimeError("File already opened")
 
-        if self._filename == '-':
-            self.logger.info('using stdout for CSV export')
+        if self._filename == "-":
+            self.logger.info("using stdout for CSV export")
             self._file_context = None
             self._file = aiofiles.stdout
         else:
-            self.logger.info('using %s for CSV export', self._filename)
-            self._file_context = aiofiles.open(self._filename, 'w', newline='', encoding='utf-8')
+            self.logger.info("using %s for CSV export", self._filename)
+            self._file_context = aiofiles.open(self._filename, "w", newline="", encoding="utf-8")
             self._file = await self._file_context.__aenter__()
 
         self._t_last = 0
         self._t_update = 0
         self._need_restart = True
-        self._coalesced : tuple[float, list[typing.Any]] = (0.0, [])
+        self._coalesced: tuple[float, list[typing.Any]] = (0.0, [])
         self._queue = []
 
         self._update_auto_write(self._auto_write)
@@ -217,11 +251,13 @@ class CsvExport(laio_worker.Work):
     @overload
     async def close(self) -> None: ...
     @overload
-    def close(self, *, block : typing.Literal[False]) -> asyncio.Future[bool]: ...
+    def close(self, *, block: typing.Literal[False]) -> asyncio.Future[bool]: ...
     @overload
-    def close(self, *, sync : typing.Literal[True]) -> bool: ...
+    def close(self, *, sync: typing.Literal[True]) -> bool: ...
     @overload
-    def close(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[bool]: ...
+    def close(
+        self, *, block: typing.Literal[False], sync: typing.Literal[True]
+    ) -> concurrent.futures.Future[bool]: ...
 
     @laio_worker.Work.run_sync
     @laio_worker.Work.locked
@@ -241,7 +277,7 @@ class CsvExport(laio_worker.Work):
             self._update_write_on_change(False)
             self._update_auto_flush(None)
         except Exception as e:
-            self.logger.debug('ignore exception: %s', e)
+            self.logger.debug("ignore exception: %s", e)
 
         try:
             data = self._out.getvalue()
@@ -251,7 +287,7 @@ class CsvExport(laio_worker.Work):
             if data:
                 await self._file.write(data)
         except Exception as e:
-            self.logger.debug('ignore exception: %s', e)
+            self.logger.debug("ignore exception: %s", e)
 
         self._file = None
 
@@ -259,10 +295,10 @@ class CsvExport(laio_worker.Work):
             try:
                 await self._file_context.__aexit__(None, None, None)
             except Exception as e:
-                self.logger.debug('ignore exception: %s', e)
+                self.logger.debug("ignore exception: %s", e)
             finally:
                 self._file_context = None
-            self.logger.debug('closed %s', self._filename)
+            self.logger.debug("closed %s", self._filename)
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         await self.close()
@@ -273,11 +309,11 @@ class CsvExport(laio_worker.Work):
 
     @laio_worker.Work.locked
     async def _restart(self):
-        self.logger.debug('restart')
+        self.logger.debug("restart")
         self._out.truncate(0)
         self._out.seek(0)
 
-        header = ['t (s)']
+        header = ["t (s)"]
         for obj in self._objs.keys():
             header.append(obj.name)
         if len(header) > 1:
@@ -287,23 +323,34 @@ class CsvExport(laio_worker.Work):
         self._need_restart = False
 
     @overload
-    async def write(self, t : float | None=None, *, flush : bool=False) -> None: ...
+    async def write(self, t: float | None = None, *, flush: bool = False) -> None: ...
     @overload
-    def write(self, t : float | None=None, *, flush : bool=False, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    def write(
+        self, t: float | None = None, *, flush: bool = False, block: typing.Literal[False]
+    ) -> asyncio.Future[None]: ...
     @overload
-    def write(self, t : float | None=None, *, flush : bool=False, sync : typing.Literal[True]) -> None: ...
+    def write(
+        self, t: float | None = None, *, flush: bool = False, sync: typing.Literal[True]
+    ) -> None: ...
     @overload
-    def write(self, t : float | None=None, *, flush : bool=False, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+    def write(
+        self,
+        t: float | None = None,
+        *,
+        flush: bool = False,
+        block: typing.Literal[False],
+        sync: typing.Literal[True],
+    ) -> concurrent.futures.Future[None]: ...
 
     @laio_worker.Work.run_sync
-    async def write(self, t : float | None=None, *, flush : bool=False) -> None:
+    async def write(self, t: float | None = None, *, flush: bool = False) -> None:
         self._collect(t)
         await self._write()
 
         if flush:
             await self._flush()
 
-    def _collect(self, t : float | None=None) -> None:
+    def _collect(self, t: float | None = None) -> None:
         if t is None:
             t = self._t_update
 
@@ -325,7 +372,7 @@ class CsvExport(laio_worker.Work):
         assert not self.lock.has_lock()
 
         if not self.opened:
-            raise RuntimeError('File not opened')
+            raise RuntimeError("File not opened")
 
         if self._need_restart:
             await self._restart()
@@ -336,18 +383,20 @@ class CsvExport(laio_worker.Work):
 
             for t, row in queue:
                 if t > self._t_last:
-                    self.logger.debug('write t=%.6f', t)
+                    self.logger.debug("write t=%.6f", t)
                     self._t_last = t
                     self._writer.writerow(row)
 
     @overload
     async def flush(self) -> None: ...
     @overload
-    def flush(self, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    def flush(self, *, block: typing.Literal[False]) -> asyncio.Future[None]: ...
     @overload
-    def flush(self, *, sync : typing.Literal[True]) -> None: ...
+    def flush(self, *, sync: typing.Literal[True]) -> None: ...
     @overload
-    def flush(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+    def flush(
+        self, *, block: typing.Literal[False], sync: typing.Literal[True]
+    ) -> concurrent.futures.Future[None]: ...
 
     @laio_worker.Work.run_sync
     async def flush(self) -> None:
@@ -357,7 +406,7 @@ class CsvExport(laio_worker.Work):
         assert not self.lock.has_lock()
 
         if not self.opened:
-            raise RuntimeError('File not opened')
+            raise RuntimeError("File not opened")
 
         async with self.lock:
             data = self._out.getvalue()
@@ -365,40 +414,48 @@ class CsvExport(laio_worker.Work):
             self._out.seek(0)
 
         if data:
-            self.logger.debug('flush')
+            self.logger.debug("flush")
             await self.file.write(data)
             await self.file.flush()
-            self.logger.debug('flushed')
+            self.logger.debug("flushed")
 
     @overload
-    async def add(self, obj : laio_zmq.Object) -> None: ...
+    async def add(self, obj: laio_zmq.Object) -> None: ...
     @overload
-    def add(self, obj : laio_zmq.Object, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    def add(
+        self, obj: laio_zmq.Object, *, block: typing.Literal[False]
+    ) -> asyncio.Future[None]: ...
     @overload
-    def add(self, obj : laio_zmq.Object, *, sync : typing.Literal[True]) -> None: ...
+    def add(self, obj: laio_zmq.Object, *, sync: typing.Literal[True]) -> None: ...
     @overload
-    def add(self, obj : laio_zmq.Object, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+    def add(
+        self, obj: laio_zmq.Object, *, block: typing.Literal[False], sync: typing.Literal[True]
+    ) -> concurrent.futures.Future[None]: ...
 
     @laio_worker.Work.run_sync
     @laio_worker.Work.locked
-    async def add(self, obj : laio_zmq.Object) -> None:
+    async def add(self, obj: laio_zmq.Object) -> None:
         if obj not in self._objs:
             self._objs[obj] = await obj.read()
             obj.register(lambda v, o=obj: self._on_object_update(o, v), self)
             self._need_restart = True
 
     @overload
-    async def remove(self, obj : laio_zmq.Object) -> None: ...
+    async def remove(self, obj: laio_zmq.Object) -> None: ...
     @overload
-    def remove(self, obj : laio_zmq.Object, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    def remove(
+        self, obj: laio_zmq.Object, *, block: typing.Literal[False]
+    ) -> asyncio.Future[None]: ...
     @overload
-    def remove(self, obj : laio_zmq.Object, *, sync : typing.Literal[True]) -> None: ...
+    def remove(self, obj: laio_zmq.Object, *, sync: typing.Literal[True]) -> None: ...
     @overload
-    def remove(self, obj : laio_zmq.Object, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+    def remove(
+        self, obj: laio_zmq.Object, *, block: typing.Literal[False], sync: typing.Literal[True]
+    ) -> concurrent.futures.Future[None]: ...
 
     @laio_worker.Work.run_sync
     @laio_worker.Work.locked
-    async def remove(self, obj : laio_zmq.Object) -> None:
+    async def remove(self, obj: laio_zmq.Object) -> None:
         if obj in self._objs:
             obj.unregister(self)
             del self._objs[obj]
@@ -407,11 +464,13 @@ class CsvExport(laio_worker.Work):
     @overload
     async def clear(self) -> None: ...
     @overload
-    def clear(self, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    def clear(self, *, block: typing.Literal[False]) -> asyncio.Future[None]: ...
     @overload
-    def clear(self, *, sync : typing.Literal[True]) -> None: ...
+    def clear(self, *, sync: typing.Literal[True]) -> None: ...
     @overload
-    def clear(self, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+    def clear(
+        self, *, block: typing.Literal[False], sync: typing.Literal[True]
+    ) -> concurrent.futures.Future[None]: ...
 
     @laio_worker.Work.run_sync
     @laio_worker.Work.locked
@@ -422,7 +481,7 @@ class CsvExport(laio_worker.Work):
         self._objs.clear()
         self._need_restart = True
 
-    def _on_object_update(self, obj : laio_zmq.Object, value : typing.Any) -> None:
+    def _on_object_update(self, obj: laio_zmq.Object, value: typing.Any) -> None:
         if obj in self._objs:
             self._objs[obj] = value
             obj_t = obj.t.value
@@ -431,33 +490,37 @@ class CsvExport(laio_worker.Work):
                 self._collect()
 
     @overload
-    def auto_write(self, interval_s : float | None) -> None: ...
+    def auto_write(self, interval_s: float | None) -> None: ...
     @overload
-    def auto_write(self, interval_s : float | None, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    def auto_write(
+        self, interval_s: float | None, *, block: typing.Literal[False]
+    ) -> asyncio.Future[None]: ...
     @overload
-    def auto_write(self, interval_s : float | None, *, sync : typing.Literal[True]) -> None: ...
+    def auto_write(self, interval_s: float | None, *, sync: typing.Literal[True]) -> None: ...
     @overload
-    def auto_write(self, interval_s : float | None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+    def auto_write(
+        self, interval_s: float | None, *, block: typing.Literal[False], sync: typing.Literal[True]
+    ) -> concurrent.futures.Future[None]: ...
 
     @laio_worker.Work.thread_safe_async
-    def auto_write(self, interval_s : float | None) -> None:
-        '''
+    def auto_write(self, interval_s: float | None) -> None:
+        """
         Enable/disable automatic writing every interval_s seconds.
         If interval_s is None, automatic writing is disabled.
-        '''
+        """
         self._auto_write = interval_s
 
         if self.opened or interval_s is None:
             self._update_auto_write(self._auto_write)
 
-    def _update_auto_write(self, interval_s : float | None) -> None:
+    def _update_auto_write(self, interval_s: float | None) -> None:
         if self._auto_write_task is not None:
             self._auto_write_task.cancel()
             self._auto_write_task = None
 
         if interval_s is not None:
             if not self.opened:
-                raise RuntimeError('File not opened')
+                raise RuntimeError("File not opened")
 
             async def auto_write_task():
                 try:
@@ -468,39 +531,45 @@ class CsvExport(laio_worker.Work):
                 except asyncio.CancelledError:
                     pass
                 except:
-                    self.logger.exception(f'Auto write task error')
+                    self.logger.exception(f"Auto write task error")
                     raise
 
-            self._auto_write_task = asyncio.create_task(auto_write_task(), name=f'{self.__class__.__name__} auto write')
+            self._auto_write_task = asyncio.create_task(
+                auto_write_task(), name=f"{self.__class__.__name__} auto write"
+            )
 
     @overload
-    def write_on_change(self, enable : bool) -> None: ...
+    def write_on_change(self, enable: bool) -> None: ...
     @overload
-    def write_on_change(self, enable : bool, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    def write_on_change(
+        self, enable: bool, *, block: typing.Literal[False]
+    ) -> asyncio.Future[None]: ...
     @overload
-    def write_on_change(self, enable : bool, *, sync : typing.Literal[True]) -> None: ...
+    def write_on_change(self, enable: bool, *, sync: typing.Literal[True]) -> None: ...
     @overload
-    def write_on_change(self, enable : bool, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+    def write_on_change(
+        self, enable: bool, *, block: typing.Literal[False], sync: typing.Literal[True]
+    ) -> concurrent.futures.Future[None]: ...
 
     @laio_worker.Work.thread_safe_async
-    def write_on_change(self, enable : bool) -> None:
-        '''
+    def write_on_change(self, enable: bool) -> None:
+        """
         Enable/disable writing on object value change.
         If enabled, a write is performed whenever an object's value is updated.
-        '''
+        """
         self._write_on_change = enable
 
         if self.opened or not enable:
             self._update_write_on_change(enable)
 
-    def _update_write_on_change(self, enable : bool) -> None:
+    def _update_write_on_change(self, enable: bool) -> None:
         if self._write_on_change_task is not None:
             self._write_on_change_task.cancel()
             self._write_on_change_task = None
 
         if enable:
             if not self.opened:
-                raise RuntimeError('File not opened')
+                raise RuntimeError("File not opened")
 
             async def write_on_change_task():
                 try:
@@ -510,39 +579,45 @@ class CsvExport(laio_worker.Work):
                 except asyncio.CancelledError:
                     pass
                 except:
-                    self.logger.exception(f'Write on change task error')
+                    self.logger.exception(f"Write on change task error")
                     raise
 
-            self._write_on_change_task = asyncio.create_task(write_on_change_task(), name=f'{self.__class__.__name__} write on change')
+            self._write_on_change_task = asyncio.create_task(
+                write_on_change_task(), name=f"{self.__class__.__name__} write on change"
+            )
 
     @overload
-    def auto_flush(self, interval_s : float | None) -> None: ...
+    def auto_flush(self, interval_s: float | None) -> None: ...
     @overload
-    def auto_flush(self, interval_s : float | None, *, block : typing.Literal[False]) -> asyncio.Future[None]: ...
+    def auto_flush(
+        self, interval_s: float | None, *, block: typing.Literal[False]
+    ) -> asyncio.Future[None]: ...
     @overload
-    def auto_flush(self, interval_s : float | None, *, sync : typing.Literal[True]) -> None: ...
+    def auto_flush(self, interval_s: float | None, *, sync: typing.Literal[True]) -> None: ...
     @overload
-    def auto_flush(self, interval_s : float | None, *, block : typing.Literal[False], sync : typing.Literal[True]) -> concurrent.futures.Future[None]: ...
+    def auto_flush(
+        self, interval_s: float | None, *, block: typing.Literal[False], sync: typing.Literal[True]
+    ) -> concurrent.futures.Future[None]: ...
 
     @laio_worker.Work.thread_safe_async
-    def auto_flush(self, interval_s : float | None) -> None:
-        '''
+    def auto_flush(self, interval_s: float | None) -> None:
+        """
         Enable/disable automatic flushing every interval_s seconds.
         If interval_s is None, automatic flushing is disabled.
-        '''
+        """
         self._auto_flush = interval_s
 
         if self.opened or interval_s is None:
             self._update_auto_flush(self._auto_flush)
 
-    def _update_auto_flush(self, interval_s : float | None) -> None:
+    def _update_auto_flush(self, interval_s: float | None) -> None:
         if self._auto_flush_task is not None:
             self._auto_flush_task.cancel()
             self._auto_flush_task = None
 
         if interval_s is not None:
             if not self.opened:
-                raise RuntimeError('File not opened')
+                raise RuntimeError("File not opened")
 
             async def auto_flush_task():
                 try:
@@ -552,7 +627,9 @@ class CsvExport(laio_worker.Work):
                 except asyncio.CancelledError:
                     pass
                 except:
-                    self.logger.exception(f'Auto flush task error')
+                    self.logger.exception(f"Auto flush task error")
                     raise
 
-            self._auto_flush_task = asyncio.create_task(auto_flush_task(), name=f'{self.__class__.__name__} auto flush')
+            self._auto_flush_task = asyncio.create_task(
+                auto_flush_task(), name=f"{self.__class__.__name__} auto flush"
+            )

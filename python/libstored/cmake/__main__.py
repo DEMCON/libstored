@@ -13,50 +13,66 @@ import sys
 
 from ..version import __version__
 
-logger = logging.getLogger('cmake')
+logger = logging.getLogger("cmake")
 
 # We are either installed by pip, so the sources are at here/../data,
 # or we are just running from the git repo, which is at here/../../..
 here = os.path.dirname(__file__)
-libstored_dir = os.path.normpath(os.path.abspath(os.path.join(here, '..', 'data')))
-if not os.path.isdir(libstored_dir) or os.path.isfile(os.path.join(libstored_dir, 'ignore')):
-    libstored_dir = os.path.normpath(os.path.abspath(os.path.join(here, '..', '..', '..')))
+libstored_dir = os.path.normpath(os.path.abspath(os.path.join(here, "..", "data")))
+if not os.path.isdir(libstored_dir) or os.path.isfile(os.path.join(libstored_dir, "ignore")):
+    libstored_dir = os.path.normpath(os.path.abspath(os.path.join(here, "..", "..", "..")))
+
 
 def escapebs(s):
-    return re.sub(r'\\', r'\\\\', s)
+    return re.sub(r"\\", r"\\\\", s)
+
 
 def escapestr(s):
-    return re.sub(r'([\\"])', r'\\\1', s)
+    return re.sub(r'([\\"])', r"\\\1", s)
+
 
 def generate_cmake(filename, defines):
-    jenv = jinja2.Environment(
-            loader = jinja2.FileSystemLoader(
-                os.path.join(libstored_dir, 'cmake')
-                ))
+    jenv = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(libstored_dir, "cmake")))
 
-    jenv.filters['escapebs'] = escapebs
-    jenv.filters['escapestr'] = escapestr
+    jenv.filters["escapebs"] = escapebs
+    jenv.filters["escapestr"] = escapestr
 
-    tmpl = jenv.get_template('FindLibstored.cmake.tmpl')
+    tmpl = jenv.get_template("FindLibstored.cmake.tmpl")
 
-    logger.info('Writing to %s...', filename)
-    with open(filename, 'w') as f:
-        f.write(tmpl.render(
-            python_executable=sys.executable,
-            libstored_dir=libstored_dir,
-            defines=defines,
-            ))
+    logger.info("Writing to %s...", filename)
+    with open(filename, "w") as f:
+        f.write(
+            tmpl.render(
+                python_executable=sys.executable,
+                libstored_dir=libstored_dir,
+                defines=defines,
+            )
+        )
+
 
 def main():
-    parser = argparse.ArgumentParser(prog=__package__,
-            description='Generator for find_package(Libstored) in CMake',
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(
+        prog=__package__,
+        description="Generator for find_package(Libstored) in CMake",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
 
-    parser.add_argument('-V', '--version', action='version', version=__version__)
-    parser.add_argument('-v', '--verbose', dest='verbose', default=0, help='enable verbose output', action='count')
-    parser.add_argument('-D', dest='define', metavar='key[=value]', default=[], nargs=1, action='append', help='CMake defines')
-    parser.add_argument('filename', default='FindLibstored.cmake', nargs='?',
-            type=str, help='Output filename')
+    parser.add_argument("-V", "--version", action="version", version=__version__)
+    parser.add_argument(
+        "-v", "--verbose", dest="verbose", default=0, help="enable verbose output", action="count"
+    )
+    parser.add_argument(
+        "-D",
+        dest="define",
+        metavar="key[=value]",
+        default=[],
+        nargs=1,
+        action="append",
+        help="CMake defines",
+    )
+    parser.add_argument(
+        "filename", default="FindLibstored.cmake", nargs="?", type=str, help="Output filename"
+    )
     args = parser.parse_args()
 
     if args.verbose == 0:
@@ -69,10 +85,11 @@ def main():
     defines = {}
     if args.define is not None:
         for d in args.define:
-            kv = d[0].split('=', 1) + ['ON']
+            kv = d[0].split("=", 1) + ["ON"]
             defines[kv[0]] = kv[1]
 
     generate_cmake(args.filename, defines)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

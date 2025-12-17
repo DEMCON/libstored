@@ -6,49 +6,52 @@ import asyncio
 import logging
 import os
 
-if os.name == 'posix':
+if os.name == "posix":
     import posix
     import select
 
 from . import protocol as lprot
 from . import util as lutil
 
+
 class FileLayer(lprot.ProtocolLayer):
-    '''
+    """
     A protocol layer that reads/writes a file for I/O.
-    '''
+    """
 
-    name = 'file'
+    name = "file"
 
-    def __init__(self, file : str | tuple[str, str], *args, **kwargs):
+    def __init__(self, file: str | tuple[str, str], *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        read = self._posix_read if os.name == 'posix' else self._read
-        self._reader = lutil.Reader(read, thread_name=f'{self.__class__.__name__} reader')
-        self._writer = lutil.Writer(self._write, thread_name=f'{self.__class__.__name__} writer')
-        self._task : asyncio.Task | None = asyncio.create_task(self._reader_task(), name=f'{self.__class__.__name__} reader')
+        read = self._posix_read if os.name == "posix" else self._read
+        self._reader = lutil.Reader(read, thread_name=f"{self.__class__.__name__} reader")
+        self._writer = lutil.Writer(self._write, thread_name=f"{self.__class__.__name__} writer")
+        self._task: asyncio.Task | None = asyncio.create_task(
+            self._reader_task(), name=f"{self.__class__.__name__} reader"
+        )
 
         if isinstance(file, str):
             file = (file, file)
 
         file_in, file_out = file
 
-        if os.name == 'posix':
+        if os.name == "posix":
             if not os.path.exists(file_in):
                 os.mkfifo(file_in)
             if not os.path.exists(file_out):
                 os.mkfifo(file_out)
 
-            self._file_in = os.fdopen(posix.open(file_in, posix.O_RDWR), 'rb')
-            self._file_out = os.fdopen(posix.open(file_out, posix.O_RDWR), 'wb')
+            self._file_in = os.fdopen(posix.open(file_in, posix.O_RDWR), "rb")
+            self._file_out = os.fdopen(posix.open(file_out, posix.O_RDWR), "wb")
         else:
-            self._file_in = open(file_in, 'rb')
-            self._file_out = open(file_out, 'wb')
+            self._file_in = open(file_in, "rb")
+            self._file_out = open(file_out, "wb")
 
     def _posix_read(self) -> bytes:
         f = self._file_in
         if f is None:
-            return b''
+            return b""
 
         while self._reader.running:
             res = select.select([f.fileno()], [], [], 1)
@@ -57,20 +60,20 @@ class FileLayer(lprot.ProtocolLayer):
                 # Readable
                 return f.read1(4096)
 
-        return b''
+        return b""
 
     def _read(self) -> bytes:
         f = self._file_in
         if f is None:
-            return b''
+            return b""
         return f.read1(4096)
 
-    def _write(self, data : bytes) -> None:
+    def _write(self, data: bytes) -> None:
         f = self._file_out
         if f is None:
             return
 
-        self.logger.debug('write %s', data)
+        self.logger.debug("write %s", data)
 
         f.write(data)
         f.flush()
@@ -81,7 +84,7 @@ class FileLayer(lprot.ProtocolLayer):
 
             while self._reader.running:
                 x = await self._reader.read()
-                self.logger.debug('read %s', x)
+                self.logger.debug("read %s", x)
                 await self.decode(x)
         except asyncio.CancelledError:
             pass
@@ -112,11 +115,11 @@ class FileLayer(lprot.ProtocolLayer):
 
         await super().close()
 
-    async def encode(self, data : lprot.ProtocolLayer.Packet) -> None:
+    async def encode(self, data: lprot.ProtocolLayer.Packet) -> None:
         if isinstance(data, str):
             data = data.encode()
         elif isinstance(data, memoryview):
-            data = data.cast('B')
+            data = data.cast("B")
 
         if not self._writer.running:
             await self._writer.start()
@@ -125,5 +128,6 @@ class FileLayer(lprot.ProtocolLayer):
             await self._writer.write(data)
 
         await super().encode(data)
+
 
 lprot.register_layer_type(FileLayer)

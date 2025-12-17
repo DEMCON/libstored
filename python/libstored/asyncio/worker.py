@@ -14,14 +14,15 @@ import logging
 import sys
 import typing
 
-if sys.platform == 'win32' and sys.version_info < (3, 16):
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy()) # type: ignore
+if sys.platform == "win32" and sys.version_info < (3, 16):
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())  # type: ignore
 
 from .. import exceptions as lexc
 
-default_worker : AsyncioWorker | None = None
+default_worker: AsyncioWorker | None = None
 
-workers : set[AsyncioWorker] = set()
+workers: set[AsyncioWorker] = set()
+
 
 # Do a graceful shutdown when the main thread exits.
 def monitor_workers():
@@ -32,9 +33,9 @@ def monitor_workers():
         except TimeoutError:
             pass
 
-monitor = threading.Thread(target=monitor_workers, daemon=False, name='AsyncioWorkerMonitor')
-monitor.start()
 
+monitor = threading.Thread(target=monitor_workers, daemon=False, name="AsyncioWorkerMonitor")
+monitor.start()
 
 
 def current_worker() -> AsyncioWorker | None:
@@ -45,18 +46,19 @@ def current_worker() -> AsyncioWorker | None:
     return None
 
 
-
 class AsyncioWorker:
-    '''
+    """
     A worker thread running an asyncio event loop.
-    '''
+    """
 
-    def __init__(self, daemon : None | bool=False, name='AsyncioWorker', *args, **kwargs):
+    def __init__(self, daemon: None | bool = False, name="AsyncioWorker", *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.logger = logging.getLogger(__class__.__name__)
-        self._loop : asyncio.AbstractEventLoop | None = None
-        self._started : bool = False
-        self._thread : threading.Thread | None = threading.Thread(target=self._run, daemon=daemon, name=name)
+        self._loop: asyncio.AbstractEventLoop | None = None
+        self._started: bool = False
+        self._thread: threading.Thread | None = threading.Thread(
+            target=self._run, daemon=daemon, name=name
+        )
         self._thread.start()
         self.logger.debug("Waiting for event loop to start")
         while not self._started:
@@ -77,7 +79,7 @@ class AsyncioWorker:
         assert self._thread == threading.current_thread()
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
-        self._loop.create_task(self._flag_started(), name=f'{self.__class__.__name__} flag')
+        self._loop.create_task(self._flag_started(), name=f"{self.__class__.__name__} flag")
 
         global default_worker
         if default_worker is None:
@@ -104,7 +106,7 @@ class AsyncioWorker:
                     except lexc.InvalidState:
                         pass
                     except:
-                        self.logger.debug('Exception in %s during shutdown', t, exc_info=True)
+                        self.logger.debug("Exception in %s during shutdown", t, exc_info=True)
         except Exception as e:
             self.logger.exception("Exception in event loop: %s", e, exc_info=True)
             raise
@@ -123,11 +125,11 @@ class AsyncioWorker:
         self._started = True
 
     def make_default(self):
-        '''
+        """
         Make this worker the default worker.
 
         Thread-safe.
-        '''
+        """
 
         if not self.is_running():
             raise lexc.InvalidState("Event loop is not running")
@@ -135,12 +137,12 @@ class AsyncioWorker:
         global default_worker
         default_worker = self
 
-    def cancel(self, timeout_s : float | None=None):
-        '''
+    def cancel(self, timeout_s: float | None = None):
+        """
         Cancel all tasks and stop the event loop and wait for the thread to exit.
 
         Thread-safe.
-        '''
+        """
 
         loop = self._loop
         if loop is None:
@@ -156,12 +158,12 @@ class AsyncioWorker:
         for task in asyncio.all_tasks(self._loop):
             task.cancel()
 
-    def stop(self, timeout_s : float | None=None):
-        '''
+    def stop(self, timeout_s: float | None = None):
+        """
         Request to stop the event loop and wait for the thread to exit.
 
         Thread-safe.
-        '''
+        """
 
         loop = self._loop
         if loop is None:
@@ -173,12 +175,12 @@ class AsyncioWorker:
 
         self.wait(timeout_s)
 
-    def wait(self, timeout_s : float | None=None):
-        '''
+    def wait(self, timeout_s: float | None = None):
+        """
         Wait for the event loop to complete all tasks.
 
         Thread-safe.
-        '''
+        """
 
         global default_worker
 
@@ -205,11 +207,11 @@ class AsyncioWorker:
         self.stop()
 
     def is_running(self) -> bool:
-        '''
+        """
         Return True if the event loop is running.
 
         Thread-safe.
-        '''
+        """
 
         return self._loop is not None
 
@@ -222,12 +224,14 @@ class AsyncioWorker:
         except KeyboardInterrupt:
             self.cancel()
 
-    def execute(self, f : typing.Callable | typing.Coroutine, *args, **kwargs) -> concurrent.futures.Future | asyncio.Future:
-        '''
+    def execute(
+        self, f: typing.Callable | typing.Coroutine, *args, **kwargs
+    ) -> concurrent.futures.Future | asyncio.Future:
+        """
         Schedule a coroutine or a callable to be executed in the event loop.
 
         Thread-safe and safe to call from within the event loop.
-        '''
+        """
 
         if not self.is_running():
             raise lexc.InvalidState("Event loop is not running")
@@ -236,14 +240,18 @@ class AsyncioWorker:
 
         if asyncio.coroutines.iscoroutine(f):
             if len(args) > 0 or len(kwargs) > 0:
-                raise TypeError("When passing a coroutine function, no additional arguments are supported")
+                raise TypeError(
+                    "When passing a coroutine function, no additional arguments are supported"
+                )
             coro = f
         elif asyncio.iscoroutinefunction(f):
             coro = f(*args, **kwargs)
         elif callable(f):
             coro = self._execute(f, *args, **kwargs)
         else:
-            raise TypeError("First argument must be a coroutine function or a callable returning a coroutine")
+            raise TypeError(
+                "First argument must be a coroutine function or a callable returning a coroutine"
+            )
 
         # self.logger.debug("Scheduling coroutine")
 
@@ -256,7 +264,7 @@ class AsyncioWorker:
             # Create coro in the worker thread context, and return async future.
             return asyncio.run_coroutine_threadsafe(self._log(coro, name), self._loop)
 
-    async def _log(self, coro : typing.Coroutine, name : str | None=None) -> typing.Any:
+    async def _log(self, coro: typing.Coroutine, name: str | None = None) -> typing.Any:
         try:
             if name:
                 t = asyncio.current_task(self._loop)
@@ -271,31 +279,36 @@ class AsyncioWorker:
         except lexc.Disconnected:
             raise
         except Exception as e:
-            self.logger.debug('Exception in %s', asyncio.current_task(self._loop), exc_info=True)
+            self.logger.debug("Exception in %s", asyncio.current_task(self._loop), exc_info=True)
             raise
 
     async def _execute(self, f, *args, **kwargs) -> typing.Any:
         return f(*args, **kwargs)
 
-def silence_future(future : concurrent.futures.Future | asyncio.Future, logger : logging.Logger | None=None) -> concurrent.futures.Future | asyncio.Future:
-    '''
+
+def silence_future(
+    future: concurrent.futures.Future | asyncio.Future, logger: logging.Logger | None = None
+) -> concurrent.futures.Future | asyncio.Future:
+    """
     Silences exceptions in a future by adding a done callback that
     retrieves the result.
 
     This prevents "unhandled exception in future" warnings.
-    '''
+    """
+
     def _callback(fut: concurrent.futures.Future | asyncio.Future):
         try:
             fut.result()
         except Exception as e:
             if logger is not None:
-                logger.debug('Silenced exception in %s: %s', fut, e)
+                logger.debug("Silenced exception in %s: %s", fut, e)
 
     future.add_done_callback(_callback)
     return future
 
-def run_sync(f : typing.Callable) -> typing.Callable:
-    '''
+
+def run_sync(f: typing.Callable) -> typing.Callable:
+    """
     Decorator to run an async function synchronously.
 
     If called from within an event loop, the coroutine is directly started,
@@ -304,13 +317,13 @@ def run_sync(f : typing.Callable) -> typing.Callable:
 
     When block=False is passed, a future is returned instead.
     When sync is passed, it checks consistency with the detected (a)sync context.
-    '''
+    """
 
     @functools.wraps(f)
-    def run_sync(*args, block : bool=True, sync : bool | None=None, **kwargs) -> typing.Any:
+    def run_sync(*args, block: bool = True, sync: bool | None = None, **kwargs) -> typing.Any:
         assert asyncio.iscoroutinefunction(f)
 
-        self : typing.Any = args[0] if len(args) > 0 else None
+        self: typing.Any = args[0] if len(args) > 0 else None
 
         loop = None
         try:
@@ -318,7 +331,9 @@ def run_sync(f : typing.Callable) -> typing.Callable:
         except RuntimeError:
             pass
 
-        assert sync is None or (loop is None) == sync or not block, 'sync argument contradicts current context'
+        assert (
+            sync is None or (loop is None) == sync or not block
+        ), "sync argument contradicts current context"
 
         if loop is not None and not sync:
             # We are in an event loop, just start the coro.
@@ -336,16 +351,16 @@ def run_sync(f : typing.Callable) -> typing.Callable:
                 logger.debug("Running %s in worker %s", f.__qualname__, str(self.worker))
                 w = self.worker
             else:
-                if hasattr(self, 'logger'):
+                if hasattr(self, "logger"):
                     logger = self.logger
                     logger.debug("Running %s in default worker", f.__qualname__)
                 global default_worker
                 w = default_worker
 
             if w is None or not w.is_running():
-                if hasattr(self, 'logger'):
+                if hasattr(self, "logger"):
                     logger = self.logger
-                    logger.debug('No worker running, creating new one')
+                    logger.debug("No worker running, creating new one")
                 w = AsyncioWorker()
 
             future = w.execute(f(*args, **kwargs))
@@ -360,13 +375,18 @@ def run_sync(f : typing.Callable) -> typing.Callable:
     return run_sync
 
 
-
 class Work:
-    '''
+    """
     Mixin class for objects that have work to run by an AsyncioWorker.
-    '''
+    """
 
-    def __init__(self, worker : AsyncioWorker | None=None, logger : logging.Logger | None=None, *args, **kwargs):
+    def __init__(
+        self,
+        worker: AsyncioWorker | None = None,
+        logger: logging.Logger | None = None,
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.logger = logger or logging.getLogger(self.__class__.__name__)
 
@@ -392,13 +412,13 @@ class Work:
 
     @staticmethod
     @functools.wraps(run_sync)
-    def run_sync(f : typing.Callable) -> typing.Callable:
+    def run_sync(f: typing.Callable) -> typing.Callable:
         # This is just an alias of the global function.
         return run_sync(f)
 
     @staticmethod
-    def thread_safe_async(f : typing.Callable) -> typing.Callable:
-        '''
+    def thread_safe_async(f: typing.Callable) -> typing.Callable:
+        """
         Decorator to make a method thread-safe by executing it in the worker
         thread, without waiting for completion.
 
@@ -406,7 +426,7 @@ class Work:
         directly executed.  The actual result is returned.
 
         Otherwise, a concurrent.futures.Future is returned.
-        '''
+        """
 
         assert not asyncio.iscoroutinefunction(f)
 
@@ -420,20 +440,22 @@ class Work:
         return thread_safe_async
 
     @staticmethod
-    def thread_safe(f : typing.Callable) -> typing.Callable:
-        '''
+    def thread_safe(f: typing.Callable) -> typing.Callable:
+        """
         Decorator to make a method thread-safe by executing it in the worker
         thread.
 
         By default, the call blocks until the method has completed and the
         actual result is returned.  If block=False is passed, a
         concurrent.futures.Future *may* be returned.
-        '''
+        """
 
         assert not asyncio.iscoroutinefunction(f)
 
         @functools.wraps(f)
-        def thread_safe(self, *args, block=True, **kwargs) -> typing.Any | concurrent.futures.Future:
+        def thread_safe(
+            self, *args, block=True, **kwargs
+        ) -> typing.Any | concurrent.futures.Future:
             x = Work.thread_safe_async(f)(self, *args, **kwargs)
             if isinstance(x, concurrent.futures.Future):
                 if block:
@@ -446,17 +468,18 @@ class Work:
         return thread_safe
 
     @staticmethod
-    def locked(f : typing.Callable) -> typing.Callable:
-        '''Decorator to lock a method with the instance's lock.'''
+    def locked(f: typing.Callable) -> typing.Callable:
+        """Decorator to lock a method with the instance's lock."""
 
         @functools.wraps(f)
         async def locked(self, *args, **kwargs):
             async with self.lock:
                 return await f(self, *args, **kwargs)
+
         return locked
 
     @property
     def lock(self) -> lexc.DeadlockChecker:
-        if not hasattr(self, '_lock'):
+        if not hasattr(self, "_lock"):
             self._lock = lexc.DeadlockChecker(asyncio.Lock())
         return self._lock

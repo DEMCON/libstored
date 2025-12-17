@@ -12,26 +12,33 @@ import filelock
 import typing
 import logging
 
+
 class Disconnected(RuntimeError):
     pass
+
 
 class OperationFailed(RuntimeError):
     pass
 
+
 class InvalidState(RuntimeError):
     pass
+
 
 class NotSupported(RuntimeError):
     pass
 
+
 class InvalidResponse(ValueError):
     pass
+
 
 class Deadlock(RuntimeError):
     pass
 
+
 class DeadlockChecker:
-    '''
+    """
     Context manager to check for deadlocks when acquiring a lock.
 
     Usage:
@@ -39,9 +46,9 @@ class DeadlockChecker:
         with DeadlockChecker(lock, timeout_s=5):
             # Critical section
             ...
-    '''
+    """
 
-    default_timeout_s : float | None = None
+    default_timeout_s: float | None = None
 
     class Type(enum.Enum):
         THREADING_LOCK = enum.auto()
@@ -51,7 +58,7 @@ class DeadlockChecker:
         ASYNCIO_FUTURE = enum.auto()
         CONCURRENT_FUTURE = enum.auto()
 
-    def __init__(self, lock : typing.Any, timeout_s : float | None=None):
+    def __init__(self, lock: typing.Any, timeout_s: float | None = None):
         self._lock = lock
         self._timeout_s = timeout_s if timeout_s is not None else self.default_timeout_s
         self._acquired = False
@@ -72,23 +79,27 @@ class DeadlockChecker:
         elif isinstance(lock, concurrent.futures.Future):
             # concurrent.futures.Future
             self._type = self.Type.CONCURRENT_FUTURE
-        elif hasattr(lock, 'acquire') and callable(getattr(lock, 'acquire')):
+        elif hasattr(lock, "acquire") and callable(getattr(lock, "acquire")):
             # Looks like threading.Lock or threading.RLock
             self._type = self.Type.THREADING_LOCK
         else:
             raise TypeError("Unsupported lock type %s" % type(lock))
 
     def _deadlock(self, type):
-        self.logger.critical(f"Deadlock detected: could not {type} {self._lock} within {self._timeout_s} seconds")
+        self.logger.critical(
+            f"Deadlock detected: could not {type} {self._lock} within {self._timeout_s} seconds"
+        )
         raise Deadlock("Deadlock detected") from None
 
     def __enter__(self):
         if self._type != self.Type.THREADING_LOCK:
-            raise RuntimeError('Wrong access method')
+            raise RuntimeError("Wrong access method")
 
-        self._acquired = self._lock.acquire(timeout=self._timeout_s if self._timeout_s is not None else -1)
+        self._acquired = self._lock.acquire(
+            timeout=self._timeout_s if self._timeout_s is not None else -1
+        )
         if not self._acquired:
-            self._deadlock('acquire lock')
+            self._deadlock("acquire lock")
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -103,10 +114,10 @@ class DeadlockChecker:
             elif self._type == self.Type.ASYNCIO_FILELOCK:
                 await self._lock.acquire(timeout=self._timeout_s)
             else:
-                raise RuntimeError('Wrong access method')
+                raise RuntimeError("Wrong access method")
             self._acquired = True
         except asyncio.TimeoutError:
-            self._deadlock('acquire lock')
+            self._deadlock("acquire lock")
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
@@ -132,18 +143,18 @@ class DeadlockChecker:
                 # We are in an event loop, wrap in asyncio future.
                 return asyncio.wait_for(asyncio.wrap_future(self._lock), timeout=self._timeout_s)
             else:
-                raise RuntimeError('Wrong access method')
+                raise RuntimeError("Wrong access method")
         except asyncio.TimeoutError:
-            self._deadlock('acquire future')
+            self._deadlock("acquire future")
 
     def __await__(self):
         if self._type != self.Type.COROUTINE:
-            raise RuntimeError('Wrong access method')
+            raise RuntimeError("Wrong access method")
 
         try:
             return asyncio.wait_for(self._lock, timeout=self._timeout_s).__await__()
         except asyncio.TimeoutError:
-            self._deadlock('complete coroutine')
+            self._deadlock("complete coroutine")
 
     def has_lock(self):
         return self._acquired
