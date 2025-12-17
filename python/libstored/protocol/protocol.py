@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import asyncio
+from contourpy.util import data
 import crcmod
 import Crypto.Cipher.AES
 import Crypto.Random
@@ -451,13 +452,13 @@ class PubTerminalLayer(TerminalLayer):
             await self._socket.send(data)
 
 
-class RepReqCheckLayer(ProtocolLayer):
+class ReqRepCheckLayer(ProtocolLayer):
     '''
     A ProtocolLayer that checks that requests and replies are matched.
     It triggers timeout() when a reply is not received in time.
     '''
 
-    name = 'repreqcheck'
+    name = 'reqrepcheck'
 
     def __init__(self, timeout_s : float = 1, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -519,7 +520,7 @@ class RepReqCheckLayer(ProtocolLayer):
 
     async def encode(self, data : ProtocolLayer.Packet) -> None:
         if self._req:
-            raise RuntimeError('RepReqCheckLayer encode called while previous request not yet handled')
+            raise RuntimeError('ReqRepCheckLayer encode called while previous request not yet handled')
 
         self._req = True
         self._retransmit_time = time.time() + self._timeout_s
@@ -612,7 +613,7 @@ class DebugArqLayer(ProtocolLayer):
     name = 'arq'
     reset_flag = 0x80
 
-    def __init__(self, timeout_s : float = 1, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._req : bool = False
         self._request : list[bytes] = []
@@ -775,6 +776,261 @@ class DebugArqLayer(ProtocolLayer):
         if m is None or m <= 0:
             return None
         return max(1, m - 4)
+
+
+
+class ArqLayer(ProtocolLayer):
+    '''
+    A ProtocolLayer that implements a general-purpose ARQ protocol.
+    '''
+
+    name = 'Arq'
+
+    nop_flag = 0x40
+    ack_flag = 0x80
+    seq_mask = 0x3f
+
+    def __init__(self, timeout_s : float | None=None, *args, keep_alive_s : float | None=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._encode_lock : asyncio.Lock = asyncio.Lock()
+        self._retransmitter : asyncio.Task | None = None
+        self._keep_alive : asyncio.Task | None = None
+        self._timeout_s : float | None = None
+        self._keep_alive_s : float | None = None
+        self._reset()
+        self.timeout_s = timeout_s
+        self.keep_alive_s = keep_alive_s
+
+    @property
+    def timeout_s(self) -> float | None:
+        return self._timeout_s
+
+    @timeout_s.setter
+    def timeout_s(self, value : float | None) -> None:
+        self._timeout_s = value
+
+        if value is None and self._retransmitter is not None:
+            self._retransmitter.cancel()
+            self._retransmitter = None
+        elif value is not None and self._retransmitter is None:
+            self._retransmitter = asyncio.create_task(self._retransmitter_task(), name=self.__class__.__name__)
+
+    @property
+    def keep_alive_s(self) -> float | None:
+        return self._keep_alive_s
+
+    @keep_alive_s.setter
+    def keep_alive_s(self, value : float | None) -> None:
+        self._keep_alive_s = value
+
+        if value is not None and self.timeout_s is None:
+            self.timeout_s = value
+
+        if value is None and self._keep_alive is not None:
+            self._keep_alive.cancel()
+            self._keep_alive = None
+        elif value is not None and self._keep_alive is None:
+            self._keep_alive = asyncio.create_task(self._keep_alive_task(), name=self.__class__.__name__)
+
+    def _reset(self) -> None:
+        self._encode_queue : list[bytes] = [bytes([self.nop_flag])]
+        self._send_seq : int = self._next_seq(0)
+        self._recv_seq : int = 0
+        self._sent : bool = False
+        self._pause_transmit : bool = False
+        self._t_sent : float = time.time()
+
+    async def decode(self, data : ProtocolLayer.Packet) -> None:
+        if isinstance(data, str):
+            data = data.encode()
+        if isinstance(data, memoryview):
+            data = data.cast('B')
+        else:
+            data = memoryview(data).cast('B')
+
+        resp = b''
+        reset_handshake = False
+        do_transmit = False
+        do_decode = False
+
+        assert not self._pause_transmit
+
+        while len(data) > 0:
+            hdr = data[0]
+            hdr_seq = hdr & self.seq_mask
+
+            if hdr & self.ack_flag:
+                if hdr_seq == 0:
+                    reset_handshake = True
+
+                if self.waiting_for_ack and hdr_seq == (self._encode_queue[0][0] & self.seq_mask):
+                    # Ack received for sent data.
+                    self._encode_queue.pop(0)
+                    do_transmit = True
+
+                    if reset_handshake:
+                        self._recv_seq = self._next_seq(0)
+                        await super().connected()
+
+                data = data[1:]
+            elif hdr_seq == 0:
+                # Reset handshake.
+                resp += bytes([self.ack_flag])
+                data = b''
+
+                if not reset_handshake:
+                    self._reset()
+                    do_transmit = True
+                    await super().disconnected()
+            elif hdr_seq == self._recv_seq:
+                # Next message.
+                resp += bytes([self.ack_flag | hdr_seq])
+                self._recv_seq = self._next_seq(self._recv_seq)
+                do_decode = not (hdr & self.nop_flag)
+                do_transmit = True
+                data = data[1:]
+            elif self._next_seq(hdr_seq) == self._recv_seq:
+                # Duplicate message, re-ack it.
+                resp += bytes([self.ack_flag | hdr_seq])
+                if hdr & self.nop_flag:
+                    data = data[1:]
+                else:
+                    # Already decoded.
+                    data = b''
+            else:
+                # Drop.
+                data = b''
+                do_transmit = True
+
+            if do_decode:
+                break
+
+        if do_decode:
+            self._pause_transmit = True
+            try:
+                await super().decode(data)
+            finally:
+                self._pause_transmit = False
+
+        if do_transmit or len(resp) > 0:
+            await self._transmit(resp)
+
+    @property
+    def waiting_for_ack(self) -> bool:
+        return len(self._encode_queue) > 0 and self._sent
+
+    async def encode(self, data : ProtocolLayer.Packet) -> None:
+        if len(data) == 0:
+            return
+
+        is_idle = not self.waiting_for_ack
+        self._push_encode_queue(data)
+        if is_idle and not self._pause_transmit:
+            await self._transmit()
+
+    def _push_encode_queue(self, data : ProtocolLayer.Packet) -> None:
+        if isinstance(data, str):
+            data = data.encode()
+        elif isinstance(data, memoryview):
+            data = data.cast('B')
+
+        self._encode_queue.append(bytes([self._send_seq]) + data)
+        self._send_seq = self._next_seq(self._send_seq)
+
+    def _next_seq(self, seq : int) -> int:
+        seq = (seq + 1) & self.seq_mask
+        if seq == 0:
+            seq = 1
+        return seq
+
+    async def _transmit(self, prefix : bytes = b'') -> bool:
+        async with self._encode_lock:
+            self._t_sent = time.time()
+
+            if len(self._encode_queue) == 0:
+                if prefix == b'':
+                    return False
+                await super().encode(prefix)
+                return True
+
+            self._sent = True
+            assert self.waiting_for_ack
+            await super().encode(prefix + self._encode_queue[0])
+            return True
+
+    async def connected(self) -> None:
+        self._reset()
+        await self._transmit()
+        await super().connected()
+
+    async def retransmit(self) -> None:
+        self.logger.debug('retransmit')
+        await self._transmit()
+
+    async def timeout(self) -> None:
+        if self.waiting_for_ack:
+            await self.retransmit()
+        else:
+            await self.keep_alive()
+
+    @property
+    def mtu(self) -> int | None:
+        m = super().mtu
+        if m is None or m <= 0:
+            return None
+        return max(1, m - 1)
+
+    async def _retransmitter_task(self) -> None:
+        try:
+            while True:
+                if self._timeout_s is None:
+                    return
+
+                if not self.waiting_for_ack and self._sent:
+                    await asyncio.sleep(self._timeout_s)
+                else:
+                    dt = time.time() - self._t_sent
+                    t_rem = self._timeout_s - dt
+                    if t_rem <= 0:
+                        await self.retransmit()
+                    else:
+                        await asyncio.sleep(t_rem)
+        except asyncio.CancelledError:
+            pass
+        except Exception as e:
+            await self.async_except(e)
+            raise
+
+    async def keep_alive(self) -> None:
+        if self.waiting_for_ack:
+            return
+
+        if len(self._encode_queue) > 0 and not self._sent:
+            await self._transmit()
+            return
+
+        self.logger.debug('keep alive')
+        self._encode_queue.append(bytes([self._send_seq | self.nop_flag]))
+        self._send_seq = self._next_seq(self._send_seq)
+        await self._transmit()
+
+    async def _keep_alive_task(self) -> None:
+        try:
+            while True:
+                if self._keep_alive_s is None:
+                    return
+
+                dt = time.time() - self._t_sent
+                t_rem = self._keep_alive_s - dt
+                if t_rem <= 0:
+                    await self.keep_alive()
+                else:
+                    await asyncio.sleep(t_rem)
+        except asyncio.CancelledError:
+            pass
+        except Exception as e:
+            await self.async_except(e)
+            raise
 
 
 
@@ -1356,9 +1612,10 @@ layer_types : list[typing.Type[ProtocolLayer]] = [
     AsciiEscapeLayer,
     TerminalLayer,
     PubTerminalLayer,
-    RepReqCheckLayer,
+    ReqRepCheckLayer,
     SegmentationLayer,
     DebugArqLayer,
+    ArqLayer,
     Crc8Layer,
     Crc16Layer,
     Crc32Layer,

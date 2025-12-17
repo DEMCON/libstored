@@ -24,45 +24,47 @@ Protocol layers
 
 .. autoclass:: libstored.protocol.Aes256Layer
 
+.. autoclass:: libstored.protocol.ArqLayer
+
 .. autoclass:: libstored.protocol.AsciiEscapeLayer
-
-.. autoclass:: libstored.protocol.TerminalLayer
-
-.. autoclass:: libstored.protocol.PubTerminalLayer
-
-.. autoclass:: libstored.protocol.RepReqCheckLayer
-
-.. autoclass:: libstored.protocol.SegmentationLayer
-
-.. autoclass:: libstored.protocol.DebugArqLayer
-
-.. autoclass:: libstored.protocol.Crc8Layer
 
 .. autoclass:: libstored.protocol.Crc16Layer
 
 .. autoclass:: libstored.protocol.Crc32Layer
 
+.. autoclass:: libstored.protocol.Crc8Layer
+
+.. autoclass:: libstored.protocol.DebugArqLayer
+
+.. autoclass:: libstored.protocol.FileLayer
+
 .. autoclass:: libstored.protocol.LoopbackLayer
+
+.. autoclass:: libstored.protocol.MuxLayer
+
+.. autoclass:: libstored.protocol.PrintLayer
+
+.. autoclass:: libstored.protocol.PubTerminalLayer
 
 .. autoclass:: libstored.protocol.RawLayer
 
-.. autoclass:: libstored.protocol.MuxLayer
+.. autoclass:: libstored.protocol.ReqRepCheckLayer
+
+.. autoclass:: libstored.protocol.SegmentationLayer
+
+.. autoclass:: libstored.protocol.SerialLayer
 
 .. autoclass:: libstored.protocol.StdinLayer
 
 .. autoclass:: libstored.protocol.StdioLayer
 
-.. autoclass:: libstored.protocol.PrintLayer
+.. autoclass:: libstored.protocol.TerminalLayer
 
-.. autoclass:: libstored.protocol.SerialLayer
-
-.. autoclass:: libstored.protocol.FileLayer
+.. autoclass:: libstored.protocol.ZmqServer
 
 .. autoclass:: libstored.protocol.ZmqSocketClient
 
 .. autoclass:: libstored.protocol.ZmqSocketServer
-
-.. autoclass:: libstored.protocol.ZmqServer
 
 Protocol stack
 --------------
