@@ -70,13 +70,14 @@ class SerialLayer(lprot.ProtocolLayer):
                     self._read, thread_name=f"{self.__class__.__name__}-reader"
                 ) as reader:
                     try:
+                        self._writer = writer
+
                         if self._encode_buffer:
                             self.logger.debug("sending buffered %s", self._encode_buffer)
                             await self._encode(self._encode_buffer)
                             self._encode_buffer = bytearray()
 
-                        self._writer = writer
-
+                        self.logger.debug("ready")
                         while self._open:
                             data = await reader.read()
                             await self.decode(data)
