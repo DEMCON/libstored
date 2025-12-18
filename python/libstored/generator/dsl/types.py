@@ -579,6 +579,7 @@ class ArrayLookup(object):
         return res
 
     def c_decl(self):
+        assert self.cname is not None
         return self.cname + "(" + ", ".join([f"int {x}" for x in self.placeholders()]) + ")"
 
 
@@ -754,7 +755,7 @@ class Variable(Object):
                     # Empty string, handle as default-initialized.
                     self.init = None
             self.len = type.blob.len
-        self.axi = None
+        self.axi: int | None = None
 
     def isBlob(self):
         return self.type in ["blob", "string"]
