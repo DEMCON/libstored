@@ -485,24 +485,34 @@ class ReqRepCheckLayer(ProtocolLayer):
 
     name = "reqrepcheck"
 
-    def __init__(self, timeout_s: float = 1, *args, **kwargs):
+    def __init__(
+        self, timeout_s: float | None = 1, error_rep: bytes | None = b"?", *args, **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self._req: bool = False
-        self._timeout_s: float = timeout_s
+        self._timeout_s: float | None = None
+        self._error_rep: bytes | None = error_rep
         self._retransmit_time: float = 0
-        self._retransmitter: asyncio.Task | None = asyncio.create_task(
-            self._retransmitter_task(), name=self.__class__.__name__
-        )
+        self._retransmitter: asyncio.Task | None = None
+        self.timeout_s = timeout_s
 
     @property
-    def timeout_s(self) -> float:
+    def timeout_s(self) -> float | None:
         return self._timeout_s
 
     @timeout_s.setter
-    def timeout_s(self, value: float) -> None:
-        if not self._req:
+    def timeout_s(self, value: float | None) -> None:
+        if self._req and value is not None:
             self._retransmit_time = time.time() + value
         self._timeout_s = value
+
+        if value is None and self._retransmitter is not None:
+            self._retransmitter.cancel()
+            self._retransmitter = None
+        elif value is not None and self._retransmitter is None:
+            self._retransmitter = asyncio.create_task(
+                self._retransmitter_task(), name=self.__class__.__name__
+            )
 
     @property
     def req(self) -> bool:
@@ -514,15 +524,17 @@ class ReqRepCheckLayer(ProtocolLayer):
     async def _retransmitter_task(self) -> None:
         try:
             dt_s = self._timeout_s
-            while True:
+            while dt_s is not None:
                 await asyncio.sleep(dt_s)
                 if not self._req:
                     continue
+                if self._timeout_s is None:
+                    break
                 now = time.time()
                 dt_s = self._retransmit_time - now
                 if dt_s <= 0:
-                    self._retransmit_time = now + self._timeout_s
                     dt_s = self._timeout_s
+                    self._retransmit_time = now + dt_s
                     await super().timeout()
         except asyncio.CancelledError:
             pass
@@ -534,6 +546,15 @@ class ReqRepCheckLayer(ProtocolLayer):
         # Ignore timeouts from above, we are checking for retransmissions ourselves.
         pass
 
+    async def _send_error_rep(self) -> None:
+        if not self._req:
+            return
+
+        if self._error_rep is not None:
+            await self.decode(self._error_rep)
+        else:
+            self._req = False
+
     async def close(self) -> None:
         if self._retransmitter is not None:
             self._retransmitter.cancel()
@@ -544,6 +565,7 @@ class ReqRepCheckLayer(ProtocolLayer):
             self._retransmitter = None
 
         await super().close()
+        await self._send_error_rep()
 
     async def encode(self, data: ProtocolLayer.Packet) -> None:
         if self._req:
@@ -552,7 +574,7 @@ class ReqRepCheckLayer(ProtocolLayer):
             )
 
         self._req = True
-        self._retransmit_time = time.time() + self._timeout_s
+        self._retransmit_time = time.time() + (self._timeout_s or 0)
         await super().encode(data)
 
     async def decode(self, data: ProtocolLayer.Packet) -> None:
@@ -564,8 +586,8 @@ class ReqRepCheckLayer(ProtocolLayer):
         await super().decode(data)
 
     async def disconnected(self) -> None:
+        await self._send_error_rep()
         await super().disconnected()
-        self._req = False
 
 
 class SegmentationLayer(ProtocolLayer):
@@ -935,7 +957,7 @@ class ArqLayer(ProtocolLayer):
             if do_decode:
                 break
 
-        if do_decode:
+        if do_decode and len(data) > 0:
             self._pause_transmit = True
             try:
                 await super().decode(data)
