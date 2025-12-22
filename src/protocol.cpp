@@ -2690,7 +2690,8 @@ bool FileLayer::isOpen() const
 void FileLayer::encode(void const* buffer, size_t len, bool last)
 {
 	if(m_fd_w == -1) {
-		setLastError(EBADF);
+		if(lastError() == 0)
+			setLastError(EBADF);
 done:
 		base::encode(buffer, len, last);
 		return;

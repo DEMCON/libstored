@@ -269,6 +269,11 @@ public:
 		return m_down;
 	}
 
+#  ifdef STORED_COMPILER_GCC
+#    pragma GCC push_options
+#    pragma GCC optimize("-foptimize-sibling-calls")
+#  endif // GCC
+
 	/*!
 	 * \brief Decode a frame and forward the decoded frame to the upper layer.
 	 *
@@ -276,8 +281,11 @@ public:
 	 */
 	virtual void decode(void* buffer, size_t len)
 	{
-		if(up())
-			up()->decode(buffer, len);
+		ProtocolLayer* p = up();
+		if(!p)
+			return;
+
+		p->decode(buffer, len);
 	}
 
 	/*!
@@ -296,8 +304,11 @@ public:
 	 */
 	virtual void encode(void const* buffer, size_t len, bool last = true)
 	{
-		if(down())
-			down()->encode(buffer, len, last);
+		ProtocolLayer* p = down();
+		if(!p)
+			return;
+
+		p->encode(buffer, len, last);
 	}
 
 	/*!
@@ -316,8 +327,11 @@ public:
 	 */
 	virtual void setPurgeableResponse(bool purgeable = true)
 	{
-		if(down())
-			down()->setPurgeableResponse(purgeable);
+		ProtocolLayer* p = down();
+		if(!p)
+			return;
+
+		p->setPurgeableResponse(purgeable);
 	}
 
 	/*!
@@ -331,7 +345,11 @@ public:
 	 */
 	virtual size_t mtu() const
 	{
-		return down() ? down()->mtu() : 0;
+		ProtocolLayer* p = down();
+		if(!p)
+			return 0;
+
+		return p->mtu();
 	}
 
 	/*!
@@ -346,7 +364,11 @@ public:
 	 */
 	virtual bool flush()
 	{
-		return down() ? down()->flush() : true;
+		ProtocolLayer* p = down();
+		if(!p)
+			return true;
+
+		return p->flush();
 	}
 
 	/*!
@@ -354,8 +376,11 @@ public:
 	 */
 	virtual void reset()
 	{
-		if(down())
-			down()->reset();
+		ProtocolLayer* p = down();
+		if(!p)
+			return;
+
+		p->reset();
 	}
 
 	/*!
@@ -363,8 +388,11 @@ public:
 	 */
 	virtual void connected()
 	{
-		if(up())
-			up()->connected();
+		ProtocolLayer* p = up();
+		if(!p)
+			return;
+
+		p->connected();
 	}
 
 	/*!
@@ -372,9 +400,16 @@ public:
 	 */
 	virtual void disconnected()
 	{
-		if(up())
-			up()->disconnected();
+		ProtocolLayer* p = up();
+		if(!p)
+			return;
+
+		p->disconnected();
 	}
+
+#  ifdef STORED_COMPILER_GCC
+#    pragma GCC pop_options
+#  endif // GCC
 
 private:
 	/*! \brief The layer above this one. */
