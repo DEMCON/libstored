@@ -252,6 +252,75 @@ class ZmqSocketClient(ZmqSocketBase):
 lprot.register_layer_type(ZmqSocketClient)
 
 
+class ZmqReqClient(ZmqSocketClient):
+    """
+    Generic ZMQ client REQ/REP layer.
+
+    This layer is expected to be at the bottom of the protocol stack.
+    Received data is passed up the stack.
+    """
+
+    default_port = lprot.default_port
+    name = "req"
+
+    @overload
+    def __init__(
+        self,
+        *args,
+        server: str = "localhost",
+        port: int = default_port,
+        context: zmq.asyncio.Context | None = None,
+        **kwargs,
+    ): ...
+    @overload
+    def __init__(
+        self,
+        connect: str,
+        *args,
+        context: zmq.asyncio.Context | None = None,
+        **kwargs,
+    ): ...
+
+    def __init__(
+        self,
+        connect: str | None = None,
+        *args,
+        server: str = "localhost",
+        port: int = default_port,
+        **kwargs,
+    ):
+        super().__init__(connect, *args, server=server, port=port, type=zmq.REQ, **kwargs)
+        self._lock = asyncio.Lock()
+        self._rep: asyncio.Future | None = None
+
+    async def _recv_init(self) -> None:
+        pass
+
+    async def _handle_recv(self, data: bytes) -> None:
+        assert self._rep is not None
+        assert not self._rep.done()
+        self._rep.set_result(data)
+
+    async def encode(self, data: lprot.ProtocolLayer.Packet) -> None:
+        rep = await self.req(data)
+        await super().decode(rep)
+
+    async def req(self, data: lprot.ProtocolLayer.Packet) -> lprot.ProtocolLayer.Packet:
+        async with self._lock:
+            await self.mark_open()
+            self._rep = asyncio.get_running_loop().create_future()
+            await super()._send(data)
+            rep = await self._rep
+            self._rep = None
+            return rep
+
+    async def decode(self, data: lprot.ProtocolLayer.Packet) -> None:
+        pass
+
+
+lprot.register_layer_type(ZmqReqClient)
+
+
 class ZmqSocketServer(ZmqSocketBase):
     """
     Generic ZMQ server (listening) socket layer.
