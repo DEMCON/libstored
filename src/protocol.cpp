@@ -2169,6 +2169,7 @@ void MuxLayer::decode(void* buffer, size_t len)
 	size_t out_start = 0;
 	size_t out_end = 0;
 	size_t in = 0;
+	bool do_decode = m_decodingEsc;
 
 	while(in < len) {
 		uint8_t b = buffer_[in++];
@@ -2178,13 +2179,16 @@ void MuxLayer::decode(void* buffer, size_t len)
 			if(b == Esc) {
 				// Escaped escape byte.
 				buffer_[out_end++] = Esc;
+				do_decode = true;
 			} else if(b == Repeat) {
 				// Just a control command in between.
 				// Repeat channel id on next encode.
 				m_encodingChannel = Repeat;
 			} else {
 				// Switch channel.
-				decode_(buffer_ + out_start, out_end - out_start);
+				if(do_decode)
+					decode_(buffer_ + out_start, out_end - out_start);
+				do_decode = true;
 				out_start = out_end = in;
 				m_decodingChannel = channel(b);
 			}
@@ -2197,11 +2201,12 @@ void MuxLayer::decode(void* buffer, size_t len)
 				size_t i = out_end++;
 				if(unlikely(out_end != in))
 					buffer_[i] = b;
+				do_decode = true;
 			}
 		}
 	}
 
-	if(likely(out_end > out_start))
+	if(likely(out_end > out_start || do_decode))
 		decode_(buffer_ + out_start, out_end - out_start);
 }
 
@@ -2210,9 +2215,6 @@ void MuxLayer::decode(void* buffer, size_t len)
  */
 void MuxLayer::decode_(void* buffer, size_t len)
 {
-	if(!buffer || len == 0)
-		return;
-
 	if(m_decodingChannel == this)
 		base::decode(buffer, len);
 	else if(m_decodingChannel)
