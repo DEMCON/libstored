@@ -38,7 +38,10 @@
  */
 #ifndef likely
 #  ifdef __GNUC__
-#    define likely(expr) __builtin_expect(!!(expr), 1)
+#    define likely(expr)                                                \
+      __builtin_expect(                                                 \
+	      !!(expr), /* NOLINT(readability-simplify-boolean-expr) */ \
+	      1)
 #  else
 #    define likely(expr) (expr)
 #  endif
@@ -52,10 +55,10 @@
  */
 #ifndef unlikely
 #  ifdef __GNUC__
-#    define unlikely(expr)                                                    \
-	    __builtin_expect(                                                 \
-		    !!(expr), /* NOLINT(readability-simplify-boolean-expr) */ \
-		    0)
+#    define unlikely(expr)                                              \
+      __builtin_expect(                                                 \
+	      !!(expr), /* NOLINT(readability-simplify-boolean-expr) */ \
+	      0)
 #  else
 #    define unlikely(expr) (expr)
 #  endif
@@ -73,9 +76,9 @@
 #      define stored_yield() zth_yield()
 #    endif
 #  else
-#    define stored_yield()                                      \
-	    do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
-	    } while(false)
+#    define stored_yield()                                \
+      do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
+      } while(false)
 #  endif
 #endif
 
@@ -125,11 +128,11 @@
 
 #ifdef STORED_HAVE_VALGRIND
 #  define STORED_MAKE_MEM_NOACCESS_VALGRIND(buffer, size) \
-	  (void)VALGRIND_MAKE_MEM_NOACCESS(buffer, size)
+    (void)VALGRIND_MAKE_MEM_NOACCESS(buffer, size)
 #  define STORED_MAKE_MEM_UNDEFINED_VALGRIND(buffer, size) \
-	  (void)VALGRIND_MAKE_MEM_UNDEFINED(buffer, size)
+    (void)VALGRIND_MAKE_MEM_UNDEFINED(buffer, size)
 #  define STORED_MAKE_MEM_DEFINED_VALGRIND(buffer, size) \
-	  (void)VALGRIND_MAKE_MEM_DEFINED(buffer, size)
+    (void)VALGRIND_MAKE_MEM_DEFINED(buffer, size)
 #else // !STORED_HAVE_VALGRIND
 #  define STORED_MAKE_MEM_NOACCESS_VALGRIND(buffer, size)  (void)0
 #  define STORED_MAKE_MEM_UNDEFINED_VALGRIND(buffer, size) (void)0
@@ -151,40 +154,40 @@
 
 #if !defined(NDEBUG) \
 	&& ((defined(STORED_HAVE_VALGRIND) && !defined(NVALGRIND)) || defined(STORED_ENABLE_ASAN))
-#  define STORED_MAKE_MEM_NOACCESS(buffer, size)              \
-	  do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
-		  void* b_ = (void*)(buffer);                 \
-		  size_t s_ = (size_t)(size);                 \
-		  STORED_MAKE_MEM_NOACCESS_VALGRIND(b_, s_);  \
-		  STORED_MAKE_MEM_NOACCESS_ASAN(b_, s_);      \
-	  } while(0)
+#  define STORED_MAKE_MEM_NOACCESS(buffer, size)        \
+    do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
+      void* b_ = (void*)(buffer);                       \
+      size_t s_ = (size_t)(size);                       \
+      STORED_MAKE_MEM_NOACCESS_VALGRIND(b_, s_);        \
+      STORED_MAKE_MEM_NOACCESS_ASAN(b_, s_);            \
+    } while(0)
 
-#  define STORED_MAKE_MEM_UNDEFINED(buffer, size)                 \
-	  do { /* NOLINT(cppcoreguidelines-avoid-do-while) */     \
-		  void* b_ = (void*)(buffer);                     \
-		  size_t s_ = (size_t)(size);                     \
-		  STORED_MAKE_MEM_UNDEFINED_VALGRIND(b_, s_);     \
-		  STORED_MAKE_MEM_UNDEFINED_ASAN(b_, s_);         \
-		  if(Config::Debug && !RUNNING_ON_VALGRIND && b_) \
-			  memset(b_, 0xef, s_);                   \
-	  } while(0)
-#  define STORED_MAKE_MEM_DEFINED(buffer, size)               \
-	  do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
-		  void* b_ = (void*)(buffer);                 \
-		  size_t s_ = (size_t)(size);                 \
-		  STORED_MAKE_MEM_DEFINED_VALGRIND(b_, s_);   \
-		  STORED_MAKE_MEM_DEFINED_ASAN(b_, s_);       \
-	  } while(0)
+#  define STORED_MAKE_MEM_UNDEFINED(buffer, size)       \
+    do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
+      void* b_ = (void*)(buffer);                       \
+      size_t s_ = (size_t)(size);                       \
+      STORED_MAKE_MEM_UNDEFINED_VALGRIND(b_, s_);       \
+      STORED_MAKE_MEM_UNDEFINED_ASAN(b_, s_);           \
+      if(Config::Debug && !RUNNING_ON_VALGRIND && b_)   \
+	memset(b_, 0xef, s_);                           \
+    } while(0)
+#  define STORED_MAKE_MEM_DEFINED(buffer, size)         \
+    do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
+      void* b_ = (void*)(buffer);                       \
+      size_t s_ = (size_t)(size);                       \
+      STORED_MAKE_MEM_DEFINED_VALGRIND(b_, s_);         \
+      STORED_MAKE_MEM_DEFINED_ASAN(b_, s_);             \
+    } while(0)
 #else
-#  define STORED_MAKE_MEM_NOACCESS(buffer, size)              \
-	  do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
-	  } while(0)
-#  define STORED_MAKE_MEM_UNDEFINED(buffer, size)             \
-	  do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
-	  } while(0)
-#  define STORED_MAKE_MEM_DEFINED(buffer, size)               \
-	  do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
-	  } while(0)
+#  define STORED_MAKE_MEM_NOACCESS(buffer, size)        \
+    do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
+    } while(0)
+#  define STORED_MAKE_MEM_UNDEFINED(buffer, size)       \
+    do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
+    } while(0)
+#  define STORED_MAKE_MEM_DEFINED(buffer, size)         \
+    do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
+    } while(0)
 #endif
 
 
@@ -208,7 +211,7 @@
  */
 #    ifndef DOXYGEN
 #      define SFINAE_IS_FUNCTION(T, F, T_OK) \
-	      typename std::enable_if<std::is_assignable<std::function<F>, T>::value, T_OK>::type
+	typename std::enable_if<std::is_assignable<std::function<F>, T>::value, T_OK>::type
 #    else
 #      define SFINAE_IS_FUNCTION(T, F, T_OK) T_OK
 #    endif
@@ -218,10 +221,10 @@
 
 #  if defined(STORED_cplusplus) && STORED_cplusplus < 201103L && !defined(static_assert) \
 	  && !defined(STORED_COMPILER_MSVC)
-#    define static_assert(expr, msg)                                                     \
-	    do { /* NOLINT(cppcoreguidelines-avoid-do-while) */                          \
-		    typedef __attribute__((unused)) int static_assert_[(expr) ? 1 : -1]; \
-	    } while(0)
+#    define static_assert(expr, msg)                                         \
+      do { /* NOLINT(cppcoreguidelines-avoid-do-while) */                    \
+	typedef __attribute__((unused)) int static_assert_[(expr) ? 1 : -1]; \
+      } while(0)
 #  endif
 
 #  ifndef STORED_CLASS_NOCOPY
@@ -236,35 +239,35 @@
  * \param Class the class this macro is embedded in
  */
 #    if STORED_cplusplus >= 201103L
-#      define STORED_CLASS_NOCOPY(Class)                      \
-      public:                                                 \
-	      /*! \brief Deleted copy constructor. */         \
-	      Class(Class const&) = delete;                   \
-	      /*! \brief Default move constructor. */         \
-	      Class(Class&&) noexcept = default; /* NOLINT */ \
-	      /*! \brief Deleted assignment operator. */      \
-	      void operator=(Class const&) = delete;          \
-	      /*! \brief Default move assignment operator. */ \
-	      Class& operator=(Class&&) noexcept = default; /* NOLINT */
+#      define STORED_CLASS_NOCOPY(Class)                \
+public:                                                 \
+	/*! \brief Deleted copy constructor. */         \
+	Class(Class const&) = delete;                   \
+	/*! \brief Default move constructor. */         \
+	Class(Class&&) noexcept = default; /* NOLINT */ \
+	/*! \brief Deleted assignment operator. */      \
+	void operator=(Class const&) = delete;          \
+	/*! \brief Default move assignment operator. */ \
+	Class& operator=(Class&&) noexcept = default; /* NOLINT */
 #    else
-#      define STORED_CLASS_NOCOPY(Class)                 \
-      private:                                           \
-	      /*! \brief Deleted copy constructor. */    \
-	      Class(Class const&);                       \
-	      /*! \brief Deleted assignment operator. */ \
-	      void operator=(Class const&);
+#      define STORED_CLASS_NOCOPY(Class)           \
+private:                                           \
+	/*! \brief Deleted copy constructor. */    \
+	Class(Class const&);                       \
+	/*! \brief Deleted assignment operator. */ \
+	void operator=(Class const&);
 #    endif
 #  endif
 
 #  if STORED_cplusplus >= 201103L && !defined(STORED_CLASS_DEFAULT_COPY_MOVE)
-#    define STORED_CLASS_DEFAULT_COPY_MOVE(type)        \
-    public:                                             \
-	    type(type const&) = default;                \
-	    type(type&&) noexcept = default;            \
-	    type& operator=(type const&) = default;     \
-	    type& operator=(type&&) noexcept = default; \
-                                                        \
-    private:
+#    define STORED_CLASS_DEFAULT_COPY_MOVE(type)  \
+      public:                                     \
+      type(type const&) = default;                \
+      type(type&&) noexcept = default;            \
+      type& operator=(type const&) = default;     \
+      type& operator=(type&&) noexcept = default; \
+                                                  \
+      private:
 #  endif
 
 #  ifndef CLASS_NO_WEAK_VTABLE
@@ -273,19 +276,19 @@
  * \details Use CLASS_NO_WEAK_VTABLE_DEF() in one .cpp file.
  */
 #    define CLASS_NO_WEAK_VTABLE \
-    protected:                   \
-	    void force_to_translation_unit();
+      protected:                 \
+      void force_to_translation_unit();
 /*!
  * \see CLASS_NO_WEAK_VTABLE
  */
 // cppcheck-suppress-macro duplInheritedMember
-#    define CLASS_NO_WEAK_VTABLE_DEF(Class)                       \
-	    /*! \brief Dummy function to force the vtable of this \
-	     * class to this translation unit. Don't call. */     \
-	    void Class::force_to_translation_unit()               \
-	    {                                                     \
-		    abort();                                      \
-	    }
+#    define CLASS_NO_WEAK_VTABLE_DEF(Class)                 \
+      /*! \brief Dummy function to force the vtable of this \
+       * class to this translation unit. Don't call. */     \
+      void Class::force_to_translation_unit()               \
+      {                                                     \
+	abort();                                            \
+      }
 #  endif
 
 namespace stored {
@@ -294,19 +297,19 @@ namespace stored {
  * \brief Like \c assert(), but only emits code when #stored::Config::EnableAssert.
  */
 #  ifdef STORED_HAVE_ZTH
-#    define stored_assert(expr)                                 \
-	    do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
-		    if(::stored::Config::EnableAssert) {        \
-			    zth_assert(expr);                   \
-		    }                                           \
-	    } while(false)
+#    define stored_assert(expr)                           \
+      do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
+	if(::stored::Config::EnableAssert) {              \
+	  zth_assert(expr);                               \
+	}                                                 \
+      } while(false)
 #  else
-#    define stored_assert(expr)                                 \
-	    do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
-		    if(::stored::Config::EnableAssert) {        \
-			    assert(expr);                       \
-		    }                                           \
-	    } while(false)
+#    define stored_assert(expr)                           \
+      do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
+	if(::stored::Config::EnableAssert) {              \
+	  assert(expr);                                   \
+	}                                                 \
+      } while(false)
 #  endif
 
 void swap_endian(void* buffer, size_t len) noexcept;
@@ -835,10 +838,10 @@ using store_t = typename store<Impl, Base...>::type;
  *
  * \hideinitializer
  */
-#  define STORE_T(Impl, ...)                                                                  \
-	  EXPAND(STORED_GET_MACRO_ARGN(                                                       \
-		  Impl, ##__VA_ARGS__, STORE_T_9, STORE_T_8, STORE_T_7, STORE_T_6, STORE_T_5, \
-		  STORE_T_4, STORE_T_3, STORE_T_2, STORE_T_1)(Impl, ##__VA_ARGS__))
+#  define STORE_T(Impl, ...)                                                                       \
+    EXPAND(STORED_GET_MACRO_ARGN(                                                                  \
+	    Impl, ##__VA_ARGS__, STORE_T_9, STORE_T_8, STORE_T_7, STORE_T_6, STORE_T_5, STORE_T_4, \
+	    STORE_T_3, STORE_T_2, STORE_T_1)(Impl, ##__VA_ARGS__))
 
 // Make sure to match the number of template arguments of stored::store.
 #  define STORE_BASE_CLASS_1(x)	     x
@@ -851,12 +854,11 @@ using store_t = typename store<Impl, Base...>::type;
 #  define STORE_BASE_CLASS_8(x, ...) EXPAND(STORE_BASE_CLASS_7(__VA_ARGS__))
 #  define STORE_BASE_CLASS_9(x, ...) EXPAND(STORE_BASE_CLASS_8(__VA_ARGS__))
 
-#  define STORE_CLASS_BASE(Impl, ...)                                                             \
-	  EXPAND(STORED_GET_MACRO_ARGN(                                                           \
-		  0, Impl, ##__VA_ARGS__, STORE_BASE_CLASS_9, STORE_BASE_CLASS_8,                 \
-		  STORE_BASE_CLASS_7, STORE_BASE_CLASS_6, STORE_BASE_CLASS_5, STORE_BASE_CLASS_4, \
-		  STORE_BASE_CLASS_3, STORE_BASE_CLASS_2,                                         \
-		  STORE_BASE_CLASS_1)(Impl, ##__VA_ARGS__))<Impl /**/>
+#  define STORE_CLASS_BASE(Impl, ...)                                                           \
+    EXPAND(STORED_GET_MACRO_ARGN(                                                               \
+	    0, Impl, ##__VA_ARGS__, STORE_BASE_CLASS_9, STORE_BASE_CLASS_8, STORE_BASE_CLASS_7, \
+	    STORE_BASE_CLASS_6, STORE_BASE_CLASS_5, STORE_BASE_CLASS_4, STORE_BASE_CLASS_3,     \
+	    STORE_BASE_CLASS_2, STORE_BASE_CLASS_1)(Impl, ##__VA_ARGS__))<Impl /**/>
 
 #  ifdef STORED_COMPILER_MSVC
 // https://developercommunity.visualstudio.com/t/compile-error-when-using-using-declaration-referen/486683
@@ -866,25 +868,25 @@ using store_t = typename store<Impl, Base...>::type;
 #    define STORE_CLASS_USING_BASE_TYPE(type, ...) using typename __VA_ARGS__::type;
 #  endif
 
-#  define STORE_CLASS_(Impl, ...)                                  \
-	  STORED_CLASS_NOCOPY(Impl)                                \
-	  STORED_CLASS_NEW_DELETE(Impl)                            \
-  public:                                                          \
-	  typedef Impl self;                                       \
-	  typedef __VA_ARGS__ base;                                \
-	  STORE_CLASS_USING_BASE_TYPE(root, __VA_ARGS__)           \
-	  STORE_CLASS_USING_BASE_TYPE(Implementation, __VA_ARGS__) \
-                                                                   \
-  private:
+#  define STORE_CLASS_(Impl, ...)                            \
+    STORED_CLASS_NOCOPY(Impl)                                \
+    STORED_CLASS_NEW_DELETE(Impl)                            \
+    public:                                                  \
+    typedef Impl self;                                       \
+    typedef __VA_ARGS__ base;                                \
+    STORE_CLASS_USING_BASE_TYPE(root, __VA_ARGS__)           \
+    STORE_CLASS_USING_BASE_TYPE(Implementation, __VA_ARGS__) \
+                                                             \
+    private:
 
 /*!
  * \brief Class helper macro to get a store implementation class right.
  * \see #stored::store
  * \hideinitializer
  */
-#  define STORE_CLASS(Impl, ...)                         \
-	  STORE_CLASS_(Impl, STORE_T(Impl, __VA_ARGS__)) \
-	  friend class STORE_CLASS_BASE(Impl, ##__VA_ARGS__);
+#  define STORE_CLASS(Impl, ...)                   \
+    STORE_CLASS_(Impl, STORE_T(Impl, __VA_ARGS__)) \
+    friend class STORE_CLASS_BASE(Impl, ##__VA_ARGS__);
 
 /*!
  * \brief Class helper macro to get a store wrapper class right.
