@@ -3,6 +3,7 @@
 		"includePath": [
 			"${workspaceFolder}/include",
 			"${workspaceFolder}/dist/*/build/*-extern-prefix/src/**",
+			"${workspaceFolder}/dist/*/build/_deps/*-src/*/include",
 			"${workspaceFolder}/examples/**",
 			"${workspaceFolder}/tests/**"
 		],

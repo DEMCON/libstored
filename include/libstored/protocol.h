@@ -281,7 +281,7 @@ public:
 	 */
 	virtual void decode(void* buffer, size_t len)
 	{
-		ProtocolLayer* p = up();
+		ProtocolLayer* const p = up();
 		if(!p)
 			return;
 
@@ -304,7 +304,7 @@ public:
 	 */
 	virtual void encode(void const* buffer, size_t len, bool last = true)
 	{
-		ProtocolLayer* p = down();
+		ProtocolLayer* const p = down();
 		if(!p)
 			return;
 
@@ -327,7 +327,7 @@ public:
 	 */
 	virtual void setPurgeableResponse(bool purgeable = true)
 	{
-		ProtocolLayer* p = down();
+		ProtocolLayer* const p = down();
 		if(!p)
 			return;
 
@@ -345,7 +345,7 @@ public:
 	 */
 	virtual size_t mtu() const
 	{
-		ProtocolLayer* p = down();
+		ProtocolLayer const* const p = down();
 		if(!p)
 			return 0;
 
@@ -364,7 +364,7 @@ public:
 	 */
 	virtual bool flush()
 	{
-		ProtocolLayer* p = down();
+		ProtocolLayer* const p = down();
 		if(!p)
 			return true;
 
@@ -376,7 +376,7 @@ public:
 	 */
 	virtual void reset()
 	{
-		ProtocolLayer* p = down();
+		ProtocolLayer* const p = down();
 		if(!p)
 			return;
 
@@ -388,7 +388,7 @@ public:
 	 */
 	virtual void connected()
 	{
-		ProtocolLayer* p = up();
+		ProtocolLayer* const p = up();
 		if(!p)
 			return;
 
@@ -400,7 +400,7 @@ public:
 	 */
 	virtual void disconnected()
 	{
-		ProtocolLayer* p = up();
+		ProtocolLayer* const p = up();
 		if(!p)
 			return;
 

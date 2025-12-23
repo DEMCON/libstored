@@ -1466,6 +1466,9 @@ TEST(MuxLayer, Encode)
 
 	ch2.encode(" ch\x10 2", 6);
 	EXPECT_EQ(ll.encoded().at(3), "\x10\x02 ch\x10\x10 2");
+
+	ch2.encode("", 0);
+	EXPECT_EQ(ll.encoded().at(4), "\x10\x02");
 }
 
 TEST(MuxLayer, Decode)
@@ -1504,6 +1507,12 @@ TEST(MuxLayer, Decode)
 
 	DECODE(l, "\x10\x03 ch?");
 	EXPECT_EQ(ch0.decoded().size(), 3U);
+
+	DECODE(l, "\x10\x02");
+	EXPECT_EQ(ch2.decoded().at(3), "");
+
+	DECODE(l, "\x10\x03");
+	EXPECT_EQ(ch2.decoded().size(), 4U);
 }
 
 TEST(Aes256Layer, EncodeDecode)
