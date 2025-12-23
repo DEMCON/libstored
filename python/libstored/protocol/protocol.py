@@ -1411,9 +1411,6 @@ class MuxLayer(ProtocolLayer):
         elif isinstance(data, memoryview):
             data = data.tobytes()
 
-        if len(data) == 0:
-            return
-
         now = time.time()
         prefix = b""
         if self._decoding is None:
@@ -1422,6 +1419,7 @@ class MuxLayer(ProtocolLayer):
             self._prev is None
             or chan != self._prev
             or (now - self._t_prev) >= self._repeat_interval
+            or len(data) == 0
         ):
             prefix = bytes([self.esc, chan])
 
@@ -1435,6 +1433,8 @@ class MuxLayer(ProtocolLayer):
         if not isinstance(data, memoryview):
             data = memoryview(data)
         data = data.cast("B")
+        decoded = bytearray()
+        do_decode = self._decoding_esc
 
         start = 0
         for i in range(len(data)):
@@ -1444,20 +1444,29 @@ class MuxLayer(ProtocolLayer):
 
                 if data[i] == self.esc:
                     # esc was in the data
-                    await self._dispatch(bytes([self.esc]))
+                    decoded.append(self.esc)
                 elif data[i] == self.repeat:
                     # Repeat last channel request
                     self._prev = None
                 else:
                     # Switched channel
+                    if do_decode:
+                        await self._dispatch(decoded)
+                        decoded = bytearray()
+                    do_decode = True
                     self._decoding = data[i]
             elif data[i] == self.esc:
                 if i > start:
-                    await self._dispatch(data[start:i])
+                    decoded += data[start:i]
+                    do_decode = True
                 self._decoding_esc = True
 
         if not self._decoding_esc and start < len(data):
-            await self._dispatch(data[start:])
+            decoded += data[start:]
+            do_decode = True
+
+        if do_decode:
+            await self._dispatch(decoded)
 
     async def _dispatch(self, data: bytes | memoryview) -> None:
         chan = self._decoding

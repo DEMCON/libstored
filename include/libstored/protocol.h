@@ -1505,6 +1505,7 @@ private:
 	ChannelId m_encodingChannel;
 	ProtocolLayer* m_decodingChannel;
 	bool m_decodingEsc;
+	bool m_encoding;
 };
 
 namespace impl {

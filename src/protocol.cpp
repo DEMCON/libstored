@@ -1994,6 +1994,7 @@ MuxLayer::MuxLayer(ProtocolLayer* up, ProtocolLayer* down)
 	, m_encodingChannel(Repeat)
 	, m_decodingChannel()
 	, m_decodingEsc()
+	, m_encoding()
 {}
 
 /*!
@@ -2226,7 +2227,8 @@ void MuxLayer::encode_(ChannelId channel, void const* buffer, size_t len, bool l
 	if(channel == Repeat)
 		return;
 
-	if(channel != m_encodingChannel) {
+	if(channel != m_encodingChannel || (!m_encoding && !len && last)) {
+		m_encoding = true;
 		uint8_t buf[2] = {Esc, channel};
 		base::encode(buf, sizeof(buf), false);
 		m_encodingChannel = channel;
@@ -2249,14 +2251,20 @@ void MuxLayer::encode_(ChannelId channel, void const* buffer, size_t len, bool l
 			break;
 
 		// Found an escape byte at position c. Repeat escape byte.
+		m_encoding = true;
 		base::encode(buffer_ + i, c - i + 1, false);
 		enc_last = c == len && last;
 		base::encode(buffer_ + c, 1, enc_last);
 		i = c + 1;
 	}
 
-	if(!enc_last && (i < len || last))
+	if(!enc_last && (i < len || last)) {
+		m_encoding = true;
 		base::encode(buffer_ + i, len - i, last);
+	}
+
+	if(last)
+		m_encoding = false;
 }
 
 size_t MuxLayer::mtu() const
