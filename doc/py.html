@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Python &mdash; libstored 2.1.0 documentation</title>
+  <title>Python &mdash; libstored 2.2.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=20623aea"></script>
+      <script src="../_static/documentation_options.js?v=2c664663"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -147,10 +147,14 @@ interface, so to access the C++ <code class="docutils literal notranslate"><span
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolLayer.async_except"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer.async_except()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolLayer.async_except_hook"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer.async_except_hook</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolLayer.close"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolLayer.connected"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer.connected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolLayer.decode"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer.decode()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolLayer.default_async_except_hook"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer.default_async_except_hook()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolLayer.disconnected"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer.disconnected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolLayer.down"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer.down</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolLayer.encode"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer.encode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolLayer.is_closed"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer.is_closed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolLayer.is_connected"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer.is_connected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolLayer.last_activity"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer.last_activity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolLayer.mtu"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer.mtu</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolLayer.name"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer.name</span></code></a></li>
@@ -160,33 +164,36 @@ interface, so to access the C++ <code class="docutils literal notranslate"><span
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.Aes256Layer"><code class="docutils literal notranslate"><span class="pre">Aes256Layer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.ArqLayer"><code class="docutils literal notranslate"><span class="pre">ArqLayer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.AsciiEscapeLayer"><code class="docutils literal notranslate"><span class="pre">AsciiEscapeLayer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.TerminalLayer"><code class="docutils literal notranslate"><span class="pre">TerminalLayer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.PubTerminalLayer"><code class="docutils literal notranslate"><span class="pre">PubTerminalLayer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.RepReqCheckLayer"><code class="docutils literal notranslate"><span class="pre">RepReqCheckLayer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.SegmentationLayer"><code class="docutils literal notranslate"><span class="pre">SegmentationLayer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.DebugArqLayer"><code class="docutils literal notranslate"><span class="pre">DebugArqLayer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.Crc8Layer"><code class="docutils literal notranslate"><span class="pre">Crc8Layer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.Crc16Layer"><code class="docutils literal notranslate"><span class="pre">Crc16Layer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.Crc32Layer"><code class="docutils literal notranslate"><span class="pre">Crc32Layer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.Crc8Layer"><code class="docutils literal notranslate"><span class="pre">Crc8Layer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.DebugArqLayer"><code class="docutils literal notranslate"><span class="pre">DebugArqLayer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.FileLayer"><code class="docutils literal notranslate"><span class="pre">FileLayer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.LoopbackLayer"><code class="docutils literal notranslate"><span class="pre">LoopbackLayer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.RawLayer"><code class="docutils literal notranslate"><span class="pre">RawLayer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.MuxLayer"><code class="docutils literal notranslate"><span class="pre">MuxLayer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.PrintLayer"><code class="docutils literal notranslate"><span class="pre">PrintLayer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.PubTerminalLayer"><code class="docutils literal notranslate"><span class="pre">PubTerminalLayer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.RawLayer"><code class="docutils literal notranslate"><span class="pre">RawLayer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.ReqRepCheckLayer"><code class="docutils literal notranslate"><span class="pre">ReqRepCheckLayer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.SegmentationLayer"><code class="docutils literal notranslate"><span class="pre">SegmentationLayer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.SerialLayer"><code class="docutils literal notranslate"><span class="pre">SerialLayer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.StdinLayer"><code class="docutils literal notranslate"><span class="pre">StdinLayer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.StdioLayer"><code class="docutils literal notranslate"><span class="pre">StdioLayer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.PrintLayer"><code class="docutils literal notranslate"><span class="pre">PrintLayer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.SerialLayer"><code class="docutils literal notranslate"><span class="pre">SerialLayer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.FileLayer"><code class="docutils literal notranslate"><span class="pre">FileLayer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.TerminalLayer"><code class="docutils literal notranslate"><span class="pre">TerminalLayer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.ZmqServer"><code class="docutils literal notranslate"><span class="pre">ZmqServer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.ZmqSocketClient"><code class="docutils literal notranslate"><span class="pre">ZmqSocketClient</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.ZmqSocketServer"><code class="docutils literal notranslate"><span class="pre">ZmqSocketServer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.ZmqServer"><code class="docutils literal notranslate"><span class="pre">ZmqServer</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="py_py.html#protocol-stack">Protocol stack</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolStack"><code class="docutils literal notranslate"><span class="pre">ProtocolStack</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolStack.Iterator"><code class="docutils literal notranslate"><span class="pre">ProtocolStack.Iterator</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolStack.close"><code class="docutils literal notranslate"><span class="pre">ProtocolStack.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolStack.connected"><code class="docutils literal notranslate"><span class="pre">ProtocolStack.connected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolStack.decode"><code class="docutils literal notranslate"><span class="pre">ProtocolStack.decode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolStack.disconnected"><code class="docutils literal notranslate"><span class="pre">ProtocolStack.disconnected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolStack.encode"><code class="docutils literal notranslate"><span class="pre">ProtocolStack.encode()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolStack.last_activity"><code class="docutils literal notranslate"><span class="pre">ProtocolStack.last_activity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="py_py.html#libstored.protocol.ProtocolStack.mtu"><code class="docutils literal notranslate"><span class="pre">ProtocolStack.mtu</span></code></a></li>

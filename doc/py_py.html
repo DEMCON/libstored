@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Base classes &mdash; libstored 2.1.0 documentation</title>
+  <title>Base classes &mdash; libstored 2.2.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=20623aea"></script>
+      <script src="../_static/documentation_options.js?v=2c664663"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -59,26 +59,27 @@
 <li class="toctree-l3"><a class="reference internal" href="#protocol-layers">Protocol layers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.ProtocolLayer"><code class="docutils literal notranslate"><span class="pre">ProtocolLayer</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.Aes256Layer"><code class="docutils literal notranslate"><span class="pre">Aes256Layer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.ArqLayer"><code class="docutils literal notranslate"><span class="pre">ArqLayer</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.AsciiEscapeLayer"><code class="docutils literal notranslate"><span class="pre">AsciiEscapeLayer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.TerminalLayer"><code class="docutils literal notranslate"><span class="pre">TerminalLayer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.PubTerminalLayer"><code class="docutils literal notranslate"><span class="pre">PubTerminalLayer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.RepReqCheckLayer"><code class="docutils literal notranslate"><span class="pre">RepReqCheckLayer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.SegmentationLayer"><code class="docutils literal notranslate"><span class="pre">SegmentationLayer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.DebugArqLayer"><code class="docutils literal notranslate"><span class="pre">DebugArqLayer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.Crc8Layer"><code class="docutils literal notranslate"><span class="pre">Crc8Layer</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.Crc16Layer"><code class="docutils literal notranslate"><span class="pre">Crc16Layer</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.Crc32Layer"><code class="docutils literal notranslate"><span class="pre">Crc32Layer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.Crc8Layer"><code class="docutils literal notranslate"><span class="pre">Crc8Layer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.DebugArqLayer"><code class="docutils literal notranslate"><span class="pre">DebugArqLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.FileLayer"><code class="docutils literal notranslate"><span class="pre">FileLayer</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.LoopbackLayer"><code class="docutils literal notranslate"><span class="pre">LoopbackLayer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.RawLayer"><code class="docutils literal notranslate"><span class="pre">RawLayer</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.MuxLayer"><code class="docutils literal notranslate"><span class="pre">MuxLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.PrintLayer"><code class="docutils literal notranslate"><span class="pre">PrintLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.PubTerminalLayer"><code class="docutils literal notranslate"><span class="pre">PubTerminalLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.RawLayer"><code class="docutils literal notranslate"><span class="pre">RawLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.ReqRepCheckLayer"><code class="docutils literal notranslate"><span class="pre">ReqRepCheckLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.SegmentationLayer"><code class="docutils literal notranslate"><span class="pre">SegmentationLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.SerialLayer"><code class="docutils literal notranslate"><span class="pre">SerialLayer</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.StdinLayer"><code class="docutils literal notranslate"><span class="pre">StdinLayer</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.StdioLayer"><code class="docutils literal notranslate"><span class="pre">StdioLayer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.PrintLayer"><code class="docutils literal notranslate"><span class="pre">PrintLayer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.SerialLayer"><code class="docutils literal notranslate"><span class="pre">SerialLayer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.FileLayer"><code class="docutils literal notranslate"><span class="pre">FileLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.TerminalLayer"><code class="docutils literal notranslate"><span class="pre">TerminalLayer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.ZmqServer"><code class="docutils literal notranslate"><span class="pre">ZmqServer</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.ZmqSocketClient"><code class="docutils literal notranslate"><span class="pre">ZmqSocketClient</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.ZmqSocketServer"><code class="docutils literal notranslate"><span class="pre">ZmqSocketServer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#libstored.protocol.ZmqServer"><code class="docutils literal notranslate"><span class="pre">ZmqServer</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#protocol-stack">Protocol stack</a><ul>
@@ -201,7 +202,7 @@ efficient.</p>
 <span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="k"><span class="pre">True</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span></dt>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="k"><span class="pre">False</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="k"><span class="pre">True</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Future</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span></dt>
-<dd><p>Alias for disconnect().</p>
+<dd><p>Disconnect and release resources.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -682,6 +683,13 @@ decoding means receiving data up the stack (towards the application layer).</p>
 <dt class="sig sig-object py" id="libstored.protocol.ProtocolLayer.close">
 <em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer.close" title="Link to this definition"></a></dt>
 <dd><p>Close the layer and release resources.</p>
+<p>Closing cannot be undone.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libstored.protocol.ProtocolLayer.connected">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer.connected" title="Link to this definition"></a></dt>
+<dd><p>Called when the connection is (re)connected.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -695,6 +703,12 @@ decoding means receiving data up the stack (towards the application layer).</p>
 <em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default_async_except_hook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseException</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer.default_async_except_hook" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="libstored.protocol.ProtocolLayer.disconnected">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">disconnected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer.disconnected" title="Link to this definition"></a></dt>
+<dd><p>Called when the connection is disconnected.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="libstored.protocol.ProtocolLayer.down">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">down</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#libstored.protocol.ProtocolLayer" title="libstored.protocol.protocol.ProtocolLayer"><span class="pre">ProtocolLayer</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#libstored.protocol.ProtocolLayer.down" title="Link to this definition"></a></dt>
@@ -704,6 +718,18 @@ decoding means receiving data up the stack (towards the application layer).</p>
 <dt class="sig sig-object py" id="libstored.protocol.ProtocolLayer.encode">
 <em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytearray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">memoryview</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer.encode" title="Link to this definition"></a></dt>
 <dd><p>Encode data for transmission.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libstored.protocol.ProtocolLayer.is_closed">
+<span class="sig-name descname"><span class="pre">is_closed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer.is_closed" title="Link to this definition"></a></dt>
+<dd><p>Return whether the layer is closed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libstored.protocol.ProtocolLayer.is_connected">
+<span class="sig-name descname"><span class="pre">is_connected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#libstored.protocol.ProtocolLayer.is_connected" title="Link to this definition"></a></dt>
+<dd><p>Return whether the connection is currently connected.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -755,48 +781,15 @@ multiple clients simultaneously, which does not allow having a single cipher sta
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="libstored.protocol.ArqLayer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">ArqLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_alive_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.ArqLayer" title="Link to this definition"></a></dt>
+<dd><p>A ProtocolLayer that implements a general-purpose ARQ protocol.</p>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.AsciiEscapeLayer">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">AsciiEscapeLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.AsciiEscapeLayer" title="Link to this definition"></a></dt>
 <dd><p>Layer that escapes non-printable ASCII characters.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="libstored.protocol.TerminalLayer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">TerminalLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fdout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytearray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">memoryview</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignoreEscapesTillFirstEncode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.TerminalLayer" title="Link to this definition"></a></dt>
-<dd><p>A ProtocolLayer that encodes debug messages in terminal escape codes.
-Non-debug messages are passed through unchanged.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="libstored.protocol.PubTerminalLayer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">PubTerminalLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'*:19027'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.PubTerminalLayer" title="Link to this definition"></a></dt>
-<dd><p>A TerminalLayer (term), that also forwards all non-debug data over a PUB socket.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="libstored.protocol.RepReqCheckLayer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">RepReqCheckLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.RepReqCheckLayer" title="Link to this definition"></a></dt>
-<dd><p>A ProtocolLayer that checks that requests and replies are matched.
-It triggers timeout() when a reply is not received in time.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="libstored.protocol.SegmentationLayer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">SegmentationLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.SegmentationLayer" title="Link to this definition"></a></dt>
-<dd><p>A ProtocolLayer that segments and reassembles data according to a simple
-protocol with ‘E’ (end) and ‘C’ (continue) markers.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="libstored.protocol.DebugArqLayer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">DebugArqLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.DebugArqLayer" title="Link to this definition"></a></dt>
-<dd><p>A ProtocolLayer that implements a simple ARQ protocol for debugging.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="libstored.protocol.Crc8Layer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">Crc8Layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.Crc8Layer" title="Link to this definition"></a></dt>
-<dd><p>ProtocolLayer to add and check integrity using a CRC8.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -812,9 +805,45 @@ protocol with ‘E’ (end) and ‘C’ (continue) markers.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="libstored.protocol.Crc8Layer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">Crc8Layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.Crc8Layer" title="Link to this definition"></a></dt>
+<dd><p>ProtocolLayer to add and check integrity using a CRC8.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libstored.protocol.DebugArqLayer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">DebugArqLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.DebugArqLayer" title="Link to this definition"></a></dt>
+<dd><p>A ProtocolLayer that implements a simple ARQ protocol for debugging.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libstored.protocol.FileLayer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">FileLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.FileLayer" title="Link to this definition"></a></dt>
+<dd><p>A protocol layer that reads/writes a file for I/O.</p>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.LoopbackLayer">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">LoopbackLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.LoopbackLayer" title="Link to this definition"></a></dt>
 <dd><p>A ProtocolLayer that loops back all data.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libstored.protocol.MuxLayer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">MuxLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeat_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.MuxLayer" title="Link to this definition"></a></dt>
+<dd><p>A ProtocolLayer that multiplexes data to different upper layers based on an channel identifier.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libstored.protocol.PrintLayer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">PrintLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.PrintLayer" title="Link to this definition"></a></dt>
+<dd><p>A protocol layer that prints all data sent and received.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libstored.protocol.PubTerminalLayer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">PubTerminalLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'*:19027'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.PubTerminalLayer" title="Link to this definition"></a></dt>
+<dd><p>A TerminalLayer (term), that also forwards all non-debug data over a PUB socket.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -824,10 +853,23 @@ protocol with ‘E’ (end) and ‘C’ (continue) markers.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="libstored.protocol.MuxLayer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">MuxLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeat_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.MuxLayer" title="Link to this definition"></a></dt>
-<dd><p>A ProtocolLayer that multiplexes data to different upper layers based on an channel identifier.</p>
+<dt class="sig sig-object py" id="libstored.protocol.ReqRepCheckLayer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">ReqRepCheckLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_rep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">b'?'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.ReqRepCheckLayer" title="Link to this definition"></a></dt>
+<dd><p>A ProtocolLayer that checks that requests and replies are matched.
+It triggers timeout() when a reply is not received in time.</p>
 </dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libstored.protocol.SegmentationLayer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">SegmentationLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.SegmentationLayer" title="Link to this definition"></a></dt>
+<dd><p>A ProtocolLayer that segments and reassembles data according to a simple
+protocol with ‘E’ (end) and ‘C’ (continue) markers.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libstored.protocol.SerialLayer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">SerialLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.SerialLayer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="libstored.protocol.StdinLayer">
@@ -842,20 +884,20 @@ protocol with ‘E’ (end) and ‘C’ (continue) markers.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="libstored.protocol.PrintLayer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">PrintLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.PrintLayer" title="Link to this definition"></a></dt>
-<dd><p>A protocol layer that prints all data sent and received.</p>
+<dt class="sig sig-object py" id="libstored.protocol.TerminalLayer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">TerminalLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fdout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytearray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">memoryview</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignoreEscapesTillFirstEncode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.TerminalLayer" title="Link to this definition"></a></dt>
+<dd><p>A ProtocolLayer that encodes debug messages in terminal escape codes.
+Non-debug messages are passed through unchanged.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="libstored.protocol.SerialLayer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">SerialLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.SerialLayer" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="libstored.protocol.FileLayer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">FileLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.FileLayer" title="Link to this definition"></a></dt>
-<dd><p>A protocol layer that reads/writes a file for I/O.</p>
+<dt class="sig sig-object py" id="libstored.protocol.ZmqServer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">ZmqServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'*'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">default_port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.ZmqServer" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">ZmqServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>A ZMQ Server, for REQ/REP debug messages.</p>
+<p>This can be used to create a bridge from an arbitrary interface to ZMQ, which
+in turn can be used to connect a libstored.asyncio.ZmqClient to.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -878,16 +920,6 @@ Received data is passed up the stack.</p>
 Received data is passed down the stack.</p>
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="libstored.protocol.ZmqServer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">ZmqServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'*'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">default_port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libstored.protocol.ZmqServer" title="Link to this definition"></a></dt>
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libstored.protocol.</span></span><span class="sig-name descname"><span class="pre">ZmqServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
-<dd><p>A ZMQ Server, for REQ/REP debug messages.</p>
-<p>This can be used to create a bridge from an arbitrary interface to ZMQ, which
-in turn can be used to connect a libstored.asyncio.ZmqClient to.</p>
-</dd></dl>
-
 </section>
 <section id="protocol-stack">
 <h2>Protocol stack<a class="headerlink" href="#protocol-stack" title="Link to this heading"></a></h2>
@@ -906,12 +938,25 @@ the application layer is expected, at index -1 the physical layer.</p>
 <dt class="sig sig-object py" id="libstored.protocol.ProtocolStack.close">
 <em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libstored.protocol.ProtocolStack.close" title="Link to this definition"></a></dt>
 <dd><p>Close the layer and release resources.</p>
+<p>Closing cannot be undone.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libstored.protocol.ProtocolStack.connected">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libstored.protocol.ProtocolStack.connected" title="Link to this definition"></a></dt>
+<dd><p>Called when the connection is (re)connected.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="libstored.protocol.ProtocolStack.decode">
 <em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytearray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">memoryview</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libstored.protocol.ProtocolStack.decode" title="Link to this definition"></a></dt>
 <dd><p>Decode data received from the lower layer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libstored.protocol.ProtocolStack.disconnected">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">disconnected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libstored.protocol.ProtocolStack.disconnected" title="Link to this definition"></a></dt>
+<dd><p>Called when the connection is disconnected.</p>
 </dd></dl>
 
 <dl class="py method">

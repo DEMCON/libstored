@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; libstored 2.1.0 documentation</title>
+  <title>Index &mdash; libstored 2.2.0-alpha documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=20623aea"></script>
+      <script src="_static/documentation_options.js?v=2c664663"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -114,6 +114,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="doc/py_py.html#libstored.protocol.ArqLayer">ArqLayer (class in libstored.protocol)</a>
+</li>
       <li><a href="doc/py_py.html#libstored.protocol.AsciiEscapeLayer">AsciiEscapeLayer (class in libstored.protocol)</a>
 </li>
       <li><a href="doc/py_py.html#libstored.protocol.ProtocolLayer.async_except">async_except() (libstored.protocol.ProtocolLayer method)</a>
@@ -150,6 +152,12 @@
       </ul></li>
       <li><a href="doc/py_py.html#libstored.ZmqClient.connect">connect() (libstored.ZmqClient method)</a>
 </li>
+      <li><a href="doc/py_py.html#libstored.protocol.ProtocolLayer.connected">connected() (libstored.protocol.ProtocolLayer method)</a>
+
+      <ul>
+        <li><a href="doc/py_py.html#libstored.protocol.ProtocolStack.connected">(libstored.protocol.ProtocolStack method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="doc/py_py.html#libstored.ZmqClient.context">context (libstored.ZmqClient property)</a>
@@ -178,12 +186,18 @@
         <li><a href="doc/py_py.html#libstored.protocol.ProtocolStack.decode">(libstored.protocol.ProtocolStack method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="doc/py_py.html#libstored.protocol.ProtocolLayer.default_async_except_hook">default_async_except_hook() (libstored.protocol.ProtocolLayer method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="doc/py_py.html#libstored.ZmqClient.disconnect">disconnect() (libstored.ZmqClient method)</a>
 </li>
+      <li><a href="doc/py_py.html#libstored.protocol.ProtocolLayer.disconnected">disconnected() (libstored.protocol.ProtocolLayer method)</a>
+
+      <ul>
+        <li><a href="doc/py_py.html#libstored.protocol.ProtocolStack.disconnected">(libstored.protocol.ProtocolStack method)</a>
+</li>
+      </ul></li>
       <li><a href="doc/py_py.html#libstored.protocol.ProtocolLayer.down">down (libstored.protocol.ProtocolLayer property)</a>
 </li>
   </ul></td>
@@ -274,10 +288,16 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="doc/py_py.html#libstored.ZmqClient.identification">identification() (libstored.ZmqClient method)</a>
 </li>
+      <li><a href="doc/py_py.html#libstored.protocol.ProtocolLayer.is_closed">is_closed() (libstored.protocol.ProtocolLayer method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="doc/py_py.html#libstored.ZmqClient.is_connected">is_connected() (libstored.ZmqClient method)</a>
+      <li><a href="doc/py_py.html#libstored.protocol.ProtocolLayer.is_connected">is_connected() (libstored.protocol.ProtocolLayer method)</a>
+
+      <ul>
+        <li><a href="doc/py_py.html#libstored.ZmqClient.is_connected">(libstored.ZmqClient method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -398,9 +418,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="doc/py_py.html#libstored.ZmqClient.release_macro">release_macro() (libstored.ZmqClient method)</a>
 </li>
-      <li><a href="doc/py_py.html#libstored.protocol.RepReqCheckLayer">RepReqCheckLayer (class in libstored.protocol)</a>
-</li>
       <li><a href="doc/py_py.html#libstored.ZmqClient.req">req() (libstored.ZmqClient method)</a>
+</li>
+      <li><a href="doc/py_py.html#libstored.protocol.ReqRepCheckLayer">ReqRepCheckLayer (class in libstored.protocol)</a>
 </li>
       <li><a href="doc/py_py.html#libstored.ZmqClient.restore_state">restore_state() (libstored.ZmqClient method)</a>
 </li>
