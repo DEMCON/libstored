@@ -507,6 +507,10 @@ class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
         super().__init__(app=app, master=parent, *args, **kwargs)
         self._obj = obj
 
+        self._visible = False
+        self._grid_row: int | None = None
+        self._style_name: str | None = None
+
         self.columnconfigure(0, weight=1)
 
         self._label = ttk.Label(self, text=obj.name)
@@ -568,6 +572,7 @@ class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
         return self._obj
 
     def style(self, style: str):
+        self._style_name = style
         if style != "":
             style += "."
 
@@ -579,6 +584,25 @@ class ObjectRow(laio_tk.AsyncWidget, ttk.Frame):
         self._value["style"] = f"{style}TEntry"
         self._poll["style"] = f"{style}TCheckbutton"
         self._refresh["style"] = f"{style}TButton"
+
+    def show(self, row: int):
+        if not self._visible:
+            self.grid(column=0, row=row, sticky="nsew")
+            self._visible = True
+            self._grid_row = row
+            return
+
+        if self._grid_row != row:
+            self.grid_configure(row=row)
+            self._grid_row = row
+
+    def hide(self):
+        if not self._visible:
+            return
+
+        self.grid_forget()
+        self._visible = False
+        self._grid_row = None
 
     @laio_tk.AsyncApp.tk_func
     def _on_poll_obj_change(self, x):
@@ -692,18 +716,32 @@ class ObjectList(ttk.Frame):
             # No filter
             f = lambda o: True
 
-        row = 0
-        self._filtered_objects = []
-        for o in self._objects:
-            if f(o.obj):
-                o.grid(column=0, row=row, sticky="nsew")
-                o.style("Even" if row % 2 == 0 else "Odd")
-                row += 1
-                self._filtered_objects.append(o)
-            else:
-                o.grid_forget()
+        new_filtered: list[ObjectRow] = []
+        for row in self._objects:
+            if f(row.obj):
+                new_filtered.append(row)
 
-        if row == 0:
+        # nothing changed, so avoid expensive Tk updates.
+        if new_filtered == self._filtered_objects:
+            return
+
+        new_set = set(new_filtered)
+        old_set = set(self._filtered_objects)
+
+        # Hide rows that are no longer visible.
+        for row in old_set - new_set:
+            row.hide()
+
+        # Show and (re)position rows that are visible.
+        for i, row in enumerate(new_filtered):
+            row.show(i)
+            style = "Even" if i % 2 == 0 else "Odd"
+            if row._style_name != style:
+                row.style(style)
+
+        self._filtered_objects = new_filtered
+
+        if len(new_filtered) == 0:
             self.configure(height=1)
 
         self.filtered.trigger()
@@ -780,28 +818,43 @@ class FilterEntry(ltk.Entry):
     Regex filter on a given ObjectList.
     """
 
+    FILTER_DEBOUNCE_MS = 150
+
     def __init__(self, parent: ttk.Widget, object_list: ObjectList, *args, **kwargs):
         super().__init__(parent, hint="enter regex filter", *args, **kwargs)
         self._object_list = object_list
+        self._filter_job: str | None = None
         self._var.trace_add("write", self._on_change)
 
     def _on_change(self, *args):
         text = self.text
 
-        if text == "":
-            self._object_list.filter(None)
-        else:
+        if self._filter_job is not None:
             try:
-                regex = re.compile(text, re.IGNORECASE)
-                self["foreground"] = "black"
-            except re.error:
-                self["foreground"] = "red"
-                return
+                self.after_cancel(self._filter_job)
+            except BaseException:
+                pass
+            self._filter_job = None
 
-            def f(o: laio_zmq.Object) -> bool:
-                return regex.search(o.name) is not None
+        try:
+            regex = re.compile(text, re.IGNORECASE)
+            self["foreground"] = "black"
+        except re.error:
+            self["foreground"] = "red"
+            return
 
-            self._object_list.filter(f)
+        def f(o: laio_zmq.Object, _regex=regex) -> bool:
+            return _regex.search(o.name) is not None
+
+        self._filter_job = self.after(self.FILTER_DEBOUNCE_MS, lambda: self._object_list.filter(f))
+
+    def destroy(self):
+        if self._filter_job is not None:
+            try:
+                self.after_cancel(self._filter_job)
+            except BaseException:
+                pass
+            self._filter_job = None
 
 
 class Tools(laio_tk.Work, ttk.Frame):
