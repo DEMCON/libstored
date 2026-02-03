@@ -1394,7 +1394,7 @@ void Crc8Layer::decode(void* buffer, size_t len)
 	uint8_t* buffer_ = static_cast<uint8_t*>(buffer);
 	uint8_t crc = init;
 	for(size_t i = 0; i < len - 1; i++)
-		crc = compute(crc, buffer_[i]);
+		crc = compute(buffer_[i], crc);
 
 	if(crc != buffer_[len - 1])
 		// Invalid.
@@ -1407,7 +1407,7 @@ void Crc8Layer::encode(void const* buffer, size_t len, bool last)
 {
 	uint8_t const* buffer_ = static_cast<uint8_t const*>(buffer);
 	for(size_t i = 0; i < len; i++)
-		m_crc = compute(m_crc, buffer_[i]);
+		m_crc = compute(buffer_[i], m_crc);
 
 	base::encode(buffer, len, false);
 
