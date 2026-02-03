@@ -79,6 +79,9 @@ IncludeCategories:
   - Regex:           '^["<]libstored/'
     Priority:        1
     SortPriority:    0
+  - Regex:           '^<(cassert|assert\.h)>$'
+    Priority:        3
+    SortPriority:    0
   - Regex:           '.*'
     Priority:        2
     SortPriority:    0
