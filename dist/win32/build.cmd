@@ -1,6 +1,6 @@
 @echo off
 
-rem SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
+rem SPDX-FileCopyrightText: 2020-2026 Jochem Rutgers
 rem
 rem SPDX-License-Identifier: MPL-2.0
 
@@ -83,6 +83,10 @@ if %1 == C++17 (
 )
 if %1 == C++20 (
 	set cmake_opts=%cmake_opts% -DCMAKE_CXX_STANDARD=20 -DCMAKE_C_STANDARD=11
+	goto next_param
+)
+if %1 == C++23 (
+	set cmake_opts=%cmake_opts% -DCMAKE_CXX_STANDARD=23 -DCMAKE_C_STANDARD=11
 	goto next_param
 )
 if %1 == conf (
@@ -229,10 +233,10 @@ exit /b 0
 echo Usage: %0 [^<opt^>...] [--] [^<other cmake arguments^>]
 echo.
 echo where opt is:
-echo   Debug         RelWithDebInfo Release
+echo   Debug RelWithDebInfo Release
 echo                 Set CMAKE_BUILD_TYPE to this value
 echo   gcc           Use gcc instead of default compiler
-echo   C++98         C++03 C++11 C++14 C++17 C++20
+echo   C++98 C++03 C++11 C++14 C++17 C++20 C++23
 echo                 Set the C++ standard
 echo   conf          Configure only, don't build
 echo   dev           Enable development-related options
