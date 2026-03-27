@@ -44,6 +44,7 @@ Fixed
 - ``ZmqClient`` assertion during cleanup
 - ``AsyncioWorker`` coro scheduling from MainThread asyncio loop.
 - Fix stopping fast poll in ``ZmqClient`` when all objects are stopped polling.
+- ``libstored.gui`` performance on Windows.
 
 .. _2.2.0: https://github.com/DEMCON/libstored/releases/tag/v2.2.0
 
