@@ -1193,8 +1193,8 @@ class GUIClient(laio_tk.AsyncApp):
 
         self.root.title(f"libstored GUI")
         icon_path = os.path.join(os.path.dirname(__file__), "twotone_bug_report_black_48dp.png")
-        icon = tk.PhotoImage(file=icon_path)
-        self.root.iconphoto(False, icon)
+        self._icon = tk.PhotoImage(file=icon_path)
+        self.root.iconphoto(False, self._icon)
 
         global plotter
         if Plotter.available and plotter is None:
