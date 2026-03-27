@@ -3045,7 +3045,7 @@ class ZmqClient(Work):
                 await self._fast_poll_macro.remove(o)
                 await self.alias(o, temporary=True, permanentRef=self._fast_poll_macro)
 
-                if len(self._fast_poll_macro) == 0:
+                if len(self._fast_poll_macro) <= 1: # time is always included, so check for <= 1
                     await self._poll_fast_stop()
 
             # Stop trace, if any

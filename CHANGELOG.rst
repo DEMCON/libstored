@@ -42,7 +42,8 @@ Fixed
 `````
 
 - ``ZmqClient`` assertion during cleanup
-- AsyncWorker coro scheduling from MainThread asyncio loop.
+- ``AsyncioWorker`` coro scheduling from MainThread asyncio loop.
+- Fix stopping fast poll in ``ZmqClient`` when all objects are stopped polling.
 
 .. _2.2.0: https://github.com/DEMCON/libstored/releases/tag/v2.2.0
 
