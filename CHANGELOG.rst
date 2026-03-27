@@ -1,7 +1,7 @@
 ﻿
 
 ..
-   SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
+   SPDX-FileCopyrightText: 2020-2026 Jochem Rutgers
    
    SPDX-License-Identifier: CC0-1.0
 
@@ -24,14 +24,27 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 Added
 `````
 
+...
+
+.. _Unreleased: https://github.com/DEMCON/libstored/compare/v2.2.0...HEAD
+
+
+
+`2.2.0`_ - 2026-03-28
+---------------------
+
+Added
+`````
+
 - ``libstored.protocol.ArqLayer`` for general-purpose ARQ.
 
 Fixed
 `````
 
 - ``ZmqClient`` assertion during cleanup
+- AsyncWorker coro scheduling from MainThread asyncio loop.
 
-.. _Unreleased: https://github.com/DEMCON/libstored/compare/v2.1.0...HEAD
+.. _2.2.0: https://github.com/DEMCON/libstored/releases/tag/v2.2.0
 
 
 

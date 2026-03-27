@@ -335,7 +335,29 @@ def run_sync(f: typing.Callable) -> typing.Callable:
             sync is None or (loop is None) == sync or not block
         ), "sync argument contradicts current context"
 
-        if loop is not None and not sync:
+        w = None
+        logger = None
+        if isinstance(self, Work):
+            logger = self.logger
+            w = self.worker
+            if loop is not w.loop:
+                logger.debug("Running %s in worker %s", f.__qualname__, str(w))
+            else:
+                logger.debug("Running %s in current worker", f.__qualname__)
+        else:
+            if hasattr(self, "logger"):
+                logger = self.logger
+                logger.debug("Running %s in default worker", f.__qualname__)
+            global default_worker
+            w = default_worker
+
+        if w is None or not w.is_running():
+            if hasattr(self, "logger"):
+                logger = self.logger
+                logger.debug("No worker running, creating new one")
+            w = AsyncioWorker()
+
+        if loop is not None and not sync and loop is w.loop:
             # We are in an event loop, just start the coro.
             coro = f(*args, **kwargs)
             if block:
@@ -343,26 +365,7 @@ def run_sync(f: typing.Callable) -> typing.Callable:
             else:
                 return asyncio.ensure_future(coro)
         else:
-            # We are not in an event loop, run the coro in the (default) worker.
-            w = None
-            logger = None
-            if isinstance(self, Work):
-                logger = self.logger
-                logger.debug("Running %s in worker %s", f.__qualname__, str(self.worker))
-                w = self.worker
-            else:
-                if hasattr(self, "logger"):
-                    logger = self.logger
-                    logger.debug("Running %s in default worker", f.__qualname__)
-                global default_worker
-                w = default_worker
-
-            if w is None or not w.is_running():
-                if hasattr(self, "logger"):
-                    logger = self.logger
-                    logger.debug("No worker running, creating new one")
-                w = AsyncioWorker()
-
+            # We are not in the (proper) event loop, run the coro in the (default) worker.
             future = w.execute(f(*args, **kwargs))
             if block:
                 return lexc.DeadlockChecker(future).result()
