@@ -17,5 +17,5 @@ breathe
 sphinxcontrib-wavedrom
 
 # Other
-reuse
+reuse >= 6.0.0
 cmake_format
