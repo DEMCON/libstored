@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2020-2026 Jochem Rutgers
+#
+# SPDX-License-Identifier: CC0-1.0
+
+version = 1
+
+[[annotations]]
+path = "extern/material.io/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Google"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "presentation/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2020-2026 Jochem Rutgers"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+[[annotations]]
+path = ".vscode/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2020-2026 Jochem Rutgers"
+SPDX-License-Identifier = "CC0-1.0"
