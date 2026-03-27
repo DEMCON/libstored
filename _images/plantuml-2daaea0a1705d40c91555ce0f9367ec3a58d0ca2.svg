@@ -75,7 +75,7 @@ reverse link PolledSocketLayer to ZmqBaseLayer--><path d="M1519.5,419.17 C1519.5
 reverse link ZmqBaseLayer to DebugZmqLayer--><path d="M1519.5,544.58 C1519.5,558.36 1519.5,573.06 1519.5,584.83 " fill="none" id="ZmqBaseLayer&lt;-DebugZmqLayer" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="none" points="1512.5,544.22,1519.5,524.22,1526.5,544.22,1512.5,544.22" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[f3be6fa14864eb0470617cb083fa250b]
 reverse link ZmqBaseLayer to SyncZmqLayer--><path d="M1571.92,535.41 C1596.53,551.56 1625.21,570.39 1647.2,584.83 " fill="none" id="ZmqBaseLayer&lt;-SyncZmqLayer" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="none" points="1567.75,541.04,1554.87,524.22,1575.43,529.34,1567.75,541.04" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[25f3531d70a20d4322aef2d41adb0dca]
 reverse link ZmqBaseLayer to ZmqLayer--><path d="M1470.6,536.12 C1448.32,552.11 1422.57,570.61 1402.77,584.83 " fill="none" id="ZmqBaseLayer&lt;-ZmqLayer" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="none" points="1466.84,530.2,1487.17,524.22,1475.01,541.57,1466.84,530.2" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[c23d2073af3fbcc52aedb24cc76e3fdd]
-link FifoLoopback to FifoLoopback1--><path d="M1829.37,165.22 C1829.98,181.48 1830.79,203.32 1831.44,220.62 " fill="none" id="FifoLoopback-&gt;FifoLoopback1" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="1831.63,225.83,1835.2932,216.6877,1831.4444,220.8334,1827.2987,216.9847,1831.63,225.83" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[026158ac66e941ea9ed33d3f0192fc42]
+link FifoLoopback to FifoLoopback1--><path d="M1829.37,165.22 C1829.98,181.48 1830.79,203.32 1831.44,220.62 " fill="none" id="FifoLoopback-&gt;FifoLoopback1" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="1831.63,225.83,1835.2932,216.6877,1831.4444,220.8334,1827.2987,216.9847,1831.63,225.83" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[19c6ca3578c840b991110600092b7048]
 @startuml
 abstract ProtocolLayer
 ProtocolLayer <|- - AsciiEscapeLayer
@@ -138,7 +138,7 @@ PlantUML version 1.2020.02(Sun Mar 01 10:22:07 UTC 2020)
 (GPL source distribution)
 Java Runtime: OpenJDK Runtime Environment
 JVM: OpenJDK 64-Bit Server VM
-Java Version: 17.0.17+10
+Java Version: 17.0.18+8
 Operating System: Linux
 Default Encoding: UTF-8
 Language: en

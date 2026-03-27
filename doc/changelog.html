@@ -6,16 +6,16 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CHANGELOG &mdash; libstored 2.2.0-alpha documentation</title>
+  <title>CHANGELOG &mdash; libstored 2.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=2c664663"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/documentation_options.js?v=b21de401"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -48,78 +48,82 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">CHANGELOG</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#unreleased">Unreleased</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#added">Added</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">2.2.0 - 2026-03-27</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Added</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#fixed">Fixed</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">2.1.0 - 2025-12-05</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id3">Added</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">2.1.0 - 2025-12-05</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Added</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#changed">Changed</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">Fixed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Fixed</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id6">2.0.0 - 2025-11-22</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id7">Added</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id8">Changed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">2.0.0 - 2025-11-22</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Changed</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#removed">Removed</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id10">1.8.0 - 2025-09-11</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id11">Added</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id12">Changed</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id13">Fixed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id13">1.8.0 - 2025-09-11</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id14">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">Changed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">Fixed</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id15">1.7.1 - 2024-02-28</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id16">Added</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id17">Changed</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id18">Fixed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id18">1.7.1 - 2024-02-28</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id19">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id20">Changed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id21">Fixed</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id20">1.7.0 - 2023-11-17</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id21">Added</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id22">Changed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id23">1.7.0 - 2023-11-17</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id24">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id25">Changed</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id24">1.6.0 - 2023-09-13</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id25">Added</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id26">Changed</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id27">Fixed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id27">1.6.0 - 2023-09-13</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id28">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id29">Changed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id30">Fixed</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id29">1.5.0 - 2023-07-07</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id30">Added</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id31">Changed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id32">1.5.0 - 2023-07-07</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id33">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id34">Changed</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id33">1.4.0 - 2023-04-06</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id34">Added</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id35">Fixed</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#id37">1.3.1 - 2022-10-21</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id36">1.4.0 - 2023-04-06</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id37">Added</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id38">Fixed</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id41">1.3.0 - 2022-10-20</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id42">Added</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id43">Changed</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id44">Fixed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id40">1.3.1 - 2022-10-21</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id41">Fixed</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id46">1.2.0 - 2022-03-28</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id47">Added</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id48">Changed</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id49">Fixed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id44">1.3.0 - 2022-10-20</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id45">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id46">Changed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id47">Fixed</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id51">1.1.0 - 2022-01-07</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id52">Added</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id53">Changed</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id54">Removed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id49">1.2.0 - 2022-03-28</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id50">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id51">Changed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id52">Fixed</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id56">1.0.0 - 2021-08-25</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id57">Added</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id54">1.1.0 - 2022-01-07</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id55">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id56">Changed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id57">Removed</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id59">1.0.0 - 2021-08-25</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id60">Added</a></li>
 </ul>
 </li>
 </ul>
@@ -162,9 +166,16 @@
 <p>The format is based on <a class="reference external" href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>, and this project adheres to
 <a class="reference external" href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <section id="unreleased">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/compare/v2.1.0...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Link to this heading"></a></h2>
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/compare/v2.2.0...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Link to this heading"></a></h2>
 <section id="added">
 <h3>Added<a class="headerlink" href="#added" title="Link to this heading"></a></h3>
+<p>…</p>
+</section>
+</section>
+<section id="id2">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v2.2.0">2.2.0</a> - 2026-03-27<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id3">
+<h3>Added<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">libstored.protocol.ArqLayer</span></code> for general-purpose ARQ.</p></li>
 </ul>
@@ -173,13 +184,16 @@
 <h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">ZmqClient</span></code> assertion during cleanup</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AsyncioWorker</span></code> coro scheduling from MainThread asyncio loop.</p></li>
+<li><p>Fix stopping fast poll in <code class="docutils literal notranslate"><span class="pre">ZmqClient</span></code> when all objects are stopped polling.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libstored.gui</span></code> performance on Windows.</p></li>
 </ul>
 </section>
 </section>
-<section id="id2">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v2.1.0">2.1.0</a> - 2025-12-05<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
-<section id="id3">
-<h3>Added<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<section id="id5">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v2.1.0">2.1.0</a> - 2025-12-05<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<section id="id6">
+<h3>Added<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Operations such as <code class="docutils literal notranslate"><span class="pre">-=</span></code> and <code class="docutils literal notranslate"><span class="pre">++</span></code> for store variables in C++.</p></li>
 <li><p>YAML export of store meta-data.</p></li>
@@ -200,17 +214,17 @@ on <code class="docutils literal notranslate"><span class="pre">keepAlive()</spa
 <li><p>Improve reconnection behavior on protocol layers.</p></li>
 </ul>
 </section>
-<section id="id4">
-<h3>Fixed<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<section id="id7">
+<h3>Fixed<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Init value of CRC32 in Python <code class="docutils literal notranslate"><span class="pre">libstored.protocol.Crc32Layer</span></code>.</p></li>
 </ul>
 </section>
 </section>
-<section id="id6">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v2.0.0">2.0.0</a> - 2025-11-22<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
-<section id="id7">
-<h3>Added<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<section id="id9">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v2.0.0">2.0.0</a> - 2025-11-22<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<section id="id10">
+<h3>Added<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">stored::Crc32Layer</span></code> and <code class="docutils literal notranslate"><span class="pre">libstored.protocol.Crc32Layer</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">libstored.protocol.MuxLayer</span></code> (Python only)</p></li>
@@ -220,8 +234,8 @@ separate thread, with support to easily communicate with the tkinter main loop.<
 <li><p>Python type hints.</p></li>
 </ul>
 </section>
-<section id="id8">
-<h3>Changed<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<section id="id11">
+<h3>Changed<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Components API is not draft anymore.</p></li>
 <li><p>Reimplemented Python modules to use asyncio instead.
@@ -238,26 +252,26 @@ This breaks the Python API.</p></li>
 </ul>
 </section>
 </section>
-<section id="id10">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.8.0">1.8.0</a> - 2025-09-11<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
-<section id="id11">
-<h3>Added<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<section id="id13">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.8.0">1.8.0</a> - 2025-09-11<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<section id="id14">
+<h3>Added<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Implement <code class="docutils literal notranslate"><span class="pre">ArqLayer</span></code> in VHDL.</p></li>
 <li><p>Added connected event to all protocol layers.</p></li>
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">Fifo::view()</span></code> for read-only iterable view on available data elements.</p></li>
 </ul>
 </section>
-<section id="id12">
-<h3>Changed<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<section id="id15">
+<h3>Changed<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">examples/9_fpga</span></code> now implements a full protocol stack over a potentially
 lossy channel.</p></li>
 <li><p>Improved handling reconnection of protocol layers.</p></li>
 </ul>
 </section>
-<section id="id13">
-<h3>Fixed<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<section id="id16">
+<h3>Fixed<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">ZMQ_DEALER</span></code> instead of <code class="docutils literal notranslate"><span class="pre">ZMQ_PAIR</span></code> for <code class="docutils literal notranslate"><span class="pre">SyncZmqLayer</span></code> to fix
 stability issues over IPC and other possibly non-stable connections.</p></li>
@@ -265,66 +279,66 @@ stability issues over IPC and other possibly non-stable connections.</p></li>
 </ul>
 </section>
 </section>
-<section id="id15">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.7.1">1.7.1</a> - 2024-02-28<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
-<section id="id16">
-<h3>Added<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<section id="id18">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.7.1">1.7.1</a> - 2024-02-28<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
+<section id="id19">
+<h3>Added<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Implement <code class="docutils literal notranslate"><span class="pre">NamedPipeLayer</span></code> and <code class="docutils literal notranslate"><span class="pre">DoublePipeLayer</span></code> for Linux.</p></li>
 <li><p>Allow running <code class="docutils literal notranslate"><span class="pre">examples/9_fpga</span></code> on Linux.</p></li>
 <li><p>CRC8, CRC16, Segmentation protocol layers in VHDL. ArqLayer is still missing.</p></li>
 </ul>
 </section>
-<section id="id17">
-<h3>Changed<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<section id="id20">
+<h3>Changed<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Brake dependency on <code class="docutils literal notranslate"><span class="pre">heatshrink2</span></code> Python package by providing a pure-python
 heatshrink decoder.</p></li>
 <li><p>Bump ZeroMQ to 4.3.5 when building from source, fixing GCC 13 support.</p></li>
 </ul>
 </section>
-<section id="id18">
-<h3>Fixed<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
+<section id="id21">
+<h3>Fixed<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Workaround for segfault in XSIM.</p></li>
 </ul>
 </section>
 </section>
-<section id="id20">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.7.0">1.7.0</a> - 2023-11-17<a class="headerlink" href="#id20" title="Link to this heading"></a></h2>
-<section id="id21">
-<h3>Added<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
+<section id="id23">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.7.0">1.7.0</a> - 2023-11-17<a class="headerlink" href="#id23" title="Link to this heading"></a></h2>
+<section id="id24">
+<h3>Added<a class="headerlink" href="#id24" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Produce SBOM for generated store libraries.</p></li>
 </ul>
 </section>
-<section id="id22">
-<h3>Changed<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<section id="id25">
+<h3>Changed<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Make libstored REUSE compliant.</p></li>
 </ul>
 </section>
 </section>
-<section id="id24">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.6.0">1.6.0</a> - 2023-09-13<a class="headerlink" href="#id24" title="Link to this heading"></a></h2>
-<section id="id25">
-<h3>Added<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
+<section id="id27">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.6.0">1.6.0</a> - 2023-09-13<a class="headerlink" href="#id27" title="Link to this heading"></a></h2>
+<section id="id28">
+<h3>Added<a class="headerlink" href="#id28" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">libstored.cmake</span></code>, with generator to pylibstored. Instead of cloning the
 libstored repo, running <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">libstored</span></code> contains everything to
 generate a store. See also <code class="docutils literal notranslate"><span class="pre">examples/int_pip</span></code>.</p></li>
 </ul>
 </section>
-<section id="id26">
-<h3>Changed<a class="headerlink" href="#id26" title="Link to this heading"></a></h3>
+<section id="id29">
+<h3>Changed<a class="headerlink" href="#id29" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>ASan checks on the correct usage of entry/exit RO/X of stores.</p></li>
 <li><p>Improved Synchronizer performance.</p></li>
 <li><p>Made buffer size configurable for FileLayer and StdioLayer.</p></li>
 </ul>
 </section>
-<section id="id27">
-<h3>Fixed<a class="headerlink" href="#id27" title="Link to this heading"></a></h3>
+<section id="id30">
+<h3>Fixed<a class="headerlink" href="#id30" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Fix baud rate setting and break generation in stored::SerialLayer for Linux.</p></li>
 <li><p>Fix encode queue size computation of stored::ArqLayer.</p></li>
@@ -333,17 +347,17 @@ messages.</p></li>
 </ul>
 </section>
 </section>
-<section id="id29">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.5.0">1.5.0</a> - 2023-07-07<a class="headerlink" href="#id29" title="Link to this heading"></a></h2>
-<section id="id30">
-<h3>Added<a class="headerlink" href="#id30" title="Link to this heading"></a></h3>
+<section id="id32">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.5.0">1.5.0</a> - 2023-07-07<a class="headerlink" href="#id32" title="Link to this heading"></a></h2>
+<section id="id33">
+<h3>Added<a class="headerlink" href="#id33" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Python <code class="docutils literal notranslate"><span class="pre">libstored.log</span></code> command line logging tool to easily generate a CSV
 file with samples.</p></li>
 </ul>
 </section>
-<section id="id31">
-<h3>Changed<a class="headerlink" href="#id31" title="Link to this heading"></a></h3>
+<section id="id34">
+<h3>Changed<a class="headerlink" href="#id34" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Get a compile error when a store class does provide the implementation of all
 functions, and provide a store wrapper to add default function
@@ -354,10 +368,10 @@ implementations.</p></li>
 </ul>
 </section>
 </section>
-<section id="id33">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.4.0">1.4.0</a> - 2023-04-06<a class="headerlink" href="#id33" title="Link to this heading"></a></h2>
-<section id="id34">
-<h3>Added<a class="headerlink" href="#id34" title="Link to this heading"></a></h3>
+<section id="id36">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.4.0">1.4.0</a> - 2023-04-06<a class="headerlink" href="#id36" title="Link to this heading"></a></h2>
+<section id="id37">
+<h3>Added<a class="headerlink" href="#id37" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>First-order high-pass filter.</p></li>
 <li><p>Pipes, to process data using functional composition.</p></li>
@@ -365,18 +379,18 @@ implementations.</p></li>
 signal is triggered (or a store variable is changed).</p></li>
 </ul>
 </section>
-<section id="id35">
-<h3>Fixed<a class="headerlink" href="#id35" title="Link to this heading"></a></h3>
+<section id="id38">
+<h3>Fixed<a class="headerlink" href="#id38" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Properly calling hooks by the Synchronizer.</p></li>
 <li><p>Minor issues with pylibstored.</p></li>
 </ul>
 </section>
 </section>
-<section id="id37">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.3.1">1.3.1</a> - 2022-10-21<a class="headerlink" href="#id37" title="Link to this heading"></a></h2>
-<section id="id38">
-<h3>Fixed<a class="headerlink" href="#id38" title="Link to this heading"></a></h3>
+<section id="id40">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.3.1">1.3.1</a> - 2022-10-21<a class="headerlink" href="#id40" title="Link to this heading"></a></h2>
+<section id="id41">
+<h3>Fixed<a class="headerlink" href="#id41" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>PySide6 6.4.0 support in changed <code class="docutils literal notranslate"><span class="pre">enum</span></code> handling. However, the same issue
 exists in matplotlib (issue <a class="reference external" href="https://github.com/matplotlib/matplotlib/issues/24155">#24155</a>).  To get plotting working again,
@@ -384,23 +398,23 @@ matplotlib&gt;=3.6.2 or PySide6&lt;6.4.0 is required.</p></li>
 </ul>
 </section>
 </section>
-<section id="id41">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.3.0">1.3.0</a> - 2022-10-20<a class="headerlink" href="#id41" title="Link to this heading"></a></h2>
-<section id="id42">
-<h3>Added<a class="headerlink" href="#id42" title="Link to this heading"></a></h3>
+<section id="id44">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.3.0">1.3.0</a> - 2022-10-20<a class="headerlink" href="#id44" title="Link to this heading"></a></h2>
+<section id="id45">
+<h3>Added<a class="headerlink" href="#id45" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Maximum error for PID.</p></li>
 <li><p>Stream visualization in the Embedded Debugger.</p></li>
 </ul>
 </section>
-<section id="id43">
-<h3>Changed<a class="headerlink" href="#id43" title="Link to this heading"></a></h3>
+<section id="id46">
+<h3>Changed<a class="headerlink" href="#id46" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Switch license to MPLv2.</p></li>
 </ul>
 </section>
-<section id="id44">
-<h3>Fixed<a class="headerlink" href="#id44" title="Link to this heading"></a></h3>
+<section id="id47">
+<h3>Fixed<a class="headerlink" href="#id47" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Fix in computing <code class="docutils literal notranslate"><span class="pre">stored::Ramp</span></code> acceleration and speed.</p></li>
 <li><p>Fix in compressed Debugger streams upon internal buffer overflow.</p></li>
@@ -408,10 +422,10 @@ matplotlib&gt;=3.6.2 or PySide6&lt;6.4.0 is required.</p></li>
 </ul>
 </section>
 </section>
-<section id="id46">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.2.0">1.2.0</a> - 2022-03-28<a class="headerlink" href="#id46" title="Link to this heading"></a></h2>
-<section id="id47">
-<h3>Added<a class="headerlink" href="#id47" title="Link to this heading"></a></h3>
+<section id="id49">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.2.0">1.2.0</a> - 2022-03-28<a class="headerlink" href="#id49" title="Link to this heading"></a></h2>
+<section id="id50">
+<h3>Added<a class="headerlink" href="#id50" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Add QObject/QML wrapper for stores to access a store directly in QML.</p></li>
 <li><p>Generate store variable changed callbacks.</p></li>
@@ -419,14 +433,14 @@ matplotlib&gt;=3.6.2 or PySide6&lt;6.4.0 is required.</p></li>
 <li><p>Generate store meta data in <code class="docutils literal notranslate"><span class="pre">doc/&lt;store&gt;Meta.py</span></code></p></li>
 </ul>
 </section>
-<section id="id48">
-<h3>Changed<a class="headerlink" href="#id48" title="Link to this heading"></a></h3>
+<section id="id51">
+<h3>Changed<a class="headerlink" href="#id51" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Replaced <code class="docutils literal notranslate"><span class="pre">UNUSED_PAR</span></code> by a more portable <code class="docutils literal notranslate"><span class="pre">UNUSED</span></code> macro.</p></li>
 </ul>
 </section>
-<section id="id49">
-<h3>Fixed<a class="headerlink" href="#id49" title="Link to this heading"></a></h3>
+<section id="id52">
+<h3>Fixed<a class="headerlink" href="#id52" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Improved QtCreator integration, such as store code-completion</p></li>
 <li><p>Fix support for disabling RTTI</p></li>
@@ -434,17 +448,17 @@ matplotlib&gt;=3.6.2 or PySide6&lt;6.4.0 is required.</p></li>
 </ul>
 </section>
 </section>
-<section id="id51">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.1.0">1.1.0</a> - 2022-01-07<a class="headerlink" href="#id51" title="Link to this heading"></a></h2>
-<section id="id52">
-<h3>Added<a class="headerlink" href="#id52" title="Link to this heading"></a></h3>
+<section id="id54">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.1.0">1.1.0</a> - 2022-01-07<a class="headerlink" href="#id54" title="Link to this heading"></a></h2>
+<section id="id55">
+<h3>Added<a class="headerlink" href="#id55" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Add support for ninja, and default to it in build scripts.</p></li>
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> for plotting signals by <code class="docutils literal notranslate"><span class="pre">libstored.gui</span></code>.</p></li>
 </ul>
 </section>
-<section id="id53">
-<h3>Changed<a class="headerlink" href="#id53" title="Link to this heading"></a></h3>
+<section id="id56">
+<h3>Changed<a class="headerlink" href="#id56" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Migrate pylibstored from PySide2 to PySide6.</p></li>
 <li><p>Restructure <code class="docutils literal notranslate"><span class="pre">scripts</span></code> directory into <code class="docutils literal notranslate"><span class="pre">dist</span></code>.</p></li>
@@ -454,18 +468,18 @@ parameters, but old (positional) interface is still supported.</p></li>
 <li><p>Improve <a class="reference external" href="https://github.com/jhrutgers/zth">Zth</a> integration for fiber-aware polling.</p></li>
 </ul>
 </section>
-<section id="id54">
-<h3>Removed<a class="headerlink" href="#id54" title="Link to this heading"></a></h3>
+<section id="id57">
+<h3>Removed<a class="headerlink" href="#id57" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Drop Ubuntu 18.04 support. PySide6 requires Ubuntu 20.04 or later.</p></li>
 </ul>
 </section>
 </section>
-<section id="id56">
-<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.0.0">1.0.0</a> - 2021-08-25<a class="headerlink" href="#id56" title="Link to this heading"></a></h2>
+<section id="id59">
+<h2><a class="reference external" href="https://github.com/DEMCON/libstored/releases/tag/v1.0.0">1.0.0</a> - 2021-08-25<a class="headerlink" href="#id59" title="Link to this heading"></a></h2>
 <p>Initial version.</p>
-<section id="id57">
-<h3>Added<a class="headerlink" href="#id57" title="Link to this heading"></a></h3>
+<section id="id60">
+<h3>Added<a class="headerlink" href="#id60" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Store generator for C++ and VHDL</p></li>
 <li><p>C++ library to access the store in your application</p></li>
