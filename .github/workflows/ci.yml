@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2026 Jochem Rutgers
 #
 # SPDX-License-Identifier: CC0-1.0
 
@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         gcc: [12, 13, 14]
-        cxx: [C++03, C++11, C++14, C++17]
+        cxx: [C++03, C++11, C++14, C++17, C++20, C++23]
         zmq: [zmq, nozmq]
         include:
           - gcc: 13
@@ -68,7 +68,7 @@ jobs:
       fail-fast: false
       matrix:
         compiler: [msvc, gcc]
-        cxx: [C++03, C++11, C++14, C++17]
+        cxx: [C++03, C++11, C++14, C++17, C++20, C++23]
         zmq: [zmq, nozmq]
         exclude:
           - compiler: msvc

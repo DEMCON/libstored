@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2026 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -18,9 +18,9 @@ trap gotErr ERR
 function show_help {
 	echo -e "Usage: $0 [<opt>...] [--] [<other cmake arguments>]\n"
 	echo "where opt is:"
-	echo "  Debug         RelWithDebInfo Release"
+	echo "  Debug RelWithDebInfo Release"
 	echo "                Set CMAKE_BUILD_TYPE to this value"
-	echo "  C++98         C++03 C++11 C++14 C++17 C++20"
+	echo "  C++98 C++03 C++11 C++14 C++17 C++20 C++23"
 	echo "                Set the C++ standard"
 	echo "  conf          Configure only, don't build"
 	echo "  dev           Enable development-related options"
@@ -77,6 +77,8 @@ while [[ ! -z ${1:-} ]]; do
 			cmake_opts="${cmake_opts} -DCMAKE_CXX_STANDARD=17 -DCMAKE_C_STANDARD=11";;
 		C++20)
 			cmake_opts="${cmake_opts} -DCMAKE_CXX_STANDARD=20 -DCMAKE_C_STANDARD=11";;
+		C++23)
+			cmake_opts="${cmake_opts} -DCMAKE_CXX_STANDARD=23 -DCMAKE_C_STANDARD=11";;
 		conf)
 			do_build=0;;
 		dev)
