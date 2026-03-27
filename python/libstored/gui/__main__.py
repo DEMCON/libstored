@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2026 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -29,7 +29,6 @@ from ..asyncio import csv as laio_csv
 from .. import tk as ltk
 from .. import exceptions as lexc
 from .. import protocol as lprot
-
 
 #####################################################################
 # Style
@@ -694,6 +693,7 @@ class ObjectList(ttk.Frame):
         for o in self._objects:
             o.destroy()
         self._objects = []
+        self._filtered_objects = []
 
         for o in natsort.natsorted(objects, key=lambda o: o.name, alg=natsort.ns.IGNORECASE):
             object_row = ObjectRow(self._app, self, o, show_plot=self._show_plot)
@@ -1337,6 +1337,8 @@ class GUIClient(laio_tk.AsyncApp):
             plotter = None
 
         self.disconnect_all()
+        self._objects.set_objects([])
+        self._polled_objects.set_objects([])
         self.logger.debug("Close client")
         self._close_async()
         super().cleanup()
