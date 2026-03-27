@@ -292,6 +292,16 @@ if(LIBSTORED_HAVE_LIBZMQ
 	)
 endif()
 
+if(LIBSTORED_PYLIBSTORED)
+	add_test(NAME test_async
+		 COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/../python
+			 ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_async.py
+	)
+
+	set_tests_properties(test_async PROPERTIES TIMEOUT 60)
+	add_launch_json_py(test_async ${CMAKE_CURRENT_SOURCE_DIR}/test_async.py)
+endif()
+
 if(VIVADO_CMD)
 	if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test_fpga/vivado/test_fpga/test_fpga.xpr)
 		execute_process(
