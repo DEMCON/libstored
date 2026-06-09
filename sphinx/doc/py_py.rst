@@ -28,6 +28,8 @@ Protocol layers
 
 .. autoclass:: libstored.protocol.AsciiEscapeLayer
 
+.. autoclass:: libstored.protocol.CobsLayer
+
 .. autoclass:: libstored.protocol.Crc16Layer
 
 .. autoclass:: libstored.protocol.Crc32Layer

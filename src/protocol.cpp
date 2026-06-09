@@ -193,8 +193,6 @@ uint8_t const CobsLayer::Delimiter;
 
 CobsLayer::CobsLayer(ProtocolLayer* up, ProtocolLayer* down)
 	: base(up, down)
-	, m_encodeChunk()
-	, m_decodeBuffer()
 	, m_decodeExpected(0U)
 	, m_decodeState(DecodeStateIdle)
 	, m_encodeState(EncodeStateIdle)
@@ -313,7 +311,7 @@ size_t CobsLayer::mtu() const
 	if(mtu == 0U)
 		return 0U;
 	if(mtu <= 2U)
-		return 0U;
+		return 1U;
 
 	// Inverse of encoded_len = n + floor(n / 254) + 2 (COBS overhead + delimiter).
 	size_t const q = (mtu - 2U) / 255U;

@@ -303,6 +303,126 @@ class AsciiEscapeLayer(ProtocolLayer):
         return max(1, int(m / 2))
 
 
+class CobsLayer(ProtocolLayer):
+    """
+    Layer that encodes/decodes Consistent Overhead Byte Stuffing (COBS).
+
+    Frames are terminated by a zero byte delimiter. Decoding accepts arbitrary
+    chunks and keeps state until a full frame is received.
+    """
+
+    name = "cobs"
+    delimiter = 0
+    encode_chunk_size = 254
+
+    _state_idle = 0
+    _state_invalid = 1
+    _state_next = 2
+    _state_decode = 3
+    _state_decode_need_zero = 4
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._decode_buffer = bytearray()
+        self._decode_expected = 0
+        self._decode_pending_zero = False
+        self._decode_state = self._state_idle
+
+    def _decode_reset(self) -> None:
+        self._decode_buffer.clear()
+        self._decode_expected = 0
+        self._decode_pending_zero = False
+        self._decode_state = self._state_idle
+
+    async def decode(self, data: ProtocolLayer.Packet) -> None:
+        if isinstance(data, str):
+            data = data.encode()
+        elif isinstance(data, memoryview):
+            data = data.cast("B")
+
+        for b in data:
+            if b == self.delimiter:
+                if self._decode_state == self._state_next:
+                    await super().decode(self._decode_buffer)
+
+                self._decode_reset()
+                continue
+
+            if self._decode_state in (self._state_idle, self._state_next):
+                if self._decode_pending_zero:
+                    self._decode_buffer.append(0)
+                    self._decode_pending_zero = False
+
+                self._decode_expected = b - 1
+                self._decode_state = (
+                    self._state_decode if b == 0xFF else self._state_decode_need_zero
+                )
+            elif self._decode_state in (self._state_decode, self._state_decode_need_zero):
+                self._decode_buffer.append(b)
+                self._decode_expected -= 1
+            elif self._decode_state == self._state_invalid:
+                continue
+
+            if self._decode_expected == 0:
+                if self._decode_state == self._state_decode_need_zero:
+                    self._decode_pending_zero = True
+
+                self._decode_state = self._state_next
+
+    async def encode(self, data: ProtocolLayer.Packet) -> None:
+        if isinstance(data, str):
+            data = data.encode()
+        elif isinstance(data, memoryview):
+            data = data.cast("B")
+
+        res = bytearray()
+        chunk = bytearray()
+        omit_on_finish = False
+
+        def flush_chunk() -> None:
+            res.append(len(chunk) + 1)
+            if len(chunk) > 0:
+                res.extend(chunk)
+            chunk.clear()
+
+        for b in data:
+            if b == self.delimiter:
+                flush_chunk()
+                omit_on_finish = False
+                continue
+
+            chunk.append(b)
+            omit_on_finish = False
+            if len(chunk) == self.encode_chunk_size:
+                flush_chunk()
+                omit_on_finish = True
+
+        if len(chunk) > 0 or not omit_on_finish:
+            flush_chunk()
+
+        res.append(self.delimiter)
+        await super().encode(res)
+
+    @property
+    def mtu(self) -> int | None:
+        m = super().mtu
+        if m is None or m <= 0:
+            return None
+        if m <= 2:
+            return 0
+
+        # Inverse of encoded_len = n + floor(n / 254) + 2.
+        q = (m - 2) // 255
+        r = (m - 2) - 255 * q
+        if r > 253:
+            r = 253
+        return 254 * q + r
+
+    async def disconnected(self) -> None:
+        self._decode_reset()
+        await super().disconnected()
+
+
 class TerminalLayer(ProtocolLayer):
     """
     A ProtocolLayer that encodes debug messages in terminal escape codes.
@@ -681,7 +801,7 @@ class DebugArqLayer(ProtocolLayer):
         if len(data) == 0:
             return
 
-        (seq, msg) = self.decode_seq(data)
+        seq, msg = self.decode_seq(data)
         if data[0] & self.reset_flag:
             self._decode_seq = seq
 
@@ -1468,7 +1588,7 @@ class MuxLayer(ProtocolLayer):
         if do_decode:
             await self._dispatch(decoded)
 
-    async def _dispatch(self, data: bytes | memoryview) -> None:
+    async def _dispatch(self, data: bytes | bytearray | memoryview) -> None:
         chan = self._decoding
         if chan is None:
             self.logger.debug("Current decoding channel unknown, dropped %s", bytes(data))
@@ -1593,7 +1713,7 @@ class Aes256Layer(ProtocolLayer):
         elif isinstance(data, memoryview):
             data = data.cast("B")
 
-        data = Crypto.Util.Padding.pad(data, 16)
+        data = Crypto.Util.Padding.pad(bytes(data), 16)
 
         prefix = None
         if self._encrypt is None or self.reqrep:
@@ -1681,6 +1801,7 @@ class Aes256Layer(ProtocolLayer):
 
 layer_types: list[typing.Type[ProtocolLayer]] = [
     AsciiEscapeLayer,
+    CobsLayer,
     TerminalLayer,
     PubTerminalLayer,
     ReqRepCheckLayer,

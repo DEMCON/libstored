@@ -24,7 +24,7 @@ The format is based on `Keep a Changelog`_, and this project adheres to
 Added
 `````
 
-...
+- ``libstored.protocol.CobsLayer`` and ``stored::CobsLayer`` for COBS padding and framing.
 
 .. _Unreleased: https://github.com/DEMCON/libstored/compare/v2.2.0...HEAD
 

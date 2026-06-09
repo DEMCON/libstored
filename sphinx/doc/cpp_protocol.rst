@@ -83,6 +83,7 @@ The inheritance of the layers is shown below.
    ProtocolLayer <|-- AsciiEscapeLayer
    ProtocolLayer <|-- TerminalLayer
    AsciiEscapeLayer -[hidden]--> TerminalLayer
+   ProtocolLayer <|-- CobsLayer
    ProtocolLayer <|-- SegmentationLayer
    ProtocolLayer <|-- Crc8Layer
    ProtocolLayer <|-- Crc16Layer
@@ -154,6 +155,11 @@ stored::CallbackLayer
 ---------------------
 
 .. doxygenclass:: stored::CallbackLayer
+
+stored::CobsLayer
+-----------------
+
+.. doxygenclass:: stored::CobsLayer
 
 stored::CompressLayer
 ---------------------
