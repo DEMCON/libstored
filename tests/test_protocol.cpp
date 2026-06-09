@@ -94,6 +94,213 @@ TEST(AsciiEscapeLayer, Decode)
 		"123");
 }
 
+TEST(CobsLayer, Encode)
+{
+	stored::CobsLayer l;
+	LoggingLayer ll;
+	ll.wrap(l);
+
+	ll.encoded().clear();
+	l.encode("", 0);
+	EXPECT_EQ(ll.encoded().size(), 1U);
+	EXPECT_EQ(ll.encoded().at(0), std::string("\x01\x00", 2));
+
+	ll.encoded().clear();
+	l.encode("123", 3);
+	EXPECT_EQ(ll.encoded().size(), 1U);
+	EXPECT_EQ(
+		ll.encoded().at(0), std::string(
+					    "\x04"
+					    "123"
+					    "\x00",
+					    5));
+
+	ll.encoded().clear();
+	l.encode("1\0", 2, false);
+	l.encode("2\0", 2);
+	EXPECT_EQ(ll.encoded().size(), 1U);
+	EXPECT_EQ(
+		ll.encoded().at(0), std::string(
+					    "\x02"
+					    "1"
+					    "\x02"
+					    "2"
+					    "\x01"
+					    "\x00",
+					    6));
+
+	std::string payload(254, 'a');
+	std::string expected;
+	expected.push_back((char)0xff);
+	expected += payload;
+	expected.push_back('\x00');
+
+	ll.encoded().clear();
+	l.encode(payload.data(), payload.size());
+	EXPECT_EQ(ll.encoded().size(), 1U);
+	EXPECT_EQ(ll.encoded().at(0), expected);
+}
+
+TEST(CobsLayer, Decode)
+{
+	stored::CobsLayer l;
+	LoggingLayer ll;
+	l.wrap(ll);
+
+	ll.decoded().clear();
+	DECODE(l, "\x01\x00");
+	EXPECT_EQ(ll.decoded().size(), 1U);
+	EXPECT_EQ(ll.decoded().at(0), "");
+
+	ll.decoded().clear();
+	DECODE(l,
+	       "\x04"
+	       "12");
+	EXPECT_EQ(ll.decoded().size(), 0U);
+	DECODE(l, "3\x00");
+	EXPECT_EQ(ll.decoded().size(), 1U);
+	EXPECT_EQ(ll.decoded().at(0), "123");
+
+	ll.decoded().clear();
+	DECODE(l,
+	       "\x02"
+	       "1"
+	       "\x02");
+	EXPECT_EQ(ll.decoded().size(), 0U);
+	DECODE(l, "2\x01\x00");
+	EXPECT_EQ(ll.decoded().size(), 1U);
+	EXPECT_EQ(
+		ll.decoded().at(0), std::string(
+					    "1\0"
+					    "2\0",
+					    4));
+
+	std::string encoded;
+	encoded.push_back((char)0xff);
+	encoded += std::string(254, 'a');
+	encoded.push_back('\x00');
+
+	ll.decoded().clear();
+	l.decode(&encoded[0], encoded.size());
+	EXPECT_EQ(ll.decoded().size(), 1U);
+	EXPECT_EQ(ll.decoded().at(0), std::string(254, 'a'));
+
+	ll.decoded().clear();
+	DECODE(l,
+	       "\x05"
+	       "12"
+	       "\x00"
+	       "\x02"
+	       "1"
+	       "\x00");
+	EXPECT_EQ(ll.decoded().size(), 1U);
+	EXPECT_EQ(ll.decoded().at(0), "1");
+}
+
+TEST(CobsLayer, DecodeBytewiseFragments)
+{
+	stored::CobsLayer l;
+	LoggingLayer ll;
+	l.wrap(ll);
+
+	// Three valid frames: "abc", "1\0", and "".
+	char const stream1[] =
+		"\x04"
+		"abc"
+		"\x00"
+		"\x02"
+		"1"
+		"\x01"
+		"\x00"
+		"\x01"
+		"\x00";
+	for(size_t i = 0; i < sizeof(stream1) - 1; i++) {
+		char b = stream1[i];
+		l.decode(&b, 1);
+	}
+
+	EXPECT_EQ(ll.decoded().size(), 3U);
+	EXPECT_EQ(ll.decoded().at(0), "abc");
+	EXPECT_EQ(ll.decoded().at(1), std::string("1\0", 2));
+	EXPECT_EQ(ll.decoded().at(2), "");
+
+	// One invalid frame (dropped), followed by one valid frame "Z".
+	ll.decoded().clear();
+	char const stream2[] =
+		"\x05"
+		"ab"
+		"\x00"
+		"\x02"
+		"Z"
+		"\x00";
+	for(size_t i = 0; i < sizeof(stream2) - 1; i++) {
+		char b = stream2[i];
+		l.decode(&b, 1);
+	}
+
+	EXPECT_EQ(ll.decoded().size(), 1U);
+	EXPECT_EQ(ll.decoded().at(0), "Z");
+}
+
+static std::string cobsRange(uint8_t first, uint8_t last)
+{
+	std::string s;
+	s.reserve((size_t)last - (size_t)first + 1U);
+	for(uint16_t v = first; v <= last; v++)
+		s.push_back((char)v);
+	return s;
+}
+
+TEST(CobsLayer, Examples)
+{
+	struct Example {
+		std::string unencoded;
+		std::string encoded;
+	};
+
+	std::vector<Example> const examples = {
+		{std::string("\x00", 1), std::string("\x01\x01\x00", 3)},
+		{std::string("\x00\x00", 2), std::string("\x01\x01\x01\x00", 4)},
+		{std::string("\x00\x11\x00", 3), std::string("\x01\x02\x11\x01\x00", 5)},
+		{std::string("\x11\x22\x00\x33", 4), std::string("\x03\x11\x22\x02\x33\x00", 6)},
+		{std::string("\x11\x22\x33\x44", 4), std::string("\x05\x11\x22\x33\x44\x00", 6)},
+		{std::string("\x11\x00\x00\x00", 4), std::string("\x02\x11\x01\x01\x01\x00", 6)},
+		{cobsRange(0x01, 0xfe),
+		 std::string("\xff", 1) + cobsRange(0x01, 0xfe) + std::string("\x00", 1)},
+		{std::string("\x00", 1) + cobsRange(0x01, 0xfe),
+		 std::string("\x01\xff", 2) + cobsRange(0x01, 0xfe) + std::string("\x00", 1)},
+		{cobsRange(0x01, 0xff),
+		 std::string("\xff", 1) + cobsRange(0x01, 0xfe) + std::string("\x02\xff\x00", 3)},
+		{cobsRange(0x02, 0xff) + std::string("\x00", 1),
+		 std::string("\xff", 1) + cobsRange(0x02, 0xff) + std::string("\x01\x01\x00", 3)},
+		{cobsRange(0x03, 0xff) + std::string("\x00\x01", 2),
+		 std::string("\xfe", 1) + cobsRange(0x03, 0xff) + std::string("\x02\x01\x00", 3)},
+	};
+
+	// Verify encode against the canonical COBS examples.
+	for(size_t i = 0; i < examples.size(); i++) {
+		stored::CobsLayer l;
+		LoggingLayer ll;
+		ll.wrap(l);
+
+		l.encode(examples[i].unencoded.data(), examples[i].unencoded.size());
+		ASSERT_EQ(ll.encoded().size(), 1U) << "example " << i + 1U;
+		EXPECT_EQ(ll.encoded().at(0), examples[i].encoded) << "example " << i + 1U;
+	}
+
+	// Verify decode for the same examples.
+	for(size_t i = 0; i < examples.size(); i++) {
+		stored::CobsLayer l;
+		LoggingLayer ll;
+		l.wrap(ll);
+
+		std::string encoded = examples[i].encoded;
+		l.decode(&encoded[0], encoded.size());
+		ASSERT_EQ(ll.decoded().size(), 1U) << "example " << i + 1U;
+		EXPECT_EQ(ll.decoded().at(0), examples[i].unencoded) << "example " << i + 1U;
+	}
+}
+
 TEST(SegmentationLayer, SingleChunkEncode)
 {
 	stored::SegmentationLayer l(8);

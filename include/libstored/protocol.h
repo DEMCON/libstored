@@ -454,6 +454,71 @@ private:
 };
 
 /*!
+ * \brief Encode/decode messages using Consistent Overhead Byte Stuffing (COBS).
+ *
+ * COBS removes all zero bytes from the encoded message and adds a bounded overhead.  A zero-byte
+ * frame delimiter is appended during encoding.
+ *
+ * This layer can replace the AsciiEscapeLayer + TerminalLayer pair in a protocol stack by providing
+ * both byte-stuffing and framing in one layer.
+ *
+ * Decoding accepts arbitrary byte chunks. It keeps a decode state and assembles frames
+ * incrementally in a decoded buffer until a delimiter is received. Invalid frames are silently
+ * dropped.
+ */
+class CobsLayer : public ProtocolLayer {
+	STORED_CLASS_NOCOPY(CobsLayer)
+public:
+	typedef ProtocolLayer base;
+
+	static uint8_t const Delimiter = 0;
+
+	explicit CobsLayer(ProtocolLayer* up = nullptr, ProtocolLayer* down = nullptr);
+	/*! \brief Dtor. */
+	virtual ~CobsLayer() override is_default
+
+	virtual void decode(void* buffer, size_t len) override;
+	virtual void encode(void const* buffer, size_t len, bool last = true) override;
+#  ifndef DOXYGEN
+	using base::encode;
+#  endif
+	virtual size_t mtu() const override;
+	virtual void reset() override;
+	virtual void disconnected() override;
+
+	void reserveDecode(size_t len);
+
+private:
+	void flushDecodeChunk();
+	void decodeReset();
+	void flushEncodeChunk();
+	void encodeReset();
+
+private:
+	enum STORED_ANONYMOUS { EncodeChunkSize = 254 };
+	enum DecodeState {
+		DecodeStateIdle,
+		DecodeStateInvalid,
+		DecodeStateNext,
+		DecodeStateDecode,
+		DecodeStateDecodeNoZero,
+	};
+
+	enum EncodeState {
+		EncodeStateIdle,
+		EncodeStateEncoding,
+		EncodeStateNext,
+		EncodeStateNextNoZero,
+	};
+
+	Vector<uint8_t>::type m_encodeChunk;
+	Vector<uint8_t>::type m_decodeBuffer;
+	size_t m_decodeExpected;
+	DecodeState m_decodeState;
+	EncodeState m_encodeState;
+};
+
+/*!
  * \brief Extracts and injects Embedded Debugger messages in a stream of data, such as a terminal.
  *
  * The frame's boundaries are marked with APC and ST C1 control characters.
@@ -1417,6 +1482,7 @@ make_callback(Up&& up, Down&& down, Connected&& connected, Disconnected&& discon
  * - SegmentationLayer
  * - AsciiEscapeLayer
  * - TerminalLayer
+ *   (or replace both with CobsLayer)
  *
  * channel 1:
  * - PrintLayer
@@ -1441,6 +1507,7 @@ make_callback(Up&& up, Down&& down, Connected&& connected, Disconnected&& discon
  * - ArqLayer
  * - AsciiEscapeLayer
  * - TerminalLayer
+ *   (or replace both with CobsLayer)
  * - some lossy transport layer
  *
  * Now, the framing is done below the ArqLayer, so all \c decode()s get full frames above the

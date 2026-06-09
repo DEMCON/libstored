@@ -186,6 +186,159 @@ size_t AsciiEscapeLayer::mtu() const
 
 
 //////////////////////////////
+// CobsLayer
+//
+
+uint8_t const CobsLayer::Delimiter;
+
+CobsLayer::CobsLayer(ProtocolLayer* up, ProtocolLayer* down)
+	: base(up, down)
+	, m_encodeChunk()
+	, m_decodeBuffer()
+	, m_decodeExpected(0U)
+	, m_decodeState(DecodeStateIdle)
+	, m_encodeState(EncodeStateIdle)
+{
+	m_encodeChunk.reserve(EncodeChunkSize);
+}
+
+void CobsLayer::reserveDecode(size_t len)
+{
+	m_decodeBuffer.reserve(len);
+}
+
+void CobsLayer::decodeReset()
+{
+	m_decodeBuffer.clear();
+	m_decodeExpected = 0U;
+	m_decodeState = DecodeStateIdle;
+}
+
+void CobsLayer::flushDecodeChunk()
+{
+	if(m_decodeState == DecodeStateDecode)
+		m_decodeBuffer.push_back(0U);
+
+	m_decodeState = DecodeStateNext;
+}
+
+void CobsLayer::decode(void* buffer, size_t len)
+{
+	uint8_t const* const p = static_cast<uint8_t const*>(buffer);
+
+	for(size_t i = 0; i < len; i++) {
+		uint8_t const b = p[i];
+
+		if(b == Delimiter) {
+			if(m_decodeState > DecodeStateInvalid && m_decodeExpected == 0U)
+				base::decode(m_decodeBuffer.data(), m_decodeBuffer.size());
+
+			decodeReset();
+			continue;
+		}
+
+		if(m_decodeState == DecodeStateInvalid)
+			continue;
+
+		if(m_decodeExpected == 0U) {
+			flushDecodeChunk();
+			stored_assert(b > 0);
+			m_decodeExpected = (size_t)b - 1U;
+			m_decodeState = b == 0xffU ? DecodeStateDecodeNoZero : DecodeStateDecode;
+		} else {
+			m_decodeBuffer.push_back(b);
+			m_decodeExpected--;
+		}
+	}
+}
+
+void CobsLayer::encodeReset()
+{
+	m_encodeChunk.clear();
+	m_encodeState = EncodeStateIdle;
+}
+
+void CobsLayer::flushEncodeChunk()
+{
+	uint8_t const code = (uint8_t)(m_encodeChunk.size() + 1U);
+	base::encode(&code, 1, false);
+	if(!m_encodeChunk.empty()) {
+		base::encode(m_encodeChunk.data(), m_encodeChunk.size(), false);
+		m_encodeChunk.clear();
+	}
+}
+
+void CobsLayer::encode(void const* buffer, size_t len, bool last)
+{
+	uint8_t const* const p = static_cast<uint8_t const*>(buffer);
+
+	for(size_t i = 0; i < len; i++) {
+		m_encodeState = EncodeStateEncoding;
+
+		uint8_t const b = p[i];
+		if(b == Delimiter) {
+			flushEncodeChunk();
+			m_encodeState = EncodeStateNext;
+			continue;
+		}
+
+		m_encodeChunk.push_back(b);
+		if(m_encodeChunk.size() == (size_t)EncodeChunkSize) {
+			flushEncodeChunk();
+			m_encodeState = EncodeStateNextNoZero;
+		}
+	}
+
+	if(last) {
+		switch(m_encodeState) {
+		case EncodeStateIdle:
+		case EncodeStateNext:
+		case EncodeStateEncoding:
+			flushEncodeChunk();
+			break;
+		case EncodeStateNextNoZero:
+		default:
+			break;
+		}
+
+		uint8_t const delimiter = Delimiter;
+		base::encode(&delimiter, 1, true);
+		m_encodeState = EncodeStateIdle;
+	}
+}
+
+size_t CobsLayer::mtu() const
+{
+	size_t const mtu = base::mtu();
+	if(mtu == 0U)
+		return 0U;
+	if(mtu <= 2U)
+		return 0U;
+
+	// Inverse of encoded_len = n + floor(n / 254) + 2 (COBS overhead + delimiter).
+	size_t const q = (mtu - 2U) / 255U;
+	size_t r = (mtu - 2U) - 255U * q;
+	if(r > 253U)
+		r = 253U;
+	return 254U * q + r;
+}
+
+void CobsLayer::reset()
+{
+	decodeReset();
+	encodeReset();
+	base::reset();
+}
+
+void CobsLayer::disconnected()
+{
+	decodeReset();
+	base::disconnected();
+}
+
+
+
+//////////////////////////////
 // TerminalLayer
 //
 
