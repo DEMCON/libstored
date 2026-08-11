@@ -278,8 +278,8 @@ set_property(
 		LIBSTORED_LAUNCH_JSON
 		"\
 {
-	\"version\": \"0.2.0\",
-	\"configurations\": ["
+  \"version\": \"0.2.0\",
+  \"configurations\": ["
 )
 
 function(add_launch_json TARGET)
@@ -291,14 +291,14 @@ function(add_launch_json TARGET)
 			PROPERTY
 				LIBSTORED_LAUNCH_JSON
 				"${_launch}
-		{
-			\"type\": \"cppdbg\",
-			\"request\": \"launch\",
-			\"name\": \"${TARGET}\",
-			\"stopAtEntry\": true,
-			\"program\": \"$<TARGET_FILE:${TARGET}>\",
-			\"cwd\": \"$<TARGET_FILE_DIR:${TARGET}>\",
-		},"
+    {
+      \"type\": \"cppdbg\",
+      \"request\": \"launch\",
+      \"name\": \"${TARGET}\",
+      \"stopAtEntry\": true,
+      \"program\": \"$<TARGET_FILE:${TARGET}>\",
+      \"cwd\": \"$<TARGET_FILE_DIR:${TARGET}>\",
+    },"
 		)
 	else()
 		set_property(
@@ -306,12 +306,12 @@ function(add_launch_json TARGET)
 			PROPERTY
 				LIBSTORED_LAUNCH_JSON
 				"${_launch}
-		{
-			\"type\": \"f5anything\",
-			\"request\": \"launch\",
-			\"name\": \"${TARGET}\",
-			\"command\": \"$<TARGET_FILE:${TARGET}>\",
-		},"
+    {
+      \"type\": \"f5anything\",
+      \"request\": \"launch\",
+      \"name\": \"${TARGET}\",
+      \"command\": \"$<TARGET_FILE:${TARGET}>\",
+    },"
 		)
 	endif()
 endfunction()
@@ -328,14 +328,14 @@ function(add_launch_json_py NAME FILE)
 		PROPERTY
 			LIBSTORED_LAUNCH_JSON
 			"${_launch}
-		{
-			\"type\": \"debugpy\",
-			\"request\": \"launch\",
-			\"name\": \"${NAME}\",
-			\"program\": \"${FILE_ESCAPED}\",
-			\"args\": [${_args}],
-			\"python\": \"${PYTHON_EXECUTABLE}\"
-		},"
+    {
+      \"type\": \"debugpy\",
+      \"request\": \"launch\",
+      \"name\": \"${NAME}\",
+      \"program\": \"${FILE_ESCAPED}\",
+      \"args\": [${_args}],
+      \"python\": \"${PYTHON_EXECUTABLE}\"
+    },"
 	)
 endfunction()
 
@@ -350,15 +350,15 @@ function(add_launch_json_pymod NAME MODULE)
 		PROPERTY
 			LIBSTORED_LAUNCH_JSON
 			"${_launch}
-		{
-			\"type\": \"debugpy\",
-			\"request\": \"launch\",
-			\"name\": \"${NAME}\",
-			\"module\": \"${MODULE}\",
-			\"args\": [${_args}],
-			\"python\": \"${PYTHON_EXECUTABLE}\",
-			\"cwd\": \"${PROJECT_SOURCE_DIR}/python\"
-		},"
+    {
+      \"type\": \"debugpy\",
+      \"request\": \"launch\",
+      \"name\": \"${NAME}\",
+      \"module\": \"${MODULE}\",
+      \"args\": [${_args}],
+      \"python\": \"${PYTHON_EXECUTABLE}\",
+      \"cwd\": \"${PROJECT_SOURCE_DIR}/python\"
+    },"
 	)
 endfunction()
 
@@ -503,7 +503,7 @@ if(LIBSTORED_GEN_LAUNCH_JSON)
 	get_property(_launch GLOBAL PROPERTY LIBSTORED_LAUNCH_JSON)
 	set(LIBSTORED_LAUNCH_JSON
 	    "${_launch}
-	]
+  ]
 }
 "
 	)

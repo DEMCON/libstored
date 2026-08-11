@@ -1,57 +1,57 @@
 {
-	"env": {
-		"includePath": [
-			"${workspaceFolder}/include",
-			"${workspaceFolder}/dist/*/build/*-extern-prefix/src/**",
-			"${workspaceFolder}/dist/*/build/_deps/*-src/*/include",
-			"${workspaceFolder}/examples/**",
-			"${workspaceFolder}/tests/**"
-		],
-		"defines": [
-			"STORED_HAVE_ZMQ",
-			"STORED_HAVE_AES",
-			"STORED_HAVE_HEATSHRINK",
-			"AES256"
-		]
-	},
-	"configurations": [
-		{
-			"name": "Linux",
-			"includePath": [
-				"${env:includePath}"
-			],
-			"defines": [
-				"${env:defines}"
-			],
-			"compilerPath": "/usr/bin/clang",
-			"cStandard": "c17",
-			"cppStandard": "c++17",
-			"intelliSenseMode": "linux-clang-x64"
-		},
-		{
-			"name": "Win32",
-			"includePath": [
-				"${env:includePath}"
-			],
-			"defines": [
-				"${env:defines}"
-			],
-			"cStandard": "c17",
-			"cppStandard": "c++17"
-		},
-		{
-			"name": "Mac",
-			"includePath": [
-				"${env:includePath}"
-			],
-			"defines": [
-				"${env:defines}"
-			],
-			"compilerPath": "/usr/bin/clang",
-			"cStandard": "c17",
-			"cppStandard": "c++17",
-			"intelliSenseMode": "macos-clang-x64"
-		}
-	],
-	"version": 4
+  "env": {
+    "includePath": [
+      "${workspaceFolder}/include",
+      "${workspaceFolder}/dist/*/build/*-extern-prefix/src/**",
+      "${workspaceFolder}/dist/*/build/_deps/*-src/*/include",
+      "${workspaceFolder}/examples/**",
+      "${workspaceFolder}/tests/**"
+    ],
+    "defines": [
+      "STORED_HAVE_ZMQ",
+      "STORED_HAVE_AES",
+      "STORED_HAVE_HEATSHRINK",
+      "AES256"
+    ]
+  },
+  "configurations": [
+    {
+      "name": "Linux",
+      "includePath": [
+        "${env:includePath}"
+      ],
+      "defines": [
+        "${env:defines}"
+      ],
+      "compilerPath": "/usr/bin/clang",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "linux-clang-x64"
+    },
+    {
+      "name": "Win32",
+      "includePath": [
+        "${env:includePath}"
+      ],
+      "defines": [
+        "${env:defines}"
+      ],
+      "cStandard": "c17",
+      "cppStandard": "c++17"
+    },
+    {
+      "name": "Mac",
+      "includePath": [
+        "${env:includePath}"
+      ],
+      "defines": [
+        "${env:defines}"
+      ],
+      "compilerPath": "/usr/bin/clang",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "macos-clang-x64"
+    }
+  ],
+  "version": 4
 }
