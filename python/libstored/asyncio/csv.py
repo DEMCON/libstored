@@ -369,8 +369,6 @@ class CsvExport(laio_worker.Work):
         self._coalesced = (t, row)
 
     async def _write(self) -> None:
-        assert not self.lock.has_lock()
-
         if not self.opened:
             raise RuntimeError("File not opened")
 
@@ -403,8 +401,6 @@ class CsvExport(laio_worker.Work):
         await self._flush()
 
     async def _flush(self) -> None:
-        assert not self.lock.has_lock()
-
         if not self.opened:
             raise RuntimeError("File not opened")
 
