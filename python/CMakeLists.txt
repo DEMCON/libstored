@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020-2025 Jochem Rutgers
+# SPDX-FileCopyrightText: 2020-2026 Jochem Rutgers
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -35,6 +35,7 @@ set(pylibstored_src
     libstored/protocol/protocol.py
     libstored/protocol/serial.py
     libstored/protocol/stdio.py
+    libstored/protocol/tcp.py
     libstored/protocol/util.py
     libstored/protocol/zmq.py
     libstored/protocol/zmqcat.py
@@ -43,6 +44,7 @@ set(pylibstored_src
     libstored/wrapper/__init__.py
     libstored/wrapper/serial.py
     libstored/wrapper/stdio.py
+    libstored/wrapper/tcp.py
 )
 
 set(package_data_
