@@ -54,8 +54,8 @@
 #  ifdef __cplusplus
 #    if __cplusplus < 201103L && !defined(decltype)
 #      define decltype(x) \
-	__typeof__(x) // Well, not really true when references are
-		      // involved...
+	      __typeof__(x) // Well, not really true when references are
+			    // involved...
 #    endif
 #  endif
 #  ifndef _GNU_SOURCE
@@ -176,7 +176,7 @@ typedef SSIZE_T ssize_t;
 #elif defined(__linux__)
 #  define STORED_OS_LINUX 1
 #  define STORED_OS_POSIX 1
-#  if defined(_DEBUG) && !defined(_FORTIFY_SOURCE)
+#  if defined(_DEBUG) && !defined(_FORTIFY_SOURCE) && defined(__OPTIMIZE__) && __OPTIMIZE__ > 0
 #    if defined(STORED_COMPILER_GCC) && GCC_VERSION >= 120000
 #      define _FORTIFY_SOURCE 3
 #    else
@@ -286,7 +286,8 @@ typedef SSIZE_T ssize_t;
 #    endif
 #    ifndef is_default
 #      define is_default \
-	{}
+	      {          \
+	      }
 #    endif
 #    ifndef constexpr14
 #      define constexpr14 inline
@@ -334,11 +335,11 @@ typedef SSIZE_T ssize_t;
 #  if !defined(STORED_cpp_exceptions)
 #    define try	       if_constexpr(true)
 #    define catch(...) if_constexpr(false)
-#    define STORED_throw(e)                               \
-      do { /* NOLINT(cppcoreguidelines-avoid-do-while) */ \
-	(void)fprintf(stderr, "Exception: %s\n", #e);     \
-	std::terminate();                                 \
-      } while(0)
+#    define STORED_throw(e)                                       \
+	    do { /* NOLINT(cppcoreguidelines-avoid-do-while) */   \
+		    (void)fprintf(stderr, "Exception: %s\n", #e); \
+		    std::terminate();                             \
+	    } while(0)
 #    define STORED_rethrow std::terminate()
 #  else
 #    define STORED_throw(e) throw e
