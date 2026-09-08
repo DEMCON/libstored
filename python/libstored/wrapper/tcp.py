@@ -6,6 +6,7 @@
 
 import argparse
 import asyncio
+import concurrent.futures
 import logging
 
 from ..version import __version__
@@ -20,9 +21,9 @@ def build_stack(
     listen: str = "*",
     zmq_port: int = lprot.default_port,
     stack: str = "cobs",
-) -> lprot.ProtocolLayer:
+) -> lprot.ProtocolStack:
     """Build a ZMQ bridge stack for a remote TCP debugger."""
-    return lprot.build_stack(
+    result = lprot.build_stack(
         ",".join(
             [
                 f"zmq={listen}:{zmq_port}",
@@ -32,6 +33,8 @@ def build_stack(
             ]
         )
     )
+    assert isinstance(result, lprot.ProtocolStack)
+    return result
 
 
 def main() -> None:
@@ -84,6 +87,15 @@ def main() -> None:
                     zmq_port=args.zmqport,
                     stack=args.stack,
                 )
+                tcp_layer = next(layer for layer in stack if layer.name == "tcp")
+
+                async def handle_tcp_exception(error: BaseException) -> None:
+                    if isinstance(error, (ConnectionError, OSError)):
+                        worker.cancel()
+                        return
+                    await tcp_layer.default_async_except_hook(error)
+
+                tcp_layer.async_except_hook = handle_tcp_exception
                 try:
                     while True:
                         await asyncio.sleep(3600)
@@ -93,6 +105,8 @@ def main() -> None:
             async_main(args)
         except KeyboardInterrupt:
             worker.cancel()
+        except concurrent.futures.CancelledError:
+            pass
 
 
 if __name__ == "__main__":
