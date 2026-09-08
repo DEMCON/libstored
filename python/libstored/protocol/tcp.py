@@ -120,6 +120,7 @@ class TcpLayer(lprot.ProtocolLayer):
         try:
             self._reader, self._writer = await self._open_connection()
             self._open = True
+            self.logger.debug("TCP connection established to %s:%d", self._server, self._port)
             await super().connected()
 
             if self._encode_buffer:
